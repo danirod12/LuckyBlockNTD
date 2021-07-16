@@ -1,0 +1,55 @@
+
+author: DenBeKKer
+# I am from Russian, translation will be good :D
+# Я из России, так что перевод будет хороший :D
+
+special:
+  water_bucket: "&c&lOWNER &cDanirod_Gaming &7-> Проверь свой инвентарь.. У тебя есть &9ведро воды&f!"
+
+system:
+  loading_config: "&fЗагрузка конфигурации... "
+  reloaded_config: "&aКонфигурация была перезагружена, загружено %amount% типов лаки-блоков..."
+  material_api: "&f%build% версия API найдена"
+  
+  lb_not_found: "&cЛаки-блок &e%lb%&c не найден, пропускаем... "
+  lb_loading_exception: "&cЛаки-блок &e%lb%&c не может быть загружен... Ошибка: &e%exception%"
+  lb_unknown_exception: "&cЛаки-блок &e%lb%&c не найден или произошла неизвестная ошибка, пропускаем... "
+  lb_loaded_zero: "&fЗагружено 0 типов лаки-блоков... Ты дура или да?..."
+  lb_loaded_not_zero: "&fЗагружено &e%amount%&f типов лаки-блоков..."
+  
+  cant_use_command: "&cПрости, но ты не можешь использовать подкоманды."
+  cant_use_subcommand: "&cПрости, но ты не можешь использовать эту подкоманду."
+  
+  cant_break_color: "&cПрости, но ты не можешь ломать лаки-блоки типа &e%lb%"
+  
+  cmd_lb_disabled: "&cЛаки-блок типа &e%lb%&c отключен :("
+  cmd_lb_not_found: "&cЛаки-блок типа &e%lb%&c не найден :("
+  cmd_lb_received: "&aПолучено %amount% лаки-блоков &7(%lb% цвет)"
+  cmd_lb_give: "&aВыдано %amount% лаки-блоков &7(%lb% цвет)"
+  
+  cmd_help:
+  - "&eLuckyBlock &fпомощь по командам:"
+  - "&8 > &e/%label% get <цвет> [кол-во] &f- получить лаки-блок"
+  - "&8 > &e/%label% give <ник> <цвет> [кол-во] &f- выдать лаки-блок"
+  - "&8 > &e/%label% gui <get/edit> &f- открыть гуи"
+  - "&8 > &e/%label% edit &f- алиас для гуи редактирования"
+  - "&8 > &e/%label% list &f- список типов лаки-блоков"
+  - "&8 > &e/%label% reload &f- перезагрузка всех конфигов"
+  - "&8 > &e/%label% checkforupdates &f- проверка обновлений"
+  - "&8 > &e/%label% support &f- получить контакты автора"
+  
+  cmd_player_not_found: "&cИгрок &e%player%&c не найден :("
+  cmd_no_perm_to_color: "&cНет прав для цвета %lb%"
+  
+gui:
+  get:
+    title: "&bПолучи лаки-блок &4&l:D"
+    no_money: "&cТребуется еще &e%eco% &cмонет"
+    success: "&aУспешно куплено &e%amount% &aлаки-блоков за &e%eco%"
+    exception: "&cОшибка Vault: %exception%"
+  count:
+    title: "&bВыбери количество &4&l:D"
+    remove: "&bУбрать %offset%"
+    add: "&bДобавить %offset%"
+    back: "&3Назад"
+    confirm: "&eПодтвердить"

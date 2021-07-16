@@ -1,0 +1,67 @@
+#
+#
+#█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+#█░░░░░░█████████░░░░░░██░░░░░░█░░░░░░░░░░░░░░█░░░░░░██░░░░░░░░█░░░░░░░░██░░░░░░░░█░░░░░░░░░░░░░░███░░░░░░█████████░░░░░░░░░░░░░░█░░░░░░░░░░░░░░█░░░░░░██░░░░░░░░█
+#█░░▄▀░░█████████░░▄▀░░██░░▄▀░░█░░▄▀▄▀▄▀▄▀▄▀░░█░░▄▀░░██░░▄▀▄▀░░█░░▄▀▄▀░░██░░▄▀▄▀░░█░░▄▀▄▀▄▀▄▀▄▀░░███░░▄▀░░█████████░░▄▀▄▀▄▀▄▀▄▀░░█░░▄▀▄▀▄▀▄▀▄▀░░█░░▄▀░░██░░▄▀▄▀░░█
+#█░░▄▀░░█████████░░▄▀░░██░░▄▀░░█░░▄▀░░░░░░░░░░█░░▄▀░░██░░▄▀░░░░█░░░░▄▀░░██░░▄▀░░░░█░░▄▀░░░░░░▄▀░░███░░▄▀░░█████████░░▄▀░░░░░░▄▀░░█░░▄▀░░░░░░░░░░█░░▄▀░░██░░▄▀░░░░█
+#█░░▄▀░░█████████░░▄▀░░██░░▄▀░░█░░▄▀░░█████████░░▄▀░░██░░▄▀░░█████░░▄▀▄▀░░▄▀▄▀░░███░░▄▀░░██░░▄▀░░███░░▄▀░░█████████░░▄▀░░██░░▄▀░░█░░▄▀░░█████████░░▄▀░░██░░▄▀░░███
+#█░░▄▀░░█████████░░▄▀░░██░░▄▀░░█░░▄▀░░█████████░░▄▀░░░░░░▄▀░░█████░░░░▄▀▄▀▄▀░░░░███░░▄▀░░░░░░▄▀░░░░█░░▄▀░░█████████░░▄▀░░██░░▄▀░░█░░▄▀░░█████████░░▄▀░░░░░░▄▀░░███
+#█░░▄▀░░█████████░░▄▀░░██░░▄▀░░█░░▄▀░░█████████░░▄▀▄▀▄▀▄▀▄▀░░███████░░░░▄▀░░░░█████░░▄▀▄▀▄▀▄▀▄▀▄▀░░█░░▄▀░░█████████░░▄▀░░██░░▄▀░░█░░▄▀░░█████████░░▄▀▄▀▄▀▄▀▄▀░░███
+#█░░▄▀░░█████████░░▄▀░░██░░▄▀░░█░░▄▀░░█████████░░▄▀░░░░░░▄▀░░█████████░░▄▀░░███████░░▄▀░░░░░░░░▄▀░░█░░▄▀░░█████████░░▄▀░░██░░▄▀░░█░░▄▀░░█████████░░▄▀░░░░░░▄▀░░███
+#█░░▄▀░░█████████░░▄▀░░██░░▄▀░░█░░▄▀░░█████████░░▄▀░░██░░▄▀░░█████████░░▄▀░░███████░░▄▀░░████░░▄▀░░█░░▄▀░░█████████░░▄▀░░██░░▄▀░░█░░▄▀░░█████████░░▄▀░░██░░▄▀░░███
+#█░░▄▀░░░░░░░░░░█░░▄▀░░░░░░▄▀░░█░░▄▀░░░░░░░░░░█░░▄▀░░██░░▄▀░░░░███████░░▄▀░░███████░░▄▀░░░░░░░░▄▀░░█░░▄▀░░░░░░░░░░█░░▄▀░░░░░░▄▀░░█░░▄▀░░░░░░░░░░█░░▄▀░░██░░▄▀░░░░█
+#█░░▄▀▄▀▄▀▄▀▄▀░░█░░▄▀▄▀▄▀▄▀▄▀░░█░░▄▀▄▀▄▀▄▀▄▀░░█░░▄▀░░██░░▄▀▄▀░░███████░░▄▀░░███████░░▄▀▄▀▄▀▄▀▄▀▄▀░░█░░▄▀▄▀▄▀▄▀▄▀░░█░░▄▀▄▀▄▀▄▀▄▀░░█░░▄▀▄▀▄▀▄▀▄▀░░█░░▄▀░░██░░▄▀▄▀░░█
+#█░░░░░░░░░░░░░░█░░░░░░░░░░░░░░█░░░░░░░░░░░░░░█░░░░░░██░░░░░░░░███████░░░░░░███████░░░░░░░░░░░░░░░░█░░░░░░░░░░░░░░█░░░░░░░░░░░░░░█░░░░░░░░░░░░░░█░░░░░░██░░░░░░░░█
+#█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+#                                                                                                                     MADE WITH LOVE BY DENBEKKER (RUSSIAN CODER)
+#
+#                    Join my DISCORD server for support & bug reporting & feature requesting - https://discord.gg/vbYW3sperj
+#                                        Plugin SpigotMC url: https://www.spigotmc.org/resources/92026
+#
+#
+#
+# Since 1.3 version you cant disable check-for-updates, but can disable player-join message about update
+# Command "/ntdluckyblock checkforupdates" will ignore this option
+#    (true - inform about updates; false - dont inform about updates)
+inform-about-update: true
+scheduled-update-check: true
+
+# LANGUAGE. You can find all languages list at https://github.com/Official-DenBeKKer/ntdluckyblock/wiki/Languages
+language: en
+
+# Some beta features (true - enabled; false - not)
+beta:
+  pistonfix: true
+  explosionfix: true
+
+# Use more RAM, but dont spam author in commands (Only in first command uses)
+reduce-command-author-info: false
+
+# [false - Permission luckyblock.get for all luckyblocks; true - Permission luckyblock.get.color (luckyblock.get.red) per color]
+permission-for-each-give-get: true
+
+# [false - Permission luckyblock.gui.get for all luckyblocks; true - Permission luckyblock.gui.get.color (luckyblock.gui.get.red) per color]
+permission-for-each-gui-get: false
+
+# Enabled colors of luckyblocks
+enabled:
+- black
+- blue
+- brown
+- cyan
+- gray
+- green
+- light_blue
+- light_gray
+- lime
+- magenta
+- orange
+- pink
+- purple
+- red
+- white
+- yellow
+
+# Dont change it
+config-level: "1.5"
+debug: false

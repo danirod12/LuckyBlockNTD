@@ -1,0 +1,31 @@
+# LuckyBlock texture into block
+texture: 29942dd1338abeae8b8274a41ae1dcdf2b7be449f28d6b650ec06e491e70f570
+
+# Item name
+name: "&4Red LuckyBlock"
+# Item lore
+lore:
+- "&7Place me :D"
+
+eco: true
+shop: true
+price: 250
+
+animation: true
+animation_type: "MOBSPAWNER_FLAMES"
+
+
+# Dropping items
+drop:
+  '0':
+    - "LUCKY_BLOCK_ITEM : BLUE : 2" # Items amount
+  '1':
+    - "SPECIAL : PIG : 4" # Pigs count
+  '2':
+    - "SPECIAL : LIGHTNING : 4" # Amount of lightnings
+  '3':
+    - "SPECIAL : WATER_BUCKET : 64" # Throw height
+  '4':
+    - "ENTITY : ZOMBIE : 2" # Zombies count
+  '5':
+    - "ENTITY : GHAST"

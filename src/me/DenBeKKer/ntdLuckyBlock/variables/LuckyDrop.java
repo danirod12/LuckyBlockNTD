@@ -1,0 +1,32 @@
+package me.DenBeKKer.ntdLuckyBlock.variables;
+
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+
+public interface LuckyDrop {
+	
+	public enum LuckyItemType { LUCKY_BLOCK_ITEM, ITEM, SPECIAL, ENTITY, COMMAND, CONSOLE, MESSAGE, SCHEMATIC; }
+	
+	public enum Special {
+		
+		PIG,
+		LIGHTNING,
+		WATER_BUCKET,
+		DIAMOND_COLUMN;
+		
+		public int defaultValue() {
+			switch(this) {
+			case LIGHTNING: return 3;
+			case PIG: return 4;
+			case WATER_BUCKET: return 64;
+			default: return 1;
+			}
+		}
+	
+	}
+	
+	void execute(Block b, Player target);
+	
+	void execute(Block b);
+	
+}
