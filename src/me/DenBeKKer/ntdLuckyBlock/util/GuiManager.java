@@ -19,6 +19,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
+import me.DenBeKKer.ntdLuckyBlock.LBMain.PlayerHead;
 import me.DenBeKKer.ntdLuckyBlock.util.MessagesManager.Message;
 import me.DenBeKKer.ntdLuckyBlock.util.material.IMat.Mat;
 import me.DenBeKKer.ntdLuckyBlock.variables.ConfirmEvent;
@@ -55,6 +56,11 @@ public class GuiManager implements Listener {
 		if(e.getSlot() < 0) return;
 		if(e.getClickedInventory().equals(get)) {
 			e.setCancelled(true);
+			
+			if(e.getSlot() == e.getClickedInventory().getSize() - 9) {
+				e.getWhoClicked().closeInventory();
+				return;
+			}
 			
 			ItemStack item = e.getInventory().getItem(e.getSlot());
 			if(item == null || !LBMain.getInstance().factory.isSkull(item)) return;
@@ -183,6 +189,12 @@ public class GuiManager implements Listener {
 			
 		}
 		
+		createExit(get);
+		
+	}
+	
+	public static void createExit(Inventory inventory) {
+		inventory.setItem(inventory.getSize() - 9, PlayerHead.CLOSE_WOOD.getHead(Message.GUI_EXIT.getAsString(true), Arrays.asList("\u00a7f ")));
 	}
 	
 	public static void close() {

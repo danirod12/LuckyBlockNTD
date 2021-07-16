@@ -44,6 +44,7 @@ public class MessagesManager {
 		GUI_GET_SUCCESS("gui.get.success"),
 		GUI_GET_EXCEPTION("gui.get.exception"),
 		GUI_COUNT_ADD("gui.count.add"),
+		GUI_EXIT("gui.exit"),
 		CMD_NO_PERM_TO_COLOR("system.cmd_no_perm_to_color"),
 		CANT_BREAK_LUCKYBLOCK("system.cant_break_color"),
 		CMD_HELP("system.cmd_help");

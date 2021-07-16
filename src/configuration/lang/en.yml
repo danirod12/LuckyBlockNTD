@@ -40,6 +40,7 @@ system:
   cmd_no_perm_to_color: "&cNo permission for color %lb%"
   
 gui:
+  exit: "&7[ &6Exit from GUI &7]"
   get:
     title: "&bGet luckyblock &4&l:D"
     no_money: "&cYou need &e%eco% &cmore money"

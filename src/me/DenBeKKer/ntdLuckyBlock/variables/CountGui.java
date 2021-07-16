@@ -42,7 +42,7 @@ public class CountGui implements Listener {
 		this.eco = eco;
 		this.price = price_per_chart;
 		this.inventory = Bukkit.createInventory(player, 27, Message.GUI_COUNT_TITLE.getAsString());
-		inventory.setItem(18, PlayerHead.PREVIOUS_MENU.getHead(Message.GUI_COUNT_BACK.getAsString(), null));
+		inventory.setItem(18, PlayerHead.PREVIOUS_WOOD.getHead(Message.GUI_COUNT_BACK.getAsString(), null));
 		inventory.setItem(26, PlayerHead.NEXT_WOOD.getHead(Message.GUI_COUNT_CONFIRM.getAsString(), null));
 		i();
 		

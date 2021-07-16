@@ -24,10 +24,11 @@ public class LBCommand implements CommandExecutor {
 			if(LBMain.isReduced()) {
 				if(!LBMain.getReduced().contains((Player) sender)) {
 					sender.sendMessage("\u00a77[\u00a7eLuckyBlock\u00a77] \u00a7fRunning \u00a7antdLuckyBlock v"
-							+ LBMain.getVersion() + " \u00a7fby \u00a7aDenBeKKer\u00a7f, " + (LBMain.isPremium() ? "\u00a7dpremium version" : "free version"));
+							+ LBMain.getVersion() + " " + (LBMain.isPremium() ? "\u00a7dprem" : "free") + " \u00a7fby \u00a7aDenBeKKer");
 					LBMain.getReduced().add((Player) sender);
 				}
-			}
+			} else sender.sendMessage("\u00a77[\u00a7eLuckyBlock\u00a77] \u00a7fRunning \u00a7antdLuckyBlock v"
+					+ LBMain.getVersion() + " " + (LBMain.isPremium() ? "\u00a7dprem" : "free") + " \u00a7fby \u00a7aDenBeKKer");
 		}
 //		if(!(LBMain.isReduced() && sender instanceof Player && LBMain.getReduced().contains((Player) sender))) {
 //			sender.sendMessage("\u00a77[\u00a7eLuckyBlock\u00a77] \u00a7fRunning \u00a7antdLuckyBlock v" + LBMain.getVersion() + " \u00a7fby \u00a7aDenBeKKer");

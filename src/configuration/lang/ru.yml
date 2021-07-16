@@ -42,6 +42,7 @@ system:
   cmd_no_perm_to_color: "&cНет прав для цвета %lb%"
   
 gui:
+  exit: "&7[ &6Покинуть меню &7]"
   get:
     title: "&bПолучи лаки-блок &4&l:D"
     no_money: "&cТребуется еще &e%eco% &cмонет"

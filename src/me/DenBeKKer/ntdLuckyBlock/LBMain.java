@@ -585,7 +585,8 @@ public class LBMain extends JavaPlugin {
 		MINUS_STONE("http://textures.minecraft.net/texture/a8c67fed7a2472b7e9afd8d772c13db7b82c32ceeff8db977474c11e4611"),
 		
 		NEXT_WOOD("http://textures.minecraft.net/texture/19bf3292e126a105b54eba713aa1b152d541a1d8938829c56364d178ed22bf"),
-		PREVIOUS_MENU("http://textures.minecraft.net/texture/b6e14f2b7d1f5cb6f56ab3e6881fc8490eda6ff2d1d48a3241d147223cb3");
+		PREVIOUS_WOOD("http://textures.minecraft.net/texture/b6e14f2b7d1f5cb6f56ab3e6881fc8490eda6ff2d1d48a3241d147223cb3"),
+		CLOSE_WOOD("https://textures.minecraft.net/texture/5b30507783c37db3a3092cad043e57951aa8b4c6ea9acc47d604b7eb5aea028");
 		
 		PlayerHead(String url) { this.url = url; }
 		

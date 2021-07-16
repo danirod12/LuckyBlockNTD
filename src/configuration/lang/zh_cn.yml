@@ -40,6 +40,7 @@ system:
   cmd_no_perm_to_color: "&c颜色 %lb% 无权限"
   
 gui:
+  exit: "&7[ &6离开菜单 &7]"
   get:
     title: "&b购买 幸运方块 &4&l:D"
     no_money: "&c你需要 &e%eco% &c硬币"

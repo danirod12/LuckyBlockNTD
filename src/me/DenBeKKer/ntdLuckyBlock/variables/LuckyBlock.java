@@ -214,7 +214,8 @@ public class LuckyBlock {
 			block.getWorld().playEffect(block.getLocation().add(0.5, 0.5, 0.5), effect, 10);
 		
 		Collection<LuckyDrop> collection = items.get((int)(Math.random() * items.size()));
-		LBMain.debug("Mathed " + collection.size() + " random lucky drops");
+		if(LBMain.getDebug())
+			LBMain.debug("Mathed " + collection.size() + " random lucky drops");
 		for(LuckyDrop item : collection) {
 			if(LBMain.getDebug()) {
 				try {
