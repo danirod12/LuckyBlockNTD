@@ -30,7 +30,7 @@ system:
   - "&8 > &e/%label% get <颜色> [数量] &f- 获取幸运方块"
   - "&8 > &e/%label% give <玩家> <颜色> [数量] &f- 给予幸运方块"
   - "&8 > &e/%label% gui <get(获取)/edit(编辑)> &f- 打开 GUI"
-  - "&8 > &e/%label% edit &f- 打开 GUI 编辑器"
+#  - "&8 > &e/%label% edit &f- 打开 GUI 编辑器"
   - "&8 > &e/%label% list &f- 列出可用幸运方块"
   - "&8 > &e/%label% reload &f- 重载配置文件"
   - "&8 > &e/%label% checkforupdates &f- 检查更新"

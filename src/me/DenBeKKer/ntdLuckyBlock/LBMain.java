@@ -64,9 +64,12 @@ public class LBMain extends JavaPlugin {
 	
 	// Last update date & Build number
 	private static final String last_update = "16/07/2021";
-	private static final int build = 46;
+	private static final int build = 47;
 	// Last update date & Build number
 	
+	
+	private static boolean premium = false;
+	public static boolean isPremium() { return premium; }
 	
 	public static LBMain getInstance() { return instance; }
 	public static File getFolder() { return folder; }
@@ -119,7 +122,8 @@ public class LBMain extends JavaPlugin {
 			
 		}));
 		
-		log(Level.INFO, ChatColor.WHITE + "Starting LuckyBlock (ntdLuckyBlock) v" + version + ", build" + getBuild());
+		log(Level.INFO, ChatColor.WHITE + "Starting LuckyBlock (ntdLuckyBlock) v" + version + ", build" + getBuild()
+			+ ", " + (premium ? "premium" : "free") + " version");
 		log(Level.INFO, ChatColor.YELLOW + "  ╭╮╱╱╭╮╱╭┳━━━┳╮╭━┳╮╱╱╭┳━━╮╭╮╱╱╭━━━┳━━━┳╮╭━╮");
 		log(Level.INFO, ChatColor.YELLOW + "  ┃┃╱╱┃┃╱┃┃╭━╮┃┃┃╭┫╰╮╭╯┃╭╮┃┃┃╱╱┃╭━╮┃╭━╮┃┃┃╭╯");
 		log(Level.INFO, ChatColor.YELLOW + "  ┃┃╱╱┃┃╱┃┃┃╱╰┫╰╯╯╰╮╰╯╭┫╰╯╰┫┃╱╱┃┃╱┃┃┃╱╰┫╰╯╯");
@@ -377,7 +381,6 @@ public class LBMain extends JavaPlugin {
 		Vault,
 		WorldEdit,
 		WorldGuard;
-		//ntdLuckyBlockMineableAddon
 		
 		private String error = "not found";
 		

@@ -24,7 +24,7 @@ public class LBCommand implements CommandExecutor {
 			if(LBMain.isReduced()) {
 				if(!LBMain.getReduced().contains((Player) sender)) {
 					sender.sendMessage("\u00a77[\u00a7eLuckyBlock\u00a77] \u00a7fRunning \u00a7antdLuckyBlock v"
-							+ LBMain.getVersion() + " \u00a7fby \u00a7aDenBeKKer");
+							+ LBMain.getVersion() + " \u00a7fby \u00a7aDenBeKKer\u00a7f, " + (LBMain.isPremium() ? "\u00a7dpremium version" : "free version"));
 					LBMain.getReduced().add((Player) sender);
 				}
 			}
@@ -41,6 +41,15 @@ public class LBCommand implements CommandExecutor {
 		}
 		
 		if(args.length > 0) {
+			
+			switch(args[0].toLowerCase()) {
+			case "edit": {
+				args = new String[] { "gui", "edit" };
+				break;
+			}
+			default: break;
+			}
+			
 			switch(args[0].toLowerCase()) {
 			case "checkforupdates": case "update": {
 				
@@ -169,21 +178,21 @@ public class LBCommand implements CommandExecutor {
 				return true;
 				
 			}
-			case "edit": {
-				
-				if(!(sender instanceof Player)) {
-					sender.sendMessage("This subcommand only for players");
-					return true;
-				}
-				
-				if(sender instanceof Player && !((Player)sender).hasPermission("luckyblock.gui.edit") && !((Player)sender).hasPermission("luckyblock.*")) {
-					sender.sendMessage(Message.CANT_USE_SUB.getAsString());
-					return true;
-				}
-				
-				GuiManager.open(GuiType.EDIT, (Player)sender);
-				return true;
-			}
+//			case "edit": {
+//				
+//				if(!(sender instanceof Player)) {
+//					sender.sendMessage("This subcommand only for players");
+//					return true;
+//				}
+//				
+//				if(sender instanceof Player && !((Player)sender).hasPermission("luckyblock.gui.edit") && !((Player)sender).hasPermission("luckyblock.*")) {
+//					sender.sendMessage(Message.CANT_USE_SUB.getAsString());
+//					return true;
+//				}
+//				
+//				GuiManager.open(GuiType.EDIT, (Player)sender);
+//				return true;
+//			}
 			case "gui": {
 				
 				if(!(sender instanceof Player)) {

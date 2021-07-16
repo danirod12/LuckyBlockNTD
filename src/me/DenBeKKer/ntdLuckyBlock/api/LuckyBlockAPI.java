@@ -411,4 +411,6 @@ public class LuckyBlockAPI {
 	
 	public LBMain getMainInstance() { return LBMain.getInstance(); }
 	
+	public boolean isPremium() { return LBMain.isPremium(); }
+	
 }

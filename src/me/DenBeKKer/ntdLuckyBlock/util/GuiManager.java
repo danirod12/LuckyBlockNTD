@@ -33,11 +33,19 @@ public class GuiManager implements Listener {
 	
 	public static void open(GuiType type, Player player) {
 		
-		if(type == GuiType.GET) {
+		switch(type) {
+		case GET: {
 			player.openInventory(get);
 			return;
 		}
-		player.sendMessage("\u00a77[\u00a7eLuckyBlock\u00a77] \u00a7c" + type.name() + " gui feature is temporarily disabled");
+		case EDIT: {
+			player.sendMessage("\u00a77[\u00a7eLuckyBlock\u00a77] \u00a7c" + type.name() + " gui feature available only in premium version");
+			return;
+		}
+		default: {
+			player.sendMessage("\u00a77[\u00a7eLuckyBlock\u00a77] \u00a7c" + type.name() + " gui feature is temporarily disabled");
+		}
+		}
 		
 	}
 	

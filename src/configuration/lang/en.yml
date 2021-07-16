@@ -30,7 +30,7 @@ system:
   - "&8 > &e/%label% get <color> [amount] &f- get luckyblock"
   - "&8 > &e/%label% give <player> <color> [amount] &f- give luckyblock"
   - "&8 > &e/%label% gui <get/edit> &f- open gui"
-  - "&8 > &e/%label% edit &f- aliase of edit gui"
+#  - "&8 > &e/%label% edit &f- aliase of edit gui"
   - "&8 > &e/%label% list &f- list of luckyblock types"
   - "&8 > &e/%label% reload &f- reload all configs"
   - "&8 > &e/%label% checkforupdates &f- check for updates"
