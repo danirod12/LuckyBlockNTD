@@ -90,7 +90,10 @@ public class LBMain extends JavaPlugin {
 		
 	}
 	
-	public void onDisable() { GuiManager.close(); }
+	public void onDisable() {
+		if(GuiManager.isInited())
+			GuiManager.close();
+	}
 	
 	public void onLoad() {
 		try {

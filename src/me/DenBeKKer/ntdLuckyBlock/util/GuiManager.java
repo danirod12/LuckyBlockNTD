@@ -202,4 +202,6 @@ public class GuiManager implements Listener {
 		new ArrayList<>(get.getViewers()).forEach(n -> n.closeInventory());
 	}
 	
+	public static boolean isInited() { return !(get == null); }
+	
 }
