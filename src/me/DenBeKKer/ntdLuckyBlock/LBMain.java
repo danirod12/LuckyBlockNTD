@@ -594,11 +594,8 @@ public class LBMain extends JavaPlugin {
 		
 		public ItemStack getHead(String name, List<String> lore) {
 			
+			if(heads.get(this) == null) loadHead();
 			ItemStack item = heads.get(this).clone();
-			if(item == null) {
-				loadHead();
-				item = heads.get(this).clone();
-			}
 			
 			ItemMeta meta = item.getItemMeta();
 			meta.setDisplayName(name.replace("&", "\u00a7"));
