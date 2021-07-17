@@ -2,6 +2,7 @@ package me.DenBeKKer.ntdLuckyBlock.util;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -14,6 +15,7 @@ import me.DenBeKKer.ntdLuckyBlock.LBMain;
 public class MessagesManager {
 	
 	private static HashMap<Message, Object> map = new HashMap<>();
+	private static Collection<String> languages = Arrays.asList("en", "ru", "zh_cn");
 	private static Config config = null;
 	public static File lang_folder = new File(LBMain.getInstance().getDataFolder() + File.separator + "lang");
 	
@@ -115,11 +117,17 @@ public class MessagesManager {
 		
 	}
 	
+	public static Collection<String> getLanguages() { return languages; }
+	
+	public static String getLanguage() {
+		if(config == null) return null;
+		return config.getName().split("\\.")[0];
+	}
+	
 	public static void reload(String lang) {
 		
-		new Config(LBMain.getInstance(), "configuration.lang", lang_folder, "en.yml").copy(false);
-		new Config(LBMain.getInstance(), "configuration.lang", lang_folder, "ru.yml").copy(false);
-		new Config(LBMain.getInstance(), "configuration.lang", lang_folder, "zh_cn.yml").copy(false);
+		for(String language : languages)
+			new Config(LBMain.getInstance(), "configuration.lang", lang_folder, language + ".yml").copy(false);
 		
 		if(lang == null) lang = "en";
 		File translation = new File(lang_folder + File.separator + lang + ".yml");
