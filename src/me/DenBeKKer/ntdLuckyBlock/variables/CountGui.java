@@ -94,24 +94,24 @@ public class CountGui implements Listener {
 			
 			switch(e.getSlot()) {
 			case 18: {
-				if(LBMain.getDebug()) LBMain.debug("back");
+				if(LBMain.isDebug()) LBMain.debug("back");
 				event.goBack();
 				return;
 			}
 			case 26: {
-				if(LBMain.getDebug()) LBMain.debug("confirm");
+				if(LBMain.isDebug()) LBMain.debug("confirm");
 				event.onConfirm(current);
 				return;
 			}
 			case 11: {
-				if(LBMain.getDebug()) LBMain.debug("minus");
+				if(LBMain.isDebug()) LBMain.debug("minus");
 				current -= offset;
 				if(current < start) current = start;
 				b(); i();
 				return;
 			}
 			case 15: {
-				if(LBMain.getDebug()) LBMain.debug("plus");
+				if(LBMain.isDebug()) LBMain.debug("plus");
 				current += offset;
 				if(current > limit) current = limit;
 				b(); i();

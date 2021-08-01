@@ -32,7 +32,7 @@ public class SpigotUpdater {
         try {
             this.checkURL = new URL("https://api.spigotmc.org/legacy/update.php?resource=" + projectID);
         } catch (MalformedURLException e) {
-    		if(LBMain.getDebug()) LBMain.debug(e.getLocalizedMessage() + " [Cannot update url, SpigotUpdater:35]");
+    		if(LBMain.isDebug()) LBMain.debug(e.getLocalizedMessage() + " [Cannot update url, SpigotUpdater:35]");
         }
     }
  

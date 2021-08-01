@@ -163,14 +163,14 @@ public class LuckyBlock {
 		if(head == null) {
 			head = LBMain.getInstance().factory.getItem(Mat.PLAYER_SKULL, 1);
 			
-			if(LBMain.getDebug()) LBMain.debug("Loading skull texture");
+			if(LBMain.isDebug()) LBMain.debug("Loading skull texture");
 			try {
 				SkullMeta headMeta = (SkullMeta) head.getItemMeta();
 		        GameProfile profile = new GameProfile(type.getUUID(), null);
 		        byte[] encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}", "http://textures.minecraft.net/texture/" + texture).getBytes());
 		        profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
 		        Field profileField = null;
-				if(LBMain.getDebug()) LBMain.debug("Performing GameProfile");
+				if(LBMain.isDebug()) LBMain.debug("Performing GameProfile");
 		        profileField = headMeta.getClass().getDeclaredField("profile");
 		        profileField.setAccessible(true);
 		        profileField.set(headMeta, profile);
@@ -201,7 +201,7 @@ public class LuckyBlock {
 	
 	public boolean tryOpen(Block block, Player target, boolean ignore) {
 		
-		if(LBMain.getDebug())
+		if(LBMain.isDebug())
 			LBMain.debug("Try open LuckyBlock " + type.name()
 				+ " (" + target.getName() + ", x:" + block.getX() + ", y:" + block.getY() + ", z:" + block.getZ() + ", " + ignore + ")");
 		
@@ -214,10 +214,10 @@ public class LuckyBlock {
 			block.getWorld().playEffect(block.getLocation().add(0.5, 0.5, 0.5), effect, 10);
 		
 		Collection<LuckyDrop> collection = items.get((int)(Math.random() * items.size()));
-		if(LBMain.getDebug())
+		if(LBMain.isDebug())
 			LBMain.debug("Mathed " + collection.size() + " random lucky drops");
 		for(LuckyDrop item : collection) {
-			if(LBMain.getDebug()) {
+			if(LBMain.isDebug()) {
 				try {
 					LBMain.debug("Performing item... " + new Gson().toJson(item));
 				} catch(Throwable th) {
@@ -243,7 +243,7 @@ public class LuckyBlock {
 	
 	public boolean tryOpen(Block block, boolean ignore) {
 		
-		if(LBMain.getDebug())
+		if(LBMain.isDebug())
 			LBMain.debug("Try open LuckyBlock " + type.name()
 				+ " (not presented, x:" + block.getX() + ", y:" + block.getY() + ", z:" + block.getZ() + ", " + ignore + ")");
 		

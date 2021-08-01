@@ -63,8 +63,8 @@ public class LBMain extends JavaPlugin {
 	
 	
 	// Last update date & Build number
-	private static final String last_update = "16/07/2021";
-	private static final int build = 47;
+	private static final String last_update = "01/08/2021";
+	private static final int build = 48;
 	// Last update date & Build number
 	
 	
@@ -80,6 +80,9 @@ public class LBMain extends JavaPlugin {
 	public static boolean getIsSk89q() { return schematics; }
 	public static boolean isReduced() { return reduce; }
 	public static Collection<Player> getReduced() { return reduce$list; }
+	
+	public static boolean isDebug() { return debug; }
+	@Deprecated
 	public static boolean getDebug() { return debug; }
 	
 	public static void log(Level level, String message) {
@@ -140,6 +143,7 @@ public class LBMain extends JavaPlugin {
 		log(Level.INFO, ChatColor.DARK_GRAY + " > " + ChatColor.BLUE + "Vkontakte "
 				+ ChatColor.WHITE + "- https://vk.com/danirodplay " + ChatColor.GRAY + "(Rus)");
 		log(Level.INFO, ChatColor.WHITE + "=-= " + ChatColor.GOLD + "SUPPORT & BUG REPORTING & FEATURE REQUESTING " + ChatColor.WHITE + "=-=");
+		log(Level.INFO, ChatColor.RED + "Help me make my plugin better! Fill out " + ChatColor.GOLD + "https://forms.gle/GvX5pB4BXU7BhAEi9");
 		
 		loadConfig();
 		
@@ -301,7 +305,7 @@ public class LBMain extends JavaPlugin {
 		inform = config.get().getBoolean("inform-about-update");
 		
 		piston_fix = config.get().getBoolean("beta.pistonfix", true);
-		explosion_fix = config.get().getBoolean("beta.explosion_fix", true);
+		explosion_fix = config.get().getBoolean("beta.explosionfix", true);
 		
 	}
 	
@@ -312,6 +316,8 @@ public class LBMain extends JavaPlugin {
 		long ms = System.currentTimeMillis();
 		if(debug) debug("Loading system");
 		map.clear();
+		
+		reduce$list = new ArrayList<>();
 		
 		for(String str : config.get().getStringList("enabled")) { try {
 			LuckyBlockType lb = LuckyBlockType.valueOf(str.toUpperCase());

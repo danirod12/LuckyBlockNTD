@@ -136,15 +136,15 @@ public class GuiManager implements Listener {
 	@SuppressWarnings("deprecation")
 	public static void init() {
 		
-		if(LBMain.getDebug()) LBMain.debug("Init GuiManager");
+		if(LBMain.isDebug()) LBMain.debug("Init GuiManager");
 		Collection<LuckyBlockType> types = LuckyBlockType.list().stream()
 				.filter(n -> n.get().canBeShoped())
 				.sorted(Comparator.<LuckyBlockType>comparingInt(n -> n.asDye().getWoolData()))
 				.collect(Collectors.toList());
-		if(LBMain.getDebug()) LBMain.debug("[GUIMANAGER] Found " + types.size() + " types");
+		if(LBMain.isDebug()) LBMain.debug("[GUIMANAGER] Found " + types.size() + " types");
 		
 		int rows = types.size() == 0 ? 3 : (int) Math.ceil(((double)types.size()) / 5);
-		if(LBMain.getDebug()) LBMain.debug("[GUIMANAGER] Mapped rows " + rows);
+		if(LBMain.isDebug()) LBMain.debug("[GUIMANAGER] Mapped rows " + rows);
 		
 		get = Bukkit.createInventory(null, (2 + rows) * 9, Message.GUI_GET_TITLE.get());
 		ItemStack gray_pane = LBMain.getInstance().factory.getItem(Mat.GRAY_PANE, 1);
@@ -166,13 +166,13 @@ public class GuiManager implements Listener {
 		int amount = 0, slot = 11;
 		for(LuckyBlockType type : types) {
 			
-			if(LBMain.getDebug()) LBMain.debug("[GUIMANAGER] Placing " + type.name() + " to " + slot + " slot");
+			if(LBMain.isDebug()) LBMain.debug("[GUIMANAGER] Placing " + type.name() + " to " + slot + " slot");
 			get.setItem(slot, type.get().getSkull());
 			amount++; slot++;
 			
 			if(amount >= 5) {
 				
-				if(LBMain.getDebug()) LBMain.debug("[GUIMANAGER] Row were changed, slot entry " + slot);
+				if(LBMain.isDebug()) LBMain.debug("[GUIMANAGER] Row were changed, slot entry " + slot);
 				slot += 4;
 				amount = 0;
 				
@@ -180,10 +180,10 @@ public class GuiManager implements Listener {
 			
 		}
 		
-		if(LBMain.getDebug()) LBMain.debug("[GUIMANAGER] Filling disabled luckyblocks");
+		if(LBMain.isDebug()) LBMain.debug("[GUIMANAGER] Filling disabled luckyblocks");
 		while(amount != 0 && amount < 5) {
 			
-			if(LBMain.getDebug()) LBMain.debug("[GUIMANAGER] Filled slot " + slot);
+			if(LBMain.isDebug()) LBMain.debug("[GUIMANAGER] Filled slot " + slot);
 			get.setItem(slot, gray_pane);
 			amount++; slot++;
 			

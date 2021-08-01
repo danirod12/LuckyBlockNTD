@@ -33,7 +33,7 @@ public class WorldEdit7 implements IWorldEdit {
 	
 	public void paste(File file, Block obj) {
 		
-		if(LBMain.getDebug()) LBMain.debug("Loading clipboard");
+		if(LBMain.isDebug()) LBMain.debug("Loading clipboard");
 		Clipboard clipboard = null;
 		
 		ClipboardFormat format = ClipboardFormats.findByFile(file);
@@ -49,7 +49,7 @@ public class WorldEdit7 implements IWorldEdit {
 			return;
 		}
 		
-		if(LBMain.getDebug()) LBMain.debug("Performing clipboard");
+		if(LBMain.isDebug()) LBMain.debug("Performing clipboard");
 		try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(obj.getWorld()))) {
 		    Operation operation = new ClipboardHolder(clipboard)
 		            .createPaste(editSession)
