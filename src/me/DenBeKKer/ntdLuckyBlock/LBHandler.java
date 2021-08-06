@@ -178,7 +178,8 @@ public class LBHandler implements Listener {
 								return;
 							}
 							
-							if(!e.getPlayer().hasPermission("luckyblock.break." + type.name().toLowerCase())) {
+							if(LBMain.isBreakPermissions() && !e.getPlayer().hasPermission("luckyblock.break." + type.name().toLowerCase())
+									&& !e.getPlayer().hasPermission("luckyblock.break.*")) {
 								e.getPlayer().sendMessage(Message.CANT_BREAK_LUCKYBLOCK.getAsString().replace("%lb%", type.get() != null ? type.get().getCustomName() :
 									type.name()));
 								e.setCancelled(true);

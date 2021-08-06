@@ -58,13 +58,14 @@ public class LBMain extends JavaPlugin {
 	public Economy eco;
 	private static Collection<Player> reduce$list = new ArrayList<>();
 	private static boolean reduce = false;
+	private static boolean brperm = true;
 	private static boolean debug;
 	private static boolean schematics = false;
 	
 	
 	// Last update date & Build number
 	private static final String last_update = "01/08/2021";
-	private static final int build = 48;
+	private static final int build = 49;
 	// Last update date & Build number
 	
 	
@@ -79,6 +80,7 @@ public class LBMain extends JavaPlugin {
 	public static File getSchematicsFolder() { return schematics_folder; }
 	public static boolean getIsSk89q() { return schematics; }
 	public static boolean isReduced() { return reduce; }
+	public static boolean isBreakPermissions() { return brperm; }
 	public static Collection<Player> getReduced() { return reduce$list; }
 	
 	public static boolean isDebug() { return debug; }
@@ -295,8 +297,15 @@ public class LBMain extends JavaPlugin {
 				config.get().set("config-level", "1.5");
 				config.save();
 			}
+			if(config.get().getString("config-level").equalsIgnoreCase("1.5")) {
+				getLogger().log(Level.INFO, "Your config level is 1.5, updating to 1.6...");
+				config.get().set("break-permissions", true);
+				config.get().set("config-level", "1.6");
+				config.save();
+			}
 		}
 		
+		brperm = config.get().getBoolean("break-permissions");
 		reduce = config.get().getBoolean("reduce-command-author-info");
 		MessagesManager.reload(config.get().getString("language"));
 		

@@ -43,6 +43,9 @@ permission-for-each-give-get: true
 # [false - Permission luckyblock.gui.get for all luckyblocks; true - Permission luckyblock.gui.get.color (luckyblock.gui.get.red) per color]
 permission-for-each-gui-get: false
 
+# Permission for luckyblock breaking (luckyblock.break.color or luckyblock.break.*)
+break-permissions: true
+
 # Enabled colors of luckyblocks
 enabled:
 - black
@@ -63,5 +66,5 @@ enabled:
 - yellow
 
 # Dont change it
-config-level: "1.5"
+config-level: "1.6"
 debug: false
