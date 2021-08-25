@@ -77,16 +77,24 @@ public class LuckyBlockAPI {
 					throw new UnsupportedOperationException();
 				}
 				
-				String file$name = sp[1].contains(".schem") ? sp[1] : sp[1] + ".schem";
 				boolean b = false;
 				if(sp[2].equalsIgnoreCase("block"))
 					b = true;
 				else if(!sp[2].equalsIgnoreCase("player")) throw new UnsupportedOperationException();
 				
+				String file$name = sp[1].endsWith(".schem") ? sp[1] : sp[1] + ".schem";
+				
 				File file = new File(LBMain.getSchematicsFolder(), file$name);
 				if(!file.exists()) {
-					LBMain.getInstance().getLogger().log(Level.WARNING, "Schematic " + file.getPath() + " not found");
-					return null;
+					
+					file$name = sp[1].endsWith(".schematic") ? sp[1] : sp[1] + ".schematic";
+					file = new File(LBMain.getSchematicsFolder(), file$name);
+					
+					if(!file.exists()) {
+						LBMain.getInstance().getLogger().log(Level.WARNING, "Schematic " + file.getPath() + " not found");
+						return null;
+					}
+					
 				}
 				
 				return new SchematicDrop(file, b);

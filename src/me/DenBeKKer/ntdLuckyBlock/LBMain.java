@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -29,7 +30,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.google.common.io.Files;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import com.sk89q.worldedit.WorldEdit;
 
 import me.DenBeKKer.ntdLuckyBlock.factory.LBFactory;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
@@ -64,8 +64,8 @@ public class LBMain extends JavaPlugin {
 	
 	
 	// Last update date & Build number
-	private static final String last_update = "01/08/2021";
-	private static final int build = 49;
+	private static final String last_update = "25/08/2021";
+	private static final int build = 50;
 	// Last update date & Build number
 	
 	
@@ -129,6 +129,9 @@ public class LBMain extends JavaPlugin {
 			return a + "/" + b;
 			
 		}));
+		metrics.addCustomChart(new Metrics.SimplePie("version_type", () -> {
+			return premium ? "premium" : "free";
+		}));
 		
 		log(Level.INFO, ChatColor.WHITE + "Starting LuckyBlock (ntdLuckyBlock) v" + version + ", build" + getBuild()
 			+ ", " + (premium ? "premium" : "free") + " version");
@@ -181,20 +184,25 @@ public class LBMain extends JavaPlugin {
 		if(Hooks.WorldEdit.isEnabled()) {
 			if(debug) debug("Loading WorldEdit provider");
 			
-			if(!WorldEdit.getVersion().startsWith("7.")) {
+			if(!LBWorldEdit.isPlatformAvailable()) {
 				
-				Hooks.WorldEdit.disable("only 7.0.0+ version is supported in this beta version");
-				Hooks.WorldGuard.disable("only 7.0.0+ version is supported in this beta version");
+				Hooks.WorldEdit.disable("unsupported version, check console");
+				Hooks.WorldGuard.disable("unsupported version, check console");
 				
 			} else {
 				
 				if(!schematics_folder.exists()) {
 					schematics_folder.mkdirs();
-					new Config(instance, "configuration.schematics", schematics_folder, "cage_lava.schem").copy(false);
-					new Config(instance, "configuration.schematics", schematics_folder, "bedrock_problem.schem").copy(false);
+					new Config(instance, "configuration.schematics." + factory.build(), schematics_folder, "cage_lava.schem" +
+							(factory.build().equalsIgnoreCase("old") ? "atic" : "")).copy(false);
+					new Config(instance, "configuration.schematics.main", schematics_folder, "bedrock_problem.schematic").copy(false);
+					if(!old) new Config(instance, "configuration.schematics.main", schematics_folder, "small_temple.schematic").copy(false);
 				}
 				
 				schematics = true;
+				
+				if(debug)
+					debug("Hooked into " + (LBWorldEdit.isFAWE() ? "FastAsync" : "") + "WorldEdit");
 				
 			}
 			
@@ -219,7 +227,7 @@ public class LBMain extends JavaPlugin {
 					"https://paypal.me/denbekker");
 			Bukkit.getOnlinePlayers().stream().filter(n -> n.hasPermission("luckyblock.supportme")).forEach(n -> {
 				n.sendMessage("\u00a77[\u00a7eLuckyBlock\u00a77] \u00a7eIf you are love my plugin, support me with \u00a765 stars review"
-						+ " (\u00a7b https://www.spigotmc.org/resources/92026/ \u00a7e) or with \u00a79https://paypal.me/denbekker");
+						+ " \u00a7e(\u00a7b https://www.spigotmc.org/resources/92026/ \u00a7e) or with \u00a79https://paypal.me/denbekker");
 			});
 			
 		}, 120);
@@ -473,7 +481,13 @@ public class LBMain extends JavaPlugin {
 		
 		public static LuckyBlockType parse(DyeColor dye) { return LuckyBlockType.valueOf(dye.name()); }
 		
-		public static LuckyBlockType parse(String color) { return LuckyBlockType.valueOf(color.toUpperCase()); }
+		public static LuckyBlockType parse(String color) {
+			try {
+				return LuckyBlockType.valueOf(color.toUpperCase());
+			} catch(Exception ex) {
+				return null;
+			}
+		}
 		
 		public String load() {
 			
@@ -543,6 +557,18 @@ public class LBMain extends JavaPlugin {
 		
 		@SuppressWarnings("deprecation")
 		public String toColorSymbol() { return toColor(this.asDye().getWoolData()); }
+		
+		public static LuckyBlockType random(boolean b) {
+			
+			LuckyBlockType[] types = b ?
+					LuckyBlockType.map().keySet().toArray(new LuckyBlockType[LuckyBlockType.map().size()]) : LuckyBlockType.values();
+			
+			if(types.length == 0)
+				types = LuckyBlockType.values();
+			
+			return types[ThreadLocalRandom.current().nextInt(types.length)];
+			
+		}
 		
 	}
 	

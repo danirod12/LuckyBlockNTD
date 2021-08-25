@@ -203,9 +203,10 @@ public class LuckyBlock {
 		
 		if(LBMain.isDebug())
 			LBMain.debug("Try open LuckyBlock " + type.name()
-				+ " (" + target.getName() + ", x:" + block.getX() + ", y:" + block.getY() + ", z:" + block.getZ() + ", " + ignore + ")");
+				+ " (" + (target == null ? "not presented" : target.getName())
+				+ ", x:" + block.getX() + ", y:" + block.getY() + ", z:" + block.getZ() + ", " + ignore + ")");
 		
-		LuckyBlockBreakEvent event = new LuckyBlockBreakEvent(block, target, this);
+		LuckyBlockBreakEvent event = target == null ? new LuckyBlockBreakEvent(block, this) : new LuckyBlockBreakEvent(block, target, this);
 		if(ignore) event.setIgnoreCancelled();
 		Bukkit.getPluginManager().callEvent(event);
 		if(event.isCancelled()) return false;
@@ -224,7 +225,7 @@ public class LuckyBlock {
 					LBMain.debug("Performing item... [Gson not found] - " + th.getLocalizedMessage());
 				}
 			}
-			item.execute(block, target);
+			item.executeProtected(block, target);
 		}
 		return true;
 		
@@ -243,23 +244,25 @@ public class LuckyBlock {
 	
 	public boolean tryOpen(Block block, boolean ignore) {
 		
-		if(LBMain.isDebug())
-			LBMain.debug("Try open LuckyBlock " + type.name()
-				+ " (not presented, x:" + block.getX() + ", y:" + block.getY() + ", z:" + block.getZ() + ", " + ignore + ")");
+//		if(LBMain.isDebug())
+//			LBMain.debug("Try open LuckyBlock " + type.name()
+//				+ " (not presented, x:" + block.getX() + ", y:" + block.getY() + ", z:" + block.getZ() + ", " + ignore + ")");
+//		
+//		LuckyBlockBreakEvent event = new LuckyBlockBreakEvent(block, this);
+//		if(ignore) event.setIgnoreCancelled();
+//		Bukkit.getPluginManager().callEvent(event);
+//		if(event.isCancelled()) return false;
+//		
+//		if(animation)
+//			block.getWorld().playEffect(block.getLocation().add(0.5, 0.5, 0.5), effect, 10);
+//		
+//		block.setType(Material.AIR);
+//		for(LuckyDrop item : items.get((int)(Math.random() * items.size()))) {
+//			item.executeProtected(block, null);
+//		}
+//		return true;
 		
-		LuckyBlockBreakEvent event = new LuckyBlockBreakEvent(block, this);
-		if(ignore) event.setIgnoreCancelled();
-		Bukkit.getPluginManager().callEvent(event);
-		if(event.isCancelled()) return false;
-		
-		if(animation)
-			block.getWorld().playEffect(block.getLocation().add(0.5, 0.5, 0.5), effect, 10);
-		
-		block.setType(Material.AIR);
-		for(LuckyDrop item : items.get((int)(Math.random() * items.size()))) {
-			item.execute(block);
-		}
-		return true;
+		return tryOpen(block, null, ignore);
 		
 	}
 	

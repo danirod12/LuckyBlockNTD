@@ -27,6 +27,8 @@ public class WaterBucketSpecial implements LuckyDrop {
 	}
 	
 	@Override
-	public void execute(Block b) { return; }
+	public void execute(Block b) {
+		b.getWorld().dropItem(b.getLocation(), new ItemStack(Material.WATER_BUCKET));
+	}
 	
 }

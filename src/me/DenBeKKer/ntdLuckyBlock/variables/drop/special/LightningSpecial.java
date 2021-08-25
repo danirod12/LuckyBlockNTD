@@ -28,7 +28,7 @@ public class LightningSpecial implements LuckyDrop {
 			@Override
 			public void run() {
 				
-				if(i >= a || !target.isOnline()) {
+				if(i >= a || !target.isOnline() || target.isDead()) {
 					cancel();
 					return;
 				}

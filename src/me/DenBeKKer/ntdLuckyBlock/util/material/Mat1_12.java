@@ -39,4 +39,9 @@ public class Mat1_12 implements IMat {
 		return new ItemStack(Material.valueOf("STAINED_GLASS"), amount, (short)color.ordinal());
 	}
 	
+	@Override
+	public boolean isOakSign(Material type) {
+		return type.name().equalsIgnoreCase("SIGN");
+	}
+	
 }

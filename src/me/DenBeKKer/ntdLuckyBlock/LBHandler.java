@@ -225,7 +225,8 @@ public class LBHandler implements Listener {
 							return;
 						}
 						
-						if(!e.getPlayer().hasPermission("luckyblock.break." + type.name().toLowerCase())) {
+						if(LBMain.isBreakPermissions() && !e.getPlayer().hasPermission("luckyblock.break." + type.name().toLowerCase())
+								&& !e.getPlayer().hasPermission("luckyblock.break.*")) {
 							e.getPlayer().sendMessage(Message.CANT_BREAK_LUCKYBLOCK.getAsString().replace("%lb%", type.get() != null ? type.get().getCustomName() :
 								type.name()));
 							e.setCancelled(true);
@@ -267,6 +268,14 @@ public class LBHandler implements Listener {
 					ArmorStand stand = (ArmorStand) e.getRightClicked();
 					if(stand.getCustomName().equalsIgnoreCase(type.name() + ";" + (int)stand.getLocation().getX()
 							+ ";" + (int)stand.getLocation().getY() + ";" + (int)stand.getLocation().getZ())) {
+						
+						if(LBMain.isBreakPermissions() && !e.getPlayer().hasPermission("luckyblock.break." + type.name().toLowerCase())
+								&& !e.getPlayer().hasPermission("luckyblock.break.*")) {
+							e.getPlayer().sendMessage(Message.CANT_BREAK_LUCKYBLOCK.getAsString().replace("%lb%", type.get() != null ? type.get().getCustomName() :
+								type.name()));
+							e.setCancelled(true);
+							return;
+						}
 						
 						if(type.get() != null) {
 							if(type.get().tryOpen(b, e.getPlayer(), false)) {

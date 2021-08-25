@@ -25,6 +25,18 @@ public interface LuckyDrop {
 	
 	}
 	
+	public default void executeProtected(Block block, Player target) {
+		
+		try {
+			if(target == null)
+				execute(block);
+			else execute(block, target);
+		} catch(Throwable th) {
+			th.printStackTrace();
+		}
+		
+	}
+	
 	void execute(Block b, Player target);
 	
 	void execute(Block b);

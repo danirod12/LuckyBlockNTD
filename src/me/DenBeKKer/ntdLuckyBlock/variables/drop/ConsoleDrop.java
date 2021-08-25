@@ -23,6 +23,11 @@ public class ConsoleDrop implements LuckyDrop {
 	}
 	
 	@Override
-	public void execute(Block b) { return; }
+	public void execute(Block b) {
+		
+		if(!cmd.contains("%player%"))
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
+		
+	}
 	
 }
