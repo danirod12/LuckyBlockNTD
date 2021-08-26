@@ -25,6 +25,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockPlaceEvent;
+import me.DenBeKKer.ntdLuckyBlock.sk89q.LBWorldGuard;
 import me.DenBeKKer.ntdLuckyBlock.util.GuiManager;
 import me.DenBeKKer.ntdLuckyBlock.util.MessagesManager.Message;
 
@@ -173,7 +174,7 @@ public class LBHandler implements Listener {
 							 *  Break luckyblock event
 							 * 
 							 */
-							if(LBMain.getIsSk89q() && !LBWorldEdit.canBreak(e.getBlock())) {
+							if(LBMain.getIsSk89q() && !LBWorldGuard.canBreak(e.getBlock())) {
 								e.setCancelled(true);
 								return;
 							}
@@ -220,7 +221,7 @@ public class LBHandler implements Listener {
 					if(stand.getCustomName() != null && stand.getCustomName().equalsIgnoreCase(type.name() + ";" + (int)stand.getLocation().getX()
 							+ ";" + (int)stand.getLocation().getY() + ";" + (int)stand.getLocation().getZ())) {
 						
-						if(LBMain.getIsSk89q() && !LBWorldEdit.canBreak(b)) {
+						if(LBMain.getIsSk89q() && !LBWorldGuard.canBreak(b)) {
 							e.setCancelled(true);
 							return;
 						}

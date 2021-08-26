@@ -32,6 +32,8 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
 import me.DenBeKKer.ntdLuckyBlock.factory.LBFactory;
+import me.DenBeKKer.ntdLuckyBlock.sk89q.LBWorldEdit;
+import me.DenBeKKer.ntdLuckyBlock.sk89q.LBWorldGuard;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
 import me.DenBeKKer.ntdLuckyBlock.util.GuiManager;
 import me.DenBeKKer.ntdLuckyBlock.util.MessagesManager;
@@ -64,8 +66,8 @@ public class LBMain extends JavaPlugin {
 	
 	
 	// Last update date & Build number
-	private static final String last_update = "25/08/2021";
-	private static final int build = 50;
+	private static final String last_update = "26/08/2021";
+	private static final int build = 51;
 	// Last update date & Build number
 	
 	
@@ -87,6 +89,12 @@ public class LBMain extends JavaPlugin {
 	@Deprecated
 	public static boolean getDebug() { return debug; }
 	
+	public static Class<?> getClass(String path) {
+		try {
+			return Class.forName(path);
+		} catch(Throwable th) { return null; }
+	}
+	
 	public static void log(Level level, String message) {
 		
 		if(level == Level.INFO)
@@ -100,11 +108,7 @@ public class LBMain extends JavaPlugin {
 			GuiManager.close();
 	}
 	
-	public void onLoad() {
-		try {
-			LBWorldEdit.registerFlags();
-		} catch(Throwable t) {}
-	}
+	public void onLoad() { LBWorldGuard.register(); }
 	
 	public void onEnable() {
 		
@@ -186,8 +190,7 @@ public class LBMain extends JavaPlugin {
 			
 			if(!LBWorldEdit.isPlatformAvailable()) {
 				
-				Hooks.WorldEdit.disable("unsupported version, check console");
-				Hooks.WorldGuard.disable("unsupported version, check console");
+				Hooks.WorldEdit.disable("unsupported version");
 				
 			} else {
 				
@@ -205,6 +208,9 @@ public class LBMain extends JavaPlugin {
 					debug("Hooked into " + (LBWorldEdit.isFAWE() ? "FastAsync" : "") + "WorldEdit");
 				
 			}
+			
+			if(Hooks.WorldGuard.isEnabled() && !LBWorldGuard.isAvailable())
+				Hooks.WorldGuard.disable("unsupported version");
 			
 		}
 		

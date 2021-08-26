@@ -125,6 +125,9 @@ public class LBFactoryV1 implements LBFactory {
 			mat = Arrays.asList(Material.values()).stream().filter(n -> n.isItem() && !n.name().toUpperCase().contains("AIR")).collect(Collectors.toList());
 		}
 		
+		if(LBMain.getInstance().factory instanceof Mat1_13)
+			mat = mat.stream().filter(n -> !n.name().contains("LEGACY_")).collect(Collectors.toList());
+		
 		Material random = mat.get(ThreadLocalRandom.current().nextInt(mat.size()));
 		
 		int amount = ThreadLocalRandom.current().nextInt(random.getMaxStackSize() + 1);

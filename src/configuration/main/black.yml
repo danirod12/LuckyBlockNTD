@@ -16,3 +16,5 @@ drop:
     - "SCHEMATIC : bedrock_problem : BLOCK"
   '1':
     - "SCHEMATIC : cage_lava : PLAYER"
+  '2':
+    - "SCHEMATIC : small_temple : BLOCK"

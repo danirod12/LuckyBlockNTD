@@ -26,15 +26,7 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
-import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.flags.Flag;
-import com.sk89q.worldguard.protection.flags.StateFlag;
-import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
-import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
-import me.DenBeKKer.ntdLuckyBlock.IWorldEdit;
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
@@ -42,7 +34,7 @@ import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockNotLoadedException;
 
 public class WorldEdit7 implements IWorldEdit {
 	
-	private static StateFlag BREAK;
+//	private static StateFlag BREAK;
 	
 	public void paste(File file, Block obj, boolean a) {
 		
@@ -134,40 +126,40 @@ public class WorldEdit7 implements IWorldEdit {
 		}
 	}
 	
-	public boolean canBreak(Block block) {
-		
-		ApplicableRegionSet set = //worldGuard.getRegionManager(location.getWorld()).getApplicableRegions(location);
-       		 WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(block.getWorld())).getApplicableRegions(
-       				 BukkitAdapter.asBlockVector(block.getLocation()));
-		
-		if(set == null) return true;
-		
-		for(ProtectedRegion entry : set) {
-			if(entry != null && entry.getFlags() != null && entry.getFlags().get(BREAK) != null &&
-					entry.getFlags().get(BREAK) == StateFlag.State.DENY) return false;
-		}
-		return true;
-		
-	}
-	
-	public void registerFlags() {
-		
-		FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
-	    try {
-	        StateFlag flag = new StateFlag("ntd-lb-break", true);
-	        registry.register(flag);
-	        BREAK = flag;
-	    } catch (FlagConflictException e) {
-	        Flag<?> existing = registry.get("ntd-lb-break");
-	        if (existing instanceof StateFlag) {
-	        	BREAK = (StateFlag) existing;
-	        } else {
-	            LBMain.log(Level.INFO, "WorldGuard flag ntd-lb-break already found and cant be enjected");
-	        }
-	    } catch(IllegalStateException e) {
-            LBMain.log(Level.INFO, "WorldGuard flags cant be registered at this time (Only on server startup available)");
-	    }
-		
-	}
+//	public boolean canBreak(Block block) {
+//		
+//		ApplicableRegionSet set = //worldGuard.getRegionManager(location.getWorld()).getApplicableRegions(location);
+//       		 WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(block.getWorld())).getApplicableRegions(
+//       				 BukkitAdapter.asBlockVector(block.getLocation()));
+//		
+//		if(set == null) return true;
+//		
+//		for(ProtectedRegion entry : set) {
+//			if(entry != null && entry.getFlags() != null && entry.getFlags().get(BREAK) != null &&
+//					entry.getFlags().get(BREAK) == StateFlag.State.DENY) return false;
+//		}
+//		return true;
+//		
+//	}
+//	
+//	public void registerFlags() {
+//		
+//		FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
+//	    try {
+//	        StateFlag flag = new StateFlag("ntd-lb-break", true);
+//	        registry.register(flag);
+//	        BREAK = flag;
+//	    } catch (FlagConflictException e) {
+//	        Flag<?> existing = registry.get("ntd-lb-break");
+//	        if (existing instanceof StateFlag) {
+//	        	BREAK = (StateFlag) existing;
+//	        } else {
+//	            LBMain.log(Level.INFO, "WorldGuard flag ntd-lb-break already found and cant be enjected");
+//	        }
+//	    } catch(IllegalStateException e) {
+//            LBMain.log(Level.INFO, "WorldGuard flags cant be registered at this time (Only on server startup available)");
+//	    }
+//		
+//	}
 	
 }

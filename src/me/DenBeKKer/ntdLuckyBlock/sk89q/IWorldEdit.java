@@ -1,4 +1,4 @@
-package me.DenBeKKer.ntdLuckyBlock;
+package me.DenBeKKer.ntdLuckyBlock.sk89q;
 
 import java.io.File;
 
@@ -8,8 +8,8 @@ public interface IWorldEdit {
 	
 	void paste(File file, Block obj, boolean activate);
 	
-	boolean canBreak(Block block);
-	
-	void registerFlags();
+//	boolean canBreak(Block block);
+//	
+//	void registerFlags();
 	
 }
