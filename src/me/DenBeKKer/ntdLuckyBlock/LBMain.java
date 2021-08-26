@@ -71,7 +71,7 @@ public class LBMain extends JavaPlugin {
 	// Last update date & Build number
 	
 	
-	private static boolean premium = false;
+	private static final boolean premium = false;
 	public static boolean isPremium() { return premium; }
 	
 	public static LBMain getInstance() { return instance; }
