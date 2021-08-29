@@ -17,6 +17,9 @@
 #
 #                    Join my DISCORD server for support & bug reporting & feature requesting - https://discord.gg/vbYW3sperj
 #                                        Plugin SpigotMC url: https://www.spigotmc.org/resources/92026
+#                                        Premium version url: https://www.spigotmc.org/resources/94872
+#
+#                       Setup documentation - https://github.com/danirod12/NTD-LuckyBlock/wiki/LuckyBlock-configuration
 #
 #
 #
@@ -46,6 +49,10 @@ permission-for-each-gui-get: false
 # Permission for luckyblock breaking (luckyblock.break.color or luckyblock.break.*)
 break-permissions: true
 
+# Disable author info for command /ntdluckyblock gui get
+# NOTE: This feature can be used only in premium plugin version
+disable-author-info-gui-get: false
+
 # Enabled colors of luckyblocks
 enabled:
 - black
@@ -66,5 +73,5 @@ enabled:
 - yellow
 
 # Dont change it
-config-level: "1.6"
+config-level: "1.7"
 debug: false

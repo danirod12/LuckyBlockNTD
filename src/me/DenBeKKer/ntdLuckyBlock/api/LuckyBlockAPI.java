@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Material;
@@ -254,6 +256,26 @@ public class LuckyBlockAPI {
 //		} catch(Exception ex) {
 //			return null;
 //		}
+		
+	}
+	
+	public static boolean isLuckyBlock(ItemStack item) {
+		return getLuckyBlock(item) != null;
+	}
+	
+	public static LuckyBlockType getLuckyBlock(ItemStack item) {
+		
+		UUID uuid = LBMain.getUUID(item);
+		
+		if(uuid == null) return null;
+		
+		for(Entry<LuckyBlockType, LuckyBlock> s : LuckyBlockType.map().entrySet()) {
+			
+			if(LBMain.getUUID(s.getValue().getSkull()).equals(uuid)) return s.getKey();
+			
+		}
+		
+		return null;
 		
 	}
 	

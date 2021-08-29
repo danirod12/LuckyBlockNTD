@@ -52,3 +52,5 @@ gui:
     add: "&bAdd %offset%"
     back: "&3Go back"
     confirm: "&eConfirm"
+    get: "&fYou will get: &6%amount%"
+    give: "&fYou will give: &c%price%"

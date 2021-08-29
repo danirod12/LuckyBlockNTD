@@ -42,6 +42,8 @@ public class MessagesManager {
 		GUI_COUNT_REMOVE("gui.count.remove"),
 		GUI_COUNT_BACK("gui.count.back"),
 		GUI_COUNT_CONFIRM("gui.count.confirm"),
+		GUI_COUNT_GET("gui.count.get"),
+		GUI_COUNT_GIVE("gui.count.give"),
 		GUI_GET_NOT_MONEY("gui.get.no_money"),
 		GUI_GET_SUCCESS("gui.get.success"),
 		GUI_GET_EXCEPTION("gui.get.exception"),

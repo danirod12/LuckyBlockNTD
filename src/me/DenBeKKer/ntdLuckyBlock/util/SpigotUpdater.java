@@ -19,12 +19,12 @@ import me.DenBeKKer.ntdLuckyBlock.LBMain;
  */
 
 public class SpigotUpdater {
- 
+	
     private int project = 0;
     private URL checkURL;
     private String newVersion = "";
     private Plugin plugin;
- 
+    
     public SpigotUpdater(JavaPlugin plugin, int projectID) {
         this.plugin = plugin;
         this.newVersion = plugin.getDescription().getVersion();
@@ -35,23 +35,23 @@ public class SpigotUpdater {
     		if(LBMain.isDebug()) LBMain.debug(e.getLocalizedMessage() + " [Cannot update url, SpigotUpdater:35]");
         }
     }
- 
+    
     public int getProjectID() {
         return project;
     }
- 
+    
     public Plugin getPlugin() {
         return plugin;
     }
- 
+    
     public String getLatestVersion() {
         return newVersion;
     }
- 
+    
     public String getResourceURL() {
         return "https://www.spigotmc.org/resources/" + project;
     }
- 
+    
     public boolean checkForUpdates() throws Exception {
         URLConnection con = checkURL.openConnection();
         this.newVersion = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();

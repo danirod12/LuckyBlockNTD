@@ -9,15 +9,15 @@ import org.bukkit.block.Block;
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.schematic.MCEditSchematicFormat;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 
 @SuppressWarnings("deprecation")
 public class WorldEdit6 implements IWorldEdit {
 	
-	private WorldGuardPlugin worldguard = (WorldGuardPlugin)Bukkit.getPluginManager().getPlugin("WorldGuard");
+	private WorldEditPlugin worldedit = (WorldEditPlugin)Bukkit.getPluginManager().getPlugin("WorldEdit");
 //	private StateFlag BREAK;
 	
 	@Override
@@ -25,7 +25,7 @@ public class WorldEdit6 implements IWorldEdit {
 		
 		try {
 			CuboidClipboard clipboard = MCEditSchematicFormat.getFormat(file).load(file);
-			clipboard.paste(worldguard.getWorldEdit().getWorldEdit().getEditSessionFactory()
+			clipboard.paste(worldedit.getWorldEdit().getEditSessionFactory()
 					 .getEditSession(new BukkitWorld(obj.getWorld()), -1), new Vector(obj.getX(), obj.getY(), obj.getZ()), true);
 		} catch (Exception e) {
 			e.printStackTrace();

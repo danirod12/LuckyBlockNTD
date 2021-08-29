@@ -70,7 +70,9 @@ public class CountGui implements Listener {
 	private void b() {
 		
 		ItemMeta meta = bag.getItemMeta();
-		meta.setLore(Arrays.asList("\u00a7f ", "\u00a7fYou will get: \u00a76" + current, (eco ? ("\u00a7fYou will give: \u00a7c" + getPrice()) : "")));
+//		meta.setLore(Arrays.asList("\u00a7f ", "\u00a7fYou will get: \u00a76" + current, (eco ? ("\u00a7fYou will give: \u00a7c" + getPrice()) : "")));
+		meta.setLore(Arrays.asList("\u00a7f ", Message.GUI_COUNT_GET.getAsString().replace("%amount%", String.valueOf(current)),
+				eco ? (Message.GUI_COUNT_GIVE.getAsString().replace("%price%", String.valueOf(getPrice()))) : ""));
 		bag.setItemMeta(meta);
 		
 	}

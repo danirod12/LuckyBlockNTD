@@ -32,6 +32,8 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
 import me.DenBeKKer.ntdLuckyBlock.factory.LBFactory;
+import me.DenBeKKer.ntdLuckyBlock.recipe.CraftListener;
+import me.DenBeKKer.ntdLuckyBlock.recipe.LuckyRecipe;
 import me.DenBeKKer.ntdLuckyBlock.sk89q.LBWorldEdit;
 import me.DenBeKKer.ntdLuckyBlock.sk89q.LBWorldGuard;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
@@ -63,11 +65,12 @@ public class LBMain extends JavaPlugin {
 	private static boolean brperm = true;
 	private static boolean debug;
 	private static boolean schematics = false;
+	public boolean dai_gui_get = false;
 	
 	
 	// Last update date & Build number
-	private static final String last_update = "26/08/2021";
-	private static final int build = 51;
+	private static final String last_update = "29/08/2021";
+	private static final int build = 52;
 	// Last update date & Build number
 	
 	
@@ -93,6 +96,31 @@ public class LBMain extends JavaPlugin {
 		try {
 			return Class.forName(path);
 		} catch(Throwable th) { return null; }
+	}
+	
+	public static UUID getUUID(ItemStack item) {
+		
+		ItemMeta meta = item.getItemMeta();
+		
+		if(!(meta instanceof SkullMeta)) return null;
+		
+		SkullMeta smeta = (SkullMeta) meta;
+		
+		if(debug) debug("Getting GameProfile");
+        try {
+        	
+        	Field profileField = smeta.getClass().getDeclaredField("profile");
+			
+	        profileField.setAccessible(true);
+	        
+	        GameProfile profile = (GameProfile)profileField.get(smeta);
+	        return profile.getId();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+	        return null;
+		}
+        
 	}
 	
 	public static void log(Level level, String message) {
@@ -226,6 +254,7 @@ public class LBMain extends JavaPlugin {
 		if(debug) debug("Loading Events");
 		Bukkit.getPluginManager().registerEvents(new LBHandler(), this);
 		Bukkit.getPluginManager().registerEvents(new GuiManager(), this);
+		Bukkit.getPluginManager().registerEvents(new CraftListener(), this);
 		
 		Bukkit.getScheduler().runTaskLater(instance, () -> {
 			
@@ -317,6 +346,12 @@ public class LBMain extends JavaPlugin {
 				config.get().set("config-level", "1.6");
 				config.save();
 			}
+			if(config.get().getString("config-level").equalsIgnoreCase("1.6")) {
+				getLogger().log(Level.INFO, "Your config level is 1.6, updating to 1.7...");
+				config.get().set("disable-author-info-gui-get", false);
+				config.get().set("config-level", "1.7");
+				config.save();
+			}
 		}
 		
 		brperm = config.get().getBoolean("break-permissions");
@@ -326,6 +361,15 @@ public class LBMain extends JavaPlugin {
 		debug = config.get().getBoolean("debug");
 		if(debug) getLogger().log(Level.WARNING, "Debug mode enabled! Note that this mode only for developer!");
 		inform = config.get().getBoolean("inform-about-update");
+		
+		dai_gui_get = config.get().getBoolean("disable-author-info-gui-get");
+		if(dai_gui_get && !premium) {
+			dai_gui_get = false;
+			
+			log(Level.WARNING, "Sorry, but you cant disable author info for gui get command in free plugin version.");
+			log(Level.WARNING, "Check out premium plugin version - https://www.spigotmc.org/resources/94872");
+			
+		}
 		
 		piston_fix = config.get().getBoolean("beta.pistonfix", true);
 		explosion_fix = config.get().getBoolean("beta.explosionfix", true);
@@ -364,6 +408,7 @@ public class LBMain extends JavaPlugin {
 		} else {
 			log(Level.INFO, Message.LB_LOADED_NOT_ZERO.getAsString().replace("%amount%", String.valueOf(map.size())));
 		}
+		
 		log(Level.INFO, "System loaded (took " + (System.currentTimeMillis() - ms) + " ms)...");
 		
 	}
@@ -516,6 +561,7 @@ public class LBMain extends JavaPlugin {
 			LuckyBlock block = new LuckyBlock(this, config);
 			if(block.getException() != null) return block.getException();
 			map.put(this, block);
+			block.loadRecipes();
 			return null;
 			
 		}
@@ -573,6 +619,14 @@ public class LBMain extends JavaPlugin {
 				types = LuckyBlockType.values();
 			
 			return types[ThreadLocalRandom.current().nextInt(types.length)];
+			
+		}
+		
+		public Collection<LuckyRecipe> getRecipes() {
+			
+			LuckyBlock luckyblock = get();
+			if(luckyblock == null) return new ArrayList<>();
+			return luckyblock.getRecipes();
 			
 		}
 		

@@ -27,6 +27,8 @@ import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockBreakEvent;
+import me.DenBeKKer.ntdLuckyBlock.recipe.CraftTheory;
+import me.DenBeKKer.ntdLuckyBlock.recipe.LuckyRecipe;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
 import me.DenBeKKer.ntdLuckyBlock.util.material.IMat.Mat;
 import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_12;
@@ -39,6 +41,10 @@ public class LuckyBlock {
 	private List<String> lore = new ArrayList<>();
 	private List<Collection<LuckyDrop>> items = new ArrayList<>();
 	private boolean eco, shop, animation; private double price;
+
+	private boolean cdef;
+
+	private boolean ccus;
 	
 	public int items$mapped() { return items.size(); }
 	public int items$mappedTwice() {
@@ -84,6 +90,14 @@ public class LuckyBlock {
 			LBMain.getInstance().getLogger().log(Level.WARNING, "[" + type.name() + "] Option for path <price> not found. Creating...");
 			file.set("price", 250);
 		}
+		if(!file.isSet("craft.default")) { b = true;
+			LBMain.getInstance().getLogger().log(Level.WARNING, "[" + type.name() + "] Option for path <craft.default> not found. Creating...");
+			file.set("craft.default", true);
+		}
+		if(!file.isSet("craft.custom")) { b = true;
+			LBMain.getInstance().getLogger().log(Level.WARNING, "[" + type.name() + "] Option for path <craft.custom> not found. Creating...");
+			file.set("craft.custom", LBMain.isPremium());
+		}
 		if(config.need_save() || b) config.save();
 		config.deleteDefault();
 		
@@ -109,6 +123,9 @@ public class LuckyBlock {
 				
 		}
 		
+		cdef = file.getBoolean("craft.default");
+		ccus = file.getBoolean("craft.custom");
+		
 		for(String str : file.getConfigurationSection("drop").getKeys(false)) {
 			
 			Collection<LuckyDrop> collection = new ArrayList<>();
@@ -118,6 +135,27 @@ public class LuckyBlock {
 					collection.add(litem);
 			}
 			items.add(collection);
+			
+		}
+		
+	}
+	
+	public void loadRecipes() {
+		
+		recipes = new ArrayList<>();
+		
+		if(cdef) {
+			recipes.addAll(CraftTheory.getDefault(type));
+		}
+		
+		if(ccus) {
+			
+			if(LBMain.isPremium()) {
+				recipes.addAll(CraftTheory.getFromConfig(type));
+			} else {
+				LBMain.log(Level.WARNING, "Custom crafts feature available only for premium version");
+				LBMain.log(Level.WARNING, "Check out premium plugin version - https://www.spigotmc.org/resources/94872");
+			}
 			
 		}
 		
@@ -157,6 +195,8 @@ public class LuckyBlock {
 	private ItemStack head = null;
 
 	private Effect effect;
+	
+	private Collection<LuckyRecipe> recipes = new ArrayList<>();
 	
 	public ItemStack getSkull() {
 		
@@ -272,5 +312,7 @@ public class LuckyBlock {
 	public void addIntent(Collection<LuckyDrop> drop) { items.add(drop); }
 	
 	public LuckyBlockType getType() { return type; }
+	
+	public Collection<LuckyRecipe> getRecipes() { return recipes; }
 	
 }

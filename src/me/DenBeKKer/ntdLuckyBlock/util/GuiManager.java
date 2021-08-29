@@ -154,7 +154,9 @@ public class GuiManager implements Listener {
 			
 			if(row - 1 == rows) {
 				ItemMeta meta = gray_pane.getItemMeta();
-				meta.setLore(Arrays.asList("\u00a7f ", "\u00a7fRunning \u00a7eLuckyBlock NTD v" + LBMain.getVersion(), "\u00a7fby \u00a7aDenBeKKer (Danirod_Gaming)"));
+				meta.setLore(Arrays.asList("\u00a7f ", "\u00a7fRunning \u00a7eLuckyBlock NTD v" + LBMain.getVersion() + " \u00a77("
+					+ (LBMain.isPremium() ? "\u00a7dprem" : "\u00a7afree") + "\u00a77)",
+					"\u00a7fby \u00a7aDenBeKKer \u00a77(Known as danirod12)"));
 				gray_pane.setItemMeta(meta);
 			}
 			get.setItem(row * 9 + 8, gray_pane);

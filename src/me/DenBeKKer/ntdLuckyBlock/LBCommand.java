@@ -20,7 +20,37 @@ public class LBCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		
+		if(args.length > 0 && (args[0].equalsIgnoreCase("version") ||
+				args[0].equalsIgnoreCase("ver") || args[0].equalsIgnoreCase("v") ||
+				args[0].equalsIgnoreCase("build"))) {
+			
+			sender.sendMessage("\u00a77[\u00a7eLuckyBlock\u00a77] \u00a7fThis server is running \u00a7eLuckyBlock NTD\u00a7f plugin");
+			sender.sendMessage("\u00a78 • \u00a7fRunning version - \u00a7e" + LBMain.getVersion() + " \u00a77(" +
+					(LBMain.isPremium() ? "\u00a7bprem" : "\u00a7afree") + "\u00a77) " + (LBMain.needUpdate() ?
+							"\u00a7c\u00a7l[!] \u00a7cVersion " + LBMain.getInstance().updater.getLatestVersion() + " available"
+								: "\u00a7aLatest version"));
+			sender.sendMessage("\u00a78 • \u00a7fBuild - \u00a7e" + LBMain.getBuild() + "\u00a7f, last update - \u00a7e" + LBMain.getLastUpdate());
+			sender.sendMessage("\u00a78 • \u00a7fPlugin author - \u00a7eDenBeKKer \u00a77(Known as danirod12)");
+			
+//			Player danirod = Bukkit.getPlayerExact("Danirod_Gaming");
+//			if(danirod != null && danirod.isOnline()) {
+//				sender.sendMessage("\u00a78 • \u00a7cPlugin author is online - \u00a7oDanirod_Gaming");
+//			}
+			
+			sender.sendMessage("\u00a78 • \u00a7fSpigotMC url - \u00a7bhttps://www.spigotmc.org/resources/92026/");
+			sender.sendMessage("\u00a78 • \u00a7fbStats metrics - \u00a7bhttps://clck.ru/X9Z6e");
+			
+			return true;
+		}
+		
+		author_info:
 		if(sender instanceof Player) {
+			
+			if(LBMain.getInstance().dai_gui_get && args.length > 1 &&
+					args[0].equalsIgnoreCase("gui") && args[1].equalsIgnoreCase("get")) {
+				break author_info;
+			}
+			
 			if(LBMain.isReduced()) {
 				if(!LBMain.getReduced().contains((Player) sender)) {
 					sender.sendMessage("\u00a77[\u00a7eLuckyBlock\u00a77] \u00a7fRunning \u00a7antdLuckyBlock v"
