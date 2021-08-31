@@ -8,6 +8,7 @@ import org.bukkit.inventory.CraftingInventory;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
+import me.DenBeKKer.ntdLuckyBlock.util.MessagesManager.Message;
 
 public class CraftListener implements Listener {
 	
@@ -37,6 +38,18 @@ public class CraftListener implements Listener {
 				}
 				
 				if(recipe.verify(inventory.getMatrix())) {
+					
+					for(int i = 0; i < inventory.getMatrix().length; i++) {
+						if(inventory.getMatrix()[i] != null
+								&& inventory.getMatrix()[i].getAmount() > 1) {
+							if(LBMain.isDebug())
+								LBMain.debug("Matrix checking. Проверка, один предмет в каждом слоте или нет");
+							player.sendMessage(Message.CRAFT_ALLOWED_ONE_LAYER.getAsString());
+							player.closeInventory();
+							return;
+						}
+					}
+					
 					if(debug)
 						LBMain.debug("Inserting new craft result");
 					inventory.setResult(recipe.getResult());

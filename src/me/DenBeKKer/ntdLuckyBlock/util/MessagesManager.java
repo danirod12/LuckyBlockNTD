@@ -25,6 +25,7 @@ public class MessagesManager {
 		LOADING_CONFIG("system.loading_config"),
 		RELOADED_CONFIG("system.reloaded_config"),
 		MATERIAL_API("system.material_api"),
+		CRAFT_ALLOWED_ONE_LAYER("craft.allowed-one-layer"),
 		LB_NOT_FOUND("system.lb_not_found"),
 		LB_LOADING_EXCEPTION("system.lb_loading_exception"),
 		LB_UNKNOWN_EXCEPTION("system.lb_unknown_exception"),

@@ -259,19 +259,34 @@ public class LuckyBlockAPI {
 		
 	}
 	
+	@Deprecated
 	public static boolean isLuckyBlock(ItemStack item) {
 		return getLuckyBlock(item) != null;
 	}
 	
+	@Deprecated
 	public static LuckyBlockType getLuckyBlock(ItemStack item) {
+		
+		return getLuckyBlock(item, false, true);
+		
+	}
+	
+	public static boolean isLuckyBlock(ItemStack item, boolean checkName, boolean checkUUID) {
+		return getLuckyBlock(item, checkName, checkUUID) != null;
+	}
+	
+	public static LuckyBlockType getLuckyBlock(ItemStack item, boolean checkName, boolean checkUUID) {
 		
 		UUID uuid = LBMain.getUUID(item);
 		
-		if(uuid == null) return null;
+		if(uuid == null || !(checkName || checkUUID)) return null;
 		
 		for(Entry<LuckyBlockType, LuckyBlock> s : LuckyBlockType.map().entrySet()) {
 			
-			if(LBMain.getUUID(s.getValue().getSkull()).equals(uuid)) return s.getKey();
+			if(checkUUID && !LBMain.getUUID(s.getValue().getSkull()).equals(uuid) ||
+					checkName && !item.getItemMeta().getDisplayName().equalsIgnoreCase(s.getValue().getSkull().getItemMeta().getDisplayName())) continue;
+			
+			return s.getKey();
 			
 		}
 		
@@ -282,7 +297,7 @@ public class LuckyBlockAPI {
 	public static void placeLuckyBlock(Block b, LuckyBlockType type) throws LuckyBlockNotLoadedException {
 		
 		if(type.get() != null) {
-			type.get().placeBlock(b);
+			type.get().placeBlock(b, false);
 		} else throw new LuckyBlockNotLoadedException(type);
 		
 	}

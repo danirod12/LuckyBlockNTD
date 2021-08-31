@@ -2,6 +2,7 @@ package me.DenBeKKer.ntdLuckyBlock.util.material;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class Mat1_13 implements IMat {
@@ -11,13 +12,6 @@ public class Mat1_13 implements IMat {
 		switch(mat) {
 		
 			case PLAYER_SKULL: return new ItemStack(Material.valueOf("PLAYER_HEAD"), i);
-			
-//			case RED_GLASS: return new ItemStack(Material.valueOf("RED_STAINED_GLASS"), i);
-//			case GREEN_GLASS: return new ItemStack(Material.valueOf("GREEN_STAINED_GLASS"), i);
-//			case YELLOW_GLASS: return new ItemStack(Material.valueOf("YELLOW_STAINED_GLASS"), i);
-//			case BLUE_GLASS: return new ItemStack(Material.valueOf("CYAN_STAINED_GLASS"), i);
-//			case BLACK_GLASS: return new ItemStack(Material.valueOf("BLACK_STAINED_GLASS"), i);
-			
 			case GRAY_PANE: return new ItemStack(Material.valueOf("GRAY_STAINED_GLASS_PANE"), i);
 			case BLACK_PANE: return new ItemStack(Material.valueOf("BLACK_STAINED_GLASS_PANE"), i);
 			
@@ -40,6 +34,16 @@ public class Mat1_13 implements IMat {
 	@Override
 	public boolean isOakSign(Material type) {
 		return type.name().contains("OAK") && type.name().contains("SIGN");
+	}
+	
+	@Override
+	public boolean isSkull(Material type) {
+		return type.name().contains("PLAYER") && type.name().contains("HEAD");
+	}
+	
+	@Override
+	public ItemStack getItemInMainHand(Player player) {
+		return player.getInventory().getItemInMainHand();
 	}
 	
 }

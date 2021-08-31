@@ -61,16 +61,21 @@ public class LBMain extends JavaPlugin {
 	public SpigotUpdater updater;
 	public Economy eco;
 	private static Collection<Player> reduce$list = new ArrayList<>();
-	private static boolean reduce = false;
-	private static boolean brperm = true;
-	private static boolean debug;
-	private static boolean schematics = false;
+	
+	private static boolean reduce = false,
+			brperm = true,
+			debug = false,
+			schematics = false,
+			verify_name = true,
+			verify_uuid = true,
+			warning_luckyblock_changed = false;
+	
 	public boolean dai_gui_get = false;
 	
 	
 	// Last update date & Build number
-	private static final String last_update = "29/08/2021";
-	private static final int build = 52;
+	private static final String last_update = "31/08/2021";
+	private static final int build = 53;
 	// Last update date & Build number
 	
 	
@@ -87,6 +92,9 @@ public class LBMain extends JavaPlugin {
 	public static boolean isReduced() { return reduce; }
 	public static boolean isBreakPermissions() { return brperm; }
 	public static Collection<Player> getReduced() { return reduce$list; }
+	public static boolean isVerifyName() { return verify_name; }
+	public static boolean isVerifyUUID() { return verify_uuid; }
+	public static boolean warning_luckyblock_changed() { return warning_luckyblock_changed; }
 	
 	public static boolean isDebug() { return debug; }
 	@Deprecated
@@ -99,6 +107,8 @@ public class LBMain extends JavaPlugin {
 	}
 	
 	public static UUID getUUID(ItemStack item) {
+		
+		if(item == null) return null;
 		
 		ItemMeta meta = item.getItemMeta();
 		
@@ -114,7 +124,7 @@ public class LBMain extends JavaPlugin {
 	        profileField.setAccessible(true);
 	        
 	        GameProfile profile = (GameProfile)profileField.get(smeta);
-	        return profile.getId();
+	        return profile == null ? null : profile.getId();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -352,10 +362,27 @@ public class LBMain extends JavaPlugin {
 				config.get().set("config-level", "1.7");
 				config.save();
 			}
+			if(config.get().getString("config-level").equalsIgnoreCase("1.7")) {
+				
+				warning_luckyblock_changed = true;
+				
+				getLogger().log(Level.INFO, "Your config level is 1.7, updating to 1.8...");
+				config.get().set("place.verify-name", true);
+				config.get().set("place.verify-UUID", true);
+				config.get().set("config-level", "1.8");
+				config.save();
+			}
 		}
 		
 		brperm = config.get().getBoolean("break-permissions");
 		reduce = config.get().getBoolean("reduce-command-author-info");
+		
+		verify_name = config.get().getBoolean("place.verify-name");
+		verify_uuid = config.get().getBoolean("place.verify-UUID");
+		
+		if(verify_name == false && verify_uuid == false)
+			log(Level.WARNING, "You must enable place.verify-name or place.verify-UUID option for plugin work");
+		
 		MessagesManager.reload(config.get().getString("language"));
 		
 		debug = config.get().getBoolean("debug");

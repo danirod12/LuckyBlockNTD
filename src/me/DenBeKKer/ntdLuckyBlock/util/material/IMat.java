@@ -2,6 +2,7 @@ package me.DenBeKKer.ntdLuckyBlock.util.material;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public interface IMat {
@@ -30,5 +31,9 @@ public interface IMat {
 	public String build();
 	
 	public boolean isOakSign(Material type);
+	
+	public boolean isSkull(Material type);
+	
+	public ItemStack getItemInMainHand(Player player);
 	
 }

@@ -53,6 +53,16 @@ break-permissions: true
 # NOTE: This feature can be used only in premium plugin version
 disable-author-info-gui-get: false
 
+# verify-UUID checks if placing skull UUID matchs with origin LuckyBlock UUID
+# verify-name checks if placing skull dispalay name match with origin LuckyBlock name
+#   NOTE: LuckyBlock names not like in configs. All names got modification.
+#         To get modified name (That will be same after restart) perform command /ntdluckyblock iteminfo
+#
+#   WARNING: Both false disable all luckyblocks
+place:
+  verify-UUID: true
+  verify-name: true
+
 # Enabled colors of luckyblocks
 enabled:
 - black
@@ -73,5 +83,5 @@ enabled:
 - yellow
 
 # Dont change it
-config-level: "1.7"
+config-level: "1.8"
 debug: false

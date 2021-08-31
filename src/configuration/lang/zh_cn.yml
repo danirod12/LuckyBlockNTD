@@ -3,7 +3,10 @@ author: SnowCutieOwO
 
 special:
   water_bucket: "&c&lOWNER &cDanirod_Gaming &7-> 检查你的背包.. 你获得了 &9水桶&f!"
-  
+
+craft:
+  allowed-one-layer: "&c使用配方合成时单个格子只能放置一个方块"
+
 system:
   loading_config: "&f配置文件载入中... "
   reloaded_config: "&a配置已重载, 载入 %amount% 种幸运方块..."
@@ -52,3 +55,5 @@ gui:
     add: "&b添加 %offset% 个"
     back: "&3返回"
     confirm: "&e确认"
+    get: "&f你将会得到: &6%amount% &f个"
+    give: "&f你将会给予: &c%give% &f个"

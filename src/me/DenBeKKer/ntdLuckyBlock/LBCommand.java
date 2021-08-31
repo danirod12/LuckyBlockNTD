@@ -11,9 +11,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
+import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.util.GuiManager;
 import me.DenBeKKer.ntdLuckyBlock.util.GuiManager.GuiType;
 import me.DenBeKKer.ntdLuckyBlock.util.MessagesManager.Message;
+import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
 
 public class LBCommand implements CommandExecutor {
 	
@@ -116,6 +118,60 @@ public class LBCommand implements CommandExecutor {
 				sender.sendMessage("\u00a78 > \u00a76LuckyBlock setup \u00a7f- https://clck.ru/VnqVN");
 				sender.sendMessage("\u00a7f=-= \u00a76SUPPORT & BUG REPORTING & FEATURE REQUESTING \u00a7f=-=");
 				return true;
+			}
+			case "iteminfo": {
+				
+				if(!(sender instanceof Player)) {
+					sender.sendMessage("This subcommand only for players");
+					return true;
+				}
+				
+				if(sender instanceof Player && !((Player)sender).hasPermission("luckyblock.iteminfo") && !((Player)sender).hasPermission("luckyblock.*")) {
+					sender.sendMessage(Message.CANT_USE_SUB.getAsString());
+					return true;
+				}
+				
+				Player player = (Player) sender;
+				ItemStack item = LBMain.getInstance().factory.getItemInMainHand(player);
+				
+				if(item == null) {
+					player.sendMessage("\u00a7cTake item in hand for this command");
+					return true;
+				}
+				
+				LuckyBlockType name = LuckyBlockAPI.getLuckyBlock(item, true, false);
+				LuckyBlockType uuid = LuckyBlockAPI.getLuckyBlock(item, false, true);
+				LuckyBlockType config = LuckyBlockAPI.getLuckyBlock(item, LBMain.isVerifyName(), LBMain.isVerifyUUID());
+				
+				if(name == null && uuid == null) {
+					player.sendMessage("\u00a7cItem type - \u00a7e" + item.getType());
+					return true;
+				}
+				
+				if(name != null) {
+					player.sendMessage("\u00a7cItem name \"\u00a7f" + item.getItemMeta().getDisplayName().replace("\u00a7", "&")
+							+ "\u00a7c\" matches with \u00a7" + name.toColorSymbol() + name.name() + "\u00a7c luckyblock");
+				}
+				if(uuid != null) {
+					player.sendMessage("\u00a7cItem UUID \"\u00a7f" + LBMain.getUUID(item)
+							+ "\u00a7c\" matches with \u00a7" + uuid.toColorSymbol() + uuid.name() + "\u00a7c luckyblock");
+				}
+				if(config != null) {
+					player.sendMessage("\u00a7cThis items matches with \u00a7" + config.toColorSymbol() + config.name() + "\u00a7c by config setup");
+					LuckyBlock block = config.get();
+					if(block == null) {
+						player.sendMessage("\u00a7cLuckyBlock for \u00a7" + config.toColorSymbol() + config.name() + " \u00a7cnot loaded");
+					} else {
+						player.sendMessage("\u00a78 > \u00a7fEconomy enabled - \u00a7e" + block.canBeShoped()
+							+ (block.canBeShoped() ? "\u00a77 (Price: " + block.getPrice() + ")" : ""));
+						player.sendMessage("\u00a78 > \u00a7fCrafts enabled - \u00a7e" + block.getRecipes().size());
+						player.sendMessage("\u00a78 > \u00a7fCustom name - \u00a7e" + block.getCustomName());
+						player.sendMessage("\u00a78 > \u00a7fAvailable drops - \u00a7e" + block.items$mapped() + "/" + block.items$mappedTwice());
+					}
+				}
+				player.sendMessage("\u00a7cItem type - \u00a7e" + item.getType());
+				return true;
+				
 			}
 			case "get": {
 				

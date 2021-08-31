@@ -165,9 +165,20 @@ public class LuckyBlock {
 	
 	public void giveItem(Player p) { p.getInventory().addItem(getSkull()); }
 	
-	@SuppressWarnings("deprecation")
+	@Deprecated
 	public void placeBlock(Block block) {
+		placeBlock(block, false);
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void placeBlock(Block block, boolean check) {
 		
+		if(check && !LBMain.getInstance().factory.isSkull(block.getType())) {
+			if(LBMain.isDebug()) {
+				LBMain.debug("Operation LuckyBlock.placeBlock(block, true) canceled because " + block.getType() + " not a skull");
+			}
+			return;
+		}
 		block.setType(Material.AIR);
 		
 		ArmorStand stand = (ArmorStand) block.getWorld().spawnEntity(block.getLocation().add(0.5, -1.2, 0.5), EntityType.ARMOR_STAND);

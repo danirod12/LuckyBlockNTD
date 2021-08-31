@@ -6,6 +6,9 @@ author: DenBeKKer
 special:
   water_bucket: "&c&lOWNER &cDanirod_Gaming &7-> Проверь свой инвентарь.. У тебя есть &9ведро воды&f!"
 
+craft:
+  allowed-one-layer: "&cКрафт возможен только с использованием каждого ингридиента в одиночном количестве для отдельного слота"
+
 system:
   loading_config: "&fЗагрузка конфигурации... "
   reloaded_config: "&aКонфигурация была перезагружена, загружено %amount% типов лаки-блоков..."
@@ -37,6 +40,7 @@ system:
   - "&8 > &e/%label% reload &f- перезагрузка всех конфигов"
   - "&8 > &e/%label% checkforupdates &f- проверка обновлений"
   - "&8 > &e/%label% support &f- получить контакты автора"
+  - "&8 > &6/%label% iteminfo &f- Информация о предмете в руке"
   
   cmd_player_not_found: "&cИгрок &e%player%&c не найден :("
   cmd_no_perm_to_color: "&cНет прав для цвета %lb%"
