@@ -174,9 +174,8 @@ public class LuckyBlock {
 	public void placeBlock(Block block, boolean check) {
 		
 		if(check && !LBMain.getInstance().factory.isSkull(block.getType())) {
-			if(LBMain.isDebug()) {
+			if(LBMain.isDebug())
 				LBMain.debug("Operation LuckyBlock.placeBlock(block, true) canceled because " + block.getType() + " not a skull");
-			}
 			return;
 		}
 		block.setType(Material.AIR);

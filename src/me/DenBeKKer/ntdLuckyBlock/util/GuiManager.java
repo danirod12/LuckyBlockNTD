@@ -20,10 +20,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.PlayerHead;
+import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockNotLoadedException;
 import me.DenBeKKer.ntdLuckyBlock.util.MessagesManager.Message;
 import me.DenBeKKer.ntdLuckyBlock.util.material.IMat.Mat;
 import me.DenBeKKer.ntdLuckyBlock.variables.ConfirmEvent;
 import me.DenBeKKer.ntdLuckyBlock.variables.CountGui;
+import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
 import net.milkbowl.vault.economy.EconomyResponse;
 
 public class GuiManager implements Listener {
@@ -51,7 +53,7 @@ public class GuiManager implements Listener {
 	}
 	
 	@EventHandler
-	public void click(final InventoryClickEvent e) {
+	public void click(final InventoryClickEvent e) throws LuckyBlockNotLoadedException {
 		
 		if(e.getSlot() < 0) return;
 		if(e.getClickedInventory().equals(get)) {
@@ -67,7 +69,14 @@ public class GuiManager implements Listener {
 			
 			final Player player = (Player) e.getWhoClicked();
 			List<LuckyBlockType> types = LuckyBlockType.list().stream()
-					.filter(n -> n.get().getSkull().getItemMeta().getDisplayName().equalsIgnoreCase(item.getItemMeta().getDisplayName()))
+					.filter(n -> {
+						try {
+							return n.get().getSkull().getItemMeta().getDisplayName().equalsIgnoreCase(item.getItemMeta().getDisplayName());
+						} catch (LuckyBlockNotLoadedException e1) {
+							e1.printStackTrace();
+							return false;
+						}
+					})
 					.limit(1).collect(Collectors.toList());
 			if(types.size() != 1) return;
 			final LuckyBlockType type = types.get(0);
@@ -79,6 +88,7 @@ public class GuiManager implements Listener {
 				return;
 			}
 			
+			final LuckyBlock block = type.get();
 			map.put(player, new CountGui(player, 1, 64, 1, (new ConfirmEvent() {
 				
 				@Override
@@ -88,15 +98,15 @@ public class GuiManager implements Listener {
 					
 					if(amount < 0) return;
 					
-					if(!type.get().canBeSold()) {
+					if(!block.canBeSold()) {
 						for(int i = 0; i < amount; i++)
-							type.get().giveItem(player);
+							block.giveItem(player);
 						player.closeInventory();
 						return;
 					}
 					
 					double current = LBMain.getInstance().eco.getBalance(player);
-					double cost = type.get().getPrice() * amount;
+					double cost = block.getPrice() * amount;
 					if(current < cost) {
 						player.sendMessage(Message.GUI_GET_NOT_MONEY.getAsString().replace("%eco%", LBMain.getInstance().getVaultPrice(cost - current)));
 						player.closeInventory();
@@ -105,7 +115,7 @@ public class GuiManager implements Listener {
 						EconomyResponse response = LBMain.getInstance().eco.withdrawPlayer(player, cost);
 						if(response.transactionSuccess()) {
 							for(int i = 0; i < amount; i++)
-								type.get().giveItem(player);
+								block.giveItem(player);
 							player.sendMessage(Message.GUI_GET_SUCCESS.getAsString().replace("%eco%", LBMain.getInstance().getVaultPrice(cost))
 									.replace("%amount%", String.valueOf(amount)));
 						} else {
@@ -124,7 +134,7 @@ public class GuiManager implements Listener {
 					player.openInventory(e.getInventory());
 				}
 				
-			}), item, type.get().canBeSold(), type.get().getPrice()));
+			}), item, block.canBeSold(), block.getPrice()));
 		}
 		
 	}
@@ -138,7 +148,14 @@ public class GuiManager implements Listener {
 		
 		if(LBMain.isDebug()) LBMain.debug("Init GuiManager");
 		Collection<LuckyBlockType> types = LuckyBlockType.list().stream()
-				.filter(n -> n.get().canBeShoped())
+				.filter(n -> {
+					try {
+						return n.get().canBeShoped();
+					} catch (LuckyBlockNotLoadedException e) {
+						e.printStackTrace();
+						return false;
+					}
+				})
 				.sorted(Comparator.<LuckyBlockType>comparingInt(n -> n.asDye().getWoolData()))
 				.collect(Collectors.toList());
 		if(LBMain.isDebug()) LBMain.debug("[GUIMANAGER] Found " + types.size() + " types");
@@ -169,7 +186,11 @@ public class GuiManager implements Listener {
 		for(LuckyBlockType type : types) {
 			
 			if(LBMain.isDebug()) LBMain.debug("[GUIMANAGER] Placing " + type.name() + " to " + slot + " slot");
-			get.setItem(slot, type.get().getSkull());
+			try {
+				get.setItem(slot, type.get().getSkull());
+			} catch (LuckyBlockNotLoadedException e) {
+				e.printStackTrace();
+			}
 			amount++; slot++;
 			
 			if(amount >= 5) {

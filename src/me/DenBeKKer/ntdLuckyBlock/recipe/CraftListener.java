@@ -8,12 +8,13 @@ import org.bukkit.inventory.CraftingInventory;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
+import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockNotLoadedException;
 import me.DenBeKKer.ntdLuckyBlock.util.MessagesManager.Message;
 
 public class CraftListener implements Listener {
 	
 	@EventHandler
-	public void craft(PrepareItemCraftEvent e) {
+	public void craft(PrepareItemCraftEvent e) throws LuckyBlockNotLoadedException {
 		
 		CraftingInventory inventory = e.getInventory();
 		Player player = null;

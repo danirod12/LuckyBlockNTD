@@ -12,13 +12,19 @@ public interface LuckyDrop {
 		PIG,
 		LIGHTNING,
 		WATER_BUCKET,
-		DIAMOND_COLUMN;
+		DIAMOND_COLUMN,
+		TNT_COLUMN,
+		TNT_EXPLOSION,
+		EXPERIENCE_EXPLOSION;
 		
 		public int defaultValue() {
 			switch(this) {
 			case LIGHTNING: return 3;
 			case PIG: return 4;
 			case WATER_BUCKET: return 64;
+			case TNT_COLUMN: return 5;
+			case TNT_EXPLOSION: return 20;
+			case EXPERIENCE_EXPLOSION: return 45;
 			default: return 1;
 			}
 		}

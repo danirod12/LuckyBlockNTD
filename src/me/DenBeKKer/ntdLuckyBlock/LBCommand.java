@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
+import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockNotLoadedException;
 import me.DenBeKKer.ntdLuckyBlock.util.GuiManager;
 import me.DenBeKKer.ntdLuckyBlock.util.GuiManager.GuiType;
 import me.DenBeKKer.ntdLuckyBlock.util.MessagesManager.Message;
@@ -156,12 +157,19 @@ public class LBCommand implements CommandExecutor {
 					player.sendMessage("\u00a7cItem UUID \"\u00a7f" + LBMain.getUUID(item)
 							+ "\u00a7c\" matches with \u00a7" + uuid.toColorSymbol() + uuid.name() + "\u00a7c luckyblock");
 				}
+				
 				if(config != null) {
 					player.sendMessage("\u00a7cThis items matches with \u00a7" + config.toColorSymbol() + config.name() + "\u00a7c by config setup");
-					LuckyBlock block = config.get();
-					if(block == null) {
+					if(!config.isLoaded()) {
 						player.sendMessage("\u00a7cLuckyBlock for \u00a7" + config.toColorSymbol() + config.name() + " \u00a7cnot loaded");
 					} else {
+						LuckyBlock block;
+						try {
+							block = config.get();
+						} catch (LuckyBlockNotLoadedException e) {
+							e.printStackTrace();
+							return true;
+						}
 						player.sendMessage("\u00a78 > \u00a7fEconomy enabled - \u00a7e" + block.canBeShoped()
 							+ (block.canBeShoped() ? "\u00a77 (Price: " + block.getPrice() + ")" : ""));
 						player.sendMessage("\u00a78 > \u00a7fCrafts enabled - \u00a7e" + block.getRecipes().size());
@@ -259,8 +267,12 @@ public class LBCommand implements CommandExecutor {
 				}
 				
 				for(LuckyBlockType type : LuckyBlockType.values()) {
-					sender.sendMessage("\u00a78 • \u00a7e" + type.name() + ((type.get() == null) ? " \u00a7cdisabled or not loaded" : (
-							" \u00a7aenabled \u00a77(" + type.get().getCustomName() + "\u00a77)")));
+					try {
+						sender.sendMessage("\u00a78 • \u00a7e" + type.name() + (!type.isLoaded() ? " \u00a7cdisabled or not loaded" : (
+								" \u00a7aenabled \u00a77(" + type.get().getCustomName() + "\u00a77)")));
+					} catch (LuckyBlockNotLoadedException e) {
+						e.printStackTrace();
+					}
 				}
 				return true;
 				

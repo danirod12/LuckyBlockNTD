@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
+import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockNotLoadedException;
 
 public class LuckyRecipe {
 	
@@ -19,7 +20,7 @@ public class LuckyRecipe {
 		
 		if(!anymatrix && items.length != 9) throw new IllegalArgumentException("Please, provide 9 LuckyRecipeItems");
 		
-		if(type.get() == null) throw new UnsupportedOperationException("LuckyBlockType " + type.name() + " is unloaded");
+		if(!type.isLoaded()) throw new UnsupportedOperationException("LuckyBlockType " + type.name() + " is unloaded");
 		
 		this.items = items;
 		this.type = type;
@@ -83,7 +84,7 @@ public class LuckyRecipe {
 		
 	}
 	
-	public ItemStack getResult() { return type.get().getSkull(); }
+	public ItemStack getResult() throws LuckyBlockNotLoadedException { return type.get().getSkull(); }
 	
 	public boolean hasAccess(Player player) {
 		if(permission == null || player == null) return true;

@@ -39,3 +39,7 @@ drop:
   '5':
     - "ITEM : POTION : 1 : 8257"
     - "ITEM : POTION : 1 : 8194"
+
+craft:
+  default: true
+  custom: false

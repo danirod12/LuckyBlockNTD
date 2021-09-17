@@ -18,3 +18,7 @@ drop:
     - "SCHEMATIC : cage_lava : PLAYER"
   '2':
     - "SCHEMATIC : small_temple : BLOCK"
+
+craft:
+  default: true
+  custom: false

@@ -31,6 +31,7 @@ import com.google.common.io.Files;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
+import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockNotLoadedException;
 import me.DenBeKKer.ntdLuckyBlock.factory.LBFactory;
 import me.DenBeKKer.ntdLuckyBlock.recipe.CraftListener;
 import me.DenBeKKer.ntdLuckyBlock.recipe.LuckyRecipe;
@@ -74,8 +75,8 @@ public class LBMain extends JavaPlugin {
 	
 	
 	// Last update date & Build number
-	private static final String last_update = "31/08/2021";
-	private static final int build = 53;
+	private static final String last_update = "17/09/2021";
+	private static final int build = 54;
 	// Last update date & Build number
 	
 	
@@ -268,11 +269,12 @@ public class LBMain extends JavaPlugin {
 		
 		Bukkit.getScheduler().runTaskLater(instance, () -> {
 			
-			log(Level.INFO, "If you are love my plugin, support me with 5 stars review (https://www.spigotmc.org/resources/92026/) or with " +
-					"https://paypal.me/denbekker");
+			log(Level.INFO, "If you are love my plugin, support me with 5 stars review (https://www.spigotmc.org/resources/92026/) or consider " +
+					"to purchase premium plugin version (https://www.spigotmc.org/resources/94872/)");
 			Bukkit.getOnlinePlayers().stream().filter(n -> n.hasPermission("luckyblock.supportme")).forEach(n -> {
 				n.sendMessage("\u00a77[\u00a7eLuckyBlock\u00a77] \u00a7eIf you are love my plugin, support me with \u00a765 stars review"
-						+ " \u00a7e(\u00a7b https://www.spigotmc.org/resources/92026/ \u00a7e) or with \u00a79https://paypal.me/denbekker");
+						+ " \u00a7e(\u00a7b https://www.spigotmc.org/resources/92026/ \u00a7e) or consider to purchase premium plugin" +
+						" version \u00a7e( \u00a7bhttps://www.spigotmc.org/resources/94872/ \u00a7e)");
 			});
 			
 		}, 120);
@@ -403,7 +405,10 @@ public class LBMain extends JavaPlugin {
 		
 	}
 	
-	public static void debug(String string) { log(Level.INFO, "[DEBUG] " + string); }
+	public static void debug(String string) {
+		if(debug)
+			log(Level.INFO, "[DEBUG] " + string);
+	}
 	
 	public void system_load() {
 		
@@ -600,7 +605,13 @@ public class LBMain extends JavaPlugin {
 			return instance.factory.getGlass(asDye(), 1);
 		}
 		
-		public LuckyBlock get() { return map.get(this); }
+		public boolean isLoaded() { return map.get(this) != null; }
+		
+		public LuckyBlock get() throws LuckyBlockNotLoadedException {
+			LuckyBlock lb = map.get(this);
+			if(lb == null) throw new LuckyBlockNotLoadedException(this);
+			return lb;
+		}
 		
 		public static Set<LuckyBlockType> list() { return map.keySet(); }
 		
@@ -649,11 +660,9 @@ public class LBMain extends JavaPlugin {
 			
 		}
 		
-		public Collection<LuckyRecipe> getRecipes() {
+		public Collection<LuckyRecipe> getRecipes() throws LuckyBlockNotLoadedException {
 			
-			LuckyBlock luckyblock = get();
-			if(luckyblock == null) return new ArrayList<>();
-			return luckyblock.getRecipes();
+			return get().getRecipes();
 			
 		}
 		

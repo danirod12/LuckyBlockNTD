@@ -26,6 +26,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
+import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockNotLoadedException;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockPlaceEvent;
 import me.DenBeKKer.ntdLuckyBlock.sk89q.LBWorldGuard;
 import me.DenBeKKer.ntdLuckyBlock.util.GuiManager;
@@ -79,10 +80,10 @@ public class LBHandler implements Listener {
 	}
 	
 	@EventHandler
-	public void claim_drop(PlayerPickupItemEvent e) {
+	public void claim_drop(PlayerPickupItemEvent e) throws LuckyBlockNotLoadedException {
 		
 		LuckyBlockType type = LuckyBlockAPI.getLuckyBlock(e.getItem().getItemStack(), false, true);
-		if(type != null && type.get() != null) {
+		if(type != null && type.isLoaded()) {
 			
 			ItemStack item = type.get().getSkull();
 			item.setAmount(e.getItem().getItemStack().getAmount());
@@ -159,7 +160,7 @@ public class LBHandler implements Listener {
 	public void place(BlockPlaceEvent e) {
 		
 		LuckyBlockType type = LuckyBlockAPI.getLuckyBlock(e.getItemInHand(), true, true);
-		if(type != null && type.get() != null) {
+		if(type != null && type.isLoaded()) {
 			
 			if(e.isCancelled()) return;
 			
@@ -168,7 +169,11 @@ public class LBHandler implements Listener {
 			if(event.isCancelled()) return;
 			
 			Bukkit.getScheduler().runTaskLater(LBMain.getInstance(), () -> {
-				type.get().placeBlock(e.getBlock(), true);
+				try {
+					type.get().placeBlock(e.getBlock(), true);
+				} catch (LuckyBlockNotLoadedException e1) {
+					e1.printStackTrace();
+				}
 			}, 1);
 			return;
 			
@@ -203,7 +208,7 @@ public class LBHandler implements Listener {
 	}
 	
 	@EventHandler
-	public void broke(BlockBreakEvent e) {
+	public void broke(BlockBreakEvent e) throws LuckyBlockNotLoadedException {
 		
 		if(e.getBlock().getType().name().toUpperCase().contains("STAINED_GLASS")) {
 			
@@ -234,13 +239,13 @@ public class LBHandler implements Listener {
 							
 							if(LBMain.isBreakPermissions() && !e.getPlayer().hasPermission("luckyblock.break." + type.name().toLowerCase())
 									&& !e.getPlayer().hasPermission("luckyblock.break.*")) {
-								e.getPlayer().sendMessage(Message.CANT_BREAK_LUCKYBLOCK.getAsString().replace("%lb%", type.get() != null ? type.get().getCustomName() :
-									type.name()));
+								e.getPlayer().sendMessage(Message.CANT_BREAK_LUCKYBLOCK.getAsString().replace("%lb%",
+										type.isLoaded() ? type.get().getCustomName() : type.name()));
 								e.setCancelled(true);
 								return;
 							}
 							
-							if(type.get() != null) {
+							if(type.isLoaded()) {
 								if(type.get().tryOpen(e.getBlock(), e.getPlayer(), false))
 									stand.remove();
 								else e.setCancelled(true);
@@ -260,7 +265,7 @@ public class LBHandler implements Listener {
 	}
 	
 	@EventHandler
-	public void entity(PlayerArmorStandManipulateEvent e) {
+	public void entity(PlayerArmorStandManipulateEvent e) throws LuckyBlockNotLoadedException {
 		
 		if(e.getRightClicked().getType() == EntityType.ARMOR_STAND) {
 			
@@ -281,13 +286,13 @@ public class LBHandler implements Listener {
 						
 						if(LBMain.isBreakPermissions() && !e.getPlayer().hasPermission("luckyblock.break." + type.name().toLowerCase())
 								&& !e.getPlayer().hasPermission("luckyblock.break.*")) {
-							e.getPlayer().sendMessage(Message.CANT_BREAK_LUCKYBLOCK.getAsString().replace("%lb%", type.get() != null ? type.get().getCustomName() :
-								type.name()));
+							e.getPlayer().sendMessage(Message.CANT_BREAK_LUCKYBLOCK.getAsString().replace("%lb%",
+									type.isLoaded() ? type.get().getCustomName() : type.name()));
 							e.setCancelled(true);
 							return;
 						}
 						
-						if(type.get() != null) {
+						if(type.isLoaded()) {
 							if(type.get().tryOpen(b, e.getPlayer(), false)) {
 								stand.remove();
 								b.setType(Material.AIR);
@@ -309,7 +314,7 @@ public class LBHandler implements Listener {
 	}
 	
 	@EventHandler
-	public void entity(PlayerInteractEntityEvent e) {
+	public void entity(PlayerInteractEntityEvent e) throws LuckyBlockNotLoadedException {
 		
 		if(e.getRightClicked().getType() == EntityType.ARMOR_STAND) {
 			
@@ -325,13 +330,13 @@ public class LBHandler implements Listener {
 						
 						if(LBMain.isBreakPermissions() && !e.getPlayer().hasPermission("luckyblock.break." + type.name().toLowerCase())
 								&& !e.getPlayer().hasPermission("luckyblock.break.*")) {
-							e.getPlayer().sendMessage(Message.CANT_BREAK_LUCKYBLOCK.getAsString().replace("%lb%", type.get() != null ? type.get().getCustomName() :
-								type.name()));
+							e.getPlayer().sendMessage(Message.CANT_BREAK_LUCKYBLOCK.getAsString().replace("%lb%",
+									type.isLoaded() ? type.get().getCustomName() : type.name()));
 							e.setCancelled(true);
 							return;
 						}
 						
-						if(type.get() != null) {
+						if(type.isLoaded()) {
 							if(type.get().tryOpen(b, e.getPlayer(), false)) {
 								stand.remove();
 								b.setType(Material.AIR);

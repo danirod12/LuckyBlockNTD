@@ -29,3 +29,7 @@ drop:
     - "ENTITY : ZOMBIE : 2" # Zombies count
   '5':
     - "ENTITY : GHAST"
+
+craft:
+  default: true
+  custom: false

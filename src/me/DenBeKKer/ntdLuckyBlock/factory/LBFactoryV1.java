@@ -34,6 +34,8 @@ public class LBFactoryV1 implements LBFactory {
 		file.set("price", 250);
 		file.set("animation", true);
 		file.set("animation_type", "MOBSPAWNER_FLAMES");
+		file.set("craft.default", true);
+		file.set("craft.custom", false);
 		
 		try {
 			

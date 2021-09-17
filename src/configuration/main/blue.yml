@@ -27,3 +27,7 @@ drop:
     - "SPECIAL : PIG : 4"
   '4':
     - "SPECIAL : PIG : 8"
+
+craft:
+  default: true
+  custom: false
