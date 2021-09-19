@@ -1,16 +1,18 @@
 author: Luke
+
 special:
   water_bucket: '&c&lOWNER &cDanirod_Gaming &7-> Prüfe dein Inventar.. Du hast einen &9Wassereimer'
+
 craft:
   allowed-one-layer: "&cDu kannst das nur herstellen , wenn du nur eine Zutat von jeder Menge nimmst für eine Anzahl von Separaten slots"
+
 system:
   loading_config: '&fLaden von der Konfiguration... '
   reloaded_config: '&aDie Konfiguration wurde neu geladen, geladen wurden %amount% LuckyBlock-Typen...'
   material_api: '&f%build% Material API-Version gegründet'
   lb_not_found: '&cLuckyBlock &e%lb%&c nicht gefunden, überspringen... '
   lb_loading_exception: '&cLuckyBlock &e%lb%&c kann nicht geladen werden... Ausnahme: &e%exception%'
-  lb_unknown_exception: '&cLuckyBlock &e%lb%&c nicht gefunden oder ein unbekannter Fehler ist aufgetreten,
-    überspringen... '
+  lb_unknown_exception: '&cLuckyBlock &e%lb%&c nicht gefunden oder ein unbekannter Fehler ist aufgetreten, überspringen... '
   lb_loaded_zero: '&fEs wurden 0 LuckyBlock-Typen geladen... Hm...'
   lb_loaded_not_zero: '&fLaden von &e%amount%&f LuckyBlock-Typen...'
   cant_use_command: '&cSorry, aber du kannst keine Unterbefehle benutzten.'
@@ -32,6 +34,7 @@ system:
   - "&8 > &6/%label% iteminfo &f- Infos von dem Itemin deiner Hand"
   cmd_player_not_found: '&cSpieler &e%player%&c nnicht gefunden :('
   cmd_no_perm_to_color: '&cDu hast keine Permission für Farbe %lb%'
+
 gui:
   exit: '&7[ &6Verlassen des Gui´s&7]'
   get:

@@ -1,5 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -13,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockNotLoadedException;
+import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
 import me.DenBeKKer.ntdLuckyBlock.util.GuiManager;
 import me.DenBeKKer.ntdLuckyBlock.util.GuiManager.GuiType;
 import me.DenBeKKer.ntdLuckyBlock.util.MessagesManager.Message;
@@ -119,6 +122,27 @@ public class LBCommand implements CommandExecutor {
 				sender.sendMessage("\u00a78 > \u00a76LuckyBlock setup \u00a7f- https://clck.ru/VnqVN");
 				sender.sendMessage("\u00a7f=-= \u00a76SUPPORT & BUG REPORTING & FEATURE REQUESTING \u00a7f=-=");
 				return true;
+			}
+			case "convert": {
+				
+				if(sender instanceof Player && !((Player)sender).hasPermission("luckyblock.convert") && !((Player)sender).hasPermission("luckyblock.*")) {
+					sender.sendMessage(Message.CANT_USE_SUB.getAsString());
+					return true;
+				}
+				
+				if(ConvertManager.getRequests() == 0) {
+					sender.sendMessage("\u00a7cThere is no convert requests");
+					return true;
+				}
+				
+				if(!LBMain.isPremium()) {
+					sender.sendMessage("\u00a7cThis feature available only in premium plugin version");
+					return true;
+				}
+				
+				// premium command realization
+				return true;
+				
 			}
 			case "iteminfo": {
 				
@@ -266,14 +290,26 @@ public class LBCommand implements CommandExecutor {
 					return true;
 				}
 				
+				Collection<LuckyBlockType> disabled = new ArrayList<>();
 				for(LuckyBlockType type : LuckyBlockType.values()) {
-					try {
-						sender.sendMessage("\u00a78 • \u00a7e" + type.name() + (!type.isLoaded() ? " \u00a7cdisabled or not loaded" : (
-								" \u00a7aenabled \u00a77(" + type.get().getCustomName() + "\u00a77)")));
-					} catch (LuckyBlockNotLoadedException e) {
-						e.printStackTrace();
+					
+					if(!type.isLoaded()) {
+						disabled.add(type);
+						continue;
 					}
+					LuckyBlock block = null;
+					try {
+						block = type.get();
+					} catch(LuckyBlockNotLoadedException e) {
+						e.printStackTrace();
+						continue;
+					}
+					
+					sender.sendMessage("\u00a78 • \u00a7" + type.toColorSymbol() + type.name() + " \u00a7aenabled \u00a77(Loaded entries: " +
+							block.items$mapped() + ", Enabled recipes: " + block.getRecipes().size() + ")");
+					
 				}
+				disabled.forEach(n -> sender.sendMessage("\u00a78 • \u00a7" + n.toColorSymbol() + n.name() + " \u00a7cdisabled"));
 				return true;
 				
 			}

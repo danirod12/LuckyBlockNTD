@@ -2,6 +2,7 @@ package me.DenBeKKer.ntdLuckyBlock.api;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -17,35 +18,103 @@ import org.bukkit.plugin.Plugin;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
+import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
+import me.DenBeKKer.ntdLuckyBlock.loader.JSONLoader;
 import me.DenBeKKer.ntdLuckyBlock.loader.LegacyLoader;
-import me.DenBeKKer.ntdLuckyBlock.loader.LuckyDropLoader;
+import me.DenBeKKer.ntdLuckyBlock.util.Config;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
+import me.DenBeKKer.ntdLuckyBlock.variables.LuckyEntry;
 
 public class LuckyBlockAPI {
 	
-	private final static LuckyDropLoader LEGACY = new LegacyLoader();
+	private final static StringLoader LEGACY = new LegacyLoader();
+	private final static PathLoader JSON = new JSONLoader();
 	
-	public static LuckyDrop loadDrop(String drop0) { return LEGACY.load(drop0); }
-	
-	public static void addLuckyDrop(LuckyBlockType type, LuckyDrop drop) throws LuckyBlockNotLoadedException { addLuckyDrop(type, Arrays.asList(drop)); }
-	
-	public static void addLuckyDrop(LuckyBlockType type, LuckyDrop... drop) throws LuckyBlockNotLoadedException {
-		addLuckyDrop(type, Arrays.asList(drop));
+	public static StringLoader getLegacyLoader() {
+		return LEGACY;
 	}
 	
-	public static void addLuckyDrop(LuckyBlockType type, Collection<LuckyDrop> drop) throws LuckyBlockNotLoadedException {
+	public static PathLoader getJSONLoader() {
+		return JSON;
+	}
+	
+	public static LuckyEntry loadDropEntry(Config loaded, String path) {
 		
-		LuckyBlock block = type.get();
-		if(block == null)
-			throw new LuckyBlockNotLoadedException(type);
-		block.addIntent(drop);
+		if(loaded == null) throw new NullPointerException("Config is unloaded");
+		
+		if(loaded.get().isSet(path + ".items")) {
+			
+			String ch = loaded.get().getString(path + ".chance");
+			DropChance chance = DropChance.MEDIUM;
+			try {
+				chance = DropChance.valueOf(ch);
+			} catch(Exception ex) {
+				LBMain.log(Level.WARNING, "Drop chance \""
+						+ (ch == null ? "null" : ch) + "\" is unsupported (" + loaded.getName() + ", " + path + ".chance)");
+			}
+			LuckyEntry entry = new LuckyEntry(chance);
+			for(String drop0 : loaded.get().getConfigurationSection(path + ".items").getKeys(false)) {
+				
+				try {
+					LuckyDrop drop = JSON.load(loaded, path + ".items." + drop0);
+					if(drop != null)
+						entry.add(drop);
+				} catch(Throwable th) {
+					
+					if(th instanceof ClassNotFoundException) {
+						LBMain.log(Level.WARNING, th.getLocalizedMessage());
+					}
+					
+					if(LBMain.isDebug())
+						th.printStackTrace();
+					
+				}
+				
+			}
+			return entry;
+			
+		}
+		
+		if(loaded.get().isSet(path)) {
+			
+			List<String> list = loaded.get().getStringList(path);
+			LuckyEntry entry = new LuckyEntry();
+			for(String drop0 : list) {
+				
+				LuckyDrop drop = LEGACY.load(drop0);
+				if(drop != null)
+					entry.add(drop);
+				
+			}
+			ConvertManager.add(loaded, path);
+			return entry;
+			
+		}
+		
+		return null;
 		
 	}
 	
 	@Deprecated
-	public static me.DenBeKKer.ntdLuckyBlock.variables.LuckyItem loadItem(String item0) {
-		throw new UnsupportedOperationException("LuckyItem no longer supported since 2.1.0! Use LuckyBlockAPI.loadDrop(String)");
+	public static LuckyDrop loadDrop(String drop0) { return LEGACY.load(drop0); }
+	
+	@Deprecated
+	public static void addLuckyDrop(LuckyBlockType type, LuckyDrop drop) throws LuckyBlockNotLoadedException {
+		addLuckyDrop(type, Arrays.asList(drop));
+	}
+	
+	@Deprecated
+	public static void addLuckyDrop(LuckyBlockType type, LuckyDrop... drop) throws LuckyBlockNotLoadedException {
+		addLuckyDrop(type, Arrays.asList(drop));
+	}
+	
+	@Deprecated
+	public static void addLuckyDrop(LuckyBlockType type, Collection<LuckyDrop> drop) throws LuckyBlockNotLoadedException {
+		
+		LuckyBlock block = type.get();
+		block.addIntent(new LuckyEntry(drop));
+		
 	}
 	
 	@Deprecated
@@ -230,31 +299,31 @@ public class LuckyBlockAPI {
 		
 	}
 	
-	public void destroy(LuckyBlockType type) {
+	public static void destroy(LuckyBlockType type) {
 		LuckyBlockType.map().put(type, null);
 	}
 	
-	public void destroy(LuckyBlock luckyblock) {
+	public static void destroy(LuckyBlock luckyblock) {
 		LuckyBlockType.map().put(luckyblock.getType(), null);
 	}
 	
-	public void rewrite(LuckyBlock luckyblock) {
+	public static void rewrite(LuckyBlock luckyblock) {
 		LuckyBlockType.map().put(luckyblock.getType(), luckyblock);
 	}
 	
-	public void system_load(Plugin your_plugin_instance) {
+	public static void system_load(Plugin your_plugin_instance) {
 		if(your_plugin_instance.equals(LBMain.getInstance()))
 			throw new UnsupportedOperationException("Provide your plugin instance, not NTD LuckyBlock");
 		LBMain.log(Level.WARNING, "Loading system by plugin " + your_plugin_instance.getName() + " v" + your_plugin_instance.getDescription().getVersion());
 		LBMain.getInstance().system_load();
 	}
 	
-	public String getVersion() { return LBMain.getVersion(); }
-	public String getLastUpdate() { return LBMain.getLastUpdate(); }
-	public int getBuild() { return LBMain.getBuild(); }
+	public static String getVersion() { return LBMain.getVersion(); }
+	public static String getLastUpdate() { return LBMain.getLastUpdate(); }
+	public static int getBuild() { return LBMain.getBuild(); }
 	
-	public LBMain getMainInstance() { return LBMain.getInstance(); }
+	public static LBMain getMainInstance() { return LBMain.getInstance(); }
 	
-	public boolean isPremium() { return LBMain.isPremium(); }
+	public static boolean isPremium() { return LBMain.isPremium(); }
 	
 }

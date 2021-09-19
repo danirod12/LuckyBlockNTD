@@ -1,6 +1,8 @@
 package me.DenBeKKer.ntdLuckyBlock;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -28,7 +30,9 @@ import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockNotLoadedException;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockPlaceEvent;
+import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
 import me.DenBeKKer.ntdLuckyBlock.sk89q.LBWorldGuard;
+import me.DenBeKKer.ntdLuckyBlock.util.Config;
 import me.DenBeKKer.ntdLuckyBlock.util.GuiManager;
 import me.DenBeKKer.ntdLuckyBlock.util.MessagesManager.Message;
 
@@ -151,6 +155,29 @@ public class LBHandler implements Listener {
 				}
 				
 			}, 50);
+			
+		}
+		if(e.getPlayer().hasPermission("luckyblock.convert")) {
+			
+			int convert = ConvertManager.getRequests();
+			if(convert > 0) {
+				
+				if(LBMain.isPremium()) {
+					e.getPlayer().sendMessage("\u00a77[\u00a7eLuckyBlock\u00a77] \u00a7fNew luckyblock configuration update available! Now " +
+							"my plugin can store almost any item from any plugin and you can set drop chances for each lucky entry. You can " +
+							"convert \u00a7c" + convert + " \u00a7fentry drops to new JSON store format. \u00a7bPerform - \u00a7l/luckyblock convert");
+					e.getPlayer().sendMessage("\u00a74[*] \u00a7cTo prevent loss of configuration in case of error, make backup of some files first");
+					for(Entry<Config, Collection<String>> entry : ConvertManager.getRequestMap().entrySet())
+						e.getPlayer().sendMessage("\u00a74 - \u00a7c" + entry.getKey().getName()
+								+ " \u00a77(Have " + entry.getValue().size() + " unconverted items)");
+				} else {
+					e.getPlayer().sendMessage("\u00a77[\u00a7eLuckyBlock\u00a77] \u00a7fNew luckyblock configuration update available! Now " +
+							"my plugin can store almost any item from any plugin and you can set drop chances for each lucky entry. This " +
+							"cool feature available in \u00a7bpremium version\u00a7f! You can convert \u00a7c" + convert + " \u00a7fentry " +
+							"drops to new JSON store format. \u00a7bCheck out - https://www.spigotmc.org/resources/94872/");
+				}
+				
+			}
 			
 		}
 		

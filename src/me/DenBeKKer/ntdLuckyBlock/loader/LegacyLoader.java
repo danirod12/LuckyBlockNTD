@@ -13,6 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
+import me.DenBeKKer.ntdLuckyBlock.api.StringLoader;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop.LuckyItemType;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop.Special;
@@ -31,10 +32,9 @@ import me.DenBeKKer.ntdLuckyBlock.variables.drop.special.TntColumnSpecial;
 import me.DenBeKKer.ntdLuckyBlock.variables.drop.special.TntExplosionSpecial;
 import me.DenBeKKer.ntdLuckyBlock.variables.drop.special.WaterBucketSpecial;
 
-public class LegacyLoader implements LuckyDropLoader {
+public class LegacyLoader implements StringLoader {
 	
 	@SuppressWarnings("deprecation")
-	@Override
 	public LuckyDrop load(String drop) {
 		
 		try {

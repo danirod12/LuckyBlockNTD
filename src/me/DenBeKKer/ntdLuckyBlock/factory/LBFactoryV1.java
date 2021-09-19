@@ -121,11 +121,7 @@ public class LBFactoryV1 implements LBFactory {
 		
 		List<Material> mat = null;
 		
-		try {
-			mat = Arrays.asList(Material.values()).stream().filter(n -> n.isItem() && !n.isAir()).collect(Collectors.toList());
-		} catch(Throwable th) {
-			mat = Arrays.asList(Material.values()).stream().filter(n -> n.isItem() && !n.name().toUpperCase().contains("AIR")).collect(Collectors.toList());
-		}
+		mat = Arrays.asList(Material.values()).stream().filter(n -> n.isItem() && !n.name().toUpperCase().contains("AIR")).collect(Collectors.toList());
 		
 		if(LBMain.getInstance().factory instanceof Mat1_13)
 			mat = mat.stream().filter(n -> !n.name().contains("LEGACY_")).collect(Collectors.toList());

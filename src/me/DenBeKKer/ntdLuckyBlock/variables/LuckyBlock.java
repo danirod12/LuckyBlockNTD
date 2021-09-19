@@ -25,6 +25,7 @@ import com.mojang.authlib.properties.Property;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
+import me.DenBeKKer.ntdLuckyBlock.api.DropChance;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockBreakEvent;
 import me.DenBeKKer.ntdLuckyBlock.recipe.CraftTheory;
@@ -34,22 +35,22 @@ import me.DenBeKKer.ntdLuckyBlock.util.material.IMat.Mat;
 import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_12;
 
 public class LuckyBlock {
-
+	
 	private LuckyBlockType type;
 	
 	private String texture, name, custom_name, exception;
 	private List<String> lore = new ArrayList<>();
-	private List<Collection<LuckyDrop>> items = new ArrayList<>();
+	private List<LuckyEntry> items = new ArrayList<>();
 	private boolean eco, shop, animation; private double price;
-
+	
 	private boolean cdef;
-
+	
 	private boolean ccus;
 	
 	public int items$mapped() { return items.size(); }
 	public int items$mappedTwice() {
 		int r = 0;
-		for(Collection<LuckyDrop> drop : items)
+		for(LuckyEntry drop : items)
 			r += drop.size();
 		return r;
 	}
@@ -128,13 +129,13 @@ public class LuckyBlock {
 		
 		for(String str : file.getConfigurationSection("drop").getKeys(false)) {
 			
-			Collection<LuckyDrop> collection = new ArrayList<>();
-			for(String item : file.getStringList("drop." + str)) {
-				LuckyDrop litem = LuckyBlockAPI.loadDrop(item);
-				if(litem != null)
-					collection.add(litem);
-			}
-			items.add(collection);
+//			LuckyEntry collection = new LuckyEntry();
+//			for(String item : file.getStringList("drop." + str)) {
+//				LuckyDrop litem = LuckyBlockAPI.loadDrop(item);
+//				if(litem != null)
+//					collection.add(litem);
+//			}
+			addIntent(LuckyBlockAPI.loadDropEntry(config, "drop." + str));
 			
 		}
 		
@@ -208,6 +209,8 @@ public class LuckyBlock {
 	
 	private Collection<LuckyRecipe> recipes = new ArrayList<>();
 	
+	private List<DropChance> chances = new ArrayList<>();
+	
 	public ItemStack getSkull() {
 		
 		if(head == null) {
@@ -264,15 +267,14 @@ public class LuckyBlock {
 		if(animation)
 			block.getWorld().playEffect(block.getLocation().add(0.5, 0.5, 0.5), effect, 10);
 		
-		Collection<LuckyDrop> collection = items.get((int)(Math.random() * items.size()));
-		if(LBMain.isDebug())
-			LBMain.debug("Mathed " + collection.size() + " random lucky drops");
+		LuckyEntry collection = DropChance.random(chances).roll(items);
+		LBMain.debug("Mathed " + collection.size() + " random lucky drops");
 		for(LuckyDrop item : collection) {
 			if(LBMain.isDebug()) {
 				try {
 					LBMain.debug("Performing item... " + new Gson().toJson(item));
 				} catch(Throwable th) {
-					LBMain.debug("Performing item... [Gson not found] - " + th.getLocalizedMessage());
+					LBMain.debug("Performing item... [Gson throwable] - " + th.getLocalizedMessage());
 				}
 			}
 			item.executeProtected(block, target);
@@ -319,7 +321,11 @@ public class LuckyBlock {
 	public String getCustomName() { return custom_name; }
 	public boolean canBeShoped() { return shop; }
 	
-	public void addIntent(Collection<LuckyDrop> drop) { items.add(drop); }
+	public void addIntent(LuckyEntry drop) {
+		items.add(drop);
+		if(!chances.contains(drop.getDropChance()))
+			chances.add(drop.getDropChance());
+	}
 	
 	public LuckyBlockType getType() { return type; }
 	
