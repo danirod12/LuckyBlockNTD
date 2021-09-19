@@ -18,6 +18,8 @@ import org.bukkit.plugin.Plugin;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
+import me.DenBeKKer.ntdLuckyBlock.api.loader.PathLoader;
+import me.DenBeKKer.ntdLuckyBlock.api.loader.StringLoader;
 import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
 import me.DenBeKKer.ntdLuckyBlock.loader.JSONLoader;
 import me.DenBeKKer.ntdLuckyBlock.loader.LegacyLoader;

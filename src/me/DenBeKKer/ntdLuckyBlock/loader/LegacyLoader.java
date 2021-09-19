@@ -13,7 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
-import me.DenBeKKer.ntdLuckyBlock.api.StringLoader;
+import me.DenBeKKer.ntdLuckyBlock.api.loader.StringLoader;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop.LuckyItemType;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop.Special;

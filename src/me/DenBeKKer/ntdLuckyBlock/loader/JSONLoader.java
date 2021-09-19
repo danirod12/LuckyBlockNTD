@@ -1,6 +1,6 @@
 package me.DenBeKKer.ntdLuckyBlock.loader;
 
-import me.DenBeKKer.ntdLuckyBlock.api.PathLoader;
+import me.DenBeKKer.ntdLuckyBlock.api.loader.PathLoader;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyEntry;

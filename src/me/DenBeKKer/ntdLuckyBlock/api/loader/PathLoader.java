@@ -1,4 +1,4 @@
-package me.DenBeKKer.ntdLuckyBlock.api;
+package me.DenBeKKer.ntdLuckyBlock.api.loader;
 
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
