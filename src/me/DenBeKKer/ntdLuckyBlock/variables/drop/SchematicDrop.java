@@ -36,8 +36,7 @@ public class SchematicDrop implements LuckyDrop, CustomSaver {
 		return file.getAbsolutePath() + ":" + (b ? "true" : "false");
 	}
 	
-	@Override
-	public LuckyDrop load(String description) {
+	public static LuckyDrop load(String description) {
 		return new SchematicDrop(new File(description.split(":")[0]), Boolean.valueOf(description.split(":")[1]));
 	}
 	

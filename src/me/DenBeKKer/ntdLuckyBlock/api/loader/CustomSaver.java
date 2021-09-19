@@ -6,6 +6,8 @@ public interface CustomSaver {
 	
 	String getDescription();
 	
-	LuckyDrop load(String description);
+	static LuckyDrop load(String description) {
+		throw new UnsupportedOperationException("Method not initialized");
+	}
 	
 }
