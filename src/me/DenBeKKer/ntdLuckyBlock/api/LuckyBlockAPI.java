@@ -49,7 +49,8 @@ public class LuckyBlockAPI {
 		if(loaded.get().isSet(path + ".items")) {
 			
 			if(!LBMain.isPremium()) {
-				LBMain.log(Level.SEVERE, "Configuration " + loaded.getName() + " was converted to JSON format. Free version supports only legacy formats");
+				LBMain.log(Level.SEVERE, "Configuration path " + loaded.getName() + "/" + path
+					+ " was converted to JSON format. Free version supports only legacy formats");
 				return new LuckyEntry(DropChance.MEDIUM, new ItemDrop(new ItemStack(Material.STONE)));
 			}
 			
