@@ -27,6 +27,7 @@ import me.DenBeKKer.ntdLuckyBlock.util.Config;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyEntry;
+import me.DenBeKKer.ntdLuckyBlock.variables.drop.ItemDrop;
 
 public class LuckyBlockAPI {
 	
@@ -46,6 +47,11 @@ public class LuckyBlockAPI {
 		if(loaded == null) throw new NullPointerException("Config is unloaded");
 		
 		if(loaded.get().isSet(path + ".items")) {
+			
+			if(!LBMain.isPremium()) {
+				LBMain.log(Level.SEVERE, "Configuration " + loaded.getName() + " was converted to JSON format. Free version supports only legacy formats");
+				return new LuckyEntry(DropChance.MEDIUM, new ItemDrop(new ItemStack(Material.STONE)));
+			}
 			
 			String ch = loaded.get().getString(path + ".chance");
 			DropChance chance = DropChance.MEDIUM;
