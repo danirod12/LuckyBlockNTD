@@ -32,8 +32,10 @@ public enum DropChance {
 		DropChance[] chance = new DropChance[a];
 		a = 0;
 		for(DropChance chance0 : chances) {
-			chance[a] = chance0;
-			a++;
+			for(int j = 0; j < chance0.i; j++) {
+				chance[a] = chance0;
+				a++;
+			}
 		}
 		return chance[ThreadLocalRandom.current().nextInt(chance.length)];
 		
