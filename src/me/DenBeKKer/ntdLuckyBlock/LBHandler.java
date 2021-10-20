@@ -72,13 +72,6 @@ public class LBHandler implements Listener {
 				}
 			});
 			
-//			if(e.getDirection() == BlockFace.UP) {
-//				if(LuckyBlockAPI.isLuckyBlock(e.getBlock().getLocation().add(0, 2, 0).getBlock())) {
-//					e.setCancelled(true);
-//					return;
-//				}
-//			}
-			
 		}
 		
 	}
@@ -206,32 +199,6 @@ public class LBHandler implements Listener {
 			
 		}
 		
-//		for(LuckyBlockType type : LuckyBlockType.list()) {
-//			
-//			try {
-//				if(e.getItemInHand().getItemMeta().getDisplayName().equals(type.get().getSkull().getItemMeta().getDisplayName())) {
-//					
-//					if(e.isCancelled()) return;
-//					
-//					LuckyBlockPlaceEvent event = new LuckyBlockPlaceEvent(e.getBlock(), e.getPlayer(), type);
-//					Bukkit.getPluginManager().callEvent(event);
-//					if(event.isCancelled()) {
-//						e.setCancelled(true);
-//						return;
-//					}
-//					
-//					Bukkit.getScheduler().runTaskLater(LBMain.getInstance(), () -> {
-//						type.get().placeBlock(e.getBlock(), true);
-//					}, 1);
-//					return;
-//					
-//				}
-//			} catch(Exception ignore) {
-//				
-//			}
-//			
-//		}
-		
 	}
 	
 	@EventHandler
@@ -241,10 +208,6 @@ public class LBHandler implements Listener {
 			
 			for(LuckyBlockType type : LuckyBlockType.values()) {
 				
-//				if((LBMain.getInstance().factory instanceof Mat1_13 && e.getBlock().getType() == type.getMaterial()) ||
-//						(LBMain.getInstance().factory instanceof Mat1_12 && e.getBlock().getType() == type.getMaterial() &&
-//								e.getBlock().getData() == type.asDye().ordinal())) {
-					
 					for(Entity en : e.getBlock().getWorld().getNearbyEntities(e.getBlock().getLocation().add(0.5, -1.2, 0.5), 0.1, 0.1, 0.1)) {
 						
 						if(e.isCancelled()) return;
@@ -254,11 +217,6 @@ public class LBHandler implements Listener {
 								+ ";" + (int)stand.getLocation().getY() + ";" + (int)stand.getLocation().getZ())
 								&& stand.getLocation().add(0, 1.2, 0).getBlock().equals(e.getBlock())) {
 							
-							/*
-							 * 
-							 *  Break luckyblock event
-							 * 
-							 */
 							if(LBMain.getIsSk89q() && !LBWorldGuard.canBreak(e.getBlock())) {
 								e.setCancelled(true);
 								return;
@@ -273,6 +231,7 @@ public class LBHandler implements Listener {
 							}
 							
 							if(type.isLoaded()) {
+								e.setDropItems(false);
 								if(type.get().tryOpen(e.getBlock(), e.getPlayer(), false))
 									stand.remove();
 								else e.setCancelled(true);
@@ -282,8 +241,6 @@ public class LBHandler implements Listener {
 						}
 						
 					}
-					
-//				}
 				
 			}
 			
@@ -296,43 +253,39 @@ public class LBHandler implements Listener {
 		
 		if(e.getRightClicked().getType() == EntityType.ARMOR_STAND) {
 			
-			Block b = e.getRightClicked().getLocation().add(0, 1.2, 0).getBlock();
+			final Block b = e.getRightClicked().getLocation().add(0, 1.2, 0).getBlock();
 			
 			for(LuckyBlockType type : LuckyBlockType.values()) {
 				
-				//if(b.getType() == type.getMaterial()) {
+				ArmorStand stand = (ArmorStand) e.getRightClicked();
+				if(stand.getCustomName() != null && stand.getCustomName().equalsIgnoreCase(type.name() + ";" + (int)stand.getLocation().getX()
+						+ ";" + (int)stand.getLocation().getY() + ";" + (int)stand.getLocation().getZ())) {
 					
-					ArmorStand stand = (ArmorStand) e.getRightClicked();
-					if(stand.getCustomName() != null && stand.getCustomName().equalsIgnoreCase(type.name() + ";" + (int)stand.getLocation().getX()
-							+ ";" + (int)stand.getLocation().getY() + ";" + (int)stand.getLocation().getZ())) {
-						
-						if(LBMain.getIsSk89q() && !LBWorldGuard.canBreak(b)) {
-							e.setCancelled(true);
-							return;
-						}
-						
-						if(LBMain.isBreakPermissions() && !e.getPlayer().hasPermission("luckyblock.break." + type.name().toLowerCase())
-								&& !e.getPlayer().hasPermission("luckyblock.break.*")) {
-							e.getPlayer().sendMessage(Message.CANT_BREAK_LUCKYBLOCK.getAsString().replace("%lb%",
-									type.isLoaded() ? type.get().getCustomName() : type.name()));
-							e.setCancelled(true);
-							return;
-						}
-						
-						if(type.isLoaded()) {
-							if(type.get().tryOpen(b, e.getPlayer(), false)) {
-								stand.remove();
-								b.setType(Material.AIR);
-							}
-						} else {
+					if(LBMain.getIsSk89q() && !LBWorldGuard.canBreak(b)) {
+						e.setCancelled(true);
+						return;
+					}
+					
+					if(LBMain.isBreakPermissions() && !e.getPlayer().hasPermission("luckyblock.break." + type.name().toLowerCase())
+							&& !e.getPlayer().hasPermission("luckyblock.break.*")) {
+						e.getPlayer().sendMessage(Message.CANT_BREAK_LUCKYBLOCK.getAsString().replace("%lb%",
+								type.isLoaded() ? type.get().getCustomName() : type.name()));
+						e.setCancelled(true);
+						return;
+					}
+					
+					if(type.isLoaded()) {
+						if(type.get().tryOpen(b, e.getPlayer(), false)) {
 							stand.remove();
 							b.setType(Material.AIR);
 						}
-						e.setCancelled(true);
-						
+					} else {
+						stand.remove();
+						b.setType(Material.AIR);
 					}
-				
-				//}
+					e.setCancelled(true);
+					
+				}
 				
 			}
 			

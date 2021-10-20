@@ -27,6 +27,8 @@
 # Command "/ntdluckyblock checkforupdates" will ignore this option
 #    (true - inform about updates; false - dont inform about updates)
 inform-about-update: true
+# Disable message when SpigotMC servers is unavailable
+web-unavailable-disable: false
 scheduled-update-check: true
 
 # LANGUAGE. You can find all languages list at https://github.com/Official-DenBeKKer/ntdluckyblock/wiki/Languages
@@ -83,5 +85,5 @@ enabled:
 - yellow
 
 # Dont change it
-config-level: "1.8"
+config-level: "1.9"
 debug: false

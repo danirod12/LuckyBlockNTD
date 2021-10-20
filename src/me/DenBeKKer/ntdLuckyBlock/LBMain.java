@@ -72,6 +72,7 @@ public class LBMain extends JavaPlugin {
 			warning_luckyblock_changed = false;
 	
 	public boolean dai_gui_get = false;
+	public boolean web_unavailable_disable = false;
 	
 	
 	// Last update date & Build number
@@ -200,6 +201,9 @@ public class LBMain extends JavaPlugin {
 			if(debug) debug("Loading Bukkit scheduler thread for delayed update check");
 			Bukkit.getScheduler().runTaskTimer(instance, () -> checkForUpdates(), 100, 100000);
 		} else Bukkit.getScheduler().runTaskLater(instance, () -> checkForUpdates(), 100);
+		
+		if(web_unavailable_disable)
+			log(Level.INFO, "\"Web-Server is unavailable\" message is disabled. My plugin page - " + updater.getResourceURL());
 		
 		boolean old = false;
 		try {
@@ -374,6 +378,12 @@ public class LBMain extends JavaPlugin {
 				config.get().set("config-level", "1.8");
 				config.save();
 			}
+			if(config.get().getString("config-level").equalsIgnoreCase("1.8")) {
+				getLogger().log(Level.INFO, "Your config level is 1.8, updating to 1.9...");
+				config.get().set("web-unavailable-disable", false);
+				config.get().set("config-level", "1.9");
+				config.save();
+			}
 		}
 		
 		brperm = config.get().getBoolean("break-permissions");
@@ -402,6 +412,7 @@ public class LBMain extends JavaPlugin {
 		
 		piston_fix = config.get().getBoolean("beta.pistonfix", true);
 		explosion_fix = config.get().getBoolean("beta.explosionfix", true);
+		web_unavailable_disable = config.get().getBoolean("web-unavailable-disable");
 		
 	}
 	
@@ -452,7 +463,8 @@ public class LBMain extends JavaPlugin {
 		try {
 			need_update = updater.checkForUpdates();
 		} catch (Exception e) {
-			instance.getLogger().log(Level.WARNING, "SpigotMC servers is unavailable... Check plugin page for updates " + updateLink());
+			if(!web_unavailable_disable)
+				instance.getLogger().log(Level.WARNING, "SpigotMC servers is unavailable... Check plugin page for updates " + updateLink());
 		}
 		
 		if(need_update) {
