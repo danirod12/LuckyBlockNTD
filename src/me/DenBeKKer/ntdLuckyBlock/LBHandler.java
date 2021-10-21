@@ -204,7 +204,8 @@ public class LBHandler implements Listener {
 	@EventHandler
 	public void broke(BlockBreakEvent e) throws LuckyBlockNotLoadedException {
 		
-		if(e.getBlock().getType().name().toUpperCase().contains("STAINED_GLASS")) {
+		if(e.getBlock().getType().name().toUpperCase().contains("STAINED_GLASS") ||
+				e.getBlock().getType().name().equalsIgnoreCase("TINTED_GLASS")) {
 			
 			for(LuckyBlockType type : LuckyBlockType.values()) {
 				
