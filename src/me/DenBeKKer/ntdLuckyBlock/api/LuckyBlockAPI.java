@@ -171,7 +171,8 @@ public class LuckyBlockAPI {
 	
 	public static boolean isLuckyBlock(Block b) {
 		
-		if(b.getType().name().toUpperCase().contains("STAINED_GLASS")) {
+		if(b.getType().name().toUpperCase().contains("STAINED_GLASS") ||
+				b.getType().name().equalsIgnoreCase("TINTED_GLASS")) {
 			
 			for(LuckyBlockType type : LuckyBlockType.values()) {
 				
@@ -205,7 +206,8 @@ public class LuckyBlockAPI {
 	
 	public static void breakLuckyBlock0(Block b, boolean ignore) {
 		
-		if(b.getType().name().toUpperCase().contains("STAINED_GLASS")) {
+		if(b.getType().name().toUpperCase().contains("STAINED_GLASS") ||
+				b.getType().name().equalsIgnoreCase("TINTED_GLASS")) {
 			
 			for(LuckyBlockType type : LuckyBlockType.values()) {
 				
@@ -256,7 +258,8 @@ public class LuckyBlockAPI {
 	
 	public static void breakLuckyBlock(Block b, Player p, boolean drop, boolean ignore) {
 		
-		if(b.getType().name().toUpperCase().contains("STAINED_GLASS")) {
+		if(b.getType().name().toUpperCase().contains("STAINED_GLASS") ||
+				b.getType().name().equalsIgnoreCase("TINTED_GLASS")) {
 			
 			for(LuckyBlockType type : LuckyBlockType.values()) {
 				
