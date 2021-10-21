@@ -302,7 +302,7 @@ public class LBHandler implements Listener {
 			
 			for(LuckyBlockType type : LuckyBlockType.values()) {
 				
-				if(b.getType() == type.getItem().getType()) {
+				if(b.getType() == type.getMaterial()) {
 					
 					ArmorStand stand = (ArmorStand) e.getRightClicked();
 					if(stand.getCustomName().equalsIgnoreCase(type.name() + ";" + (int)stand.getLocation().getX()

@@ -168,4 +168,8 @@ public class Config {
 	
 	public void need_save(boolean b) { need_save = b; }
 	
+	public File getFile() {
+		return new File(folder, name);
+	}
+	
 }

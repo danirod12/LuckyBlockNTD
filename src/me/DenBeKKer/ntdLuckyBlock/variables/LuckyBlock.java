@@ -36,16 +36,29 @@ import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_12;
 
 public class LuckyBlock {
 	
-	private LuckyBlockType type;
+	private final LuckyBlockType type;
 	
-	private String texture, name, custom_name, exception;
+	private final String exception, texture, name, custom_name;
 	private List<String> lore = new ArrayList<>();
 	private List<LuckyEntry> items = new ArrayList<>();
-	private boolean eco, shop, animation; private double price;
+	private final boolean eco, shop, animation, cdef, ccus;
+	private double price;
 	
-	private boolean cdef;
-	
-	private boolean ccus;
+	public void setPrice(double price, boolean update) {
+		this.price = price;
+		if(update) {
+			Config config = new Config(LBMain.getInstance(), LBMain.getFolder(), type.name().toLowerCase() + ".yml");
+			if(config.getFile().exists()) {
+				config.reload();
+				FileConfiguration file = config.get();
+				if(file != null) {
+					file.set("price", price);
+					config.save();
+					LBMain.log(Level.INFO, "Force updated LuckyBlock price");
+				}
+			}
+		}
+	}
 	
 	public int items$mapped() { return items.size(); }
 	public int items$mappedTwice() {
@@ -64,6 +77,8 @@ public class LuckyBlock {
 		FileConfiguration file = config.get();
 		if(!file.isSet("texture")) {
 			exception = "texture not set";
+			texture = name = custom_name = null;
+			eco = shop = animation = cdef = ccus = false;
 			return;
 		}
 		boolean b = false;
@@ -127,17 +142,9 @@ public class LuckyBlock {
 		cdef = file.getBoolean("craft.default");
 		ccus = file.getBoolean("craft.custom");
 		
-		for(String str : file.getConfigurationSection("drop").getKeys(false)) {
-			
-//			LuckyEntry collection = new LuckyEntry();
-//			for(String item : file.getStringList("drop." + str)) {
-//				LuckyDrop litem = LuckyBlockAPI.loadDrop(item);
-//				if(litem != null)
-//					collection.add(litem);
-//			}
+		for(String str : file.getConfigurationSection("drop").getKeys(false))
 			addIntent(LuckyBlockAPI.loadDropEntry(config, "drop." + str));
-			
-		}
+		exception = null;
 		
 	}
 	
@@ -294,29 +301,7 @@ public class LuckyBlock {
 							+ "RECEIVED INCORRECT BREAK API METHOD AND BECOME CORRUPTED [!]");
 	}
 	
-	public boolean tryOpen(Block block, boolean ignore) {
-		
-//		if(LBMain.isDebug())
-//			LBMain.debug("Try open LuckyBlock " + type.name()
-//				+ " (not presented, x:" + block.getX() + ", y:" + block.getY() + ", z:" + block.getZ() + ", " + ignore + ")");
-//		
-//		LuckyBlockBreakEvent event = new LuckyBlockBreakEvent(block, this);
-//		if(ignore) event.setIgnoreCancelled();
-//		Bukkit.getPluginManager().callEvent(event);
-//		if(event.isCancelled()) return false;
-//		
-//		if(animation)
-//			block.getWorld().playEffect(block.getLocation().add(0.5, 0.5, 0.5), effect, 10);
-//		
-//		block.setType(Material.AIR);
-//		for(LuckyDrop item : items.get((int)(Math.random() * items.size()))) {
-//			item.executeProtected(block, null);
-//		}
-//		return true;
-		
-		return tryOpen(block, null, ignore);
-		
-	}
+	public boolean tryOpen(Block block, boolean ignore) { return tryOpen(block, null, ignore); }
 	
 	public String getCustomName() { return custom_name; }
 	public boolean canBeShoped() { return shop; }

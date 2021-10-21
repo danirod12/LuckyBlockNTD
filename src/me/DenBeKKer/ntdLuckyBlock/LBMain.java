@@ -47,6 +47,7 @@ import me.DenBeKKer.ntdLuckyBlock.util.material.IMat;
 import me.DenBeKKer.ntdLuckyBlock.util.material.IMat.Mat;
 import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_12;
 import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_13;
+import me.DenBeKKer.ntdLuckyBlock.util.material.TintedMaterial;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
 import net.milkbowl.vault.economy.Economy;
 
@@ -76,8 +77,8 @@ public class LBMain extends JavaPlugin {
 	
 	
 	// Last update date & Build number
-	private static final String last_update = "20/10/2021";
-	private static final int build = 56;
+	private static final String last_update = "21/10/2021";
+	private static final int build = 57;
 	// Last update date & Build number
 	
 	
@@ -541,6 +542,8 @@ public class LBMain extends JavaPlugin {
 	
 	public enum LuckyBlockType {
 		
+		TINTED("a57a8c5ef6cafefa50eb308b97a6375b132def6fb6c50b107fbb39a28fa6c227"),
+		
 		BLACK("c7b187e38b407feabaf190879d98a67f4c7052f3201f72e44571f537ea89d4c7"),
 		BLUE("8534b17d2d3b5a64c57f5f080dd777945761d9f71d82e8f599f242976e4d0c05"),
 		BROWN("c133414759f9e5315156017023a8b1b31cfbf177dcafb0603b8e9d94036a23f1"),
@@ -558,7 +561,7 @@ public class LBMain extends JavaPlugin {
 		WHITE("c8e16e7ff13d3e30a3a2b835a86fd05ecbc08909f6056de1646fe25b3def9584"),
 		YELLOW("17bc1b64cba3dc4cefe4e121c3cdbbb0fa99aba0e113b5c916815fc9b304e636");
 		
-		private String texture;
+		private final String texture;
 		
 		LuckyBlockType(String texture) {
 			this.texture = texture;
@@ -566,25 +569,32 @@ public class LBMain extends JavaPlugin {
 		
 		public DyeColor asDye() {
 			
-			if(this == LuckyBlockType.LIGHT_GRAY && instance.factory instanceof Mat1_12) {
+			if(this == LuckyBlockType.LIGHT_GRAY && instance.factory instanceof Mat1_12)
 				return DyeColor.valueOf("SILVER");
-			}
+			if(this == LuckyBlockType.TINTED) return DyeColor.BLACK;
 			
 			return DyeColor.valueOf(this.name());
 			
 		}
 		
+		@Deprecated
 		public static LuckyBlockType parse(DyeColor dye) { return LuckyBlockType.valueOf(dye.name()); }
 		
-		public static LuckyBlockType parse(String color) {
+		public static LuckyBlockType parse(String name) {
 			try {
-				return LuckyBlockType.valueOf(color.toUpperCase());
+				return LuckyBlockType.valueOf(name.toUpperCase());
 			} catch(Exception ex) {
 				return null;
 			}
 		}
 		
+		public boolean isAvailable() {
+			return this == LuckyBlockType.TINTED ? TintedMaterial.isAvailable() : true;
+		}
+		
 		public String load() {
+			
+			if(!isAvailable()) return "LuckyBlock type \"" + name() + "\" is not available";
 			
 			Config config = new Config(instance, "configuration." + instance.factory.build(), folder, this.name().toLowerCase() + ".yml");
 			
@@ -610,9 +620,12 @@ public class LBMain extends JavaPlugin {
 			
 		}
 		
-		@Deprecated
-		public Material getMaterial() { return instance.factory.getGlass(asDye(), 1).getType(); }
+		public Material getMaterial() {
+			if(this == LuckyBlockType.TINTED) return TintedMaterial.getMaterial();
+			return instance.factory.getGlass(asDye(), 1).getType();
+		}
 		
+		@Deprecated
 		public ItemStack getItem() {
 			return instance.factory.getGlass(asDye(), 1);
 		}
@@ -654,6 +667,8 @@ public class LBMain extends JavaPlugin {
 		
 		@SuppressWarnings("deprecation")
 		public UUID getUUID() {
+			if(this == LuckyBlockType.TINTED)
+				return UUID.fromString("12345678-1234-1234-1234-000000000010");
 			return UUID.fromString("12345678-1234-1234-1234-00000000000" + Integer.toHexString(asDye().getWoolData()));
 		}
 		
