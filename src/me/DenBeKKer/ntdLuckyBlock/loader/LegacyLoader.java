@@ -55,7 +55,7 @@ public class LegacyLoader implements StringLoader {
 			case ITEM: {
 				ItemStack item = new ItemStack(Material.matchMaterial(sp[1].toUpperCase()), Integer.parseInt(sp[2]), (short) Integer.parseInt(sp[3]));
 				ItemMeta meta = item.getItemMeta();
-				if(sp.length >= 4) meta.setDisplayName(sp[4].replace("&", "\u00a7"));
+				if(sp.length >= 5) meta.setDisplayName(sp[4].replace("&", "\u00a7"));
 				for(int ench = 5; ench < sp.length - 1; ench += 2) {
 					try {
 						meta.addEnchant(Enchantment.getByName(sp[ench].toUpperCase()), Integer.parseInt(sp[ench + 1]), true);
