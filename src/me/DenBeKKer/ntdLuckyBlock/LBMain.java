@@ -77,8 +77,8 @@ public class LBMain extends JavaPlugin {
 	
 	
 	// Last update date & Build number
-	private static final String last_update = "21/10/2021";
-	private static final int build = 57;
+	private static final String last_update = "26/10/2021";
+	private static final int build = 59;
 	// Last update date & Build number
 	
 	
@@ -385,10 +385,17 @@ public class LBMain extends JavaPlugin {
 				config.get().set("config-level", "1.9");
 				config.save();
 			}
+			if(config.get().getString("config-level").equalsIgnoreCase("1.9")) {
+				getLogger().log(Level.INFO, "Your config level is 1.9, updating to 1.10...");
+				config.get().set("prevent-hat-luckyblocks", true);
+				config.get().set("config-level", "1.10");
+				config.save();
+			}
 		}
 		
 		brperm = config.get().getBoolean("break-permissions");
 		reduce = config.get().getBoolean("reduce-command-author-info");
+		p$s = config.get().getBoolean("prevent-hat-luckyblocks");
 		
 		verify_name = config.get().getBoolean("place.verify-name");
 		verify_uuid = config.get().getBoolean("place.verify-UUID");
@@ -722,6 +729,7 @@ public class LBMain extends JavaPlugin {
 	}
 	
 	private static HashMap<PlayerHead, ItemStack> heads = new HashMap<>();
+	private static boolean p$s;
 	
 	public static ItemStack getHead0(String url, String name, List<String> lore) {
 		ItemStack head = instance.factory.getItem(Mat.PLAYER_SKULL, 1);
@@ -808,5 +816,7 @@ public class LBMain extends JavaPlugin {
 		if(s.equalsIgnoreCase("  ") || s.equalsIgnoreCase(" ")) s = "";
 		return new DecimalFormat("#.##").format(d) + s;
 	}
+	
+	public static boolean isPreventSkulls() { return p$s; }
 	
 }

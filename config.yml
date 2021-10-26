@@ -39,6 +39,9 @@ beta:
   pistonfix: true
   explosionfix: true
 
+# Prevent players to equip luckyblocks to hat like armor context (skulls)
+prevent-hat-luckyblocks: true
+
 # Use more RAM, but dont spam author in commands (Only in first command uses)
 reduce-command-author-info: false
 
@@ -85,5 +88,5 @@ enabled:
 - yellow
 
 # Dont change it
-config-level: "1.9"
+config-level: "1.10"
 debug: false

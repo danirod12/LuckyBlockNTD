@@ -11,13 +11,19 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -74,6 +80,37 @@ public class LBHandler implements Listener {
 			
 		}
 		
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void inventory(InventoryClickEvent e) {
+		
+		if(!LBMain.isPreventSkulls()) return;
+		if(e.isCancelled() || e.getAction() == InventoryAction.NOTHING) return;
+		if(!(e.getWhoClicked() instanceof Player)) return;
+		
+		if(e.getSlotType() != SlotType.ARMOR && e.getSlotType() != SlotType.CONTAINER
+				&& e.getSlotType() != SlotType.QUICKBAR) return;
+		
+		if(!e.getInventory().getType().equals(InventoryType.CRAFTING) &&
+				!e.getInventory().getType().equals(InventoryType.PLAYER)) return;
+		final boolean shift = e.getClick().name().contains("SHIFT");
+		
+		final ItemStack stack = shift ? e.getCurrentItem() : e.getCursor();
+		if(LuckyBlockAPI.isLuckyBlock(stack, LBMain.isVerifyName(), LBMain.isVerifyUUID())) {
+			
+			if(shift) {
+				if(isAirOrNull(e.getWhoClicked().getInventory().getHelmet()))
+					e.setCancelled(true);
+				return;
+			} else if(e.getRawSlot() == 5) e.setCancelled(true);
+			
+		}
+		
+	}
+	
+	private boolean isAirOrNull(ItemStack helmet) {
+		return helmet == null || helmet.getType() == Material.AIR;
 	}
 	
 	@EventHandler

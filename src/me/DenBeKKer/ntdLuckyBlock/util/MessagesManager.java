@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -15,7 +16,7 @@ import me.DenBeKKer.ntdLuckyBlock.LBMain;
 public class MessagesManager {
 	
 	private static HashMap<Message, Object> map = new HashMap<>();
-	private final static Collection<String> languages = Arrays.asList("en", "ru", "zh_cn", "de");
+	private final static Collection<String> build_in_languages = Arrays.asList("en", "ru", "zh_cn", "de", "pl");
 	private static Config config = null;
 	public static File lang_folder = new File(LBMain.getInstance().getDataFolder() + File.separator + "lang");
 	
@@ -120,7 +121,21 @@ public class MessagesManager {
 		
 	}
 	
-	public static Collection<String> getLanguages() { return languages; }
+	/*
+	 * @deprecated
+	 * <p> Use {@link MessagesManager#getBuildInLanguages()} instead.
+	 */
+	@Deprecated
+	public static Collection<String> getLanguages() { return getBuildInLanguages(); }
+	
+	public static Collection<String> getBuildInLanguages() {
+		return build_in_languages;
+	}
+	
+	public static Collection<String> getActualLanguages() {
+		return Stream.of(lang_folder.listFiles()).map(n -> n.getName())
+				.filter(n -> n.endsWith(".yml")).map(n -> n.toLowerCase().substring(0, n.length() - 4)).collect(Collectors.toList());
+	}
 	
 	public static String getLanguage() {
 		if(config == null) return null;
@@ -129,7 +144,7 @@ public class MessagesManager {
 	
 	public static void reload(String lang) {
 		
-		for(String language : languages)
+		for(String language : build_in_languages)
 			new Config(LBMain.getInstance(), "configuration.lang", lang_folder, language + ".yml").copy(false);
 		
 		if(lang == null) lang = "en";
