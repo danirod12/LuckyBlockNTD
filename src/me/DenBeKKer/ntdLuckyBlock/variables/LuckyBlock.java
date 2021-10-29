@@ -244,7 +244,7 @@ public class LuckyBlock {
 			}
 			
 		}
-        return head;
+        return head.clone();
         
 	}
 	
