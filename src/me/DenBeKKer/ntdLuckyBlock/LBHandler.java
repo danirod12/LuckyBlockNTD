@@ -269,7 +269,9 @@ public class LBHandler implements Listener {
 							}
 							
 							if(type.isLoaded()) {
-								e.setDropItems(false);
+								try {
+									e.setDropItems(false);
+								} catch(Throwable v1_8) { }
 								if(type.get().tryOpen(e.getBlock(), e.getPlayer(), false))
 									stand.remove();
 								else e.setCancelled(true);
