@@ -4,8 +4,12 @@ author: DenBeKKer
 special:
   water_bucket: "&c&lOWNER &cDanirod_Gaming &7-> Check your inventory.. You have &9water bucket&f!"
 
+custom_items:
+  item_not_found: "&cItem for identifier %identifier% not found"
+  magic_wool: "&6&l&oMagic wool"
+
 craft:
-  allowed-one-layer: "&cCrafting is only possible with the use of each ingredient in a single amount for a separate slot"
+  allowed_one_layer: "&cCrafting is only possible with the use of each ingredient in a single amount for a separate slot"
 
 system:
   loading_config: "&fLoading configuration... "
@@ -22,6 +26,7 @@ system:
   cant_use_subcommand: "&cSorry, but you cant use this sub command."
   
   cant_break_color: "&cSorry, but you cant break luckyblock type &e%lb%"
+  cant_interact_world: "&cSorry, but you cant interact with LuckyBlocks in world &e%world%"
   
   cmd_lb_disabled: "&cLuckyBlock type &e%lb%&c disabled :("
   cmd_lb_not_found: "&cLuckyBlock type &e%lb%&c not found :("

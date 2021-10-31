@@ -5,6 +5,8 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import me.DenBeKKer.ntdLuckyBlock.util.ColorData;
+
 public class Mat1_12 implements IMat {
 	
 	@SuppressWarnings("deprecation")
@@ -13,8 +15,9 @@ public class Mat1_12 implements IMat {
 		switch(mat) {
 		
 			case PLAYER_SKULL: return new ItemStack(Material.valueOf("SKULL_ITEM"), i, (short)3);
-			case GRAY_PANE: return new ItemStack(Material.valueOf("STAINED_GLASS_PANE"), i, (short)7);
-			case BLACK_PANE: return new ItemStack(Material.valueOf("STAINED_GLASS_PANE"), i, (short)15);
+			case GRAY_PANE: return new ItemStack(Material.valueOf("STAINED_GLASS_PANE"), i, ColorData.GRAY.getData());
+			case BLACK_PANE: return new ItemStack(Material.valueOf("STAINED_GLASS_PANE"), i, ColorData.BLACK.getData());
+			case WHITE_WOOL: return new ItemStack(Material.valueOf("WOOL"), i, ColorData.WHITE.getData());
 			
 			default: return null;
 			

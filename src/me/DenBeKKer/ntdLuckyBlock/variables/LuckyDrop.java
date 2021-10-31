@@ -3,6 +3,10 @@ package me.DenBeKKer.ntdLuckyBlock.variables;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
+import me.DenBeKKer.ntdLuckyBlock.LBMain;
+import me.DenBeKKer.ntdLuckyBlock.variables.drop.EntityDrop;
+import me.DenBeKKer.ntdLuckyBlock.variables.drop.ItemDrop;
+
 public interface LuckyDrop {
 	
 	public enum LuckyItemType { LUCKY_BLOCK_ITEM, ITEM, SPECIAL, ENTITY, COMMAND, CONSOLE, MESSAGE, SCHEMATIC; }
@@ -38,6 +42,12 @@ public interface LuckyDrop {
 				execute(block);
 			else execute(block, target);
 		} catch(Throwable th) {
+			if(LBMain.h()) {
+				
+				if(this instanceof EntityDrop && th.getMessage().contains("Cannot spawn an entity")) return;
+				if(this instanceof ItemDrop && th.getMessage().toLowerCase().contains("air")) return;
+				
+			}
 			th.printStackTrace();
 		}
 		

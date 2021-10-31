@@ -32,6 +32,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockNotLoadedException;
+import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
 import me.DenBeKKer.ntdLuckyBlock.factory.LBFactory;
 import me.DenBeKKer.ntdLuckyBlock.recipe.CraftListener;
 import me.DenBeKKer.ntdLuckyBlock.recipe.LuckyRecipe;
@@ -49,6 +50,7 @@ import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_12;
 import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_13;
 import me.DenBeKKer.ntdLuckyBlock.util.material.TintedMaterial;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
+import me.DenBeKKer.ntdLuckyBlock.variables.WorldsList;
 import net.milkbowl.vault.economy.Economy;
 
 public class LBMain extends JavaPlugin {
@@ -62,6 +64,7 @@ public class LBMain extends JavaPlugin {
 	private static String version;
 	public SpigotUpdater updater;
 	public Economy eco;
+	public WorldsList w;
 	private static Collection<Player> reduce$list = new ArrayList<>();
 	
 	private static boolean reduce = false,
@@ -70,15 +73,17 @@ public class LBMain extends JavaPlugin {
 			schematics = false,
 			verify_name = true,
 			verify_uuid = true,
+			h = true,
 			warning_luckyblock_changed = false;
 	
 	public boolean dai_gui_get = false;
 	public boolean web_unavailable_disable = false;
+	public boolean reduce_convert = false;
 	
 	
 	// Last update date & Build number
-	private static final String last_update = "29/10/2021";
-	private static final int build = 61;
+	private static final String last_update = "31/10/2021";
+	private static final int build = 62;
 	// Last update date & Build number
 	
 	
@@ -93,6 +98,7 @@ public class LBMain extends JavaPlugin {
 	public static File getSchematicsFolder() { return schematics_folder; }
 	public static boolean getIsSk89q() { return schematics; }
 	public static boolean isReduced() { return reduce; }
+	public static boolean h() { return h; }
 	public static boolean isBreakPermissions() { return brperm; }
 	public static Collection<Player> getReduced() { return reduce$list; }
 	public static boolean isVerifyName() { return verify_name; }
@@ -267,7 +273,10 @@ public class LBMain extends JavaPlugin {
 			ex.printStackTrace();
 		}
 		
-		if(debug) debug("Loading Events");
+		debug("Loading custom items...");
+		CustomItemFactory.loadSystem();
+		
+		debug("Loading Events");
 		Bukkit.getPluginManager().registerEvents(new LBHandler(), this);
 		Bukkit.getPluginManager().registerEvents(new GuiManager(), this);
 		Bukkit.getPluginManager().registerEvents(new CraftListener(), this);
@@ -284,7 +293,7 @@ public class LBMain extends JavaPlugin {
 			
 		}, 120);
 		
-		if(debug) debug("Loading Command");
+		debug("Loading Command");
 		Bukkit.getPluginCommand("ntdluckyblock").setExecutor(new LBCommand());
 		ms = (System.currentTimeMillis() - ms);
 		log(Level.INFO, ChatColor.GREEN + "Enabled " + msIndicator(ms, 500, 1000) + "(took " + ms + " ms)" + ChatColor.GREEN + "... ");
@@ -391,10 +400,19 @@ public class LBMain extends JavaPlugin {
 				config.get().set("config-level", "1.10");
 				config.save();
 			}
+			if(config.get().getString("config-level").equalsIgnoreCase("1.10")) {
+				getLogger().log(Level.INFO, "Your config level is 1.10, updating to 1.11...");
+				config.get().set("disable-json-convert-checking", false);
+				config.get().set("skip-factory-broken", true);
+				config.get().set("config-level", "1.11");
+				config.save();
+			}
 		}
 		
 		brperm = config.get().getBoolean("break-permissions");
 		reduce = config.get().getBoolean("reduce-command-author-info");
+		reduce_convert = config.get().getBoolean("disable-json-convert-checking");
+		h = config.get().getBoolean("skip-factory-broken");
 		p$s = config.get().getBoolean("prevent-hat-luckyblocks");
 		
 		verify_name = config.get().getBoolean("place.verify-name");
@@ -421,6 +439,14 @@ public class LBMain extends JavaPlugin {
 		piston_fix = config.get().getBoolean("beta.pistonfix", true);
 		explosion_fix = config.get().getBoolean("beta.explosionfix", true);
 		web_unavailable_disable = config.get().getBoolean("web-unavailable-disable");
+		
+		Config worlds = new Config(this, null, "worlds");
+		worlds.copy(true);
+		w = new WorldsList(worlds.get().getString("mode"), worlds.get().getStringList("list"));
+		w.setBreakNoDrop(worlds.get().getBoolean("break-no-drop"));
+		w.setPlaceAdmins(worlds.get().getBoolean("place-admins"));
+		
+		CustomItemFactory.reloadSystem();
 		
 	}
 	
@@ -682,9 +708,9 @@ public class LBMain extends JavaPlugin {
 		@SuppressWarnings("deprecation")
 		public String toColorSymbol() { return toColor(this.asDye().getWoolData()); }
 		
-		public static LuckyBlockType random(boolean b) {
+		public static LuckyBlockType random(boolean loaded) {
 			
-			LuckyBlockType[] types = b ?
+			LuckyBlockType[] types = loaded ?
 					LuckyBlockType.map().keySet().toArray(new LuckyBlockType[LuckyBlockType.map().size()]) : LuckyBlockType.values();
 			
 			if(types.length == 0)

@@ -3,8 +3,12 @@ author: Luke
 special:
   water_bucket: '&c&lOWNER &cDanirod_Gaming &7-> Prüfe dein Inventar.. Du hast einen &9Wassereimer'
 
+custom_items:
+  item_not_found: - "&cGegenstand zum identifizieren %identifier% nicht gefunden"
+  magic_wool: "&6&l&oMagische Wolle"
+
 craft:
-  allowed-one-layer: "&cDu kannst das nur herstellen , wenn du nur eine Zutat von jeder Menge nimmst für eine Anzahl von Separaten slots"
+  allowed_one_layer: "&cDu kannst das nur herstellen , wenn du nur eine Zutat von jeder Menge nimmst für eine Anzahl von Separaten slots"
 
 system:
   loading_config: '&fLaden von der Konfiguration... '
@@ -18,6 +22,7 @@ system:
   cant_use_command: '&cSorry, aber du kannst keine Unterbefehle benutzten.'
   cant_use_subcommand: '&cSorry, aber du kannst diesen Unterbefehl nicht verwenden.'
   cant_break_color: '&cSorry, aber du kannst kein LuckyBlock-Type &e%lb% zerstören.'
+  cant_interact_world: "&cSorry, Aber du kannst mit LuckyBlocks in Welt &e%world% interagieren"
   cmd_lb_disabled: '&c Der LuckyBlock-Type &e%lb%&c ist deaktiviert  :('
   cmd_lb_not_found: '&c Der LuckyBlock-Type &e%lb%&c wurde nicht gefunden :('
   cmd_lb_received: '&a Du hast %amount% Luckyblocks erhalten &7(%lb% Farbe)'

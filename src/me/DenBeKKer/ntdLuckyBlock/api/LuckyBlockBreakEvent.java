@@ -11,10 +11,11 @@ import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
 public class LuckyBlockBreakEvent extends Event implements Cancellable {
 	
 	private static HandlerList handlers = new HandlerList();
-	private Block block;
-	private Player player;
-	private LuckyBlock luckyblock;
+	private final Block block;
+	private final Player player;
+	private final LuckyBlock luckyblock;
 	private boolean targetable = true, ignore = false, c = false;
+	private boolean drop = true;
 	
 	public LuckyBlockBreakEvent(Block b, Player p, LuckyBlock lb) {
 		block = b;
@@ -23,9 +24,8 @@ public class LuckyBlockBreakEvent extends Event implements Cancellable {
 	}
 	
 	public LuckyBlockBreakEvent(Block b, LuckyBlock lb) {
-		block = b;
+		this(b, null, lb);
 		targetable = false;
-		luckyblock = lb;
 	}
 	
 	public Block getBlock() {
@@ -44,6 +44,10 @@ public class LuckyBlockBreakEvent extends Event implements Cancellable {
 		return luckyblock;
 	}
 	
+	public void setDrop(boolean drop) {
+		this.drop = drop;
+	}
+	
 	public void setIgnoreCancelled() { ignore = true; }
 	
 	@Override
@@ -60,5 +64,7 @@ public class LuckyBlockBreakEvent extends Event implements Cancellable {
 	public static HandlerList getHandlerList() {
 	    return handlers;
 	}
+	
+	public boolean isDrop() { return drop; }
 	
 }

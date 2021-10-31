@@ -6,7 +6,7 @@ special:
   witch: "&5&lStara wiedźma"
 
 craft:
-  allowed-one-layer: "&cCrafting jest możliwy tylko przy użyciu każdego składnika w jednej ilości dla osobnego slotu"
+  allowed_one_layer: "&cCrafting jest możliwy tylko przy użyciu każdego składnika w jednej ilości dla osobnego slotu"
 
 system:
   loading_config: "&fWczytywanie konfiguracji... "

@@ -1,7 +1,6 @@
 package me.DenBeKKer.ntdLuckyBlock.variables;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
@@ -31,6 +30,8 @@ import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockBreakEvent;
 import me.DenBeKKer.ntdLuckyBlock.recipe.CraftTheory;
 import me.DenBeKKer.ntdLuckyBlock.recipe.LuckyRecipe;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
+import me.DenBeKKer.ntdLuckyBlock.util.MessagesManager.Message;
+import me.DenBeKKer.ntdLuckyBlock.util.material.IMat;
 import me.DenBeKKer.ntdLuckyBlock.util.material.IMat.Mat;
 import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_12;
 
@@ -199,14 +200,8 @@ public class LuckyBlock {
 		stand.getEquipment().setHelmet(getSkull());
 		
 		block.setType(type.getMaterial());
-		if(LBMain.getInstance().factory instanceof Mat1_12) {
-			try {
-				Method method = block.getClass().getDeclaredMethod("setData", byte.class);
-				method.invoke(block, type.asDye().getWoolData());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+		if(LBMain.getInstance().factory instanceof Mat1_12)
+			IMat.setData(block, type.asDye().getWoolData());
 		
 	}
 	
@@ -267,9 +262,26 @@ public class LuckyBlock {
 				+ ", x:" + block.getX() + ", y:" + block.getY() + ", z:" + block.getZ() + ", " + ignore + ")");
 		
 		LuckyBlockBreakEvent event = target == null ? new LuckyBlockBreakEvent(block, this) : new LuckyBlockBreakEvent(block, target, this);
+		
+		if(target != null) {
+			
+			if(!LBMain.getInstance().w.allowed_break(block.getWorld())) {
+				
+				if(LBMain.getInstance().w.getBreakNoDrop()) {
+					event.setDrop(false);
+				} else {
+					target.sendMessage(Message.CANT_INTERACT_WORLD.getAsString(true).replace("%world%", block.getWorld().getName()));
+					return false;
+				}
+				
+			}
+			
+		}
+		
 		if(ignore) event.setIgnoreCancelled();
 		Bukkit.getPluginManager().callEvent(event);
 		if(event.isCancelled()) return false;
+		if(!event.isDrop()) return true;
 		
 		if(animation)
 			block.getWorld().playEffect(block.getLocation().add(0.5, 0.5, 0.5), effect, 10);

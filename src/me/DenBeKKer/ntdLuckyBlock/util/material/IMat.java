@@ -1,7 +1,12 @@
 package me.DenBeKKer.ntdLuckyBlock.util.material;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -18,7 +23,8 @@ public interface IMat {
 //		BLACK_GLASS,
 //		
 		GRAY_PANE,
-		BLACK_PANE;
+		BLACK_PANE,
+		WHITE_WOOL;
 		
 	}
 	
@@ -35,5 +41,17 @@ public interface IMat {
 	public boolean isSkull(Material type);
 	
 	public ItemStack getItemInMainHand(Player player);
+	
+	public static void setData(Block block, byte data) {
+		try {
+			block.getClass().getDeclaredMethod("setData", byte.class).invoke(block, data);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public final static List<Material> WOOLS = Stream.of(Material.values())
+			.filter(n -> !n.name().startsWith("LEGACY_") && n.name().contains("WOOL"))
+			.collect(Collectors.toList());
 	
 }

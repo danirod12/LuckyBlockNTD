@@ -5,7 +5,7 @@ special:
   water_bucket: "&c&lOWNER &cDanirod_Gaming &7-> 检查你的背包.. 你获得了 &9水桶&f!"
 
 craft:
-  allowed-one-layer: "&c使用配方合成时单个格子只能放置一个方块"
+  allowed_one_layer: "&c使用配方合成时单个格子只能放置一个方块"
 
 system:
   loading_config: "&f配置文件载入中... "

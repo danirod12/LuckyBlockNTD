@@ -31,7 +31,7 @@ inform-about-update: true
 web-unavailable-disable: false
 scheduled-update-check: true
 
-# LANGUAGE. You can find all languages list at https://github.com/Official-DenBeKKer/ntdluckyblock/wiki/Languages
+# LANGUAGE. You can find all languages list at https://github.com/danirod12/ntdluckyblock/wiki/Languages
 language: en
 
 # Some beta features (true - enabled; false - not)
@@ -57,6 +57,12 @@ break-permissions: true
 # Disable author info for command /ntdluckyblock gui get
 # NOTE: This feature can be used only in premium plugin version
 disable-author-info-gui-get: false
+
+# Check for available convertions (Disable join spam message that you can convert items)
+disable-json-convert-checking: false
+
+# Skip exceptions for broken entry drops from LBFactory
+skip-factory-broken: true
 
 # verify-UUID checks if placing skull UUID matchs with origin LuckyBlock UUID
 # verify-name checks if placing skull dispalay name match with origin LuckyBlock name
@@ -88,5 +94,5 @@ enabled:
 - yellow
 
 # Dont change it
-config-level: "1.10"
+config-level: "1.11"
 debug: false

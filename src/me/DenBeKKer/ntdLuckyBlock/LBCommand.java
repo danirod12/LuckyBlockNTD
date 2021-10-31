@@ -2,7 +2,11 @@ package me.DenBeKKer.ntdLuckyBlock;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -15,6 +19,8 @@ import org.bukkit.inventory.ItemStack;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockNotLoadedException;
+import me.DenBeKKer.ntdLuckyBlock.customitem.BekkerItemStack;
+import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
 import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
 import me.DenBeKKer.ntdLuckyBlock.util.GuiManager;
 import me.DenBeKKer.ntdLuckyBlock.util.GuiManager.GuiType;
@@ -123,6 +129,30 @@ public class LBCommand implements CommandExecutor {
 				sender.sendMessage("\u00a7f=-= \u00a76SUPPORT & BUG REPORTING & FEATURE REQUESTING \u00a7f=-=");
 				return true;
 			}
+			case "getcustomitem": case "gci": {
+				
+				if(!(sender instanceof Player)) {
+					sender.sendMessage("Command only for players");
+					return true;
+				}
+				
+				if(args.length > 1) {
+					
+					if(!args[1].contains("-"))
+						args[1] = "ntdluckyblock-" + args[1];
+					
+					BekkerItemStack stack = CustomItemFactory.fetchCustomItem(args[1]);
+					if(stack == null) {
+						sender.sendMessage(Message.CI_NOT_FOUND.getAsString(true).replace("%identifier%", args[1]));
+						return true;
+					}
+					((Player)sender).getInventory().addItem(stack);
+					return true;
+					
+				}
+				break;
+				
+			}
 			case "convert": {
 				
 				if(sender instanceof Player && !((Player)sender).hasPermission("luckyblock.convert") && !((Player)sender).hasPermission("luckyblock.*")) {
@@ -219,6 +249,34 @@ public class LBCommand implements CommandExecutor {
 				
 				if(args.length > 1) {
 					
+					if(args[1].equalsIgnoreCase("random")) {
+						
+						List<LuckyBlockType> types = Stream.of(LuckyBlockType.values()).filter(n -> n.isLoaded())
+								.filter(n -> {
+									
+									return !(sender instanceof Player && LBMain.getInstance().config.get().getBoolean("permission-for-each-give-get") &&
+											!((Player)sender).hasPermission("luckyblock.get." + n.name().toLowerCase())
+											&& !((Player)sender).hasPermission("luckyblock.get.*"));
+									
+								}).collect(Collectors.toList());
+						if(types.size() == 0) {
+							sender.sendMessage(Message.CMD_NO_PERM_TO_COLOR.getAsString().replace("%lb%", "RANDOM"));
+							return true;
+						}
+						LuckyBlockType type = types.get(ThreadLocalRandom.current().nextInt(types.size()));
+						ItemStack stack = LuckyBlockType.map().get(type).getSkull();
+						int amount = 1;
+						try {
+							amount = Integer.parseInt(args[2]);
+						} catch(Exception ignored) {}
+						if(amount < 1) amount = 1;
+						stack.setAmount(amount);
+						((Player)sender).getInventory().addItem(stack);
+						sender.sendMessage(Message.CMD_LB_RECEIVED.getAsString().replace("%lb%", type.getCustomName()).replace("%amount%", String.valueOf(amount)));
+						return true;
+						
+					}
+					
 					try {
 						LuckyBlockType type = LuckyBlockType.valueOf(args[1].toUpperCase());
 						if(type == null) {
@@ -246,7 +304,6 @@ public class LBCommand implements CommandExecutor {
 						ItemStack item = type.get().getSkull();
 						item.setAmount(amount);
 						((Player)sender).getInventory().addItem(item);
-						item.setAmount(1);
 						sender.sendMessage(Message.CMD_LB_RECEIVED.getAsString().replace("%lb%", type.getCustomName()).replace("%amount%", String.valueOf(amount)));
 						return true;
 					} catch(Exception ex) {
@@ -385,6 +442,22 @@ public class LBCommand implements CommandExecutor {
 					if(p == null) {
 						sender.sendMessage(Message.CMD_PLAYER_NOT_FOUND.getAsString().replace("%player%", args[1]));
 						return true;
+					}
+					
+					if(args[2].toLowerCase().equalsIgnoreCase("RANDOM")) {
+						
+						LuckyBlockType type = LuckyBlockType.random(true);
+						ItemStack stack = LuckyBlockType.map().get(type).getSkull();
+						int amount = 1;
+						try {
+							amount = Integer.parseInt(args[2]);
+						} catch(Exception ignored) {}
+						if(amount < 1) amount = 1;
+						stack.setAmount(amount);
+						((Player)sender).getInventory().addItem(stack);
+						sender.sendMessage(Message.CMD_LB_RECEIVED.getAsString().replace("%lb%", type.getCustomName()).replace("%amount%", String.valueOf(amount)));
+						return true;
+						
 					}
 					
 					try {

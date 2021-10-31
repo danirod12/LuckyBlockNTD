@@ -26,9 +26,11 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -36,6 +38,8 @@ import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockNotLoadedException;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockPlaceEvent;
+import me.DenBeKKer.ntdLuckyBlock.customitem.BekkerItemStack;
+import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
 import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
 import me.DenBeKKer.ntdLuckyBlock.sk89q.LBWorldGuard;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
@@ -129,6 +133,20 @@ public class LBHandler implements Listener {
 	}
 	
 	@EventHandler
+	public void interact(PlayerInteractEvent e) {
+		
+		try {
+			if(e.getHand() != EquipmentSlot.HAND) return;
+		} catch(Throwable v1_8) {}
+		final ItemStack stack = e.getPlayer().getInventory().getItem(e.getPlayer().getInventory().getHeldItemSlot());
+		if(stack == null) return;
+		BekkerItemStack item = CustomItemFactory.fetchCustomItem(stack);
+		if(item == null) return;
+		item.handleInteract(e);
+		
+	}
+	
+	@EventHandler
 	public void quit(PlayerQuitEvent e) {
 		GuiManager.ramFix(e.getPlayer());
 		if(LBMain.getReduced() != null && LBMain.getReduced().contains(e.getPlayer()))
@@ -157,7 +175,7 @@ public class LBHandler implements Listener {
 				@Override
 				public void run() {
 					
-					if(e.getPlayer() != null && e.getPlayer().isOnline()) {
+					if(e.getPlayer().isOnline()) {
 						
 						LBMain.getInstance().informAboutUpdate(e.getPlayer());
 						
@@ -187,7 +205,7 @@ public class LBHandler implements Listener {
 			}, 50);
 			
 		}
-		if(e.getPlayer().hasPermission("luckyblock.convert")) {
+		if(e.getPlayer().hasPermission("luckyblock.convert") && !LBMain.getInstance().reduce_convert) {
 			
 			int convert = ConvertManager.getRequests();
 			if(convert > 0) {
@@ -220,6 +238,13 @@ public class LBHandler implements Listener {
 		if(type != null && type.isLoaded()) {
 			
 			if(e.isCancelled()) return;
+			if(!LBMain.getInstance().w.allowed_break(e.getBlock().getWorld())) {
+				if(!LBMain.getInstance().w.getPlaceAdmins() && e.getPlayer().hasPermission("luckyblock.place.disabled")) {
+					e.getPlayer().sendMessage(Message.CANT_INTERACT_WORLD.getAsString(true).replace("%world%", e.getBlock().getWorld().getName()));
+					e.setCancelled(true);
+					return;
+				}
+			}
 			
 			LuckyBlockPlaceEvent event = new LuckyBlockPlaceEvent(e.getBlock(), e.getPlayer(), type);
 			Bukkit.getPluginManager().callEvent(event);
@@ -235,6 +260,11 @@ public class LBHandler implements Listener {
 			return;
 			
 		}
+		final ItemStack stack = e.getItemInHand();
+		if(stack == null) return;
+		BekkerItemStack item = CustomItemFactory.fetchCustomItem(stack);
+		if(item == null) return;
+		item.handlePlace(e);
 		
 	}
 	
@@ -285,6 +315,12 @@ public class LBHandler implements Listener {
 			}
 			
 		}
+		
+		final ItemStack stack = e.getPlayer().getInventory().getItem(e.getPlayer().getInventory().getHeldItemSlot());
+		if(stack == null) return;
+		BekkerItemStack item = CustomItemFactory.fetchCustomItem(stack);
+		if(item == null) return;
+		item.handleBreak(e);
 		
 	}
 	
