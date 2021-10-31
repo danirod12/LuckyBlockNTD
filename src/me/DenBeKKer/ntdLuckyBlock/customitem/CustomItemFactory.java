@@ -41,7 +41,10 @@ public class CustomItemFactory {
 	
 	public static BekkerItemStack fetchCustomItem(ItemStack item) {
 		
-		final String identifier = Identifier.getTagString(Identifier.getTag(Identifier.asNMSCopy(item)), CustomItemFactory.TAG_IDENTIFIER_NAME);
+		final Object tag = Identifier.getTag(Identifier.asNMSCopy(item));
+		if(tag == null) return null;
+		
+		final String identifier = Identifier.getTagString(tag, CustomItemFactory.TAG_IDENTIFIER_NAME);
 		if(identifier == null) return null;
 		
 		for(BekkerItemStack stack : storage)

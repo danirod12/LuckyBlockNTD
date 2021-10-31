@@ -450,7 +450,7 @@ public class LBCommand implements CommandExecutor {
 						ItemStack stack = LuckyBlockType.map().get(type).getSkull();
 						int amount = 1;
 						try {
-							amount = Integer.parseInt(args[2]);
+							amount = Integer.parseInt(args[3]);
 						} catch(Exception ignored) {}
 						if(amount < 1) amount = 1;
 						stack.setAmount(amount);
