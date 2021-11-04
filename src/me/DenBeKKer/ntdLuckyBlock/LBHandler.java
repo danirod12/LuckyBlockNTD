@@ -2,6 +2,7 @@ package me.DenBeKKer.ntdLuckyBlock;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
@@ -11,6 +12,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LightningStrike;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,6 +21,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -40,6 +43,7 @@ import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockNotLoadedException;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockPlaceEvent;
 import me.DenBeKKer.ntdLuckyBlock.customitem.BekkerItemStack;
 import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
+import me.DenBeKKer.ntdLuckyBlock.customitem.HitEvent;
 import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
 import me.DenBeKKer.ntdLuckyBlock.sk89q.LBWorldGuard;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
@@ -48,6 +52,12 @@ import me.DenBeKKer.ntdLuckyBlock.util.MessagesManager.Message;
 
 @SuppressWarnings("deprecation")
 public class LBHandler implements Listener {
+	
+	private static HashMap<LightningStrike, Double> map;
+	
+	static {
+		map = new HashMap<>();
+	}
 	
 	@EventHandler
 	public void piston(BlockPistonExtendEvent e) {
@@ -81,6 +91,45 @@ public class LBHandler implements Listener {
 					return;
 				}
 			});
+			
+		}
+		
+	}
+	
+	@EventHandler
+	public void hit(EntityDamageByEntityEvent event) {
+		
+		victim:
+		if(event.getEntity() instanceof Player) {
+			
+			if(event.getDamager() instanceof LightningStrike &&
+					map.containsKey(event.getDamager())) {
+				
+				final double damage = map.get(event.getDamager());
+				map.remove(event.getDamager());
+				
+				event.setDamage(damage);
+				return;
+				
+			}
+			
+			final Player player = (Player) event.getEntity();
+			final ItemStack stack = player.getInventory().getItem(player.getInventory().getHeldItemSlot());
+			if(stack == null) break victim;
+			BekkerItemStack item = CustomItemFactory.fetchCustomItem(stack);
+			if(item == null) break victim;
+			item.handleHit(event.getDamager(), player, HitEvent.Type.VICTIM);
+			
+		}
+		damager:
+		if(event.getDamager() instanceof Player) {
+			
+			final Player player = (Player) event.getDamager();
+			final ItemStack stack = player.getInventory().getItem(player.getInventory().getHeldItemSlot());
+			if(stack == null) break damager;
+			BekkerItemStack item = CustomItemFactory.fetchCustomItem(stack);
+			if(item == null) break damager;
+			item.handleHit(player, event.getEntity(), HitEvent.Type.DAMAGER);
 			
 		}
 		
@@ -411,6 +460,10 @@ public class LBHandler implements Listener {
 			
 		}
 		
+	}
+	
+	public static void register(LightningStrike strike, double damage) {
+		map.put(strike, damage);
 	}
 	
 }

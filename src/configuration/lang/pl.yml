@@ -5,6 +5,10 @@ special:
   water_bucket: "&c&lWŁAŚCICIEL &cDanirod_Gaming &7-> Sprawdź swój ekwipunek.. Masz &9wiadro wody&f!"
   witch: "&5&lStara wiedźma"
 
+custom_item:
+  item_not_found: "Nie znaleziono identyfikatora %identifier%"
+  magic_wool: "&6&l&oMagiczna wełna"
+
 craft:
   allowed_one_layer: "&cCrafting jest możliwy tylko przy użyciu każdego składnika w jednej ilości dla osobnego slotu"
 
@@ -21,6 +25,7 @@ system:
   
   cant_use_command: "&cPrzepraszamy, ale nie możesz używać żadnych poleceń."
   cant_use_subcommand: "&cPrzepraszamy, ale nie możesz użyć tego polecenia."
+  cant_interact_world: "&cPrzykro mi, ale nie możesz interaktować z LuckyBlockami w świecie &e%world%"
   
   cant_break_color: "&cPrzepraszamy, ale nie możesz zniszczyć typu LuckyBlocka &e%lb%"
   

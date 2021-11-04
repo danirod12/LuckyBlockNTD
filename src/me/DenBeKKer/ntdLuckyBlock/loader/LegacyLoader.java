@@ -14,6 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.loader.StringLoader;
+import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop.LuckyItemType;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop.Special;
@@ -23,6 +24,7 @@ import me.DenBeKKer.ntdLuckyBlock.variables.drop.EntityDrop;
 import me.DenBeKKer.ntdLuckyBlock.variables.drop.ItemDrop;
 import me.DenBeKKer.ntdLuckyBlock.variables.drop.LuckyItemDrop;
 import me.DenBeKKer.ntdLuckyBlock.variables.drop.MessageDrop;
+import me.DenBeKKer.ntdLuckyBlock.variables.drop.RandomLuckyItemDrop;
 import me.DenBeKKer.ntdLuckyBlock.variables.drop.SchematicDrop;
 import me.DenBeKKer.ntdLuckyBlock.variables.drop.special.DiamondColumnSpecial;
 import me.DenBeKKer.ntdLuckyBlock.variables.drop.special.ExperienceExplosionSpecial;
@@ -72,7 +74,16 @@ public class LegacyLoader implements StringLoader {
 				int i = 1;
 				try { i = Integer.parseInt(sp[2]); } catch(Exception ignored) {}
 				if(i < 1) i = 1;
+				if(sp[1].equalsIgnoreCase("random")) return new RandomLuckyItemDrop(i);
 				return new LuckyItemDrop(LuckyBlockType.valueOf(sp[1].toUpperCase()), i);
+			}
+			case CUSTOM_ITEM: {
+				int i = 1;
+				try { i = Integer.parseInt(sp[2]); } catch(Exception ignored) {}
+				if(i < 1) i = 1;
+				ItemStack stack = CustomItemFactory.fetchCustomItem(sp[1].contains("-") ? sp[1] : "ntdluckyblock-" + sp[1]).clone();
+				stack.setAmount(i);
+				return new ItemDrop(stack);
 			}
 			case SCHEMATIC: {
 				

@@ -5,7 +5,11 @@ special:
 
 custom_items:
   item_not_found: - "&cGegenstand zum identifizieren %identifier% nicht gefunden"
+  list: "&7[&eLuckyBlock&7] &f:Liste der individuellen Items:"
   magic_wool: "&6&l&oMagische Wolle"
+  sword_of_justice: "&6&l&oSchwert der Gerechtigkeit"
+  axe_of_perun: "&6&l&oAxt von Perun"
+  carrot_corrupter: "&6&l&oKarottenverderber"
 
 craft:
   allowed_one_layer: "&cDu kannst das nur herstellen , wenn du nur eine Zutat von jeder Menge nimmst für eine Anzahl von Separaten slots"
@@ -29,14 +33,16 @@ system:
   cmd_lb_give: '&aDu hast %amount% Luckyblocks gegeben &7(%lb% Farbe)'
   cmd_help:
   - '&eLuckyBlock''s &fHilfs-Commands:'
-  - '&8 > &e/%label% erhalten <Farbe> [Menge] &f- erhalte LuckyBlock'
-  - '&8 > &e/%label% gebe <Spieler> <Farbe> [Menge] &f- gebe LuckyBlock'
-  - '&8 > &e/%label% gui <erhalte/bearbeite> &f- Öffne Gui'
-  - '&8 > &e/%label% liste &f- Liste von LuckyBlock-Typen'
-  - '&8 > &e/%label% neuladen &f- lade alle configs neu'
-  - '&8 > &e/%label% checkfürupdates &f- check für Updates'
+  - '&8 > &e/%label% get <Farbe> [Menge] &f- erhalte LuckyBlock'
+  - '&8 > &e/%label% give <Spieler> <Farbe> [Menge] &f- gebe LuckyBlock'
+  - '&8 > &e/%label% gui <get/edit> &f- Öffne Gui'
+  - '&8 > &e/%label% list &f- Liste von LuckyBlock-Typen'
+  - '&8 > &e/%label% relaod &f- lade alle configs neu'
+  - '&8 > &e/%label% checkforupdates &f- check für Updates'
   - '&8 > &e/%label% support &f- erhalte Autorenkontakte'
   - "&8 > &6/%label% iteminfo &f- Infos von dem Itemin deiner Hand"
+  - "&8 > &6/%label% getcustomitem <id> &f- bekomme individuelles Item"
+  - "&8 > &6/%label% customitemlist &f- Liste der individuellen Items"
   cmd_player_not_found: '&cSpieler &e%player%&c nnicht gefunden :('
   cmd_no_perm_to_color: '&cDu hast keine Permission für Farbe %lb%'
 

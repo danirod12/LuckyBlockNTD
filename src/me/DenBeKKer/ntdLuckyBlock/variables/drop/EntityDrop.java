@@ -15,6 +15,10 @@ public class EntityDrop implements LuckyDrop {
 	@SerializedName(value = "amount")
 	private int amount;
 	
+	/**
+	 * @param entity - EntityType of entity that will be spawned
+	 * @param amount - Entity amount that will be spawned
+	 */
 	public EntityDrop(EntityType entity, int amount) {
 		this.entity = entity;
 		this.amount = amount;

@@ -14,6 +14,9 @@ public class CommandDrop implements LuckyDrop {
 	@SerializedName(value = "command")
 	private String cmd;
 	
+	/**
+	 * @param command - Command that will be executed
+	 */
 	public CommandDrop(String command) {
 		this.cmd = command;
 	}

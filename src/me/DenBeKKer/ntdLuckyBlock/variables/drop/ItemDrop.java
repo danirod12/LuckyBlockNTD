@@ -13,6 +13,9 @@ public class ItemDrop implements LuckyDrop {
 	@SerializedName(value = "item")
 	private ItemStack item;
 	
+	/**
+	 * @param item - ItemStack will be dropped
+	 */
 	public ItemDrop(ItemStack item) {
 		this.item = item;
 	}

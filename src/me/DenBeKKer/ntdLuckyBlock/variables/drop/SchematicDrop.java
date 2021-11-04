@@ -20,6 +20,11 @@ public class SchematicDrop implements LuckyDrop, CustomSaver {
 	@SerializedName(value = "file")
 	private File file;
 	
+	/**
+	 * 
+	 * @param file - Schematic file
+	 * @param b - Place at block (true); Place at player (false)
+	 */
 	public SchematicDrop(File file, boolean b) {
 		this.b = b;
 		this.file = file;

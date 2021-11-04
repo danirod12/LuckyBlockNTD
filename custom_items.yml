@@ -1,3 +1,14 @@
 
-magic-wool:
+magic_wool:
+  enabled: true
+
+sword_of_justice:
+  enabled: true
+  heal: 2.0
+
+axe_of_perun:
+  enabled: true
+  damage: 0.5
+
+carrot_corrupter:
   enabled: true

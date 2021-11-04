@@ -1,16 +1,12 @@
 package me.DenBeKKer.ntdLuckyBlock.variables.drop;
 
-import java.util.logging.Level;
-
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.gson.annotations.SerializedName;
 
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
-import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockNotLoadedException;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
 
 public class LuckyItemDrop implements LuckyDrop {
@@ -20,6 +16,11 @@ public class LuckyItemDrop implements LuckyDrop {
 	@SerializedName(value = "amount")
 	private int amount;
 	
+	/**
+	 * 
+	 * @param type - LuckyBlockType will be dropped
+	 * @param amount - LuckyBlock's amount
+	 */
 	public LuckyItemDrop(LuckyBlockType type, int amount) {
 		this.item = type;
 		this.amount = amount;
@@ -31,17 +32,9 @@ public class LuckyItemDrop implements LuckyDrop {
 	@Override
 	public void execute(Block b) {
 		if(item.isLoaded()) {
-			ItemStack item;
-			try {
-				item = this.item.get().getSkull();
-			} catch (LuckyBlockNotLoadedException e) {
-				e.printStackTrace();
-				LBMain.log(Level.WARNING, "LuckyBlock " + this.item.name() + " not loaded, internal exception");
-				return;
-			}
+			ItemStack item = LuckyBlockType.map().get(this.item).getSkull();
 			item.setAmount(amount);
-			b.getWorld().dropItem(b.getLocation().add(0.5, 0.4, 0.5), item);
-			item.setAmount(1);
+			b.getWorld().dropItem(b.getLocation().add(.5, .4, .5), item);
 		}
 	}
 	

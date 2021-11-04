@@ -9,7 +9,7 @@ import me.DenBeKKer.ntdLuckyBlock.variables.drop.ItemDrop;
 
 public interface LuckyDrop {
 	
-	public enum LuckyItemType { LUCKY_BLOCK_ITEM, ITEM, SPECIAL, ENTITY, COMMAND, CONSOLE, MESSAGE, SCHEMATIC; }
+	public enum LuckyItemType { LUCKY_BLOCK_ITEM, ITEM, SPECIAL, ENTITY, COMMAND, CONSOLE, MESSAGE, SCHEMATIC, CUSTOM_ITEM; }
 	
 	public enum Special {
 		
@@ -42,7 +42,7 @@ public interface LuckyDrop {
 				execute(block);
 			else execute(block, target);
 		} catch(Throwable th) {
-			if(LBMain.h()) {
+			if(LBMain.h() && th.getMessage() != null) {
 				
 				if(this instanceof EntityDrop && th.getMessage().contains("Cannot spawn an entity")) return;
 				if(this instanceof ItemDrop && th.getMessage().toLowerCase().contains("air")) return;

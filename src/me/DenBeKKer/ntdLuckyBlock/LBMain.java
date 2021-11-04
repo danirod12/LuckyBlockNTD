@@ -82,8 +82,8 @@ public class LBMain extends JavaPlugin {
 	
 	
 	// Last update date & Build number
-	private static final String last_update = "31/10/2021";
-	private static final int build = 63;
+	private static final String last_update = "04/11/2021";
+	private static final int build = 64;
 	// Last update date & Build number
 	
 	
@@ -264,6 +264,9 @@ public class LBMain extends JavaPlugin {
 			
 		}
 		
+		debug("Loading custom items...");
+		CustomItemFactory.loadSystem();
+		
 		Hooks.print();
 		system_load();
 		
@@ -272,9 +275,6 @@ public class LBMain extends JavaPlugin {
 		} catch(Exception ex) {
 			ex.printStackTrace();
 		}
-		
-		debug("Loading custom items...");
-		CustomItemFactory.loadSystem();
 		
 		debug("Loading Events");
 		Bukkit.getPluginManager().registerEvents(new LBHandler(), this);
@@ -445,7 +445,6 @@ public class LBMain extends JavaPlugin {
 		w = new WorldsList(worlds.get().getString("mode"), worlds.get().getStringList("list"));
 		w.setBreakNoDrop(worlds.get().getBoolean("break-no-drop"));
 		w.setPlaceAdmins(worlds.get().getBoolean("place-admins"));
-		
 		CustomItemFactory.reloadSystem();
 		
 	}

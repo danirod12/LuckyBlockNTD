@@ -12,6 +12,10 @@ public class MessageDrop implements LuckyDrop {
 	@SerializedName(value = "message")
 	private String cmd;
 	
+	/**
+	 * 
+	 * @param message - Message will be sended
+	 */
 	public MessageDrop(String message) {
 		this.cmd = message.replace("&", "\u00a7");
 	}

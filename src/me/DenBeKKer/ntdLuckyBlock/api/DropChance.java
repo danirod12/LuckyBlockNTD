@@ -8,10 +8,22 @@ import me.DenBeKKer.ntdLuckyBlock.variables.LuckyEntry;
 
 public enum DropChance {
 	
-	LOWEST(1), // ~5.3%
-	LOW(3),    // ~15.8%
-	MEDIUM(5), // ~26.3%
-	HIGH(10);  // ~52.6%
+	/**
+	 * ~5.3%
+	 */
+	LOWEST(1),
+	/**
+	 * ~15.8%
+	 */
+	LOW(3),
+	/**
+	 * ~26.3%
+	 */
+	MEDIUM(5),
+	/**
+	 * ~52.6%
+	 */
+	HIGH(10);
 	
 	private final int i;
 	

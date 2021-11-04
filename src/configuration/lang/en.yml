@@ -6,7 +6,12 @@ special:
 
 custom_items:
   item_not_found: "&cItem for identifier %identifier% not found"
+  list: "&7[&eLuckyBlock&7] &fCustom items list:"
+  
   magic_wool: "&6&l&oMagic wool"
+  sword_of_justice: "&6&l&oSword Of Justice"
+  axe_of_perun: "&6&l&oAxe of Perun"
+  carrot_corrupter: "&6&l&oCarrot Corrupter"
 
 craft:
   allowed_one_layer: "&cCrafting is only possible with the use of each ingredient in a single amount for a separate slot"
@@ -44,6 +49,8 @@ system:
   - "&8 > &e/%label% checkforupdates &f- check for updates"
   - "&8 > &e/%label% support &f- get author contacts"
   - "&8 > &6/%label% iteminfo &f- Item in hand info"
+  - "&8 > &6/%label% getcustomitem <id> &f- Get custom item"
+  - "&8 > &6/%label% customitemlist &f- List custom items"
   
   cmd_player_not_found: "&cPlayer &e%player%&c not found :("
   cmd_no_perm_to_color: "&cNo permission for color %lb%"

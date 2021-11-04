@@ -129,10 +129,44 @@ public class LBCommand implements CommandExecutor {
 				sender.sendMessage("\u00a7f=-= \u00a76SUPPORT & BUG REPORTING & FEATURE REQUESTING \u00a7f=-=");
 				return true;
 			}
-			case "getcustomitem": case "gci": {
+			case "listcustomitem": case "customitemlist": case "lci": {
 				
 				if(!(sender instanceof Player)) {
 					sender.sendMessage("Command only for players");
+					return true;
+				}
+				
+				final Player player = (Player) sender;
+				if(!player.hasPermission("luckyblock.customitemslist") && !player.hasPermission("luckyblock.*")) {
+					sender.sendMessage(Message.CANT_USE_SUB.getAsString());
+					return true;
+				}
+				
+				player.sendMessage(Message.CI_LIST.getAsString(true));
+				
+				Collection<BekkerItemStack> collection = CustomItemFactory.copy();
+				if(collection.size() == 0) {
+					player.sendMessage("\u00a77 >>\u00a7c List is empty");
+				} else {
+					for(BekkerItemStack stack : collection) {
+						final String plugin = stack.getIdentifier().toString().split("-")[0];
+						player.sendMessage("\u00a78 > \u00a7e" + stack.getIdentifier().toString()
+								+ " \u00a77(" + (plugin.equalsIgnoreCase(LBMain.getInstance().getName()) ? "\u00a76" : "\u00a7e") + plugin + "\u00a77)");
+					}
+				}
+				return true;
+				
+			}
+			case "getcustomitem": case "customitemget": case "gci": {
+				
+				if(!(sender instanceof Player)) {
+					sender.sendMessage("Command only for players");
+					return true;
+				}
+				
+				final Player player = (Player) sender;
+				if(!player.hasPermission("luckyblock.customitemsget") && !player.hasPermission("luckyblock.*")) {
+					sender.sendMessage(Message.CANT_USE_SUB.getAsString());
 					return true;
 				}
 				
@@ -191,6 +225,12 @@ public class LBCommand implements CommandExecutor {
 				
 				if(item == null) {
 					player.sendMessage("\u00a7cTake item in hand for this command");
+					return true;
+				}
+				
+				BekkerItemStack stack = CustomItemFactory.fetchCustomItem(item);
+				if(stack != null) {
+					player.sendMessage("\u00a7eCustom item. Identifier - \u00a76" + stack.getIdentifier().toString());
 					return true;
 				}
 				
@@ -327,7 +367,6 @@ public class LBCommand implements CommandExecutor {
 				long ms = System.currentTimeMillis();
 				
 				LBMain.getInstance().loadConfig();
-//				MessagesManager.reload(LBMain.getInstance().config.get().getString("language"));
 				LBMain.getInstance().system_load();
 				try {
 					GuiManager.init();
