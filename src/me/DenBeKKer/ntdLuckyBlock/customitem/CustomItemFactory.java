@@ -47,6 +47,16 @@ public class CustomItemFactory {
 		if(stack != null) storage.add(stack);
 	}
 	
+	public static boolean compare(ItemStack item, String identifier) {
+		
+		final Object tag = Identifier.getTag(Identifier.asNMSCopy(item));
+		if(tag == null) return false;
+		
+		final String id = Identifier.getTagString(tag, CustomItemFactory.TAG_IDENTIFIER_NAME);
+		return id != null && id.equalsIgnoreCase(identifier);
+		
+	}
+	
 	public static BekkerItemStack fetchCustomItem(ItemStack item) {
 		
 		final Object tag = Identifier.getTag(Identifier.asNMSCopy(item));
