@@ -79,6 +79,8 @@ public class LBMain extends JavaPlugin {
 	public boolean dai_gui_get = false;
 	public boolean web_unavailable_disable = false;
 	public boolean reduce_convert = false;
+	private static String NMS_VERSION;
+	public static String getNMSVersion() { return NMS_VERSION; }
 	
 	
 	// Last update date & Build number
@@ -160,6 +162,9 @@ public class LBMain extends JavaPlugin {
 	public void onEnable() {
 		
 		long ms = System.currentTimeMillis();
+		
+		NMS_VERSION = Bukkit.getServer().getClass().getPackage().getName();
+		NMS_VERSION = NMS_VERSION.substring(NMS_VERSION.lastIndexOf('.') + 1);
 		
 		instance = this;
 		updater = new SpigotUpdater(instance, 92026);
