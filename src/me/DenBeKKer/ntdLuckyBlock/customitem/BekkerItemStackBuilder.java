@@ -85,9 +85,7 @@ public class BekkerItemStackBuilder {
 		return this;
 	}
 	
-	public BekkerItemStack build() {
-		
-		if(identifier == null) return null;
+	public ItemStack asItemStack() {
 		
 		try {
 			
@@ -103,7 +101,7 @@ public class BekkerItemStackBuilder {
 			if(he) meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 			item.setItemMeta(meta);
 			
-			return new BekkerItemStack(identifier, item, events);
+			return item;
 			
 		} catch(Throwable th) {
 			LBMain.log(Level.WARNING, "Report this to author (danirod12):");
@@ -111,6 +109,13 @@ public class BekkerItemStackBuilder {
 			LBMain.log(Level.WARNING, new Gson().toJson(this));
 			return null;
 		}
+		
+	}
+	
+	public BekkerItemStack build() {
+		
+		if(identifier == null) return null;
+		return new BekkerItemStack(identifier, asItemStack(), events);
 		
 	}
 	
