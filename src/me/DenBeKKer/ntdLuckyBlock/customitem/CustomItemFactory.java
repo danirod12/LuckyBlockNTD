@@ -155,7 +155,7 @@ public class CustomItemFactory {
 						
 					}));
 		}
-		if(isEnabled(custom_items, "carrot_corrupter")) {
+		if(LBMain.getInstance().factory instanceof Mat1_13 && isEnabled(custom_items, "carrot_corrupter")) {
 			register(new BekkerItemStackBuilder(Material.CARROT).addUnsafeEnchantment(Enchantment.DURABILITY, 1)
 					.hideEnchantments().setSerialID("carrot_corrupter").setName(Message.CI_CARROT_CORRUPTER.getAsString(true))
 					.registerEvent(ItemEvent.HIT, new HitEvent() {
@@ -230,7 +230,7 @@ public class CustomItemFactory {
 	
 	public static void reloadSystem() {
 		
-		if(storage != null) {
+		if(storage != null && LBMain.getInstance().factory != null) {
 			
 			new ArrayList<>(storage).stream().filter(item -> {
 				

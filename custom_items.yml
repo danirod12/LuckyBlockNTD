@@ -9,6 +9,3 @@ sword_of_justice:
 axe_of_perun:
   enabled: true
   damage: 0.5
-
-carrot_corrupter:
-  enabled: true

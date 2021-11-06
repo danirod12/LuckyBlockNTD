@@ -15,19 +15,28 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.util.Pair;
 
 public class BekkerItemStackBuilder {
 	
+	@SerializedName(value = "material")
 	private final Material material;
+	@SerializedName(value = "name")
 	private String name;
+	@SerializedName(value = "lore")
 	private List<String> lore = new ArrayList<>();
+	@SerializedName(value = "enchantments")
 	private List<Pair<Enchantment, Integer>> enchantments = new ArrayList<>();
+	@SerializedName(value = "events")
 	private HashMap<ItemEvent<?>, Object> events = new HashMap<>();
+	@SerializedName(value = "data")
 	private short data = -54;
+	@SerializedName(value = "identifier")
 	private Identifier identifier;
+	@SerializedName(value = "hide_enchantments")
 	private boolean he = false;
 	
 	@SuppressWarnings("deprecation")
