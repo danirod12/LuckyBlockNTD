@@ -6,20 +6,30 @@ import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
+import me.DenBeKKer.ntdLuckyBlock.LBMain;
+
 public class Identifier {
 	
-	private static Class<?> CraftItemStack;
+	private static Class<?> CraftItemStack, NBTTagCompound;
 	
 	static {
 		
-		String version = Bukkit.getServer().getClass().getPackage().getName();
-		version = version.substring(version.lastIndexOf('.') + 1);
-		
 		try {
-			CraftItemStack = Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
+			CraftItemStack = Class.forName("org.bukkit.craftbukkit." + LBMain.getNMSVersion() + ".inventory.CraftItemStack");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			Bukkit.shutdown();
+		}
+		
+		try {
+			NBTTagCompound = Class.forName("net.minecraft.server." + LBMain.getNMSVersion() + ".nbt.NBTTagCompound");
+		} catch(Exception ex) {
+			try {
+				NBTTagCompound = Class.forName("net.minecraft.nbt.NBTTagCompound");
+			} catch(Exception ex2) {
+				ex.printStackTrace();
+				ex2.printStackTrace();
+			}
 		}
 		
 	}
@@ -33,6 +43,7 @@ public class Identifier {
 	public ItemStack apply(ItemStack origin) {
 		Object nmsItem = asNMSCopy(origin);
 		Object tag = getTag(nmsItem);
+		if(tag == null) tag = newTag();
 		setTagString(tag, CustomItemFactory.TAG_IDENTIFIER_NAME, identifier);
 		setTag(nmsItem, tag);
 		return asBukkitCopy(nmsItem);
@@ -68,6 +79,16 @@ public class Identifier {
 		try {
 			return (ItemStack) CraftItemStack.getMethod("asBukkitCopy", nmsItem.getClass()).invoke(null, nmsItem);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	@SuppressWarnings("deprecation")
+	public static Object newTag() {
+		try {
+			return NBTTagCompound.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 			return null;
 		}
