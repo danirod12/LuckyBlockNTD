@@ -14,7 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.PlayerHead;
-import me.DenBeKKer.ntdLuckyBlock.util.MessagesManager.Message;
+import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 
 public class CountGui implements Listener {
 	

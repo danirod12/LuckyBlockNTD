@@ -22,9 +22,9 @@ import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockNotLoadedException;
 import me.DenBeKKer.ntdLuckyBlock.customitem.BekkerItemStack;
 import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
 import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
-import me.DenBeKKer.ntdLuckyBlock.util.GuiManager;
-import me.DenBeKKer.ntdLuckyBlock.util.GuiManager.GuiType;
-import me.DenBeKKer.ntdLuckyBlock.util.MessagesManager.Message;
+import me.DenBeKKer.ntdLuckyBlock.util.manager.GuiManager;
+import me.DenBeKKer.ntdLuckyBlock.util.manager.GuiManager.GuiType;
+import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
 
 public class LBCommand implements CommandExecutor {
@@ -38,7 +38,7 @@ public class LBCommand implements CommandExecutor {
 			
 			sender.sendMessage("\u00a77[\u00a7eLuckyBlock\u00a77] \u00a7fThis server is running \u00a7eLuckyBlock NTD\u00a7f plugin");
 			sender.sendMessage("\u00a78 • \u00a7fRunning version - \u00a7e" + LBMain.getVersion() + " \u00a77(" +
-					(LBMain.isPremium() ? "\u00a7bprem" : "\u00a7afree") + "\u00a77) " + (LBMain.needUpdate() ?
+					(LBMain.isPremium() ? "\u00a7bprem" : "\u00a7afree") + "\u00a77) " + (LBMain.getUpdater().need_update$cache() ?
 							"\u00a7c\u00a7l[!] \u00a7cVersion " + LBMain.getInstance().updater.getLatestVersion() + " available"
 								: "\u00a7aLatest version"));
 			sender.sendMessage("\u00a78 • \u00a7fBuild - \u00a7e" + LBMain.getBuild() + "\u00a7f, last update - \u00a7e" + LBMain.getLastUpdate());
@@ -102,8 +102,8 @@ public class LBCommand implements CommandExecutor {
 				}
 				
 				sender.sendMessage("\u00a7aChecking for updates...");
-				LBMain.getInstance().checkForUpdates(true);
-				if(!LBMain.needUpdate())
+				LBMain.checkForUpdates(true);
+				if(!LBMain.getUpdater().need_update$cache())
 					sender.sendMessage("\u00a7aNo updates were found :(");
 				return true;
 			}

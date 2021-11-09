@@ -1,4 +1,4 @@
-package me.DenBeKKer.ntdLuckyBlock.util;
+package me.DenBeKKer.ntdLuckyBlock.util.manager;
 
 import java.io.File;
 import java.util.Arrays;
@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
+import me.DenBeKKer.ntdLuckyBlock.util.Config;
 
 public class MessagesManager {
 	

@@ -9,7 +9,7 @@ import org.bukkit.inventory.CraftingInventory;
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockNotLoadedException;
-import me.DenBeKKer.ntdLuckyBlock.util.MessagesManager.Message;
+import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 
 public class CraftListener implements Listener {
 	
@@ -21,7 +21,9 @@ public class CraftListener implements Listener {
 		try {
 			player = (Player) e.getViewers().get(0);
 		} catch(Exception ex) {
-			ex.printStackTrace();
+			if(LBMain.isDebug())
+				ex.printStackTrace();
+			return;
 		}
 		
 		boolean debug = LBMain.isDebug();

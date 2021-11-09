@@ -22,7 +22,7 @@ public class Identifier {
 		}
 		
 		try {
-			NBTTagCompound = Class.forName("net.minecraft.server." + LBMain.getNMSVersion() + ".nbt.NBTTagCompound");
+			NBTTagCompound = Class.forName("net.minecraft.server." + LBMain.getNMSVersion() + ".NBTTagCompound");
 		} catch(Exception ex) {
 			try {
 				NBTTagCompound = Class.forName("net.minecraft.nbt.NBTTagCompound");

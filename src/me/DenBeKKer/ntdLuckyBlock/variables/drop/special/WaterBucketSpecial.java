@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.google.gson.annotations.SerializedName;
 
-import me.DenBeKKer.ntdLuckyBlock.util.MessagesManager.Message;
+import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
 
 public class WaterBucketSpecial implements LuckyDrop {

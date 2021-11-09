@@ -10,18 +10,17 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LightningStrike;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import me.DenBeKKer.ntdLuckyBlock.LBHandler;
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
-import me.DenBeKKer.ntdLuckyBlock.util.MessagesManager.Message;
+import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import me.DenBeKKer.ntdLuckyBlock.util.material.IMat;
 import me.DenBeKKer.ntdLuckyBlock.util.material.IMat.Mat;
 import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_13;
@@ -147,9 +146,9 @@ public class CustomItemFactory {
 						@Override
 						public void execute(Entity a, Entity v, HitEvent.Type type) {
 							
-							if(type != HitEvent.Type.DAMAGER) return;
-							LightningStrike strike = v.getWorld().strikeLightning(v.getLocation());
-							LBHandler.register(strike, damage);
+							if(type != HitEvent.Type.DAMAGER || !(v instanceof Damageable)) return;
+							v.getWorld().strikeLightningEffect(v.getLocation());
+							((Damageable)v).damage(damage);
 							
 						}
 						

@@ -7,7 +7,11 @@ special:
 
 custom_item:
   item_not_found: "Nie znaleziono identyfikatora %identifier%"
+  list: "&7[&eLuckyBlock&7] &fLista niestandardowych przedmiotów:"
   magic_wool: "&6&l&oMagiczna wełna"
+  sword_of_justice: "&6&l&oMiecz Sprawiedliwości"
+  axe_of_perun: "&6&l&oTopór Perun"
+  carrot_corrupter: "&6&l&oZepsucie marchewki"
 
 craft:
   allowed_one_layer: "&cCrafting jest możliwy tylko przy użyciu każdego składnika w jednej ilości dla osobnego slotu"
@@ -45,6 +49,8 @@ system:
   - "&8 > &e/%label% checkforupdates &f- sprawdź aktualizacje."
   - "&8 > &e/%label% support &f- zdobądź kontakty do autora."
   - "&8 > &6/%label% iteminfo &f- Informacje o przedmiocie w łapce."
+  - "&8 > &6/%label% getcustomitem <id> &f- Uzyskaj niestandardowy przedmiot"
+  - "&8 > &6/%label% customitemlist &f- Lista niestandardowych przedmiotów"
   
   cmd_player_not_found: "&cNie znaleziono gracza &e%player%&c :("
   cmd_no_perm_to_color: "&cBrak uprawnień dla koloru %lb%"

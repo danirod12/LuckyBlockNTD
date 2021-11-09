@@ -6,6 +6,10 @@ special:
 
 craft:
   allowed_one_layer: "&c使用配方合成时单个格子只能放置一个方块"
+  list: "&7[&eLuckyBlock&7] &f自定义物品列表:"
+  sword_of_justice: "&6&l&o正义之剑"
+  axe_of_perun: "&6&l&o秘鲁之斧"
+  carrot_corrupter: "&6&l&o胡萝卜坍缩者"
 
 system:
   loading_config: "&f配置文件载入中... "
@@ -38,6 +42,8 @@ system:
   - "&8 > &e/%label% reload &f- 重载配置文件"
   - "&8 > &e/%label% checkforupdates &f- 检查更新"
   - "&8 > &e/%label% support &f- 取得作者联系"
+  - "&8 > &6/%label% getcustomitem <id> &f- 获取自定义物品"
+  - "&8 > &6/%label% customitemlist &f- 列出自定义物品"
   
   cmd_player_not_found: "&c玩家 &e%player%&c 未找到 :("
   cmd_no_perm_to_color: "&c颜色 %lb% 无权限"

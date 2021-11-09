@@ -39,11 +39,11 @@ import me.DenBeKKer.ntdLuckyBlock.recipe.LuckyRecipe;
 import me.DenBeKKer.ntdLuckyBlock.sk89q.LBWorldEdit;
 import me.DenBeKKer.ntdLuckyBlock.sk89q.LBWorldGuard;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
-import me.DenBeKKer.ntdLuckyBlock.util.GuiManager;
-import me.DenBeKKer.ntdLuckyBlock.util.MessagesManager;
-import me.DenBeKKer.ntdLuckyBlock.util.MessagesManager.Message;
 import me.DenBeKKer.ntdLuckyBlock.util.Metrics;
 import me.DenBeKKer.ntdLuckyBlock.util.SpigotUpdater;
+import me.DenBeKKer.ntdLuckyBlock.util.manager.GuiManager;
+import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager;
+import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import me.DenBeKKer.ntdLuckyBlock.util.material.IMat;
 import me.DenBeKKer.ntdLuckyBlock.util.material.IMat.Mat;
 import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_12;
@@ -56,7 +56,6 @@ import net.milkbowl.vault.economy.Economy;
 public class LBMain extends JavaPlugin {
 	
 	private static LBMain instance;
-	private static boolean need_update = false;
 	public Config config;
 	public IMat factory;
 	private static boolean inform;
@@ -84,8 +83,8 @@ public class LBMain extends JavaPlugin {
 	
 	
 	// Last update date & Build number
-	private static final String last_update = "04/11/2021";
-	private static final int build = 64;
+	private static final String last_update = "09/11/2021";
+	private static final int build = 65;
 	// Last update date & Build number
 	
 	
@@ -167,7 +166,7 @@ public class LBMain extends JavaPlugin {
 		NMS_VERSION = NMS_VERSION.substring(NMS_VERSION.lastIndexOf('.') + 1);
 		
 		instance = this;
-		updater = new SpigotUpdater(instance, 92026);
+		updater = new SpigotUpdater(instance, 92026, "LuckyBlock");
 		folder = new File(instance.getDataFolder() + File.separator + "luckyblocks");
 		folder.mkdirs();
 		version = getDescription().getVersion();
@@ -211,8 +210,8 @@ public class LBMain extends JavaPlugin {
 //		checkForUpdates();
 		if(config.get().getBoolean("scheduled-update-check")) {
 			if(debug) debug("Loading Bukkit scheduler thread for delayed update check");
-			Bukkit.getScheduler().runTaskTimer(instance, () -> checkForUpdates(), 100, 100000);
-		} else Bukkit.getScheduler().runTaskLater(instance, () -> checkForUpdates(), 100);
+			Bukkit.getScheduler().runTaskTimer(instance, () -> checkForUpdates(), 100L, 72000L);
+		} else Bukkit.getScheduler().runTaskLater(instance, () -> checkForUpdates(), 100L);
 		
 		if(web_unavailable_disable)
 			log(Level.INFO, "\"Web-Server is unavailable\" message is disabled. My plugin page - " + updater.getResourceURL());
@@ -441,8 +440,6 @@ public class LBMain extends JavaPlugin {
 			
 		}
 		
-		piston_fix = config.get().getBoolean("beta.pistonfix", true);
-		explosion_fix = config.get().getBoolean("beta.explosionfix", true);
 		web_unavailable_disable = config.get().getBoolean("web-unavailable-disable");
 		
 		Config worlds = new Config(this, null, "worlds");
@@ -494,44 +491,10 @@ public class LBMain extends JavaPlugin {
 		
 	}
 	
+	@Deprecated
 	public void checkForUpdates() { checkForUpdates(false); }
 	
-	public void checkForUpdates(boolean b) {
-		
-		try {
-			need_update = updater.checkForUpdates();
-		} catch (Exception e) {
-			if(!web_unavailable_disable)
-				instance.getLogger().log(Level.WARNING, "SpigotMC servers is unavailable... Check plugin page for updates " + updateLink());
-		}
-		
-		if(need_update) {
-			
-			log(Level.INFO, ChatColor.GOLD + "╔");
-			log(Level.INFO, ChatColor.GOLD + "║   " + ChatColor.RED + ChatColor.BOLD + "[!] " + ChatColor.GREEN +
-					"New plugin version for " + ChatColor.YELLOW + "LuckyBlock" + ChatColor.GREEN + " has been released!");
-			log(Level.INFO,  ChatColor.GOLD + "║ " + ChatColor.GREEN + "Your current version is " + ChatColor.GRAY + 
-					version + " (outdated)" + ChatColor.GREEN + ". New version is " + ChatColor.RED +  updater.getLatestVersion());
-			log(Level.INFO, ChatColor.GOLD + "║ " + ChatColor.GREEN + "Check " + ChatColor.AQUA + LBMain.updateLink() +
-					ChatColor.GREEN + " for more details");
-			log(Level.INFO, ChatColor.GOLD + "╚");
-			
-			if(inform || b) for(Player p : Bukkit.getOnlinePlayers()) {
-			
-			if(p.hasPermission("luckyblock.update")) informAboutUpdate(p);
-			
-		} }
-		
-	}
-	
-	public void informAboutUpdate(Player p) {
-		p.sendMessage("\u00a76╔");
-		p.sendMessage("\u00a76║   \u00a7c\u00a7l[!] \u00a7aNew plugin version for \u00a7eLuckyBlock\u00a7a has been released!");
-		p.sendMessage("\u00a76║ \u00a7aYour current version is \u00a77"
-				+ LBMain.getVersion() + "\u00a7a. New version is \u00a7c" + LBMain.getInstance().updater.getLatestVersion());
-		p.sendMessage("\u00a76║ \u00a7aCheck \u00a7b" + LBMain.updateLink() + "  \u00a76\u00a7l^_^");
-		p.sendMessage("\u00a76╚");
-	}
+	public static void checkForUpdates(boolean inform) { getUpdater().check$announce(!instance.web_unavailable_disable || debug, LBMain.inform || inform); }
 	
 	private static HashMap<LuckyBlockType, LuckyBlock> map = new HashMap<>();
 	
@@ -830,15 +793,12 @@ public class LBMain extends JavaPlugin {
 		
 	}
 	
-	public static boolean needUpdate() { return need_update; }
+	@Deprecated
 	public static boolean inform() { return inform; }
+	public static boolean isInformAbountUpdates() { return inform; }
 	
+	@Deprecated
 	public static String updateLink() { return instance.updater.getResourceURL(); }
-	
-	private boolean piston_fix = false, explosion_fix = false;
-	public boolean pistonFix() { return piston_fix; }
-	
-	public boolean explosionFix() { return explosion_fix; }
 	
 	public String getVaultPrice(double d) {
 		String s = "";
@@ -848,5 +808,6 @@ public class LBMain extends JavaPlugin {
 	}
 	
 	public static boolean isPreventSkulls() { return p$s; }
+	public static SpigotUpdater getUpdater() { return instance.updater; }
 	
 }

@@ -30,7 +30,7 @@ import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockBreakEvent;
 import me.DenBeKKer.ntdLuckyBlock.recipe.CraftTheory;
 import me.DenBeKKer.ntdLuckyBlock.recipe.LuckyRecipe;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
-import me.DenBeKKer.ntdLuckyBlock.util.MessagesManager.Message;
+import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import me.DenBeKKer.ntdLuckyBlock.util.material.IMat;
 import me.DenBeKKer.ntdLuckyBlock.util.material.IMat.Mat;
 import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_12;

@@ -2,7 +2,6 @@ package me.DenBeKKer.ntdLuckyBlock;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
@@ -12,7 +11,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LightningStrike;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -47,53 +45,37 @@ import me.DenBeKKer.ntdLuckyBlock.customitem.HitEvent;
 import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
 import me.DenBeKKer.ntdLuckyBlock.sk89q.LBWorldGuard;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
-import me.DenBeKKer.ntdLuckyBlock.util.GuiManager;
-import me.DenBeKKer.ntdLuckyBlock.util.MessagesManager.Message;
+import me.DenBeKKer.ntdLuckyBlock.util.manager.GuiManager;
+import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 
 @SuppressWarnings("deprecation")
 public class LBHandler implements Listener {
 	
-	private static HashMap<LightningStrike, Double> map;
-	
-	static {
-		map = new HashMap<>();
-	}
-	
 	@EventHandler
 	public void piston(BlockPistonExtendEvent e) {
-		
-		if(LBMain.getInstance().pistonFix()) {
-			e.getBlocks().forEach(n -> {
-				if(LuckyBlockAPI.isLuckyBlock(n)) {
-					e.setCancelled(true);
-					return;
-				}
-			});
-			
-			if(e.getDirection() == BlockFace.UP) {
-				if(LuckyBlockAPI.isLuckyBlock(e.getBlock().getLocation().add(0, 2, 0).getBlock())) {
-					e.setCancelled(true);
-					return;
-				}
+		e.getBlocks().forEach(n -> {
+			if(LuckyBlockAPI.isLuckyBlock(n)) {
+				e.setCancelled(true);
+				return;
 			}
-			
-		}
+		});
 		
+		if(e.getDirection() == BlockFace.UP) {
+			if(LuckyBlockAPI.isLuckyBlock(e.getBlock().getLocation().add(0, 2, 0).getBlock())) {
+				e.setCancelled(true);
+				return;
+			}
+		}
 	}
 	
 	@EventHandler
 	public void piston(BlockPistonRetractEvent e) {
-		
-		if(LBMain.getInstance().pistonFix()) {
-			e.getBlocks().forEach(n -> {
-				if(LuckyBlockAPI.isLuckyBlock(n)) {
-					e.setCancelled(true);
-					return;
-				}
-			});
-			
-		}
-		
+		e.getBlocks().forEach(n -> {
+			if(LuckyBlockAPI.isLuckyBlock(n)) {
+				e.setCancelled(true);
+				return;
+			}
+		});
 	}
 	
 	@EventHandler
@@ -101,17 +83,6 @@ public class LBHandler implements Listener {
 		
 		victim:
 		if(event.getEntity() instanceof Player) {
-			
-			if(event.getDamager() instanceof LightningStrike &&
-					map.containsKey(event.getDamager())) {
-				
-				final double damage = map.get(event.getDamager());
-				map.remove(event.getDamager());
-				
-				event.setDamage(damage);
-				return;
-				
-			}
 			
 			final Player player = (Player) event.getEntity();
 			final ItemStack stack = player.getInventory().getItem(player.getInventory().getHeldItemSlot());
@@ -204,31 +175,25 @@ public class LBHandler implements Listener {
 	
 	@EventHandler
 	public void explosion(EntityExplodeEvent e) {
-		
-		if(LBMain.getInstance().explosionFix())
-			new ArrayList<>(e.blockList()).forEach(n -> {
-				if(LuckyBlockAPI.isLuckyBlock(n)) {
-					e.blockList().remove(n);
-				}
-			});
-		
+		new ArrayList<>(e.blockList()).forEach(n -> {
+			if(LuckyBlockAPI.isLuckyBlock(n)) {
+				e.blockList().remove(n);
+			}
+		});
 	}
 	
 	@EventHandler
 	public void join(PlayerJoinEvent e) {
 		
-		if(e.getPlayer().hasPermission("luckyblock.update") && LBMain.needUpdate() && LBMain.inform()) {
+		if(e.getPlayer().hasPermission("luckyblock.update") && LBMain.getUpdater().need_update$cache() && LBMain.inform()) {
 			
 			new BukkitRunnable() {
 
 				@Override
 				public void run() {
 					
-					if(e.getPlayer().isOnline()) {
-						
-						LBMain.getInstance().informAboutUpdate(e.getPlayer());
-						
-					}
+					if(e.getPlayer().isOnline())
+						LBMain.getUpdater().announce(e.getPlayer());
 					
 				}
 				
@@ -460,10 +425,6 @@ public class LBHandler implements Listener {
 			
 		}
 		
-	}
-	
-	public static void register(LightningStrike strike, double damage) {
-		map.put(strike, damage);
 	}
 	
 }

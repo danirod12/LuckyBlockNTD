@@ -34,11 +34,6 @@ scheduled-update-check: true
 # LANGUAGE. You can find all languages list at https://github.com/danirod12/ntdluckyblock/wiki/Languages
 language: en
 
-# Some beta features (true - enabled; false - not)
-beta:
-  pistonfix: true
-  explosionfix: true
-
 # Prevent players to equip luckyblocks to hat like armor context (skulls)
 prevent-hat-luckyblocks: true
 

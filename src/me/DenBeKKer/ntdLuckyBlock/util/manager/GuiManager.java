@@ -1,4 +1,4 @@
-package me.DenBeKKer.ntdLuckyBlock.util;
+package me.DenBeKKer.ntdLuckyBlock.util.manager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +21,7 @@ import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.PlayerHead;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockNotLoadedException;
-import me.DenBeKKer.ntdLuckyBlock.util.MessagesManager.Message;
+import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import me.DenBeKKer.ntdLuckyBlock.util.material.IMat.Mat;
 import me.DenBeKKer.ntdLuckyBlock.variables.ConfirmEvent;
 import me.DenBeKKer.ntdLuckyBlock.variables.CountGui;
