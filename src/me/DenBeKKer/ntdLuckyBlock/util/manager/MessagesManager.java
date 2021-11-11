@@ -17,7 +17,7 @@ import me.DenBeKKer.ntdLuckyBlock.util.Config;
 public class MessagesManager {
 	
 	private static HashMap<Message, Object> map = new HashMap<>();
-	private final static Collection<String> build_in_languages = Arrays.asList("en", "ru", "zh_cn", "de", "pl");
+	private final static Collection<String> build_in_languages = Arrays.asList("en", "ru", "zh_cn", "de", "pl", "pt_br");
 	private static Config config = null;
 	public static File lang_folder = new File(LBMain.getInstance().getDataFolder() + File.separator + "lang");
 	
