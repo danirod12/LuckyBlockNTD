@@ -26,17 +26,14 @@ public class CraftListener implements Listener {
 			return;
 		}
 		
-		boolean debug = LBMain.isDebug();
-		if(debug)
-			LBMain.debug("PrepareItemCraftEvent, player - " + (player == null ? "null" : player.getName()));
+		LBMain.debug("PrepareItemCraftEvent, player - " + (player == null ? "null" : player.getName()));
 		
 		for(LuckyBlockType type : LuckyBlockType.map().keySet()) {
 			
 			for(LuckyRecipe recipe : type.getRecipes()) {
 				
 				if(recipe == null || !recipe.hasAccess(player)) {
-					if(debug)
-						LBMain.debug("No permission for craft");
+					LBMain.debug("No permission for craft");
 					continue;
 				}
 				
@@ -53,8 +50,7 @@ public class CraftListener implements Listener {
 						}
 					}
 					
-					if(debug)
-						LBMain.debug("Inserting new craft result");
+					LBMain.debug("Inserting new craft result");
 					inventory.setResult(recipe.getResult());
 					return;
 				}

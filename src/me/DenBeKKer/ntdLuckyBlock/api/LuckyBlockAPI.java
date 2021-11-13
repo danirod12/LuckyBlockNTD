@@ -247,6 +247,7 @@ public class LuckyBlockAPI {
 						
 						if(en.getType() != EntityType.ARMOR_STAND) continue;
 						ArmorStand stand = (ArmorStand) en;
+						if(stand.getCustomName() == null) continue;
 						if(stand.getCustomName().equalsIgnoreCase(type.name() + ";" + (int)stand.getLocation().getX()
 								+ ";" + (int)stand.getLocation().getY() + ";" + (int)stand.getLocation().getZ())
 								&& stand.getLocation().add(0, 1.2, 0).getBlock().equals(b)) {
@@ -291,6 +292,7 @@ public class LuckyBlockAPI {
 					
 					if(en.getType() != EntityType.ARMOR_STAND) continue;
 					ArmorStand stand = (ArmorStand) en;
+					if(stand.getCustomName() == null) continue;
 					if(stand.getCustomName().equalsIgnoreCase(type.name() + ";" + (int)stand.getLocation().getX()
 							+ ";" + (int)stand.getLocation().getY() + ";" + (int)stand.getLocation().getZ())
 							&& stand.getLocation().add(0, 1.2, 0).getBlock().equals(b)) {
@@ -349,6 +351,7 @@ public class LuckyBlockAPI {
 					
 					if(en.getType() != EntityType.ARMOR_STAND) continue;
 					ArmorStand stand = (ArmorStand) en;
+					if(stand.getCustomName() == null) continue;
 					if(stand.getCustomName().equalsIgnoreCase(type.name() + ";" + (int)stand.getLocation().getX()
 							+ ";" + (int)stand.getLocation().getY() + ";" + (int)stand.getLocation().getZ())
 							&& stand.getLocation().add(0, 1.2, 0).getBlock().equals(b)) {

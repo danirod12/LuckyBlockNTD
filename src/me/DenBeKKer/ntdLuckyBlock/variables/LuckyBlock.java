@@ -1,8 +1,6 @@
 package me.DenBeKKer.ntdLuckyBlock.variables;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
@@ -16,11 +14,8 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 
 import com.google.gson.Gson;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
@@ -30,9 +25,9 @@ import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockBreakEvent;
 import me.DenBeKKer.ntdLuckyBlock.recipe.CraftTheory;
 import me.DenBeKKer.ntdLuckyBlock.recipe.LuckyRecipe;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
+import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import me.DenBeKKer.ntdLuckyBlock.util.material.IMat;
-import me.DenBeKKer.ntdLuckyBlock.util.material.IMat.Mat;
 import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_12;
 
 public class LuckyBlock {
@@ -136,7 +131,7 @@ public class LuckyBlock {
 		if(file.isSet("lore"))
 			for(String str : file.getStringList("lore")) {
 				
-				lore.add(str.replace("&", "\u00a7"));
+				lore.add(Misc.setColors(str));
 				
 		}
 		
@@ -179,7 +174,6 @@ public class LuckyBlock {
 		placeBlock(block, false);
 	}
 	
-	@SuppressWarnings("deprecation")
 	public void placeBlock(Block block, boolean check) {
 		
 		if(check && !LBMain.getInstance().factory.isSkull(block.getType())) {
@@ -195,13 +189,14 @@ public class LuckyBlock {
 		stand.setCustomNameVisible(false);
 		stand.setGravity(false);
 		stand.setVisible(false);
+		stand.setMarker(true);
 		stand.setCustomName(type.name() + ";" + (int)stand.getLocation().getX() + ";" + (int)stand.getLocation().getY() + ";" + (int)stand.getLocation().getZ());
 		
 		stand.getEquipment().setHelmet(getSkull());
 		
 		block.setType(type.getMaterial());
 		if(LBMain.getInstance().factory instanceof Mat1_12)
-			IMat.setData(block, type.asDye().getWoolData());
+			IMat.setData(block, (byte) type.asColor().getData());
 		
 	}
 	
@@ -213,32 +208,12 @@ public class LuckyBlock {
 	
 	private List<DropChance> chances = new ArrayList<>();
 	
+	public void resetSkull() { head = null; }
+	
 	public ItemStack getSkull() {
 		
-		if(head == null) {
-			head = LBMain.getInstance().factory.getItem(Mat.PLAYER_SKULL, 1);
-			
-			if(LBMain.isDebug()) LBMain.debug("Loading skull texture");
-			try {
-				SkullMeta headMeta = (SkullMeta) head.getItemMeta();
-		        GameProfile profile = new GameProfile(type.getUUID(), null);
-		        byte[] encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}", "http://textures.minecraft.net/texture/" + texture).getBytes());
-		        profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
-		        Field profileField = null;
-				if(LBMain.isDebug()) LBMain.debug("Performing GameProfile");
-		        profileField = headMeta.getClass().getDeclaredField("profile");
-		        profileField.setAccessible(true);
-		        profileField.set(headMeta, profile);
-		        
-		        headMeta.setDisplayName(name.replace("&", "\u00a7"));
-		        headMeta.setLore(lore);
-		        
-		        head.setItemMeta(headMeta);
-			} catch(Throwable t) {
-				t.printStackTrace();
-			}
-			
-		}
+		if(head == null)
+			head = LBMain.getHead0("http://textures.minecraft.net/texture/" + texture, Misc.setColors(name), lore, type.getUUID());
         return head.clone();
         
 	}

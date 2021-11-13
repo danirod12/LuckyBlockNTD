@@ -13,6 +13,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
+import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 
 public class MessagesManager {
 	
@@ -45,6 +46,7 @@ public class MessagesManager {
 		CMD_LB_DISABLED("system.cmd_lb_disabled"),
 		CMD_LB_NOT_FOUND("system.cmd_lb_not_found"),
 		CMD_LB_RECEIVED("system.cmd_lb_received"),
+		CMD_CI_RECEIVED("system.cmd_ci_received"),
 		CMD_LB_GIVE("system.cmd_lb_give"),
 		CMD_PLAYER_NOT_FOUND("system.cmd_player_not_found"),
 		GUI_GET_TITLE("gui.get.title"),
@@ -60,8 +62,21 @@ public class MessagesManager {
 		GUI_COUNT_ADD("gui.count.add"),
 		GUI_EXIT("gui.exit"),
 		CMD_NO_PERM_TO_COLOR("system.cmd_no_perm_to_color"),
+		CMD_NO_PERM("system.cmd_no_perm"),
 		CANT_BREAK_LUCKYBLOCK("system.cant_break_color"),
-		CMD_HELP("system.cmd_help");
+		CMD_HELP("system.cmd.help_title"),
+		CMD_GET("system.cmd.get"),
+		CMD_CUSTOMITEMGET("system.cmd.customitemget"),
+		CMD_GIVE("system.cmd.give"),
+		CMD_GUI("system.cmd.gui"),
+		CMD_ITEMINFO("system.cmd.iteminfo"),
+		CMD_LIST("system.cmd.list"),
+		CMD_CUSTOMITEMSLIST("system.cmd.customitemslist"),
+		CMD_RELOAD("system.cmd.reload"),
+		CMD_SUPPORT("system.cmd.support"),
+		CMD_CHECKFORUPDATES("system.cmd.checkforupdates"),
+		CMD_DESTROY("system.cmd.destroy"),
+		CMD_DESTROYED_LB("system.cmd_destroyed_lb");
 		
 		private String path;
 		
@@ -80,7 +95,7 @@ public class MessagesManager {
 		public String getAsString() { return getAsString(true); }
 		
 		public String getAsString(boolean formated) {
-			return (map.containsKey(this) && map.get(this) != null) ? (formated ? ((String)map.get(this)).replace("&", "\u00a7") : (String)map.get(this))
+			return (map.containsKey(this) && map.get(this) != null) ? (formated ? Misc.setColors((String) map.get(this)) : (String)map.get(this))
 					: "\u00a7c<<Translation for path \u00a7e<" + this.path + ">\u00a7c is missed>>";
 		}
 		
@@ -114,7 +129,7 @@ public class MessagesManager {
 		private void load() { load(true); }
 		
 		public List<String> getAsList(boolean formated) {
-			return formated ? getAsList().stream().map(n -> n.replace("&", "\u00a7")).collect(Collectors.toList()) : getAsList();
+			return formated ? getAsList().stream().map(n -> Misc.setColors(n)).collect(Collectors.toList()) : getAsList();
 		}
 		
 		@SuppressWarnings("unchecked")

@@ -35,10 +35,7 @@ public class LuckyRecipe {
 	
 	public boolean verify(ItemStack[] origin) {
 		
-		boolean debug = LBMain.isDebug();
-		
 		if(origin.length != 9) {
-			if(debug) LBMain.debug("Provided " + origin.length + " items (Need 9)");
 			return false;
 		}
 		
@@ -50,7 +47,7 @@ public class LuckyRecipe {
 				return false;
 			}
 			if(!items[i].isMatch(origin[i])) {
-				if(debug) LBMain.debug("Item " + items[i].toString() + " not matchs " + (origin[i] == null ? "null" : origin[i].getType().name()));
+				LBMain.debug("Item " + items[i].toString() + " not matchs " + (origin[i] == null ? "null" : origin[i].getType().name()));
 				return false;
 			}
 		}

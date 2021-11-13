@@ -19,8 +19,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -32,12 +32,14 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockNotLoadedException;
+import me.DenBeKKer.ntdLuckyBlock.command.CommandsManager;
 import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
 import me.DenBeKKer.ntdLuckyBlock.factory.LBFactory;
 import me.DenBeKKer.ntdLuckyBlock.recipe.CraftListener;
 import me.DenBeKKer.ntdLuckyBlock.recipe.LuckyRecipe;
 import me.DenBeKKer.ntdLuckyBlock.sk89q.LBWorldEdit;
 import me.DenBeKKer.ntdLuckyBlock.sk89q.LBWorldGuard;
+import me.DenBeKKer.ntdLuckyBlock.util.ColorData;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
 import me.DenBeKKer.ntdLuckyBlock.util.Metrics;
 import me.DenBeKKer.ntdLuckyBlock.util.SpigotUpdater;
@@ -64,7 +66,6 @@ public class LBMain extends JavaPlugin {
 	public SpigotUpdater updater;
 	public Economy eco;
 	public WorldsList w;
-	private static Collection<Player> reduce$list = new ArrayList<>();
 	
 	private static boolean reduce = false,
 			brperm = true,
@@ -75,16 +76,17 @@ public class LBMain extends JavaPlugin {
 			h = true,
 			warning_luckyblock_changed = false;
 	
-	public boolean dai_gui_get = false;
+	public boolean disable_author_info = false;
 	public boolean web_unavailable_disable = false;
 	public boolean reduce_convert = false;
+	private CommandsManager commands_manager;
 	private static String NMS_VERSION;
 	public static String getNMSVersion() { return NMS_VERSION; }
 	
 	
 	// Last update date & Build number
-	private static final String last_update = "09/11/2021";
-	private static final int build = 65;
+	private static final String last_update = "13/11/2021";
+	private static final int build = 66;
 	// Last update date & Build number
 	
 	
@@ -101,10 +103,10 @@ public class LBMain extends JavaPlugin {
 	public static boolean isReduced() { return reduce; }
 	public static boolean h() { return h; }
 	public static boolean isBreakPermissions() { return brperm; }
-	public static Collection<Player> getReduced() { return reduce$list; }
 	public static boolean isVerifyName() { return verify_name; }
 	public static boolean isVerifyUUID() { return verify_uuid; }
 	public static boolean warning_luckyblock_changed() { return warning_luckyblock_changed; }
+	public static CommandsManager getCommandsManager() { return instance.commands_manager; }
 	
 	public static boolean isDebug() { return debug; }
 	@Deprecated
@@ -297,8 +299,12 @@ public class LBMain extends JavaPlugin {
 			
 		}, 120);
 		
-		debug("Loading Command");
-		Bukkit.getPluginCommand("ntdluckyblock").setExecutor(new LBCommand());
+		debug("Loading command...");
+		commands_manager = new CommandsManager();
+		PluginCommand command = Bukkit.getPluginCommand("ntdluckyblock");
+		command.setExecutor(commands_manager);
+		command.setTabCompleter(commands_manager);
+		
 		ms = (System.currentTimeMillis() - ms);
 		log(Level.INFO, ChatColor.GREEN + "Enabled " + msIndicator(ms, 500, 1000) + "(took " + ms + " ms)" + ChatColor.GREEN + "... ");
 //		if(ms > 1000)
@@ -431,9 +437,9 @@ public class LBMain extends JavaPlugin {
 		if(debug) getLogger().log(Level.WARNING, "Debug mode enabled! Note that this mode only for developer!");
 		inform = config.get().getBoolean("inform-about-update");
 		
-		dai_gui_get = config.get().getBoolean("disable-author-info-gui-get");
-		if(dai_gui_get && !premium) {
-			dai_gui_get = false;
+		disable_author_info = config.get().getBoolean("disable-author-info-gui-get") || config.get().getBoolean("disable-author-info");
+		if(disable_author_info && !premium) {
+			disable_author_info = false;
 			
 			log(Level.WARNING, "Sorry, but you cant disable author info for gui get command in free plugin version.");
 			log(Level.WARNING, "Check out premium plugin version - https://www.spigotmc.org/resources/94872");
@@ -462,7 +468,8 @@ public class LBMain extends JavaPlugin {
 		if(debug) debug("Loading system");
 		map.clear();
 		
-		reduce$list = new ArrayList<>();
+		if(commands_manager != null)
+			commands_manager.fix_ram(null);
 		
 		for(String str : config.get().getStringList("enabled")) { try {
 			LuckyBlockType lb = LuckyBlockType.valueOf(str.toUpperCase());
@@ -538,6 +545,12 @@ public class LBMain extends JavaPlugin {
 			
 		}
 		
+		public static Hooks parse(String name) {
+			for(Hooks hook : values())
+				if(hook.name().equalsIgnoreCase(name)) return hook;
+			return null;
+		}
+		
 	}
 	
 	public enum LuckyBlockType {
@@ -567,6 +580,7 @@ public class LBMain extends JavaPlugin {
 			this.texture = texture;
 		}
 		
+		@Deprecated
 		public DyeColor asDye() {
 			
 			if(this == LuckyBlockType.LIGHT_GRAY && instance.factory instanceof Mat1_12)
@@ -577,15 +591,21 @@ public class LBMain extends JavaPlugin {
 			
 		}
 		
-		@Deprecated
-		public static LuckyBlockType parse(DyeColor dye) { return LuckyBlockType.valueOf(dye.name()); }
+		public ColorData asColor() {
+			
+			if(this == LuckyBlockType.TINTED) return ColorData.BLACK;
+			return ColorData.valueOf(name());
+			
+		}
+		
+		public static LuckyBlockType parse(ColorData data) {
+			return LuckyBlockType.valueOf(data.name());
+		}
 		
 		public static LuckyBlockType parse(String name) {
-			try {
-				return LuckyBlockType.valueOf(name.toUpperCase());
-			} catch(Exception ex) {
-				return null;
-			}
+			for(LuckyBlockType type : values())
+				if(type.name().equalsIgnoreCase(name)) return type;
+			return null;
 		}
 		
 		public boolean isAvailable() {
@@ -622,12 +642,12 @@ public class LBMain extends JavaPlugin {
 		
 		public Material getMaterial() {
 			if(this == LuckyBlockType.TINTED) return TintedMaterial.getMaterial();
-			return instance.factory.getGlass(asDye(), 1).getType();
+			return instance.factory.getGlass(asColor(), 1).getType();
 		}
 		
 		@Deprecated
 		public ItemStack getItem() {
-			return instance.factory.getGlass(asDye(), 1);
+			return instance.factory.getGlass(asColor(), 1);
 		}
 		
 		public boolean isLoaded() { return map.get(this) != null; }
@@ -638,11 +658,12 @@ public class LBMain extends JavaPlugin {
 			return lb;
 		}
 		
-		public static Set<LuckyBlockType> list() { return map.keySet(); }
+		public static Set<LuckyBlockType> enabled() { return map.keySet(); }
+		@Deprecated
+		public static Set<LuckyBlockType> list() { return enabled(); }
 		
 		public static HashMap<LuckyBlockType, LuckyBlock> map() { return map; }
 		
-		@SuppressWarnings("deprecation")
 		public String fixName(String name) {
 			
 			try {
@@ -653,8 +674,8 @@ public class LBMain extends JavaPlugin {
 				ex.printStackTrace();
 			}
 			
-			String name0 = name + "\u00a7" + toColor(this.asDye().getWoolData());
-			if(debug) debug(("Remmaped " + name + " to " + name0 + " to avoid same names").replace("\u00a7", "&"));
+			String name0 = name + "\u00a7" + toColorSymbol();
+			debug(("Remmaped " + name + " to " + name0 + " to avoid same names").replace("\u00a7", "&"));
 			return name0;
 			
 		}
@@ -665,15 +686,13 @@ public class LBMain extends JavaPlugin {
 		
 		public String getTexture() { return this.texture; }
 		
-		@SuppressWarnings("deprecation")
 		public UUID getUUID() {
 			if(this == LuckyBlockType.TINTED)
 				return UUID.fromString("12345678-1234-1234-1234-000000000010");
-			return UUID.fromString("12345678-1234-1234-1234-00000000000" + Integer.toHexString(asDye().getWoolData()));
+			return UUID.fromString("12345678-1234-1234-1234-00000000000" + Integer.toHexString(asColor().getData()));
 		}
 		
-		@SuppressWarnings("deprecation")
-		public String toColorSymbol() { return toColor(this.asDye().getWoolData()); }
+		public String toColorSymbol() { return toColor(asColor().getData()); }
 		
 		public static LuckyBlockType random(boolean loaded) {
 			
@@ -724,23 +743,25 @@ public class LBMain extends JavaPlugin {
 	private static HashMap<PlayerHead, ItemStack> heads = new HashMap<>();
 	private static boolean p$s;
 	
-	public static ItemStack getHead0(String url, String name, List<String> lore) {
+	public static ItemStack getHead0(String url, String name, List<String> lore) { return getHead0(url, name, lore, UUID.randomUUID()); }
+	
+	public static ItemStack getHead0(String url, String name, List<String> lore, UUID uuid) {
+		if(url == null || url.isEmpty())
+			throw new UnsupportedOperationException("URL cannout be null");
 		ItemStack head = instance.factory.getItem(Mat.PLAYER_SKULL, 1);
-        if(url.isEmpty()) return head;
         SkullMeta headMeta = (SkullMeta) head.getItemMeta();
-        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-        byte[] encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}", url).getBytes());
-        profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
-        Field profileField = null;
+        GameProfile profile = new GameProfile(uuid, null);
+        profile.getProperties().put("textures", new Property("textures",
+        		new String(Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}", url).getBytes()))));
         try {
-            profileField = headMeta.getClass().getDeclaredField("profile");
+        	Field profileField = headMeta.getClass().getDeclaredField("profile");
             profileField.setAccessible(true);
             profileField.set(headMeta, profile);
-        } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e1) {
-            e1.printStackTrace();
+        } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+            e.printStackTrace();
         }
-        headMeta.setDisplayName(name);
-        headMeta.setLore(lore);
+        if(name != null) headMeta.setDisplayName(name);
+        if(lore != null) headMeta.setLore(lore);
         head.setItemMeta(headMeta);
         return head;
 	}

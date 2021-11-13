@@ -10,47 +10,50 @@ custom_items:
   magic_wool: "&6&l&oLã mágica"
   sword_of_justice: "&6&l&oEspada da Justíça"
   axe_of_perun: "&6&l&oMachado de Perun"
-  carrot_corrupter: "&6&l&oCorruptor de Cenoura"
+  carrot_corrupter: "&6&l&oCenoura corrupdora"
 
 craft:
   allowed_one_layer: "&cCraftar é apenas possível com o uso de cada ingrediente em um slot separado"
 
 system:
   loading_config: "&fCarregando configuração... "
-  reloaded_config: "&aA configuração foi recarregada, carregado %amount% tipos de luckyblocks..."
+  reloaded_config: "&aA configuração foi recarregada, carregado %amount% LuckyBlocks..."
   material_api: "&f%build% material API-version encontrado"
   
   lb_not_found: "&cLuckyBlock &e%lb%&c não encontrada, pulando... "
   lb_loading_exception: "&cLuckyBlock &e%lb%&c não pode ser carregada... Exception: &e%exception%"
   lb_unknown_exception: "&cLuckyBlock &e%lb%&c não pode ser carregada ou exception desconhecida ocorreu, pulando... "
-  lb_loaded_zero: "&fCarregado 0 tipos de luckyblock... Hm..."
-  lb_loaded_not_zero: "&fCarregado &e%amount%&f tipos de luckyblock..."
+  lb_loaded_zero: "&fCarregado 0 LuckyBlocks... Hm..."
+  lb_loaded_not_zero: "&fCarregado &e%amount%&f LuckyBlocks..."
   
   cant_use_command: "&cDesculpe, mas você não pode usar qualquer sub comando."
   cant_use_subcommand: "&cDesculpe, mas você não pode usar esse sub comando."
   
-  cant_break_color: "&cDesculpe, mas você não pode quebrar a luckyblock com o tipo &e%lb%"
+  cant_break_color: "&cDesculpe, mas você não pode quebrar a LuckyBlock &e%lb%"
   cant_interact_world: "&cDesculpe, mas você não pode interagir com LuckyBlocks no mundo &e%world%"
   
-  cmd_lb_disabled: "&cTipo de LuckyBlock &e%lb%&c desativada :("
-  cmd_lb_not_found: "&cTipo de LuckyBlock &e%lb%&c não encontrada :("
+  cmd_lb_disabled: "&cLuckyBlock &e%lb%&c desativada :("
+  cmd_lb_not_found: "&cLuckyBlock &e%lb%&c não encontrada :("
   cmd_lb_received: "&aRecebido %amount% LuckyBlocks &7(cor %lb%)"
+  cmd_ci_received: "&aRecebido %item%"
+  cmd_destroyed_lb: "&e%amount% &cLuckyBlocks destruídas"
   cmd_lb_give: "&aDado %amount% LuckyBlocks &7(cor %lb%)"
   
-  cmd_help:
-  - "&eLuckyBlock's &fajuda de comandos:"
-  - "&8 > &e/%label% get <cor> [amount] &f- pegar luckyblock"
-  - "&8 > &e/%label% give <player> <cor> [quantidade] &f- dar luckyblock"
-  - "&8 > &e/%label% gui <get (pegar)/edit> &f- abrir gui"
-#  - "&8 > &e/%label% edit &f- apelido do comando edit gui"
-  - "&8 > &e/%label% list &f- lista de tipos de luckyblock"
-  - "&8 > &e/%label% reload &f- recarrega todas configurações"
-  - "&8 > &e/%label% checkforupdates &f- verifica se há atualizações"
-  - "&8 > &e/%label% support &f- pegar os contatos do autor"
-  - "&8 > &6/%label% iteminfo &f- Informação do item sua mão"
-  - "&8 > &6/%label% getcustomitem <id> &f- Pegue item customizado"
-  - "&8 > &6/%label% customitemlist &f- Lista de itens customizados"
+  cmd:
+    help_title: "&fAjuda de comandos do &eLuckyBlock's:"
+    get: "&8 > &e/%label% get <cor> [amount] &f- pegar certa quantidade de luckyblocks"
+    give: "&8 > &e/%label% give <player> <cor> [quantidade] &f- dar luckyblocks a alguém"
+    gui: "&8 > &e/%label% gui <get (pegar)/edit> &f- Abre o GUI de pegar/editar uma LuckyBlock"
+    list: "&8 > &e/%label% list &f- Lista de tipos de luckyblock"
+    reload: "&8 > &e/%label% reload &f- Recarrega todas configurações"
+    checkforupdates: "&8 > &e/%label% checkforupdates &f- Verifica se há atualizações"
+    support: "&8 > &e/%label% support &f- Pegue os contatos do autor"
+    iteminfo: "&8 > &6/%label% iteminfo &f- Informação do item sua mão"
+    customitemget: "&8 > &6/%label% customitemget <id> &f- Pegue item customizado"
+    customitemslist: "&8 > &6/%label% customitemslist &f- Lista de itens customizados"
+    destroy: " &8> &e/%label% destroy <alcance/chunk> [-all] &f- destroi o lb"
   
+  cmd_no_perm: "&cDesculpe, mas você não tem permissão para executar esse sub comando"
   cmd_player_not_found: "&cPlayer &e%player%&c não encontrado :("
   cmd_no_perm_to_color: "&cSem permissão para a cor %lb%"
   
@@ -59,7 +62,7 @@ gui:
   get:
     title: "&bPegar luckyblock &4&l:D"
     no_money: "&Você precisa de mais &e%eco% &cmoney"
-    success: "&aVocê comprou com sucesso &e%amount% &aluckyblock para &e%eco%"
+    success: "&aVocê comprou com sucesso &e%amount% &aLuckyBlocks para &e%eco%"
     exception: "&cVault exception: %exception%"
   count:
     title: "&bSelecione quantidade &4&l:D"

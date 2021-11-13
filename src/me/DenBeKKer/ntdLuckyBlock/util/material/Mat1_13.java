@@ -1,9 +1,10 @@
 package me.DenBeKKer.ntdLuckyBlock.util.material;
 
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import me.DenBeKKer.ntdLuckyBlock.util.ColorData;
 
 public class Mat1_13 implements IMat {
 	
@@ -28,7 +29,7 @@ public class Mat1_13 implements IMat {
 	public String build() { return "main"; }
 	
 	@Override
-	public ItemStack getGlass(DyeColor color, int amount) {
+	public ItemStack getGlass(ColorData color, int amount) {
 		return new ItemStack(Material.valueOf(color.name() + "_STAINED_GLASS"), amount);
 	}
 	

@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -25,8 +24,6 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.InventoryType.SlotType;
-import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -169,8 +166,7 @@ public class LBHandler implements Listener {
 	@EventHandler
 	public void quit(PlayerQuitEvent e) {
 		GuiManager.ramFix(e.getPlayer());
-		if(LBMain.getReduced() != null && LBMain.getReduced().contains(e.getPlayer()))
-			LBMain.getReduced().remove(e.getPlayer());
+		LBMain.getCommandsManager().fix_ram(e.getPlayer());
 	}
 	
 	@EventHandler
@@ -295,6 +291,7 @@ public class LBHandler implements Listener {
 						if(e.isCancelled()) return;
 						if(en.getType() != EntityType.ARMOR_STAND) continue;
 						ArmorStand stand = (ArmorStand) en;
+						if(stand.getCustomName() == null) continue;
 						if(stand.getCustomName().equalsIgnoreCase(type.name() + ";" + (int)stand.getLocation().getX()
 								+ ";" + (int)stand.getLocation().getY() + ";" + (int)stand.getLocation().getZ())
 								&& stand.getLocation().add(0, 1.2, 0).getBlock().equals(e.getBlock())) {
@@ -335,95 +332,6 @@ public class LBHandler implements Listener {
 		BekkerItemStack item = CustomItemFactory.fetchCustomItem(stack);
 		if(item == null) return;
 		item.handleBreak(e);
-		
-	}
-	
-	@EventHandler
-	public void entity(PlayerArmorStandManipulateEvent e) throws LuckyBlockNotLoadedException {
-		
-		if(e.getRightClicked().getType() == EntityType.ARMOR_STAND) {
-			
-			final Block b = e.getRightClicked().getLocation().add(0, 1.2, 0).getBlock();
-			
-			for(LuckyBlockType type : LuckyBlockType.values()) {
-				
-				ArmorStand stand = (ArmorStand) e.getRightClicked();
-				if(stand.getCustomName() != null && stand.getCustomName().equalsIgnoreCase(type.name() + ";" + (int)stand.getLocation().getX()
-						+ ";" + (int)stand.getLocation().getY() + ";" + (int)stand.getLocation().getZ())) {
-					
-					if(LBMain.getIsSk89q() && !LBWorldGuard.canBreak(b)) {
-						e.setCancelled(true);
-						return;
-					}
-					
-					if(LBMain.isBreakPermissions() && !e.getPlayer().hasPermission("luckyblock.break." + type.name().toLowerCase())
-							&& !e.getPlayer().hasPermission("luckyblock.break.*")) {
-						e.getPlayer().sendMessage(Message.CANT_BREAK_LUCKYBLOCK.getAsString().replace("%lb%",
-								type.isLoaded() ? type.get().getCustomName() : type.name()));
-						e.setCancelled(true);
-						return;
-					}
-					
-					if(type.isLoaded()) {
-						if(type.get().tryOpen(b, e.getPlayer(), false)) {
-							stand.remove();
-							b.setType(Material.AIR);
-						}
-					} else {
-						stand.remove();
-						b.setType(Material.AIR);
-					}
-					e.setCancelled(true);
-					
-				}
-				
-			}
-			
-		}
-		
-	}
-	
-	@EventHandler
-	public void entity(PlayerInteractEntityEvent e) throws LuckyBlockNotLoadedException {
-		
-		if(e.getRightClicked().getType() == EntityType.ARMOR_STAND) {
-			
-			Block b = e.getRightClicked().getLocation().add(0, 1.2, 0).getBlock();
-			
-			for(LuckyBlockType type : LuckyBlockType.values()) {
-				
-				if(b.getType() == type.getMaterial()) {
-					
-					ArmorStand stand = (ArmorStand) e.getRightClicked();
-					if(stand.getCustomName().equalsIgnoreCase(type.name() + ";" + (int)stand.getLocation().getX()
-							+ ";" + (int)stand.getLocation().getY() + ";" + (int)stand.getLocation().getZ())) {
-						
-						if(LBMain.isBreakPermissions() && !e.getPlayer().hasPermission("luckyblock.break." + type.name().toLowerCase())
-								&& !e.getPlayer().hasPermission("luckyblock.break.*")) {
-							e.getPlayer().sendMessage(Message.CANT_BREAK_LUCKYBLOCK.getAsString().replace("%lb%",
-									type.isLoaded() ? type.get().getCustomName() : type.name()));
-							e.setCancelled(true);
-							return;
-						}
-						
-						if(type.isLoaded()) {
-							if(type.get().tryOpen(b, e.getPlayer(), false)) {
-								stand.remove();
-								b.setType(Material.AIR);
-							}
-						} else {
-							stand.remove();
-							b.setType(Material.AIR);
-						}
-						e.setCancelled(true);
-						
-					}
-				
-				}
-				
-			}
-			
-		}
 		
 	}
 	

@@ -31,18 +31,19 @@ system:
   cmd_lb_not_found: '&c Der LuckyBlock-Type &e%lb%&c wurde nicht gefunden :('
   cmd_lb_received: '&a Du hast %amount% Luckyblocks erhalten &7(%lb% Farbe)'
   cmd_lb_give: '&aDu hast %amount% Luckyblocks gegeben &7(%lb% Farbe)'
-  cmd_help:
-  - '&eLuckyBlock''s &fHilfs-Commands:'
-  - '&8 > &e/%label% get <Farbe> [Menge] &f- erhalte LuckyBlock'
-  - '&8 > &e/%label% give <Spieler> <Farbe> [Menge] &f- gebe LuckyBlock'
-  - '&8 > &e/%label% gui <get/edit> &f- Öffne Gui'
-  - '&8 > &e/%label% list &f- Liste von LuckyBlock-Typen'
-  - '&8 > &e/%label% relaod &f- lade alle configs neu'
-  - '&8 > &e/%label% checkforupdates &f- check für Updates'
-  - '&8 > &e/%label% support &f- erhalte Autorenkontakte'
-  - "&8 > &6/%label% iteminfo &f- Infos von dem Itemin deiner Hand"
-  - "&8 > &6/%label% getcustomitem <id> &f- bekomme individuelles Item"
-  - "&8 > &6/%label% customitemlist &f- Liste der individuellen Items"
+  
+  cmd:
+    help_title: '&eLuckyBlock''s &fHilfs-Commands:'
+    get: '&8 > &e/%label% get <Farbe> [Menge] &f- erhalte LuckyBlock'
+    give: '&8 > &e/%label% give <Spieler> <Farbe> [Menge] &f- gebe LuckyBlock'
+    gui: '&8 > &e/%label% gui <get/edit> &f- Öffne Gui'
+    list: '&8 > &e/%label% list &f- Liste von LuckyBlock-Typen'
+    reload: '&8 > &e/%label% reload &f- lade alle configs neu'
+    checkforupdates: '&8 > &e/%label% checkforupdates &f- check für Updates'
+    support: '&8 > &e/%label% support &f- erhalte Autorenkontakte'
+    iteminfo: "&8 > &6/%label% iteminfo &f- Infos von dem Itemin deiner Hand"
+    customitemget: "&8 > &6/%label% customitemget <id> &f- bekomme individuelles Item"
+    customitemslist: "&8 > &6/%label% customitemslist &f- Liste der individuellen Items"
   cmd_player_not_found: '&cSpieler &e%player%&c nnicht gefunden :('
   cmd_no_perm_to_color: '&cDu hast keine Permission für Farbe %lb%'
 

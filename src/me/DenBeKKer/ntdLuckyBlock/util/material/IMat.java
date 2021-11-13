@@ -4,11 +4,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import me.DenBeKKer.ntdLuckyBlock.util.ColorData;
 
 public interface IMat {
 	
@@ -30,7 +31,7 @@ public interface IMat {
 	
 	public ItemStack getItem(Mat mat, int amount);
 	
-	public ItemStack getGlass(DyeColor color, int amount);
+	public ItemStack getGlass(ColorData color, int amount);
 	
 	public boolean isSkull(ItemStack item);
 

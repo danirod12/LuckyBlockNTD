@@ -11,7 +11,10 @@ import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 
 public class CraftTheory {
 	
+	@SuppressWarnings("deprecation")
 	public static Collection<LuckyRecipe> getDefault(LuckyBlockType type) {
+		
+		if(type == LuckyBlockType.TINTED) return new ArrayList<>();
 		
 		Collection<LuckyRecipe> collection = new ArrayList<>();
 		

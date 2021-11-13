@@ -20,13 +20,12 @@ public class LBFactoryV1 implements LBFactory {
 	
 	public void generate(FileConfiguration file, LuckyBlockType type) { generate(file, type, 5, 50); }
 	
-	@SuppressWarnings("deprecation")
 	public void generate(FileConfiguration file, LuckyBlockType type, int min, int max) {
 		
 		LBMain.log(Level.INFO, "\u00a7fGenerating \u00a7" + type.toColorSymbol() + type.name() + " LuckyBlock \u00a7fconfiguration \u00a76(LBF version: 1)");
 		
 		file.set("texture", type.getTexture());
-		file.set("name", "&" + LBMain.toColor(type.asDye().getWoolData())
+		file.set("name", "&" + type.toColorSymbol()
 			+ String.valueOf(type.name().toCharArray()[0]).toUpperCase() + type.name().substring(1).toLowerCase().replace("_", " ") + " LuckyBlock");
 		file.set("lore", Arrays.asList("&7Place me :D"));
 		file.set("eco", true);

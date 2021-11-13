@@ -51,7 +51,7 @@ break-permissions: true
 
 # Disable author info for command /ntdluckyblock gui get
 # NOTE: This feature can be used only in premium plugin version
-disable-author-info-gui-get: false
+disable-author-info: false
 
 # Check for available convertions (Disable join spam message that you can convert items)
 disable-json-convert-checking: false
