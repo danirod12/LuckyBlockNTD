@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
+import me.DenBeKKer.ntdLuckyBlock.command.cmd.ConvertCommand;
 import me.DenBeKKer.ntdLuckyBlock.command.cmd.DestroyCommand;
 import me.DenBeKKer.ntdLuckyBlock.command.cmd.GetCommand;
 import me.DenBeKKer.ntdLuckyBlock.command.cmd.GetCustomItemCommand;
@@ -67,6 +68,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter {
 		
 		// Other
 		register(new VersionCommand());
+		register(new ConvertCommand());
 		
 		LBMain.debug("Loaded " + commands.size() + " subcommands");
 		
