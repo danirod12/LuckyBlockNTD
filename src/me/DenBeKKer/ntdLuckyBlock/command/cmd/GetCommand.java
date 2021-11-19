@@ -77,7 +77,8 @@ public class GetCommand implements LBPlayerCommand {
 			ItemStack stack = LuckyBlockType.map().get(type).getSkull();
 			stack.setAmount(amount);
 			player.getInventory().addItem(stack);
-			player.sendMessage(Message.CMD_LB_RECEIVED.getAsString().replace("%lb%", type.getCustomName()).replace("%amount%", String.valueOf(amount)));
+			player.sendMessage(Message.CMD_LB_RECEIVED.getAsString().replace("%lb%", type.getCustomName(true))
+					.replace("%amount%", String.valueOf(amount)));
 			return CommandResponce.SUCCESS;
 			
 		}

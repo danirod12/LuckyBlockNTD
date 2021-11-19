@@ -105,7 +105,8 @@ public class GiveCommand implements LBCommand {
 			default:
 				throw new IllegalArgumentException("Byte give type " + data + " not defined");
 			}
-			sender.sendMessage(Message.CMD_LB_GIVE.getAsString().replace("%lb%", type.getCustomName()).replace("%amount%", String.valueOf(amount)));
+			sender.sendMessage(Message.CMD_LB_GIVE.getAsString().replace("%lb%", type.getCustomName(true))
+					.replace("%amount%", String.valueOf(amount)));
 			return CommandResponce.SUCCESS;
 			
 		}

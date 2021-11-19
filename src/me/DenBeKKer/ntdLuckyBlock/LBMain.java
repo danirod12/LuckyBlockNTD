@@ -694,9 +694,12 @@ public class LBMain extends JavaPlugin {
 			
 		}
 		
-		public String getCustomName() {
-			return map.containsKey(this) ? map.get(this).getCustomName() : this.name();
+		public String getCustomName(boolean colored) {
+			return (colored ? "\u00a7" + toColorSymbol() : "") + (map.containsKey(this) ? map.get(this).getCustomName() : this.name());
 		}
+		
+		@Deprecated
+		public String getCustomName() { return getCustomName(false); }
 		
 		public String getTexture() { return this.texture; }
 		
