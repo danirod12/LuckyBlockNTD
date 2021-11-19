@@ -3,7 +3,6 @@ package me.DenBeKKer.ntdLuckyBlock;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -24,7 +23,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.common.io.Files;
@@ -34,6 +32,9 @@ import com.mojang.authlib.properties.Property;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockNotLoadedException;
 import me.DenBeKKer.ntdLuckyBlock.command.CommandsManager;
 import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
+import me.DenBeKKer.ntdLuckyBlock.economy.EconomyBridge;
+import me.DenBeKKer.ntdLuckyBlock.economy.TokenManagerEconomy;
+import me.DenBeKKer.ntdLuckyBlock.economy.VaultEconomy;
 import me.DenBeKKer.ntdLuckyBlock.factory.LBFactory;
 import me.DenBeKKer.ntdLuckyBlock.recipe.CraftListener;
 import me.DenBeKKer.ntdLuckyBlock.recipe.LuckyRecipe;
@@ -53,7 +54,6 @@ import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_13;
 import me.DenBeKKer.ntdLuckyBlock.util.material.TintedMaterial;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
 import me.DenBeKKer.ntdLuckyBlock.variables.WorldsList;
-import net.milkbowl.vault.economy.Economy;
 
 public class LBMain extends JavaPlugin {
 	
@@ -63,8 +63,8 @@ public class LBMain extends JavaPlugin {
 	private static boolean inform;
 	private static File folder, schematics_folder;
 	private static String version;
+	private EconomyBridge economy_bridge;
 	public SpigotUpdater updater;
-	public Economy eco;
 	public WorldsList w;
 	
 	private static boolean reduce = false,
@@ -85,8 +85,8 @@ public class LBMain extends JavaPlugin {
 	
 	
 	// Last update date & Build number
-	private static final String last_update = "13/11/2021";
-	private static final int build = 66;
+	private static final String last_update = "19/11/2021";
+	private static final int build = 67;
 	// Last update date & Build number
 	
 	
@@ -102,6 +102,7 @@ public class LBMain extends JavaPlugin {
 	public static boolean getIsSk89q() { return schematics; }
 	public static boolean isReduced() { return reduce; }
 	public static boolean h() { return h; }
+	public static EconomyBridge getEconomy() { return instance.economy_bridge; }
 	public static boolean isBreakPermissions() { return brperm; }
 	public static boolean isVerifyName() { return verify_name; }
 	public static boolean isVerifyUUID() { return verify_uuid; }
@@ -189,6 +190,10 @@ public class LBMain extends JavaPlugin {
 		metrics.addCustomChart(new Metrics.SimplePie("version_type", () -> {
 			return premium ? "premium" : "free";
 		}));
+		metrics.addCustomChart(new Metrics.SimplePie("language", () -> {
+			final String language = MessagesManager.getLanguage();
+			return language == null ? "undefined" : language;
+		}));
 		
 		log(Level.INFO, ChatColor.WHITE + "Starting LuckyBlock (ntdLuckyBlock) v" + version + ", build" + getBuild()
 			+ ", " + (premium ? "premium" : "free") + " version");
@@ -201,11 +206,12 @@ public class LBMain extends JavaPlugin {
 		log(Level.INFO, ChatColor.WHITE + "          Made with " + ChatColor.RED + "love " + ChatColor.WHITE + "by " + ChatColor.GREEN + "DenBeKKer");
 		log(Level.INFO, ChatColor.WHITE + "");
 		log(Level.INFO, ChatColor.WHITE + "=-= " + ChatColor.GOLD + "SUPPORT & BUG REPORTING & FEATURE REQUESTING " + ChatColor.WHITE + "=-=");
-		log(Level.INFO, ChatColor.DARK_GRAY + " > " + ChatColor.AQUA + "Discord " + ChatColor.WHITE + "- https://discord.gg/vbYW3sperj");
+		log(Level.INFO, ChatColor.DARK_GRAY + " > " + ChatColor.AQUA + "Discord " + ChatColor.WHITE + "- " + getDiscordURL());
 		log(Level.INFO, ChatColor.DARK_GRAY + " > " + ChatColor.BLUE + "Vkontakte "
 				+ ChatColor.WHITE + "- https://vk.com/danirodplay " + ChatColor.GRAY + "(Rus)");
 		log(Level.INFO, ChatColor.WHITE + "=-= " + ChatColor.GOLD + "SUPPORT & BUG REPORTING & FEATURE REQUESTING " + ChatColor.WHITE + "=-=");
-		log(Level.INFO, ChatColor.RED + "Help me make my plugin better! Fill out " + ChatColor.GOLD + "https://forms.gle/GvX5pB4BXU7BhAEi9");
+		if(ThreadLocalRandom.current().nextBoolean())
+			log(Level.INFO, ChatColor.RED + "Help me make my plugin better! Fill out " + ChatColor.GOLD + "https://forms.gle/GvX5pB4BXU7BhAEi9");
 		
 		loadConfig();
 		
@@ -232,12 +238,19 @@ public class LBMain extends JavaPlugin {
 		for(PlayerHead h : PlayerHead.values()) h.loadHead();
 		Hooks.loadAll();
 		
-		if(Hooks.Vault.isEnabled()) {
-			if(debug) debug("Loading Vault provider");
-			RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(Economy.class);
-	        if (economyProvider != null && economyProvider.getProvider() != null) {
-	            eco = economyProvider.getProvider();
-	        } else Hooks.Vault.disable("economy not found");
+		if(Hooks.TokenManager.isEnabled()) {
+			
+			Config token = new Config(instance, null, "token_manager");
+			token.copy(true);
+			
+			if(token.get().getBoolean("override-vault")) {
+				this.economy_bridge = new TokenManagerEconomy(token.get().getString("display"));
+			} else Hooks.TokenManager.disable("disabled in config");
+			
+		}
+		
+		if(!Hooks.TokenManager.isEnabled() && Hooks.Vault.isEnabled()) {
+			this.economy_bridge = new VaultEconomy();
 		}
 		
 		schematics_folder = new File(getDataFolder(), "schematics");
@@ -508,6 +521,7 @@ public class LBMain extends JavaPlugin {
 	public enum Hooks {
 		
 		Vault,
+		TokenManager,
 		WorldEdit,
 		WorldGuard;
 		
@@ -821,14 +835,9 @@ public class LBMain extends JavaPlugin {
 	@Deprecated
 	public static String updateLink() { return instance.updater.getResourceURL(); }
 	
-	public String getVaultPrice(double d) {
-		String s = "";
-		if(eco != null) s = " " + eco.currencyNameSingular();
-		if(s.equalsIgnoreCase("  ") || s.equalsIgnoreCase(" ")) s = "";
-		return new DecimalFormat("#.##").format(d) + s;
-	}
-	
 	public static boolean isPreventSkulls() { return p$s; }
 	public static SpigotUpdater getUpdater() { return instance.updater; }
+	
+	public static final String getDiscordURL() { return "https://discord.gg/vbYW3sperj"; }
 	
 }

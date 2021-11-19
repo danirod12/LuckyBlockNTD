@@ -53,7 +53,6 @@ gui:
     title: "&b购买 幸运方块 &4&l:D"
     no_money: "&c你需要 &e%eco% &c硬币"
     success: "&a你购买了 &e%amount% &a个幸运方块, 花费了 &e%eco%"
-    exception: "&cVault 错误: %exception%"
   count:
     title: "&b选择数量 &4&l:D"
     remove: "&b拿走 %offset% 个"

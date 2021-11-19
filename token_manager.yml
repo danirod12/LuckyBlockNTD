@@ -1,0 +1,6 @@
+
+# Enable TokenManager support or not
+override-vault: true
+
+# Economy display
+display: "%amount% Ⓣ"

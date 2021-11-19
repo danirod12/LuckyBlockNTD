@@ -60,7 +60,6 @@ gui:
     title: "&bDaj LuckyBlocka &4&l:D"
     no_money: "&cPotrzebujesz jeszcze &e%eco% &cpieniędzy."
     success: "&aPomyślnie zakupiłeś(aś) LuckyBlocki (&e%amount% szt.&a) za &e%eco%"
-    exception: "&cBłąd pluginu Vault: %exception%"
   count:
     title: "&bWybierz ilość &4&l:D"
     remove: "&bUsuń %offset%"

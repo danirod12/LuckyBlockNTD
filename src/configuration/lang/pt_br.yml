@@ -63,7 +63,6 @@ gui:
     title: "&bPegar luckyblock &4&l:D"
     no_money: "&Você precisa de mais &e%eco% &cmoney"
     success: "&aVocê comprou com sucesso &e%amount% &aLuckyBlocks para &e%eco%"
-    exception: "&cVault exception: %exception%"
   count:
     title: "&bSelecione quantidade &4&l:D"
     remove: "&bRemove %offset%"

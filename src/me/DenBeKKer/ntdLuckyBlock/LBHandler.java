@@ -25,6 +25,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -86,7 +87,7 @@ public class LBHandler implements Listener {
 			if(stack == null) break victim;
 			BekkerItemStack item = CustomItemFactory.fetchCustomItem(stack);
 			if(item == null) break victim;
-			item.handleHit(event.getDamager(), player, HitEvent.Type.VICTIM);
+			item.handle(new HitEvent(event.getDamager(), player, HitEvent.Type.VICTIM));
 			
 		}
 		damager:
@@ -97,9 +98,18 @@ public class LBHandler implements Listener {
 			if(stack == null) break damager;
 			BekkerItemStack item = CustomItemFactory.fetchCustomItem(stack);
 			if(item == null) break damager;
-			item.handleHit(player, event.getEntity(), HitEvent.Type.DAMAGER);
+			item.handle(new HitEvent(player, event.getEntity(), HitEvent.Type.DAMAGER));
 			
 		}
+		
+	}
+	
+	@EventHandler
+	public void consume(PlayerItemConsumeEvent e) {
+		
+		BekkerItemStack item = CustomItemFactory.fetchCustomItem(e.getItem());
+		if(item == null) return;
+		item.handle(e);
 		
 	}
 	
@@ -159,7 +169,7 @@ public class LBHandler implements Listener {
 		if(stack == null) return;
 		BekkerItemStack item = CustomItemFactory.fetchCustomItem(stack);
 		if(item == null) return;
-		item.handleInteract(e);
+		item.handle(e);
 		
 	}
 	
@@ -274,7 +284,7 @@ public class LBHandler implements Listener {
 		if(stack == null) return;
 		BekkerItemStack item = CustomItemFactory.fetchCustomItem(stack);
 		if(item == null) return;
-		item.handlePlace(e);
+		item.handle(e);
 		
 	}
 	
@@ -331,7 +341,7 @@ public class LBHandler implements Listener {
 		if(stack == null) return;
 		BekkerItemStack item = CustomItemFactory.fetchCustomItem(stack);
 		if(item == null) return;
-		item.handleBreak(e);
+		item.handle(e);
 		
 	}
 	

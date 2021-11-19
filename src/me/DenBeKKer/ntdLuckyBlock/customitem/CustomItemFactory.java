@@ -11,11 +11,11 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Damageable;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
@@ -70,6 +70,7 @@ public class CustomItemFactory {
 		
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static void loadSystem() {
 		
 		storage = new ArrayList<>();
@@ -83,35 +84,30 @@ public class CustomItemFactory {
 			register(new BekkerItemStackBuilder(LBMain.getInstance().factory.getItem(Mat.WHITE_WOOL, 1))
 					.addUnsafeEnchantment(Enchantment.DURABILITY, 1).setSerialID("magic_wool")
 					.hideEnchantments().setName(Message.CI_MAGIC_WOOL.getAsString(true))
-					.registerEvent(ItemEvent.PLACE, new PlaceEvent() {
+					.registerEvent(ItemEvent.PLACE, n -> {
 						
-						@Override
-						public void execute(BlockPlaceEvent e) {
+						new BukkitRunnable() {
 							
-							new BukkitRunnable() {
+							int rounds = ThreadLocalRandom.current().nextInt(5, 15);
+							final Block block = n.getBlock();
+							
+							@Override
+							public void run() {
 								
-								int rounds = ThreadLocalRandom.current().nextInt(5, 15);
-								final Block block = e.getBlock();
-								
-								@Override
-								public void run() {
-									
-									if(rounds < 0 || !block.getType().name().contains("WOOL")) {
-										cancel();
-										return;
-									}
-									
-									if(LBMain.getInstance().factory instanceof Mat1_13)
-										block.setType(IMat.WOOLS.get(ThreadLocalRandom.current().nextInt(IMat.WOOLS.size())));
-									else IMat.setData(block, (byte)ThreadLocalRandom.current().nextInt(16));
-									
-									rounds--;
-									
+								if(rounds < 0 || !block.getType().name().contains("WOOL")) {
+									cancel();
+									return;
 								}
 								
-							}.runTaskTimer(LBMain.getInstance(), 2L, 5L);
+								if(LBMain.getInstance().factory instanceof Mat1_13)
+									block.setType(IMat.WOOLS.get(ThreadLocalRandom.current().nextInt(IMat.WOOLS.size())));
+								else IMat.setData(block, (byte)ThreadLocalRandom.current().nextInt(16));
+								
+								rounds--;
+								
+							}
 							
-						}
+						}.runTaskTimer(LBMain.getInstance(), 2L, 5L);
 						
 					}));
 		}
@@ -121,18 +117,10 @@ public class CustomItemFactory {
 			final double heal = h;
 			register(new BekkerItemStackBuilder(Material.IRON_SWORD).addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 2)
 					.setSerialID("sword_of_justice").setName(Message.CI_SWORD_OF_JUSTICE.getAsString(true))
-					.registerEvent(ItemEvent.HIT, new HitEvent() {
-						
-						@SuppressWarnings("deprecation")
-						@Override
-						public void execute(Entity a, Entity b, HitEvent.Type type) {
-							
-							if(type != HitEvent.Type.DAMAGER) return;
-							final Player player = (Player) a;
-							player.setHealth(Math.min(player.getMaxHealth(), heal + player.getHealth()));
-							
-						}
-						
+					.registerEvent(ItemEvent.HIT, n -> {
+						if(n.getType() != HitEvent.Type.DAMAGER) return;
+						final Player player = (Player) n.getDamager();
+						player.setHealth(Math.min(player.getMaxHealth(), heal + player.getHealth()));
 					}));
 		}
 		if(isEnabled(custom_items, "axe_of_perun")) {
@@ -141,15 +129,25 @@ public class CustomItemFactory {
 			final double damage = d;
 			register(new BekkerItemStackBuilder(Material.DIAMOND_AXE).addUnsafeEnchantment(Enchantment.DURABILITY, 1)
 					.setSerialID("axe_of_perun").setName(Message.CI_AXE_OF_PERUN.getAsString(true))
-					.registerEvent(ItemEvent.HIT, new HitEvent() {
+					.registerEvent(ItemEvent.HIT, n -> {
+						if(n.getType() != HitEvent.Type.DAMAGER || !(n.getVictim() instanceof Damageable)) return;
+						n.getVictim().getWorld().strikeLightningEffect(n.getVictim().getLocation());
+						((Damageable)n.getVictim()).damage(damage);
+					}));
+		}
+		if(isEnabled(custom_items, "mystery_meat")) {
+			register(new BekkerItemStackBuilder(Material.BEEF).addUnsafeEnchantment(Enchantment.DURABILITY, 1)
+					.hideEnchantments().setSerialID("mystery_meat").setName(Message.CI_MYSTERY_MEAT.getAsString(true))
+					.registerEvent(ItemEvent.CONSUME, n -> {
 						
-						@Override
-						public void execute(Entity a, Entity v, HitEvent.Type type) {
-							
-							if(type != HitEvent.Type.DAMAGER || !(v instanceof Damageable)) return;
-							v.getWorld().strikeLightningEffect(v.getLocation());
-							((Damageable)v).damage(damage);
-							
+						final Player player = n.getPlayer();
+						
+						try {
+							PotionEffectType type = PotionEffectType.values()[ThreadLocalRandom.current().nextInt(PotionEffectType.values().length)];
+							player.addPotionEffect(new PotionEffect(type, ThreadLocalRandom.current().nextInt(5, 45) * 20, 1));
+						} catch(Exception ex) {
+							LBMain.log(Level.WARNING, "Report to author - " + LBMain.getDiscordURL());
+							ex.printStackTrace();
 						}
 						
 					}));
@@ -157,28 +155,21 @@ public class CustomItemFactory {
 		if(LBMain.getInstance().factory instanceof Mat1_13 && isEnabled(custom_items, "carrot_corrupter")) {
 			register(new BekkerItemStackBuilder(Material.CARROT).addUnsafeEnchantment(Enchantment.DURABILITY, 1)
 					.hideEnchantments().setSerialID("carrot_corrupter").setName(Message.CI_CARROT_CORRUPTER.getAsString(true))
-					.registerEvent(ItemEvent.HIT, new HitEvent() {
+					.registerEvent(ItemEvent.HIT, n -> {
+						if(n.getType() != HitEvent.Type.DAMAGER) return;
+						if(!(n.getVictim() instanceof Player)) return;
 						
-						@Override
-						public void execute(Entity d, Entity v, HitEvent.Type type) {
-							
-							if(type != HitEvent.Type.DAMAGER) return;
-							if(!(v instanceof Player)) return;
-							
-							final Player victim = (Player) v;
-							List<Integer> slots = new ArrayList<>();
-							for(int slot = 0; slot < 9; slot++)
-								if(!isEmpty(victim.getInventory().getItem(slot))) slots.add(slot);
-							if(slots.size() != 0) {
-								victim.getInventory().setItem(slots.get(ThreadLocalRandom.current().nextInt(slots.size())),
-										new ItemStack(Material.CARROT));
-							} else {
-								victim.getInventory().setItem(ThreadLocalRandom.current().nextInt(9), new ItemStack(Material.CARROT));
-							}
-							withdrawItem((Player) d);
-							
+						final Player victim = (Player) n.getVictim();
+						List<Integer> slots = new ArrayList<>();
+						for(int slot = 0; slot < 9; slot++)
+							if(!isEmpty(victim.getInventory().getItem(slot))) slots.add(slot);
+						if(slots.size() != 0) {
+							victim.getInventory().setItem(slots.get(ThreadLocalRandom.current().nextInt(slots.size())),
+									new ItemStack(Material.CARROT));
+						} else {
+							victim.getInventory().setItem(ThreadLocalRandom.current().nextInt(9), new ItemStack(Material.CARROT));
 						}
-						
+						withdrawItem((Player) n.getDamager());
 					}));
 		}
 		

@@ -77,7 +77,7 @@ public class CountGui implements Listener {
 		
 	}
 	
-	private String getPrice() { return LBMain.getInstance().getVaultPrice(current * price); }
+	private String getPrice() { return LBMain.getEconomy().format((int) (current * price)); }
 	
 	@EventHandler
 	public void close(InventoryCloseEvent e) {

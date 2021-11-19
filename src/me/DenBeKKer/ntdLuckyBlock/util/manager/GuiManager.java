@@ -26,7 +26,6 @@ import me.DenBeKKer.ntdLuckyBlock.util.material.IMat.Mat;
 import me.DenBeKKer.ntdLuckyBlock.variables.ConfirmEvent;
 import me.DenBeKKer.ntdLuckyBlock.variables.CountGui;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
-import net.milkbowl.vault.economy.EconomyResponse;
 
 public class GuiManager implements Listener {
 	
@@ -105,21 +104,19 @@ public class GuiManager implements Listener {
 						return;
 					}
 					
-					double current = LBMain.getInstance().eco.getBalance(player);
+					double current = LBMain.getEconomy().getBalance(player);
 					double cost = block.getPrice() * amount;
 					if(current < cost) {
-						player.sendMessage(Message.GUI_GET_NOT_MONEY.getAsString().replace("%eco%", LBMain.getInstance().getVaultPrice(cost - current)));
+						player.sendMessage(Message.GUI_GET_NOT_MONEY.getAsString().replace("%eco%", LBMain.getEconomy().format((int) (cost - current))));
 						player.closeInventory();
 						return;
 					} else {
-						EconomyResponse response = LBMain.getInstance().eco.withdrawPlayer(player, cost);
-						if(response.transactionSuccess()) {
+						if(LBMain.getEconomy().withdraw(player, (int) cost)) {
 							for(int i = 0; i < amount; i++)
 								block.giveItem(player);
-							player.sendMessage(Message.GUI_GET_SUCCESS.getAsString().replace("%eco%", LBMain.getInstance().getVaultPrice(cost))
+							player.sendMessage(Message.GUI_GET_SUCCESS.getAsString().replace("%eco%", LBMain.getEconomy().format((int) cost))
 									.replace("%amount%", String.valueOf(amount)));
 						} else {
-							player.sendMessage(Message.GUI_GET_EXCEPTION.getAsString().replace("%exception%", response.errorMessage));
 							player.closeInventory();
 							return;
 						}
@@ -143,25 +140,16 @@ public class GuiManager implements Listener {
 		map.remove(p);
 	}
 	
-	@SuppressWarnings("deprecation")
 	public static void init() {
 		
-		LBMain.debug("Init GuiManager");
-		Collection<LuckyBlockType> types = LuckyBlockType.list().stream()
-				.filter(n -> {
-					try {
-						return n.get().canBeShoped();
-					} catch (LuckyBlockNotLoadedException e) {
-						e.printStackTrace();
-						return false;
-					}
-				})
+		Collection<LuckyBlockType> types = LuckyBlockType.enabled().stream()
+				.filter(n -> LuckyBlockType.map().get(n).canBeShoped())
 				.sorted(Comparator.<LuckyBlockType>comparingInt(n -> n.asColor().getData()))
 				.collect(Collectors.toList());
 		LBMain.debug("[GUIMANAGER] Found " + types.size() + " types");
 		
 		int rows = types.size() == 0 ? 3 : (int) Math.ceil(((double)types.size()) / 5);
-		get = Bukkit.createInventory(null, (2 + rows) * 9, Message.GUI_GET_TITLE.get());
+		get = Bukkit.createInventory(null, (2 + rows) * 9, Message.GUI_GET_TITLE.getAsString(true));
 		ItemStack gray_pane = LBMain.getInstance().factory.getItem(Mat.GRAY_PANE, 1);
 		
 		for(int row = 0; row < rows + 2; row++) {

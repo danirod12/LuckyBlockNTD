@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -31,7 +33,7 @@ public class BekkerItemStackBuilder {
 	@SerializedName(value = "enchantments")
 	private List<Pair<Enchantment, Integer>> enchantments = new ArrayList<>();
 	@SerializedName(value = "events")
-	private HashMap<ItemEvent<?>, Object> events = new HashMap<>();
+	private HashMap<ItemEvent<?>, Consumer<Event>> events = new HashMap<>();
 	@SerializedName(value = "data")
 	private short data = -54;
 	@SerializedName(value = "identifier")
@@ -72,8 +74,9 @@ public class BekkerItemStackBuilder {
 		return this;
 	}
 	
-	public <T> BekkerItemStackBuilder registerEvent(ItemEvent<T> event, T executor) {
-		events.put(event, executor);
+	@SuppressWarnings("unchecked")
+	public <E> BekkerItemStackBuilder registerEvent(ItemEvent<E> event, Consumer<E> executor) {
+		events.put(event, (Consumer<Event>) executor);
 		return this;
 	}
 	

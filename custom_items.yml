@@ -9,3 +9,6 @@ sword_of_justice:
 axe_of_perun:
   enabled: true
   damage: 0.5
+
+mystery_meat:
+  enabled: true

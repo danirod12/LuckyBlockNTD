@@ -25,10 +25,19 @@ public class GiveCommand implements LBCommand {
 		
 		if(args.length > 1) {
 			
-			Player p = Bukkit.getPlayerExact(args[0]);
-			if(p == null) {
-				sender.sendMessage(Message.CMD_PLAYER_NOT_FOUND.getAsString().replace("%player%", args[0]));
-				return CommandResponce.SUCCESS;
+			Player p = null;
+			byte data = 0;
+			
+			if(args[0].equalsIgnoreCase("all")) {
+				data = 1;
+			} else if(args[0].equalsIgnoreCase("world")) {
+				data = 2;
+			} else {
+				p = Bukkit.getPlayerExact(args[0]);
+				if(p == null) {
+					sender.sendMessage(Message.CMD_PLAYER_NOT_FOUND.getAsString().replace("%player%", args[0]));
+					return CommandResponce.SUCCESS;
+				}
 			}
 			
 			boolean random = false;
@@ -73,7 +82,29 @@ public class GiveCommand implements LBCommand {
 			
 			ItemStack item = LuckyBlockType.map().get(type).getSkull();
 			item.setAmount(amount);
-			p.getInventory().addItem(item);
+			switch(data) {
+			case 0: {
+				p.getInventory().addItem(item);
+				break;
+			}
+			case 1: {
+				Bukkit.getOnlinePlayers().forEach(n -> n.getInventory().addItem(item));
+				break;
+			}
+			case 2: {
+				
+				if(sender instanceof Player) {
+					((Player)sender).getWorld().getPlayers().forEach(n -> n.getInventory().addItem(item));
+				} else {
+					sender.sendMessage("Argument world only for players ;(");
+					return CommandResponce.SUCCESS;
+				}
+				
+				break;
+			}
+			default:
+				throw new IllegalArgumentException("Byte give type " + data + " not defined");
+			}
 			sender.sendMessage(Message.CMD_LB_GIVE.getAsString().replace("%lb%", type.getCustomName()).replace("%amount%", String.valueOf(amount)));
 			return CommandResponce.SUCCESS;
 			

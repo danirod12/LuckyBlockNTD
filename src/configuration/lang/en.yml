@@ -12,6 +12,7 @@ custom_items:
   sword_of_justice: "&6&l&oSword Of Justice"
   axe_of_perun: "&6&l&oAxe of Perun"
   carrot_corrupter: "&6&l&oCarrot Corrupter"
+  mystery_meat: "&6&l&oMystery meat"
 
 craft:
   allowed_one_layer: "&cCrafting is only possible with the use of each ingredient in a single amount for a separate slot"
@@ -64,7 +65,6 @@ gui:
     title: "&bGet luckyblock &4&l:D"
     no_money: "&cYou need &e%eco% &cmore money"
     success: "&aYou have successfully bought &e%amount% &aluckyblock for &e%eco%"
-    exception: "&cVault exception: %exception%"
   count:
     title: "&bSelect amount &4&l:D"
     remove: "&bRemove %offset%"

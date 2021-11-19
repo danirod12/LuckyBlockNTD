@@ -64,7 +64,7 @@ public class LuckyBlock {
 		return r;
 	}
 	
-	public boolean canBeSold() { return eco && LBMain.getInstance().eco != null; }
+	public boolean canBeSold() { return eco && LBMain.getEconomy() != null && LBMain.getEconomy().enabled(); }
 	public double getPrice() { return price; }
 	
 	public LuckyBlock(LuckyBlockType type, Config config) {

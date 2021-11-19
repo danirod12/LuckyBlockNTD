@@ -53,10 +53,9 @@ gui:
     title: '&berhalte LuckyBlock &4&l:D'
     no_money: '&cDu brauchst &e%eco% &cmehr Geld'
     success: '&aDu hast erfolgreich &e%amount% &a´Luckyblocks für &e%eco% gekauft.'
-    exception: '&cVault Ausnahme: %exception%'
+  count:
     get: '&fDu wirst bekommen: &6%amount%'
     give: '&fDu wirst geben: &c%price%'
-  count:
     title: '&bBetrag auswählen &4&l:D'
     remove: '&bEntferne %offset%'
     add: '&bHinzufügen %offset%'

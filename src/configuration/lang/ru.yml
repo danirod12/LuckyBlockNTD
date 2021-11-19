@@ -65,7 +65,6 @@ gui:
     title: "&bПолучи лаки-блок &4&l:D"
     no_money: "&cТребуется еще &e%eco% &cмонет"
     success: "&aУспешно куплено &e%amount% &aлаки-блоков за &e%eco%"
-    exception: "&cОшибка Vault: %exception%"
   count:
     title: "&bВыбери количество &4&l:D"
     remove: "&bУбрать %offset%"
