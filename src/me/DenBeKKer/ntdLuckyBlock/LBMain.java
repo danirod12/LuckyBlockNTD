@@ -36,6 +36,7 @@ import me.DenBeKKer.ntdLuckyBlock.economy.EconomyBridge;
 import me.DenBeKKer.ntdLuckyBlock.economy.TokenManagerEconomy;
 import me.DenBeKKer.ntdLuckyBlock.economy.VaultEconomy;
 import me.DenBeKKer.ntdLuckyBlock.factory.LBFactory;
+import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
 import me.DenBeKKer.ntdLuckyBlock.recipe.CraftListener;
 import me.DenBeKKer.ntdLuckyBlock.recipe.LuckyRecipe;
 import me.DenBeKKer.ntdLuckyBlock.sk89q.LBWorldEdit;
@@ -71,22 +72,21 @@ public class LBMain extends JavaPlugin {
 			brperm = true,
 			debug = false,
 			schematics = false,
-			verify_name = true,
-			verify_uuid = true,
 			h = true,
 			warning_luckyblock_changed = false;
 	
 	public boolean disable_author_info = false;
 	public boolean web_unavailable_disable = false;
 	public boolean reduce_convert = false;
+	private ConvertManager convert_manager = new ConvertManager();
 	private CommandsManager commands_manager;
 	private static String NMS_VERSION;
 	public static String getNMSVersion() { return NMS_VERSION; }
 	
 	
 	// Last update date & Build number
-	private static final String last_update = "19/11/2021";
-	private static final int build = 67;
+	private static final String last_update = "22/11/2021";
+	private static final int build = 68;
 	// Last update date & Build number
 	
 	
@@ -104,10 +104,15 @@ public class LBMain extends JavaPlugin {
 	public static boolean h() { return h; }
 	public static EconomyBridge getEconomy() { return instance.economy_bridge; }
 	public static boolean isBreakPermissions() { return brperm; }
-	public static boolean isVerifyName() { return verify_name; }
-	public static boolean isVerifyUUID() { return verify_uuid; }
+	@Deprecated
+	public static boolean isVerifyName() { return false; }
+	@Deprecated
+	public static boolean isVerifyUUID() { return getConvertManager().isVerifyUUID(); }
+	@Deprecated
+	public static boolean isVerifyTAG() { return getConvertManager().isVerifyTAG(); }
 	public static boolean warning_luckyblock_changed() { return warning_luckyblock_changed; }
 	public static CommandsManager getCommandsManager() { return instance.commands_manager; }
+	public static ConvertManager getConvertManager() { return instance.convert_manager; }
 	
 	public static boolean isDebug() { return debug; }
 	@Deprecated
@@ -217,12 +222,12 @@ public class LBMain extends JavaPlugin {
 		
 //		checkForUpdates();
 		if(config.get().getBoolean("scheduled-update-check")) {
-			if(debug) debug("Loading Bukkit scheduler thread for delayed update check");
+			debug("Loading Bukkit scheduler thread for delayed update check");
 			Bukkit.getScheduler().runTaskTimer(instance, () -> checkForUpdates(), 100L, 72000L);
 		} else Bukkit.getScheduler().runTaskLater(instance, () -> checkForUpdates(), 100L);
 		
 		if(web_unavailable_disable)
-			log(Level.INFO, "\"Web-Server is unavailable\" message is disabled. My plugin page - " + updater.getResourceURL());
+			log(Level.INFO, "\"Web-Server is unavailable\" message is disabled. Plugin page - " + updater.getResourceURL());
 		
 		boolean old = false;
 		try {
@@ -240,7 +245,7 @@ public class LBMain extends JavaPlugin {
 		
 		if(Hooks.TokenManager.isEnabled()) {
 			
-			Config token = new Config(instance, null, "token_manager");
+			Config token = new Config(instance, "configuration.other", null, "token_manager");
 			token.copy(true);
 			
 			if(token.get().getBoolean("override-vault")) {
@@ -255,7 +260,7 @@ public class LBMain extends JavaPlugin {
 		
 		schematics_folder = new File(getDataFolder(), "schematics");
 		if(Hooks.WorldEdit.isEnabled()) {
-			if(debug) debug("Loading WorldEdit provider");
+			debug("Loading WorldEdit provider...");
 			
 			if(!LBWorldEdit.isPlatformAvailable()) {
 				
@@ -272,9 +277,7 @@ public class LBMain extends JavaPlugin {
 				}
 				
 				schematics = true;
-				
-				if(debug)
-					debug("Hooked into " + (LBWorldEdit.isFAWE() ? "FastAsync" : "") + "WorldEdit");
+				debug("Hooked into " + (LBWorldEdit.isFAWE() ? "FastAsync" : "") + "WorldEdit");
 				
 			}
 			
@@ -283,8 +286,12 @@ public class LBMain extends JavaPlugin {
 			
 		}
 		
-		debug("Loading custom items...");
-		CustomItemFactory.loadSystem();
+		debug("Loading custom item factory...");
+		try {
+			CustomItemFactory.loadSystem();
+		} catch(Throwable th) {
+			th.printStackTrace();
+		}
 		
 		Hooks.print();
 		system_load();
@@ -295,10 +302,11 @@ public class LBMain extends JavaPlugin {
 			ex.printStackTrace();
 		}
 		
-		debug("Loading Events");
+		debug("Loading event managers...");
 		Bukkit.getPluginManager().registerEvents(new LBHandler(), this);
 		Bukkit.getPluginManager().registerEvents(new GuiManager(), this);
 		Bukkit.getPluginManager().registerEvents(new CraftListener(), this);
+		Bukkit.getPluginManager().registerEvents(convert_manager, this);
 		
 		Bukkit.getScheduler().runTaskLater(instance, () -> {
 			
@@ -312,19 +320,15 @@ public class LBMain extends JavaPlugin {
 			
 		}, 120);
 		
-		debug("Loading command...");
+		debug("Loading commands manager...");
 		commands_manager = new CommandsManager();
 		PluginCommand command = Bukkit.getPluginCommand("ntdluckyblock");
 		command.setExecutor(commands_manager);
 		command.setTabCompleter(commands_manager);
 		
 		ms = (System.currentTimeMillis() - ms);
-		log(Level.INFO, ChatColor.GREEN + "Enabled " + msIndicator(ms, 500, 1000) + "(took " + ms + " ms)" + ChatColor.GREEN + "... ");
-//		if(ms > 1000)
-//			log(Level.INFO, "\u00a7c\u00a7l[!] \u00a7ePlugin initialization took over 1 second (1000 ms). This is fine for the first launch. "
-//					+ "But if this is not the first launch, then inform the author about this by providing the full console log");
-		if(ms > 1000)
-			log(Level.INFO, "\u00a7c\u00a7l[!] \u00a7ePlugin initialization took over 1 second (" + ms + " ms)");
+		log(Level.INFO, ChatColor.GREEN + "Enabled " + msIndicator(ms, 1000, 3000) + "(took " + ms + " ms)" + ChatColor.GREEN + "... ");
+		if(ms > 5000) log(Level.INFO, "\u00a7c\u00a7l[!] \u00a7ePlugin initialization took over 5 second (" + ms + " ms)");
 		
 	}
 	
@@ -438,11 +442,24 @@ public class LBMain extends JavaPlugin {
 		h = config.get().getBoolean("skip-factory-broken");
 		p$s = config.get().getBoolean("prevent-hat-luckyblocks");
 		
-		verify_name = config.get().getBoolean("place.verify-name");
-		verify_uuid = config.get().getBoolean("place.verify-UUID");
+		if(config.get().isSet("place.verify-name")) {
+			
+			config.get().set("place.verify-name", null);
+			config.get().set("place.verify-TAG", true);
+			config.get().set("place.convert-factory", true);
+			config.save();
+			log(Level.WARNING, "Old storage scheme found!");
+			log(Level.WARNING, "  > disabling name checking");
+			log(Level.WARNING, "  > enabling tag factory converter");
+			log(Level.WARNING, "THIS MAY CAUSE BAD PERFOMANCE IMPACT!");
+			
+		}
 		
-		if(verify_name == false && verify_uuid == false)
-			log(Level.WARNING, "You must enable place.verify-name or place.verify-UUID option for plugin work");
+		convert_manager.options(config.get().getBoolean("place.verify-UUID"), config.get().getBoolean("place.verify-TAG"));
+		convert_manager.toggleFactory(config.get().getBoolean("place.convert-factory"));
+		
+		if(convert_manager.isVerifyTAG() == false && convert_manager.isVerifyUUID() == false)
+			log(Level.WARNING, "You must enable place.verify-TAG or place.verify-UUID option for plugin work");
 		
 		MessagesManager.reload(config.get().getString("language"));
 		
@@ -461,24 +478,25 @@ public class LBMain extends JavaPlugin {
 		
 		web_unavailable_disable = config.get().getBoolean("web-unavailable-disable");
 		
-		Config worlds = new Config(this, null, "worlds");
+		Config worlds = new Config(this, "configuration.other", null, "worlds");
 		worlds.copy(true);
 		w = new WorldsList(worlds.get().getString("mode"), worlds.get().getStringList("list"));
 		w.setBreakNoDrop(worlds.get().getBoolean("break-no-drop"));
 		w.setPlaceAdmins(worlds.get().getBoolean("place-admins"));
-		CustomItemFactory.reloadSystem();
+		try {
+			CustomItemFactory.reloadSystem();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 		
 	}
 	
-	public static void debug(String string) {
-		if(debug)
-			log(Level.INFO, "[DEBUG] " + string);
-	}
+	public static void debug(String string) { if(debug) log(Level.INFO, "[DEBUG] " + string); }
 	
 	public void system_load() {
 		
 		long ms = System.currentTimeMillis();
-		if(debug) debug("Loading system");
+		debug("Loading system...");
 		map.clear();
 		
 		if(commands_manager != null)
@@ -570,6 +588,7 @@ public class LBMain extends JavaPlugin {
 	public enum LuckyBlockType {
 		
 		TINTED("a57a8c5ef6cafefa50eb308b97a6375b132def6fb6c50b107fbb39a28fa6c227"),
+		ICED("2fbe5d2c82ef397513cd757f7735e653238fb62de672907e6b4762a1767afa7d"),
 		
 		BLACK("c7b187e38b407feabaf190879d98a67f4c7052f3201f72e44571f537ea89d4c7"),
 		BLUE("8534b17d2d3b5a64c57f5f080dd777945761d9f71d82e8f599f242976e4d0c05"),
@@ -600,6 +619,7 @@ public class LBMain extends JavaPlugin {
 			if(this == LuckyBlockType.LIGHT_GRAY && instance.factory instanceof Mat1_12)
 				return DyeColor.valueOf("SILVER");
 			if(this == LuckyBlockType.TINTED) return DyeColor.BLACK;
+			if(this == LuckyBlockType.ICED) return DyeColor.LIGHT_BLUE;
 			
 			return DyeColor.valueOf(this.name());
 			
@@ -608,6 +628,7 @@ public class LBMain extends JavaPlugin {
 		public ColorData asColor() {
 			
 			if(this == LuckyBlockType.TINTED) return ColorData.BLACK;
+			if(this == LuckyBlockType.ICED) return ColorData.LIGHT_BLUE;
 			return ColorData.valueOf(name());
 			
 		}
@@ -622,15 +643,26 @@ public class LBMain extends JavaPlugin {
 			return null;
 		}
 		
+		public static LuckyBlockType parse(UUID uuid) {
+			for(LuckyBlockType type : values())
+				if(type.getUUID().equals(uuid)) return type;
+			return null;
+		}
+		
 		public boolean isAvailable() {
-			return this == LuckyBlockType.TINTED ? TintedMaterial.isAvailable() : true;
+			
+			if(this == LuckyBlockType.TINTED) return TintedMaterial.isAvailable();
+			if(this == LuckyBlockType.ICED) return isPremium();
+			
+			return true;
+			
 		}
 		
 		public String load() {
 			
-			if(!isAvailable()) return "LuckyBlock type \"" + name() + "\" is not available";
+			if(!isAvailable()) return "LuckyBlock \"" + name() + "\" is not available";
 			
-			Config config = new Config(instance, "configuration." + instance.factory.build(), folder, this.name().toLowerCase() + ".yml");
+			Config config = new Config(instance, "configuration.luckyblocks." + instance.factory.build(), folder, this.name().toLowerCase() + ".yml");
 			
 			if(!config.hasResource()) {
 				
@@ -656,6 +688,7 @@ public class LBMain extends JavaPlugin {
 		
 		public Material getMaterial() {
 			if(this == LuckyBlockType.TINTED) return TintedMaterial.getMaterial();
+			if(this == LuckyBlockType.ICED) return Material.ICE;
 			return instance.factory.getGlass(asColor(), 1).getType();
 		}
 		
@@ -678,6 +711,7 @@ public class LBMain extends JavaPlugin {
 		
 		public static HashMap<LuckyBlockType, LuckyBlock> map() { return map; }
 		
+		@Deprecated
 		public String fixName(String name) {
 			
 			try {
@@ -704,8 +738,8 @@ public class LBMain extends JavaPlugin {
 		public String getTexture() { return this.texture; }
 		
 		public UUID getUUID() {
-			if(this == LuckyBlockType.TINTED)
-				return UUID.fromString("12345678-1234-1234-1234-000000000010");
+			if(this == LuckyBlockType.TINTED) return UUID.fromString("12345678-1234-1234-1234-000000000010");
+			if(this == LuckyBlockType.ICED) return UUID.fromString("12345678-1234-1234-1234-000000000011");
 			return UUID.fromString("12345678-1234-1234-1234-00000000000" + Integer.toHexString(asColor().getData()));
 		}
 		
@@ -727,6 +761,10 @@ public class LBMain extends JavaPlugin {
 			
 			return get().getRecipes();
 			
+		}
+		
+		public boolean isColoredGlass() {
+			return this != TINTED && this != ICED;
 		}
 		
 	}

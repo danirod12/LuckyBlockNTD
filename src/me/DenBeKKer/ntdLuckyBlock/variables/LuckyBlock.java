@@ -3,6 +3,7 @@ package me.DenBeKKer.ntdLuckyBlock.variables;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -22,6 +23,8 @@ import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.DropChance;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockBreakEvent;
+import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
+import me.DenBeKKer.ntdLuckyBlock.customitem.Identifier;
 import me.DenBeKKer.ntdLuckyBlock.recipe.CraftTheory;
 import me.DenBeKKer.ntdLuckyBlock.recipe.LuckyRecipe;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
@@ -33,6 +36,7 @@ import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_12;
 public class LuckyBlock {
 	
 	private final LuckyBlockType type;
+	private final Identifier identifier;
 	
 	private final String exception, texture, name, custom_name;
 	private List<String> lore = new ArrayList<>();
@@ -70,6 +74,7 @@ public class LuckyBlock {
 	public LuckyBlock(LuckyBlockType type, Config config) {
 		
 		this.type = type;
+		this.identifier = new Identifier(CustomItemFactory.TAG_LUCKYBLOCK_TYPE, type.name().toLowerCase());
 		FileConfiguration file = config.get();
 		if(!file.isSet("texture")) {
 			exception = "texture not set";
@@ -125,7 +130,7 @@ public class LuckyBlock {
 					"https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Effect.html for full animations list");
 			effect = Effect.MOBSPAWNER_FLAMES;
 		}
-		name = file.isSet("name") ? type.fixName(file.getString("name")) : type.name();
+		name = file.isSet("name") ? file.getString("name") : type.name();
 		custom_name = file.isSet("custom_name") ? file.getString("custom_name") : type.name();
 		
 		if(file.isSet("lore"))
@@ -195,7 +200,7 @@ public class LuckyBlock {
 		stand.getEquipment().setHelmet(getSkull());
 		
 		block.setType(type.getMaterial());
-		if(LBMain.getInstance().factory instanceof Mat1_12)
+		if(LBMain.getInstance().factory instanceof Mat1_12 && type.isColoredGlass())
 			IMat.setData(block, (byte) type.asColor().getData());
 		
 	}
@@ -213,9 +218,29 @@ public class LuckyBlock {
 	public ItemStack getSkull() {
 		
 		if(head == null)
-			head = LBMain.getHead0("http://textures.minecraft.net/texture/" + texture, Misc.setColors(name), lore, type.getUUID());
+			head = identifier.apply(LBMain.getHead0("http://textures.minecraft.net/texture/" + texture, Misc.setColors(name), lore, type.getUUID()));
         return head.clone();
         
+	}
+	
+	public boolean isSkull(ItemStack stack) {
+		return isSkull(stack, true);
+	}
+	
+	public boolean isSkull(ItemStack stack, boolean check_tag) {
+		return isSkull(stack, true, check_tag);
+	}
+	
+	public boolean isSkull(ItemStack stack, boolean check_uuid, boolean check_tag) {
+		
+		if(check_uuid) {
+			
+			UUID uuid = LBMain.getUUID(stack);
+			if(uuid == null || !uuid.equals(type.getUUID())) return false;
+			
+		}
+		return !check_tag || identifier.compare(stack);
+		
 	}
 	
 	@Deprecated
@@ -300,7 +325,17 @@ public class LuckyBlock {
 	}
 	
 	public LuckyBlockType getType() { return type; }
+	public Identifier getIdentifier() { return identifier; }
 	
 	public Collection<LuckyRecipe> getRecipes() { return recipes; }
+	
+	@SuppressWarnings("deprecation")
+	public String getOldName() {
+		return type.fixName(name);
+	}
+	
+	public String getName() {
+		return name;
+	}
 	
 }

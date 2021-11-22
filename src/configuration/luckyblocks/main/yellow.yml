@@ -60,11 +60,10 @@ drop:
     - "ITEM : CHAINMAIL_LEGGINGS : 1 : 0 : Chainmail Leggings : PROTECTION_ENVIRONMENTAL : 2"
     - "ITEM : ARROW : 12 : 0"
   '9':
-    - "ITEM : COOKED_FISH : 8 : 0"
     - "ITEM : APPLE : 8 : 0"
-    - "ITEM : WOOD : 9 : 1"
+    - "ITEM : COBBLESTONE : 9 : 1"
   '10':
-    - "ITEM : COOKED_FISH : 6 : 0"
+    - "ITEM : APPLE : 6 : 0"
     - "ITEM : EGG : 16 : 0"
     - "ITEM : LEGACY_FIREWORK_CHARGE : 1 : 0"
   '11':
@@ -107,7 +106,7 @@ drop:
   '20':
     - "ITEM : LAVA_BUCKET : 1 : 0"
     - "ITEM : FLINT_AND_STEEL : 1 : 0"
-    - "ITEM : IRON_PLATE : 12 : 0"
+    - "ITEM : IRON_CHESTPLATE : 12 : 0"
 
 craft:
   default: true

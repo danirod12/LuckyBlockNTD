@@ -27,7 +27,7 @@ public class GetCustomItemCommand implements LBPlayerCommand {
 				return CommandResponce.SUCCESS;
 			}
 			sender.getInventory().addItem(stack);
-			sender.sendMessage(Message.CMD_CI_RECEIVED.getAsString(true).replace("%item%", stack.getIdentifier().toString()));
+			sender.sendMessage(Message.CMD_CI_RECEIVED.getAsString(true).replace("%item%", stack.getIdentifier().getIdentifier()));
 			return CommandResponce.SUCCESS;
 			
 		}

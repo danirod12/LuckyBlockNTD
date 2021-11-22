@@ -27,7 +27,6 @@ import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -46,7 +45,6 @@ import me.DenBeKKer.ntdLuckyBlock.util.Config;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.GuiManager;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 
-@SuppressWarnings("deprecation")
 public class LBHandler implements Listener {
 	
 	@EventHandler
@@ -128,7 +126,7 @@ public class LBHandler implements Listener {
 		final boolean shift = e.getClick().name().contains("SHIFT");
 		
 		final ItemStack stack = shift ? e.getCurrentItem() : e.getCursor();
-		if(LuckyBlockAPI.isLuckyBlock(stack, LBMain.isVerifyName(), LBMain.isVerifyUUID())) {
+		if(LuckyBlockAPI.checkLuckyBlock(stack)) {
 			
 			if(shift) {
 				if(isAirOrNull(e.getWhoClicked().getInventory().getHelmet()))
@@ -144,16 +142,16 @@ public class LBHandler implements Listener {
 		return helmet == null || helmet.getType() == Material.AIR;
 	}
 	
+	@SuppressWarnings("deprecation")
 	@EventHandler
-	public void claim_drop(PlayerPickupItemEvent e) throws LuckyBlockNotLoadedException {
+	public void claim_drop(org.bukkit.event.player.PlayerPickupItemEvent e) {
 		
-		LuckyBlockType type = LuckyBlockAPI.getLuckyBlock(e.getItem().getItemStack(), false, true);
+		LuckyBlockType type = LuckyBlockAPI.parseLuckyBlock(e.getItem().getItemStack(), false);
 		if(type != null && type.isLoaded()) {
 			
-			ItemStack item = type.get().getSkull();
+			ItemStack item = LuckyBlockType.map().get(type).getSkull();
 			item.setAmount(e.getItem().getItemStack().getAmount());
 			e.getItem().setItemStack(item);
-			item.setAmount(1);
 			
 		}
 		
@@ -191,7 +189,7 @@ public class LBHandler implements Listener {
 	@EventHandler
 	public void join(PlayerJoinEvent e) {
 		
-		if(e.getPlayer().hasPermission("luckyblock.update") && LBMain.getUpdater().need_update$cache() && LBMain.inform()) {
+		if(e.getPlayer().hasPermission("luckyblock.update") && LBMain.getUpdater().need_update$cache() && LBMain.isInformAbountUpdates()) {
 			
 			new BukkitRunnable() {
 
@@ -227,7 +225,7 @@ public class LBHandler implements Listener {
 		}
 		if(e.getPlayer().hasPermission("luckyblock.convert") && !LBMain.getInstance().reduce_convert) {
 			
-			int convert = ConvertManager.getRequests();
+			int convert = LBMain.getConvertManager().getRequests();
 			if(convert > 0) {
 				
 				if(LBMain.isPremium()) {
@@ -235,7 +233,7 @@ public class LBHandler implements Listener {
 							"my plugin can store almost any item from any plugin and you can set drop chances for each lucky entry. You can " +
 							"convert \u00a7c" + convert + " \u00a7fentry drops to new JSON store format. \u00a7bPerform - \u00a7l/luckyblock convert");
 					e.getPlayer().sendMessage("\u00a74[*] \u00a7cTo prevent loss of configuration in case of error, make backup of some files first");
-					for(Entry<Config, Collection<String>> entry : ConvertManager.getRequestMap().entrySet())
+					for(Entry<Config, Collection<String>> entry : LBMain.getConvertManager().getRequestMap().entrySet())
 						e.getPlayer().sendMessage("\u00a74 - \u00a7c" + entry.getKey().getName()
 								+ " \u00a77(Have " + entry.getValue().size() + " unconverted items)");
 				} else {
@@ -254,7 +252,14 @@ public class LBHandler implements Listener {
 	@EventHandler
 	public void place(BlockPlaceEvent e) {
 		
-		LuckyBlockType type = LuckyBlockAPI.getLuckyBlock(e.getItemInHand(), true, true);
+		LuckyBlockType temp = null;
+		if(LBMain.getConvertManager().isFactory() && LBMain.getConvertManager().isVerifyTAG()) {
+			temp = LuckyBlockAPI.parseOldLuckyBlock(e.getItemInHand());
+			if(temp != null) Bukkit.getScheduler().runTaskLater(LBMain.getInstance(), () -> ConvertManager.convert(e.getPlayer()), 1L);
+		}
+		
+		final LuckyBlockType type = temp != null ? temp : LuckyBlockAPI.parseLuckyBlock(e.getItemInHand(), LBMain.getConvertManager().isVerifyUUID(),
+				LBMain.getConvertManager().isVerifyTAG());
 		if(type != null && type.isLoaded()) {
 			
 			if(e.isCancelled()) return;
@@ -269,14 +274,7 @@ public class LBHandler implements Listener {
 			LuckyBlockPlaceEvent event = new LuckyBlockPlaceEvent(e.getBlock(), e.getPlayer(), type);
 			Bukkit.getPluginManager().callEvent(event);
 			if(event.isCancelled()) return;
-			
-			Bukkit.getScheduler().runTaskLater(LBMain.getInstance(), () -> {
-				try {
-					type.get().placeBlock(e.getBlock(), true);
-				} catch (LuckyBlockNotLoadedException e1) {
-					e1.printStackTrace();
-				}
-			}, 1);
+			Bukkit.getScheduler().runTaskLater(LBMain.getInstance(), () -> LuckyBlockType.map().get(type).placeBlock(e.getBlock(), true), 1L);
 			return;
 			
 		}

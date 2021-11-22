@@ -179,7 +179,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter {
 					args[0].equalsIgnoreCase("cig") || args[0].equalsIgnoreCase("gci"))
 					 && (!(sender instanceof Player) || Misc.hasPermission((Player) sender, "luckyblock.command.customitemget"))) {
 				
-				if(args.length == 2) return CustomItemFactory.copy().stream().map(n -> n.getIdentifier().toString())
+				if(args.length == 2) return CustomItemFactory.copy().stream().map(n -> n.getIdentifier().getIdentifier())
 						.filter(n -> n.toLowerCase().startsWith(args[1].toLowerCase()) ||
 								!args[1].contains("-") && n.split("-")[1].startsWith(args[1].toLowerCase())).collect(Collectors.toList());
 				

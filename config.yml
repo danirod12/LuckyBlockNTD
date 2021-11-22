@@ -60,14 +60,17 @@ disable-json-convert-checking: false
 skip-factory-broken: true
 
 # verify-UUID checks if placing skull UUID matchs with origin LuckyBlock UUID
-# verify-name checks if placing skull dispalay name match with origin LuckyBlock name
-#   NOTE: LuckyBlock names not like in configs. All names got modification.
-#         To get modified name (That will be same after restart) perform command /ntdluckyblock iteminfo
+# verify-TAG checks if placing skull contains NBT tag compound luckyblock_type
 #
 #   WARNING: Both false disable all luckyblocks
 place:
   verify-UUID: true
-  verify-name: true
+  verify-TAG: true
+  
+  # Not needed. Enable it if you have used my plugin before 2.4.3
+  # This will check joining players inventories and all container change events
+  #		to replace old LuckyBlock items (Name & UUID) to new one (Tag & UUID)
+  convert-factory: false
 
 # Enabled colors of luckyblocks
 enabled:

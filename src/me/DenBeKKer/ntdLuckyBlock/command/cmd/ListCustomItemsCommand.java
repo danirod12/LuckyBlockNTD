@@ -28,8 +28,8 @@ public class ListCustomItemsCommand implements LBCommand {
 		if(collection.size() == 0)
 			sender.sendMessage("\u00a77 >>\u00a7c List is empty");
 		else for(BekkerItemStack stack : collection) {
-			final String plugin = stack.getIdentifier().toString().split("-")[0];
-			sender.sendMessage("\u00a78 > \u00a7e" + stack.getIdentifier().toString()
+			final String plugin = stack.getIdentifier().getIdentifier().split("-")[0];
+			sender.sendMessage("\u00a78 > \u00a7e" + stack.getIdentifier().getIdentifier()
 					+ " \u00a77(" + (plugin.equalsIgnoreCase(LBMain.getInstance().getName()) ? "\u00a76" : "\u00a7e") + plugin + "\u00a77)");
 		}
 		return CommandResponce.SUCCESS;

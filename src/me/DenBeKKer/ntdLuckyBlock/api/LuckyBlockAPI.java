@@ -3,7 +3,7 @@ package me.DenBeKKer.ntdLuckyBlock.api;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -20,7 +20,8 @@ import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.loader.PathLoader;
 import me.DenBeKKer.ntdLuckyBlock.api.loader.StringLoader;
-import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
+import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
+import me.DenBeKKer.ntdLuckyBlock.customitem.Identifier;
 import me.DenBeKKer.ntdLuckyBlock.loader.JSONLoader;
 import me.DenBeKKer.ntdLuckyBlock.loader.LegacyLoader;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
@@ -110,7 +111,7 @@ public class LuckyBlockAPI {
 					entry.add(drop);
 				
 			}
-			ConvertManager.add(loaded, path);
+			LBMain.getConvertManager().add(loaded, path);
 			return entry;
 			
 		}
@@ -158,19 +159,11 @@ public class LuckyBlockAPI {
 		
 	}
 	
-	/**
-	 * 
-	 * @deprecated {@link #isLuckyBlock(ItemStack, boolean, boolean)}
-	 */
 	@Deprecated
 	public static boolean isLuckyBlock(ItemStack item) {
 		return getLuckyBlock(item) != null;
 	}
 	
-	/**
-	 * 
-	 * @deprecated {@link #getLuckyBlock(ItemStack, boolean, boolean)}
-	 */
 	@Deprecated
 	public static LuckyBlockType getLuckyBlock(ItemStack item) {
 		
@@ -178,41 +171,112 @@ public class LuckyBlockAPI {
 		
 	}
 	
+	@Deprecated
+	public static boolean isLuckyBlock(ItemStack item, boolean unavailable, boolean checkUUID) {
+		return getLuckyBlock(item, unavailable, checkUUID) != null;
+	}
+	
+	@Deprecated
+	public static LuckyBlockType getLuckyBlock(ItemStack item, boolean unavailable, boolean checkUUID) {
+		return parseLuckyBlock(item, checkUUID, false);
+	}
+	
 	/**
-	 * 
-	 * @param item ItemStack to be checked
-	 * @param checkName Check name? System: {@link LBMain#isVerifyName()}
-	 * @param checkUUID Check UUID? System: {@link LBMain#isVerifyUUID()}
-	 * @return ItemStack is a LuckyBlock
+	 * Check that item is LuckyBlock
+	 * @param stack ItemStack to be checked
+	 * @return Checks that item is LuckyBlock
 	 */
-	public static boolean isLuckyBlock(ItemStack item, boolean checkName, boolean checkUUID) {
-		return getLuckyBlock(item, checkName, checkUUID) != null;
+	public static boolean checkLuckyBlock(ItemStack stack) {
+		return checkLuckyBlock(stack, true);
+	}
+	
+	/**
+	 * Check that item is LuckyBlock
+	 * @param stack ItemStack to be checked
+	 * @param check_tag Check tag
+	 * @return Checks that item is LuckyBlock
+	 */
+	public static boolean checkLuckyBlock(ItemStack stack, boolean check_tag) {
+		return checkLuckyBlock(stack, true, check_tag);
+	}
+	
+	/**
+	 * Check that item is LuckyBlock
+	 * @param stack ItemStack to be checked
+	 * @param check_uuid Check uuid
+	 * @param check_tag Check tag
+	 * @return Checks that item is LuckyBlock
+	 */
+	public static boolean checkLuckyBlock(ItemStack stack, boolean check_uuid, boolean check_tag) {
+		return parseLuckyBlock(stack, check_uuid, check_tag) != null;
+	}
+	
+	/**
+	 * Parse LuckyBlock type from ItemStack
+	 * @param stack ItemStack to be parsed
+	 * @return LuckyBlockType from item if item is LuckyBlock and null if not
+	 */
+	public static LuckyBlockType parseLuckyBlock(ItemStack stack) {
+		return parseLuckyBlock(stack, true);
+	}
+	
+	/**
+	 * Parse LuckyBlock type from ItemStack
+	 * @param stack ItemStack to be parsed
+	 * @param check_tag Check tag
+	 * @return LuckyBlockType from item if item is LuckyBlock and null if not
+	 */
+	public static LuckyBlockType parseLuckyBlock(ItemStack stack, boolean check_tag) {
+		return parseLuckyBlock(stack, true, check_tag);
+	}
+	
+	/**
+	 * Parse LuckyBlock type from ItemStack
+	 * @param stack ItemStack to be parsed
+	 * @param check_uuid Check uuid
+	 * @param check_tag Check tag
+	 * @return LuckyBlockType from item if item is LuckyBlock and null if not
+	 */
+	public static LuckyBlockType parseLuckyBlock(ItemStack stack, boolean check_uuid, boolean check_tag) {
+		
+		UUID uuid = null;
+		if(check_uuid) {
+			uuid = LBMain.getUUID(stack);
+			if(uuid == null) return null;
+		}
+		
+		if(check_tag) {
+			
+			final String type = CustomItemFactory.parseValue(stack, CustomItemFactory.TAG_LUCKYBLOCK_TYPE);
+			final LuckyBlockType parsed = LuckyBlockType.parse(type);
+			return parsed == null || uuid == null || parsed.getUUID().equals(uuid) ? parsed : null;
+			
+		} else return LuckyBlockType.parse(uuid);
+		
 	}
 	
 	/**
 	 * 
-	 * @param item ItemStack to be checked
-	 * @param checkName Check name? System: {@link LBMain#isVerifyName()}
-	 * @param checkUUID Check UUID? System: {@link LBMain#isVerifyUUID()}
-	 * @return LuckyBlockType of item. NULL if item not a luckyblock
+	 * @param stack ItemStack to mark
+	 * @param tag_name Tag name
+	 * @param plugin Plugin
+	 * @param value Value to insert
+	 * @return Insert custom tag
 	 */
-	public static LuckyBlockType getLuckyBlock(ItemStack item, boolean checkName, boolean checkUUID) {
-		
-		UUID uuid = LBMain.getUUID(item);
-		
-		if(uuid == null || !(checkName || checkUUID)) return null;
-		
-		for(Entry<LuckyBlockType, LuckyBlock> s : LuckyBlockType.map().entrySet()) {
-			
-			if(checkName && !item.getItemMeta().getDisplayName().equalsIgnoreCase(s.getValue().getSkull().getItemMeta().getDisplayName())
-					|| checkUUID && !s.getKey().getUUID().equals(uuid)) continue;
-			
-			return s.getKey();
-			
-		}
-		
-		return null;
-		
+	public static ItemStack insertTag(ItemStack stack, String tag_name, Plugin plugin, String value) {
+		return new Identifier(plugin, tag_name, value).apply(stack);
+	}
+	
+	/**
+	 * 
+	 * @param stack ItemStack to check
+	 * @param tag_name Tag name
+	 * @param Plugin
+	 * @param value Value
+	 * @return Check if ItemStack has tag and value is same
+	 */
+	public static boolean compareTag(ItemStack stack, String tag_name, Plugin plugin, String value) {
+		return new Identifier(plugin, tag_name, value).compare(stack);
 	}
 	
 	/**
@@ -226,6 +290,31 @@ public class LuckyBlockAPI {
 		if(type.get() != null) {
 			type.get().placeBlock(b, false);
 		} else throw new LuckyBlockNotLoadedException(type);
+		
+	}
+	
+	public static LuckyBlockType parseOldLuckyBlock(ItemStack stack) {
+		
+		UUID uuid = LBMain.getUUID(stack);
+		if(uuid == null) return null;
+		if(CustomItemFactory.parseValue(stack, CustomItemFactory.TAG_LUCKYBLOCK_TYPE) != null) return null;
+		
+		LuckyBlockType type = LuckyBlockType.parse(uuid);
+		if(type == null) {
+			
+			for(Map.Entry<LuckyBlockType, LuckyBlock> loaded : LuckyBlockType.map().entrySet()) {
+				
+				if(stack.getItemMeta().getDisplayName().equalsIgnoreCase(loaded.getValue().getOldName())) {
+					
+					type = loaded.getKey();
+					break;
+					
+				}
+				
+			}
+			
+		}
+		return type;
 		
 	}
 	

@@ -36,7 +36,7 @@ public class BekkerItemStack extends ItemStack {
 	
 	public void handle(Event event) {
 		
-		LBMain.debug(event.getClass().getSimpleName() + " - " + identifier.toString());
+		LBMain.debug(event.getClass().getSimpleName() + " - " + identifier.getIdentifier());
 		for(Entry<ItemEvent<?>, Consumer<Event>> element : map.entrySet()) {
 			
 			if(element.getKey().getInstance().isAssignableFrom(event.getClass())) {

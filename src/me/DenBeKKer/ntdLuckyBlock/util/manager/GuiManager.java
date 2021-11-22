@@ -116,12 +116,13 @@ public class GuiManager implements Listener {
 								block.giveItem(player);
 							player.sendMessage(Message.GUI_GET_SUCCESS.getAsString().replace("%eco%", LBMain.getEconomy().format((int) cost))
 									.replace("%amount%", String.valueOf(amount)));
+							player.openInventory(get);
+							return;
 						} else {
 							player.closeInventory();
 							return;
 						}
 					}
-					player.closeInventory();
 					
 				}
 				

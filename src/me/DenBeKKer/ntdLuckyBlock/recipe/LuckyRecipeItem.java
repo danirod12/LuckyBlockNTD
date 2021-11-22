@@ -5,8 +5,6 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Dye;
 
-import com.google.gson.Gson;
-
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
@@ -75,6 +73,6 @@ public class LuckyRecipeItem {
 	}
 	
 	@Override
-	public String toString() { return new Gson().toJson(this); }
+	public String toString() { return "{\"type\":\"" + type.name() + "\",\"option\":\"" + (object == null ? "null" : object.name()) + "\"}"; }
 	
 }

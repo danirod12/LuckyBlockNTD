@@ -5,7 +5,6 @@ import org.bukkit.command.CommandSender;
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.command.CommandResponce;
 import me.DenBeKKer.ntdLuckyBlock.command.LBCommand;
-import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 
 public class ConvertCommand implements LBCommand {
@@ -19,7 +18,7 @@ public class ConvertCommand implements LBCommand {
 	@Override
 	public CommandResponce execute(CommandSender sender, String label, String[] args) {
 		
-		if(ConvertManager.getRequests() == 0) {
+		if(LBMain.getConvertManager().getRequests() == 0) {
 			sender.sendMessage("\u00a7cThere is no convert requests");
 			return CommandResponce.SUCCESS;
 		}

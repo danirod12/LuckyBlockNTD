@@ -20,7 +20,7 @@ animation_type: "MOBSPAWNER_FLAMES"
 # Dropping items
 drop:
   '0':
-    - "ITEM : WOOD_SWORD : 1 : 29 : Hm... What is that!? : DAMAGE_ALL : 5"
+    - "ITEM : WOODEN_SWORD : 1 : 29 : Hm... What is that!? : DAMAGE_ALL : 5"
     - "ITEM : DIAMOND_CHESTPLATE : 1 : 200"
   '1':
     - "ITEM : IRON_CHESTPLATE : 1 : 0"
@@ -37,8 +37,9 @@ drop:
     - "ITEM : IRON_SWORD : 1 : 0 : &7&nIron&b Diamond sword : FIRE_ASPECT : 2"
     - "ITEM : FISHING_ROD : 1 : 0"
   '5':
-    - "ITEM : POTION : 1 : 8257"
-    - "ITEM : POTION : 1 : 8194"
+    - "SPECIAL : TNT_EXPLOSION : 20"
+  '6':
+    - "SPECIAL : EXPERIENCE_EXPLOSION : 40"
 
 craft:
   default: true

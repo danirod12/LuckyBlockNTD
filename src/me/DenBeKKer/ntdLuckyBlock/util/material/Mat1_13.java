@@ -17,6 +17,8 @@ public class Mat1_13 implements IMat {
 			case BLACK_PANE: return new ItemStack(Material.valueOf("BLACK_STAINED_GLASS_PANE"), i);
 			case WHITE_WOOL: return new ItemStack(Material.valueOf("WHITE_WOOL"), i);
 			
+			case BEEF: return new ItemStack(Material.valueOf("BEEF"), i);
+			
 			default: return null;
 			
 		}

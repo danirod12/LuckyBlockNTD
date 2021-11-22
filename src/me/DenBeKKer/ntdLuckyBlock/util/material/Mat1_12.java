@@ -18,6 +18,8 @@ public class Mat1_12 implements IMat {
 			case BLACK_PANE: return new ItemStack(Material.valueOf("STAINED_GLASS_PANE"), i, ColorData.BLACK.getData());
 			case WHITE_WOOL: return new ItemStack(Material.valueOf("WOOL"), i, ColorData.WHITE.getData());
 			
+			case BEEF: return new ItemStack(Material.valueOf("RAW_BEEF"), i);
+			
 			default: return null;
 			
 		}

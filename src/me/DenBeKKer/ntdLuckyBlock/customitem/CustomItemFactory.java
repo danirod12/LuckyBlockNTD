@@ -28,6 +28,7 @@ import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_13;
 public class CustomItemFactory {
 	
 	public static final String TAG_IDENTIFIER_NAME = "bekker_item_identifier";
+	public static final String TAG_LUCKYBLOCK_TYPE = "luckyblock_type";
 	private static Collection<BekkerItemStack> storage;
 	
 	public static void register(BekkerItemStack item) {
@@ -39,7 +40,7 @@ public class CustomItemFactory {
 	}
 	
 	private static void register(BekkerItemStackBuilder builder) {
-		if(!builder.getIdentifier().toString().split("-")[0].equalsIgnoreCase(LBMain.getInstance().getName())) {
+		if(!builder.getIdentifier().getIdentifier().split("-")[0].equalsIgnoreCase(LBMain.getInstance().getName())) {
 			throw new UnsupportedOperationException("Only system items can be registered using this method.");
 		}
 		BekkerItemStack stack = builder.build();
@@ -48,11 +49,27 @@ public class CustomItemFactory {
 	
 	public static boolean compare(ItemStack item, String identifier) {
 		
+		return compare(item, TAG_IDENTIFIER_NAME, identifier);
+		
+	}
+	
+	public static boolean compare(ItemStack item, String tag_name, String identifier) {
+		
 		final Object tag = Identifier.getTag(Identifier.asNMSCopy(item));
 		if(tag == null) return false;
 		
-		final String id = Identifier.getTagString(tag, CustomItemFactory.TAG_IDENTIFIER_NAME);
+		final String id = Identifier.getTagString(tag, tag_name);
 		return id != null && id.equalsIgnoreCase(identifier);
+		
+	}
+	
+	public static String parseValue(ItemStack item, String tag_name) {
+		
+		final Object tag = Identifier.getTag(Identifier.asNMSCopy(item));
+		if(tag == null) return null;
+		
+		final String id = Identifier.getTagString(tag, tag_name);
+		return id != null && id.isEmpty() ? null : id;
 		
 	}
 	
@@ -71,106 +88,127 @@ public class CustomItemFactory {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public static void loadSystem() {
+	public static void loadSystem() throws Throwable {
 		
 		storage = new ArrayList<>();
 		
-		Config custom_items = new Config(LBMain.getInstance(), null, "custom_items");
+		Config custom_items = new Config(LBMain.getInstance(), "configuration.other", null, "custom_items");
 		custom_items.copy(true);
 		
 		// check if new items missed
 		
 		if(isEnabled(custom_items, "magic_wool")) {
-			register(new BekkerItemStackBuilder(LBMain.getInstance().factory.getItem(Mat.WHITE_WOOL, 1))
-					.addUnsafeEnchantment(Enchantment.DURABILITY, 1).setSerialID("magic_wool")
-					.hideEnchantments().setName(Message.CI_MAGIC_WOOL.getAsString(true))
-					.registerEvent(ItemEvent.PLACE, n -> {
-						
-						new BukkitRunnable() {
+			try {
+				register(new BekkerItemStackBuilder(LBMain.getInstance().factory.getItem(Mat.WHITE_WOOL, 1))
+						.addUnsafeEnchantment(Enchantment.DURABILITY, 1).setSerialID("magic_wool")
+						.hideEnchantments().setName(Message.CI_MAGIC_WOOL.getAsString(true))
+						.registerEvent(ItemEvent.PLACE, n -> {
 							
-							int rounds = ThreadLocalRandom.current().nextInt(5, 15);
-							final Block block = n.getBlock();
-							
-							@Override
-							public void run() {
+							new BukkitRunnable() {
 								
-								if(rounds < 0 || !block.getType().name().contains("WOOL")) {
-									cancel();
-									return;
+								int rounds = ThreadLocalRandom.current().nextInt(5, 15);
+								final Block block = n.getBlock();
+								
+								@Override
+								public void run() {
+									
+									if(rounds < 0 || !block.getType().name().contains("WOOL")) {
+										cancel();
+										return;
+									}
+									
+									if(LBMain.getInstance().factory instanceof Mat1_13)
+										block.setType(IMat.WOOLS.get(ThreadLocalRandom.current().nextInt(IMat.WOOLS.size())));
+									else IMat.setData(block, (byte)ThreadLocalRandom.current().nextInt(16));
+									
+									rounds--;
+									
 								}
 								
-								if(LBMain.getInstance().factory instanceof Mat1_13)
-									block.setType(IMat.WOOLS.get(ThreadLocalRandom.current().nextInt(IMat.WOOLS.size())));
-								else IMat.setData(block, (byte)ThreadLocalRandom.current().nextInt(16));
-								
-								rounds--;
-								
-							}
+							}.runTaskTimer(LBMain.getInstance(), 2L, 5L);
 							
-						}.runTaskTimer(LBMain.getInstance(), 2L, 5L);
-						
-					}));
+						}));
+			} catch(Throwable th) {
+				th.printStackTrace();
+			}
 		}
 		if(isEnabled(custom_items, "sword_of_justice")) {
-			double h = custom_items.get().getDouble("sword_of_justice.heal");
-			if(h <= 0) h = 1;
-			final double heal = h;
-			register(new BekkerItemStackBuilder(Material.IRON_SWORD).addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 2)
-					.setSerialID("sword_of_justice").setName(Message.CI_SWORD_OF_JUSTICE.getAsString(true))
-					.registerEvent(ItemEvent.HIT, n -> {
-						if(n.getType() != HitEvent.Type.DAMAGER) return;
-						final Player player = (Player) n.getDamager();
-						player.setHealth(Math.min(player.getMaxHealth(), heal + player.getHealth()));
-					}));
+			try {
+				double h = custom_items.get().getDouble("sword_of_justice.heal");
+				if(h <= 0) h = 1;
+				final double heal = h;
+				register(new BekkerItemStackBuilder(Material.IRON_SWORD).addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 2)
+						.setSerialID("sword_of_justice").setName(Message.CI_SWORD_OF_JUSTICE.getAsString(true))
+						.registerEvent(ItemEvent.HIT, n -> {
+							if(n.getType() != HitEvent.Type.DAMAGER) return;
+							final Player player = (Player) n.getDamager();
+							player.setHealth(Math.min(player.getMaxHealth(), heal + player.getHealth()));
+						}));
+			} catch(Throwable th) {
+				th.printStackTrace();
+			}
 		}
 		if(isEnabled(custom_items, "axe_of_perun")) {
-			double d = custom_items.get().getDouble("axe_of_perun.damage");
-			if(d <= 0) d = .1D;
-			final double damage = d;
-			register(new BekkerItemStackBuilder(Material.DIAMOND_AXE).addUnsafeEnchantment(Enchantment.DURABILITY, 1)
-					.setSerialID("axe_of_perun").setName(Message.CI_AXE_OF_PERUN.getAsString(true))
-					.registerEvent(ItemEvent.HIT, n -> {
-						if(n.getType() != HitEvent.Type.DAMAGER || !(n.getVictim() instanceof Damageable)) return;
-						n.getVictim().getWorld().strikeLightningEffect(n.getVictim().getLocation());
-						((Damageable)n.getVictim()).damage(damage);
-					}));
+			try {
+				double d = custom_items.get().getDouble("axe_of_perun.damage");
+				if(d <= 0) d = .1D;
+				final double damage = d;
+				register(new BekkerItemStackBuilder(Material.DIAMOND_AXE).addUnsafeEnchantment(Enchantment.DURABILITY, 1)
+						.setSerialID("axe_of_perun").setName(Message.CI_AXE_OF_PERUN.getAsString(true))
+						.registerEvent(ItemEvent.HIT, n -> {
+							if(n.getType() != HitEvent.Type.DAMAGER || !(n.getVictim() instanceof Damageable)) return;
+							n.getVictim().getWorld().strikeLightningEffect(n.getVictim().getLocation());
+							((Damageable)n.getVictim()).damage(damage);
+						}));
+			} catch(Throwable th) {
+				th.printStackTrace();
+			}
 		}
 		if(isEnabled(custom_items, "mystery_meat")) {
-			register(new BekkerItemStackBuilder(Material.BEEF).addUnsafeEnchantment(Enchantment.DURABILITY, 1)
-					.hideEnchantments().setSerialID("mystery_meat").setName(Message.CI_MYSTERY_MEAT.getAsString(true))
-					.registerEvent(ItemEvent.CONSUME, n -> {
-						
-						final Player player = n.getPlayer();
-						
-						try {
-							PotionEffectType type = PotionEffectType.values()[ThreadLocalRandom.current().nextInt(PotionEffectType.values().length)];
-							player.addPotionEffect(new PotionEffect(type, ThreadLocalRandom.current().nextInt(5, 45) * 20, 1));
-						} catch(Exception ex) {
-							LBMain.log(Level.WARNING, "Report to author - " + LBMain.getDiscordURL());
-							ex.printStackTrace();
-						}
-						
-					}));
+			try {
+				register(new BekkerItemStackBuilder(LBMain.getInstance().factory.getItem(Mat.BEEF, 1).getType())
+						.addUnsafeEnchantment(Enchantment.DURABILITY, 1)
+						.hideEnchantments().setSerialID("mystery_meat").setName(Message.CI_MYSTERY_MEAT.getAsString(true))
+						.registerEvent(ItemEvent.CONSUME, n -> {
+							
+							final Player player = n.getPlayer();
+							final PotionEffectType type = PotionEffectType.values()[ThreadLocalRandom.current().nextInt(PotionEffectType.values().length)];
+							try {
+								player.addPotionEffect(new PotionEffect(type, ThreadLocalRandom.current().nextInt(5, 45) * 20, 1));
+							} catch(Exception ex) {
+								LBMain.log(Level.WARNING, "Report to author - " + LBMain.getDiscordURL());
+								LBMain.log(Level.WARNING, " > PotionEffectType - " + type + ", " + ex.getLocalizedMessage());
+								if(LBMain.isDebug()) ex.printStackTrace();
+							}
+							
+						}));
+			} catch(Throwable th) {
+				th.printStackTrace();
+			}
 		}
 		if(LBMain.getInstance().factory instanceof Mat1_13 && isEnabled(custom_items, "carrot_corrupter")) {
-			register(new BekkerItemStackBuilder(Material.CARROT).addUnsafeEnchantment(Enchantment.DURABILITY, 1)
-					.hideEnchantments().setSerialID("carrot_corrupter").setName(Message.CI_CARROT_CORRUPTER.getAsString(true))
-					.registerEvent(ItemEvent.HIT, n -> {
-						if(n.getType() != HitEvent.Type.DAMAGER) return;
-						if(!(n.getVictim() instanceof Player)) return;
-						
-						final Player victim = (Player) n.getVictim();
-						List<Integer> slots = new ArrayList<>();
-						for(int slot = 0; slot < 9; slot++)
-							if(!isEmpty(victim.getInventory().getItem(slot))) slots.add(slot);
-						if(slots.size() != 0) {
-							victim.getInventory().setItem(slots.get(ThreadLocalRandom.current().nextInt(slots.size())),
-									new ItemStack(Material.CARROT));
-						} else {
-							victim.getInventory().setItem(ThreadLocalRandom.current().nextInt(9), new ItemStack(Material.CARROT));
-						}
-						withdrawItem((Player) n.getDamager());
-					}));
+			try {
+				register(new BekkerItemStackBuilder(Material.CARROT).addUnsafeEnchantment(Enchantment.DURABILITY, 1)
+						.hideEnchantments().setSerialID("carrot_corrupter").setName(Message.CI_CARROT_CORRUPTER.getAsString(true))
+						.registerEvent(ItemEvent.HIT, n -> {
+							if(n.getType() != HitEvent.Type.DAMAGER) return;
+							if(!(n.getVictim() instanceof Player)) return;
+							
+							final Player victim = (Player) n.getVictim();
+							List<Integer> slots = new ArrayList<>();
+							for(int slot = 0; slot < 9; slot++)
+								if(!isEmpty(victim.getInventory().getItem(slot))) slots.add(slot);
+							if(slots.size() != 0) {
+								victim.getInventory().setItem(slots.get(ThreadLocalRandom.current().nextInt(slots.size())),
+										new ItemStack(Material.CARROT));
+							} else {
+								victim.getInventory().setItem(ThreadLocalRandom.current().nextInt(9), new ItemStack(Material.CARROT));
+							}
+							withdrawItem((Player) n.getDamager());
+						}));
+			} catch(Throwable th) {
+				th.printStackTrace();
+			}
 		}
 		
 	}
@@ -218,7 +256,7 @@ public class CustomItemFactory {
 		
 	}
 	
-	public static void reloadSystem() {
+	public static void reloadSystem() throws Throwable {
 		
 		if(storage != null && LBMain.getInstance().factory != null) {
 			

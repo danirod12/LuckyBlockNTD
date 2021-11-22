@@ -81,7 +81,7 @@ public class DestroyCommand implements LBPlayerCommand {
 			
 			final Block block = stand.getWorld().getBlockAt(stand.getLocation().add(-.5, 1.2, -.5));
 			if(type.getMaterial() == block.getType()
-					&& (LBMain.getInstance().factory instanceof Mat1_13 || block.getData() == type.asColor().getData())) {
+					&& (!type.isColoredGlass() || LBMain.getInstance().factory instanceof Mat1_13 || block.getData() == type.asColor().getData())) {
 				
 				if(!destroy_all) continue;
 				block.setType(Material.AIR);

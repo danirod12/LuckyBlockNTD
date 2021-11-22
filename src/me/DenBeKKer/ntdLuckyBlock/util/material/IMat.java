@@ -25,7 +25,8 @@ public interface IMat {
 //		
 		GRAY_PANE,
 		BLACK_PANE,
-		WHITE_WOOL;
+		WHITE_WOOL,
+		BEEF;
 		
 	}
 	
