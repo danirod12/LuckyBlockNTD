@@ -326,7 +326,7 @@ public class LuckyBlockAPI {
 	public static boolean isLuckyBlock(Block b) {
 		
 		if(b.getType().name().toUpperCase().contains("STAINED_GLASS") ||
-				b.getType().name().equalsIgnoreCase("TINTED_GLASS")) {
+				b.getType().name().equalsIgnoreCase("TINTED_GLASS") || b.getType() == Material.ICE) {
 			
 			for(LuckyBlockType type : LuckyBlockType.values()) {
 				
@@ -373,7 +373,7 @@ public class LuckyBlockAPI {
 	public static void breakLuckyBlock0(Block b, boolean ignore) {
 		
 		if(b.getType().name().toUpperCase().contains("STAINED_GLASS") ||
-				b.getType().name().equalsIgnoreCase("TINTED_GLASS")) {
+				b.getType().name().equalsIgnoreCase("TINTED_GLASS") || b.getType() == Material.ICE) {
 			
 			for(LuckyBlockType type : LuckyBlockType.values()) {
 				
@@ -432,7 +432,7 @@ public class LuckyBlockAPI {
 	public static void breakLuckyBlock(Block b, Player p, boolean drop, boolean ignore) {
 		
 		if(b.getType().name().toUpperCase().contains("STAINED_GLASS") ||
-				b.getType().name().equalsIgnoreCase("TINTED_GLASS")) {
+				b.getType().name().equalsIgnoreCase("TINTED_GLASS") || b.getType() == Material.ICE) {
 			
 			for(LuckyBlockType type : LuckyBlockType.values()) {
 				
@@ -501,7 +501,7 @@ public class LuckyBlockAPI {
 	}
 	
 	public static void system_load(Plugin your_plugin_instance) {
-		if(your_plugin_instance.equals(LBMain.getInstance()))
+		if(your_plugin_instance.equals(LBMain.getInstance()) || your_plugin_instance == null)
 			throw new UnsupportedOperationException("Provide your plugin instance, not NTD LuckyBlock");
 		LBMain.log(Level.WARNING, "Loading system by plugin " + your_plugin_instance.getName() + " v" + your_plugin_instance.getDescription().getVersion());
 		LBMain.getInstance().system_load();

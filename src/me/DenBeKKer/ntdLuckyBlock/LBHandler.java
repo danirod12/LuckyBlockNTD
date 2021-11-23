@@ -290,7 +290,7 @@ public class LBHandler implements Listener {
 	public void broke(BlockBreakEvent e) throws LuckyBlockNotLoadedException {
 		
 		if(e.getBlock().getType().name().toUpperCase().contains("STAINED_GLASS") ||
-				e.getBlock().getType().name().equalsIgnoreCase("TINTED_GLASS")) {
+				e.getBlock().getType().name().equalsIgnoreCase("TINTED_GLASS") || e.getBlock().getType() == Material.ICE) {
 			
 			for(LuckyBlockType type : LuckyBlockType.values()) {
 				
