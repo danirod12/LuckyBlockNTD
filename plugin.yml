@@ -1,6 +1,6 @@
 name: ntdLuckyBlock
 main: me.DenBeKKer.ntdLuckyBlock.LBMain
-version: 2.4.3
+version: 2.4.4
 api-version: 1.13
 author: [DenBeKKer]
 softdepend: [TokenManager, Vault, WorldEdit, FastAsyncWorldEdit, WorldGuard]
