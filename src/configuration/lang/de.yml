@@ -10,6 +10,7 @@ custom_items:
   sword_of_justice: "&6&l&oSchwert der Gerechtigkeit"
   axe_of_perun: "&6&l&oAxt von Perun"
   carrot_corrupter: "&6&l&oKarottenverderber"
+  mystery_meat: "&6&l&oMysteriöses Fleisch"
 
 craft:
   allowed_one_layer: "&cDu kannst das nur herstellen , wenn du nur eine Zutat von jeder Menge nimmst für eine Anzahl von Separaten slots"

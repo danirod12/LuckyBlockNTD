@@ -12,6 +12,7 @@ custom_item:
   sword_of_justice: "&6&l&oMiecz Sprawiedliwości"
   axe_of_perun: "&6&l&oTopór Perun"
   carrot_corrupter: "&6&l&oZepsucie marchewki"
+  mystery_meat: "&6&l&oTajemnicze mięso"
 
 craft:
   allowed_one_layer: "&cCrafting jest możliwy tylko przy użyciu każdego składnika w jednej ilości dla osobnego slotu"
