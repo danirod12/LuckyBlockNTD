@@ -30,7 +30,7 @@ public class GuiCommand implements LBPlayerCommand {
 			} catch(Exception ingnored) {}
 			if(type != null) {
 				
-				if(!Misc.hasPermission(player, "luckyblock.me.DenBeKKer.ntdLuckyBlock.command.gui." + type.name())) return CommandResponce.MISSED_PERMISSION;
+				if(!Misc.hasPermission(player, "luckyblock.command.gui." + type.name())) return CommandResponce.MISSED_PERMISSION;
 				GuiManager.open(type, player);
 				return CommandResponce.SUCCESS;
 				

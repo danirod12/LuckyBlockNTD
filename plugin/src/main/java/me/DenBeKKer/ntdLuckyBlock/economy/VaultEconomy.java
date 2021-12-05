@@ -24,7 +24,7 @@ public class VaultEconomy implements EconomyBridge {
         if (economyProvider != null && economyProvider.getProvider() != null) {
             this.eco = economyProvider.getProvider();
         } else {
-        	Hooks.Vault.disable("me.DenBeKKer.ntdLuckyBlock.economy not found");
+        	Hooks.Vault.disable("economy not found");
         	this.eco = null;
         }
         

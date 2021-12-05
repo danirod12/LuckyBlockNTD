@@ -4,7 +4,7 @@ texture: 6ab180e820f71629f01f25b62bdeb9c324d50a38af74e6a9321439471046dc41
 
 # Item name
 name: "&2Green LuckyBlock"
-# System name (Give me.DenBeKKer.ntdLuckyBlock.command will use it as color)
+# System name (Give command will use it as color)
 custom_name: "GREEN"
 # Item lore
 lore:

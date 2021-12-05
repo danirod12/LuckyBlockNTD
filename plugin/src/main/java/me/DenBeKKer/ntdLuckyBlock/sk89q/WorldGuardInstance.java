@@ -2,6 +2,7 @@ package me.DenBeKKer.ntdLuckyBlock.sk89q;
 
 import java.util.logging.Level;
 
+import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -49,7 +50,7 @@ public class WorldGuardInstance {
 	    } catch (Exception e) {
 	    	
 	    	if(e instanceof IllegalStateException) {
-//	            LBMain.log(Level.INFO, "WorldGuard flags cant be registered at this time (Only on server startup available)");
+	            MvLogger.log(Level.INFO, "WorldGuard flags cant be registered at this time (Only on server startup available)");
 	            return;
 	    	}
 	    	
@@ -57,7 +58,7 @@ public class WorldGuardInstance {
 	        if (existing instanceof StateFlag) {
 	        	BREAK = (StateFlag) existing;
 	        } else {
-//	            LBMain.log(Level.INFO, "WorldGuard flag ntd-lb-break already found and cant be enjected");
+	            MvLogger.log(Level.INFO, "WorldGuard flag ntd-lb-break already found and cant be enjected");
 	        }
 	        
 	    }

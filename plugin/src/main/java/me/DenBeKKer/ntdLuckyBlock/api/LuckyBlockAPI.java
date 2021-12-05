@@ -38,7 +38,7 @@ public class LuckyBlockAPI {
 	
 	/**
 	 * 
-	 * @return LegacyLoader (Free version config me.DenBeKKer.ntdLuckyBlock.loader)
+	 * @return LegacyLoader (Free version config loader)
 	 */
 	public static StringLoader getLegacyLoader() {
 		return LEGACY;
@@ -46,7 +46,7 @@ public class LuckyBlockAPI {
 	
 	/**
 	 * 
-	 * @return JSON me.DenBeKKer.ntdLuckyBlock.loader (Premium version config me.DenBeKKer.ntdLuckyBlock.loader)
+	 * @return JSON loader (Premium version config loader)
 	 */
 	public static PathLoader getJSONLoader() {
 		return JSON;

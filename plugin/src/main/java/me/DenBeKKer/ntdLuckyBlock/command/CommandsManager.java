@@ -96,7 +96,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter {
 			
 			if(sender instanceof Player) {
 				
-				if(command.permission() && !Misc.hasPermission((Player) sender, "luckyblock.me.DenBeKKer.ntdLuckyBlock.command." + args[0].toLowerCase())) {
+				if(command.permission() && !Misc.hasPermission((Player) sender, "luckyblock.command." + args[0].toLowerCase())) {
 					sender.sendMessage(Message.CMD_NO_PERM.getAsString(true));
 					return true;
 				}
@@ -104,7 +104,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter {
 			} else {
 				
 				if(command.onlyPlayer()) {
-					sender.sendMessage("Sorry, but me.DenBeKKer.ntdLuckyBlock.command `/" + label + " " + args[0] + "` only for players");
+					sender.sendMessage("Sorry, but command `/" + label + " " + args[0] + "` only for players");
 					return true;
 				}
 				
@@ -121,7 +121,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter {
 				
 			} catch(Throwable th) {
 				th.printStackTrace();
-				sender.sendMessage("\u00a7cAn exception ocurred while performing me.DenBeKKer.ntdLuckyBlock.command /" + label + " " + args[0]);
+				sender.sendMessage("\u00a7cAn exception occurred while performing command /" + label + " " + args[0]);
 				sender.sendMessage("\u00a78 - \u00a7fIf you are a player - \u00a7aReport this to staff");
 				sender.sendMessage("\u00a78 - \u00a7fIf you are a staff - Check console & report to author");
 				return true;
@@ -131,7 +131,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter {
 		
 		final List<String> messages = commands.stream().filter(command -> {
 			if(sender instanceof Player)
-				return !(command.permission() && !Misc.hasPermission((Player) sender, "luckyblock.me.DenBeKKer.ntdLuckyBlock.command." + command.commands()[0]));
+				return !(command.permission() && !Misc.hasPermission((Player) sender, "luckyblock.command." + command.commands()[0]));
 			else return !command.onlyPlayer();
 		}).filter(n -> n.helpMessage() != null).map(n -> n.helpMessage().getAsString(true).replace("%label%", label)).collect(Collectors.toList());
 		if(messages.size() == 0)
@@ -161,23 +161,23 @@ public class CommandsManager implements CommandExecutor, TabCompleter {
 			if(sender instanceof Player && args[0].equalsIgnoreCase("get") && (args.length < 3)) {
 				
 				return LuckyBlockType.enabled().stream().map(n -> n.name())
-						.filter(n -> Misc.hasPermission((Player) sender, "luckyblock.me.DenBeKKer.ntdLuckyBlock.command.get." + n))
+						.filter(n -> Misc.hasPermission((Player) sender, "luckyblock.command.get." + n))
 						.filter(n -> n.startsWith(args[1].toUpperCase())).collect(Collectors.toList());
 				
 			}
-			if(args[0].equalsIgnoreCase("give") && (!(sender instanceof Player) || Misc.hasPermission((Player) sender, "luckyblock.me.DenBeKKer.ntdLuckyBlock.command.give"))) {
+			if(args[0].equalsIgnoreCase("give") && (!(sender instanceof Player) || Misc.hasPermission((Player) sender, "luckyblock.command.give"))) {
 				
 				if(args.length == 2) return Bukkit.getOnlinePlayers().stream().map(n -> n.getName())
 						.filter(n -> n.toLowerCase().startsWith(args[1].toLowerCase())).collect(Collectors.toList());
 				if(args.length == 3) return LuckyBlockType.enabled().stream().map(n -> n.name())
-						.filter(n -> Misc.hasPermission((Player) sender, "luckyblock.me.DenBeKKer.ntdLuckyBlock.command.give." + n))
+						.filter(n -> Misc.hasPermission((Player) sender, "luckyblock.command.give." + n))
 						.filter(n -> n.startsWith(args[2].toUpperCase())).collect(Collectors.toList());
 				
 			}
 			if((args[0].equalsIgnoreCase("customitemget") ||
 					args[0].equalsIgnoreCase("getcustomitem") ||
 					args[0].equalsIgnoreCase("cig") || args[0].equalsIgnoreCase("gci"))
-					 && (!(sender instanceof Player) || Misc.hasPermission((Player) sender, "luckyblock.me.DenBeKKer.ntdLuckyBlock.command.customitemget"))) {
+					 && (!(sender instanceof Player) || Misc.hasPermission((Player) sender, "luckyblock.command.customitemget"))) {
 				
 				if(args.length == 2) return CustomItemFactory.copy().stream().map(n -> n.getIdentifier().getIdentifier())
 						.filter(n -> n.toLowerCase().startsWith(args[1].toLowerCase()) ||
@@ -190,7 +190,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter {
 		return commands.stream().filter(command -> {
 			
 			if(sender instanceof Player)
-				return !(command.permission() && !Misc.hasPermission((Player) sender, "luckyblock.me.DenBeKKer.ntdLuckyBlock.command." + command.commands()[0]));
+				return !(command.permission() && !Misc.hasPermission((Player) sender, "luckyblock.command." + command.commands()[0]));
 			else return !command.onlyPlayer();
 			
 		}).map(n -> n.commands()[0]).filter(n -> n.startsWith(args[0].toLowerCase())).collect(Collectors.toList());

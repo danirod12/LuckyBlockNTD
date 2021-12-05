@@ -299,7 +299,7 @@ public class LBMain extends JavaPlugin {
 			
 		}
 		
-		debug("Loading custom item me.DenBeKKer.ntdLuckyBlock.factory...");
+		debug("Loading custom factory...");
 		try {
 			CustomItemFactory.loadSystem();
 		} catch(Throwable th) {
@@ -381,7 +381,7 @@ public class LBMain extends JavaPlugin {
 			}
 			if(config.get().getString("config-level").equalsIgnoreCase("1.4")) {
 				getLogger().log(Level.INFO, "Your config level is 1.4, updating to 1.5...");
-				config.get().set("reduce-me.DenBeKKer.ntdLuckyBlock.command-author-info", false);
+				config.get().set("reduce-command-author-info", false);
 				
 				File messages = new File(getDataFolder() + File.separator + "messages.yml");
 				
@@ -443,33 +443,33 @@ public class LBMain extends JavaPlugin {
 			if(config.get().getString("config-level").equalsIgnoreCase("1.10")) {
 				getLogger().log(Level.INFO, "Your config level is 1.10, updating to 1.11...");
 				config.get().set("disable-json-convert-checking", false);
-				config.get().set("skip-me.DenBeKKer.ntdLuckyBlock.factory-broken", true);
+				config.get().set("skip-factory-broken", true);
 				config.get().set("config-level", "1.11");
 				config.save();
 			}
 		}
 		
 		brperm = config.get().getBoolean("break-permissions");
-		reduce = config.get().getBoolean("reduce-me.DenBeKKer.ntdLuckyBlock.command-author-info");
+		reduce = config.get().getBoolean("reduce-command-author-info");
 		reduce_convert = config.get().getBoolean("disable-json-convert-checking");
-		h = config.get().getBoolean("skip-me.DenBeKKer.ntdLuckyBlock.factory-broken");
+		h = config.get().getBoolean("skip-factory-broken");
 		p$s = config.get().getBoolean("prevent-hat-luckyblocks");
 		
 		if(config.get().isSet("place.verify-name")) {
 			
 			config.get().set("place.verify-name", null);
 			config.get().set("place.verify-TAG", true);
-			config.get().set("place.convert-me.DenBeKKer.ntdLuckyBlock.factory", true);
+			config.get().set("place.convert-factory", true);
 			config.save();
 			log(Level.WARNING, "Old storage scheme found!");
 			log(Level.WARNING, "  > disabling name checking");
-			log(Level.WARNING, "  > enabling tag me.DenBeKKer.ntdLuckyBlock.factory converter");
+			log(Level.WARNING, "  > enabling tag factory converter");
 			log(Level.WARNING, "THIS MAY CAUSE BAD PERFOMANCE IMPACT!");
 			
 		}
 		
 		convert_manager.options(config.get().getBoolean("place.verify-UUID"), config.get().getBoolean("place.verify-TAG"));
-		convert_manager.toggleFactory(config.get().getBoolean("place.convert-me.DenBeKKer.ntdLuckyBlock.factory"));
+		convert_manager.toggleFactory(config.get().getBoolean("place.convert-factory"));
 		
 		if(convert_manager.isVerifyTAG() == false && convert_manager.isVerifyUUID() == false)
 			log(Level.WARNING, "You must enable place.verify-TAG or place.verify-UUID option for plugin work");
@@ -484,7 +484,7 @@ public class LBMain extends JavaPlugin {
 		if(disable_author_info && !premium) {
 			disable_author_info = false;
 			
-			log(Level.WARNING, "Sorry, but you cant disable author info for gui get me.DenBeKKer.ntdLuckyBlock.command in free plugin version.");
+			log(Level.WARNING, "Sorry, but you cant disable author info in free plugin version.");
 			log(Level.WARNING, "Check out premium plugin version - https://www.spigotmc.org/resources/94872");
 			
 		}

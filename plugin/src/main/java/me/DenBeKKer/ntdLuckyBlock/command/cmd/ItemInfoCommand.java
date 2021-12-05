@@ -27,7 +27,7 @@ public class ItemInfoCommand implements LBPlayerCommand {
 		final ItemStack item = LBMain.getInstance().factory.getItemInMainHand(player);
 		
 		if(item == null) {
-			player.sendMessage("\u00a7cTake item in hand for this me.DenBeKKer.ntdLuckyBlock.command");
+			player.sendMessage("\u00a7cTake item in hand for this command");
 			return CommandResponce.SUCCESS;
 		}
 		

@@ -33,10 +33,9 @@ public class LBWorldEdit {
 				worldedit = (IWorldEdit) new WorldEdit6();
 					LBMain.debug("WorldEdit v7 (1.13 - 1.17 and above)");
 			}
-			
-			fawe = getClassZ("com.fastasyncworldedit.bukkit.FaweBukkit") != null ||
-					getClassZ("com.boydti.fawe.Fawe") != null;
-			LBMain.log(Level.INFO, "\u00a7aFastAsyncWorldEdit support enabled");
+
+			if(fawe = getClassZ("com.fastasyncworldedit.bukkit.FaweBukkit") != null ||
+					getClassZ("com.boydti.fawe.Fawe") != null) LBMain.log(Level.INFO, "\u00a7aFastAsyncWorldEdit support enabled");
 			
 		}
 		

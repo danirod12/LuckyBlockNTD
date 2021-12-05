@@ -44,7 +44,7 @@ public class GiveCommand implements LBCommand {
 			LuckyBlockType type = null;
 			if(args[1].equalsIgnoreCase("RANDOM")) {
 				
-				if(sender instanceof Player && !Misc.hasPermission((Player) sender, "luckyblock.me.DenBeKKer.ntdLuckyBlock.command.give.random")) {
+				if(sender instanceof Player && !Misc.hasPermission((Player) sender, "luckyblock.command.give.random")) {
 					sender.sendMessage(Message.CMD_NO_PERM_TO_COLOR.getAsString().replace("%lb%", "RANDOM"));
 					return CommandResponce.SUCCESS;
 				}
@@ -69,7 +69,7 @@ public class GiveCommand implements LBCommand {
 			}
 			
 			if(!random && sender instanceof Player && LBMain.getInstance().config.get().getBoolean("permission-for-each-give-get") &&
-					!Misc.hasPermission((Player) sender, "luckyblock.me.DenBeKKer.ntdLuckyBlock.command.give." + type.name())) {
+					!Misc.hasPermission((Player) sender, "luckyblock.command.give." + type.name())) {
 				sender.sendMessage(Message.CMD_NO_PERM_TO_COLOR.getAsString().replace("%lb%", LuckyBlockType.map().get(type).getCustomName()));
 				return CommandResponce.SUCCESS;
 			}

@@ -28,7 +28,7 @@ public class ConvertCommand implements LBCommand {
 			return CommandResponce.SUCCESS;
 		}
 		
-		// premium me.DenBeKKer.ntdLuckyBlock.command implementation
+		// premium command implementation
 		throw new UnsupportedOperationException("Command not implemented. Hack attempt?");
 		
 	}

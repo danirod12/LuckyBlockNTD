@@ -36,7 +36,7 @@ public class GetCommand implements LBPlayerCommand {
 						.filter(n -> {
 							
 							return !LBMain.getInstance().config.get().getBoolean("permission-for-each-give-get") ||
-									Misc.hasPermission(player, "luckyblock.me.DenBeKKer.ntdLuckyBlock.command.get." + n.name());
+									Misc.hasPermission(player, "luckyblock.command.get." + n.name());
 							
 						}).collect(Collectors.toList());
 				if(types.size() == 0) {
@@ -63,7 +63,7 @@ public class GetCommand implements LBPlayerCommand {
 				player.sendMessage(Message.CMD_LB_DISABLED.getAsString().replace("%lb%", args[0]));
 				return CommandResponce.SUCCESS;
 			}
-			if(!(random || Misc.hasPermission(player, "luckyblock.me.DenBeKKer.ntdLuckyBlock.command.get." + type.name()))) {
+			if(!(random || Misc.hasPermission(player, "luckyblock.command.get." + type.name()))) {
 				player.sendMessage(Message.CMD_NO_PERM_TO_COLOR.getAsString().replace("%lb%", LuckyBlockType.map().get(type).getCustomName()));
 				return CommandResponce.SUCCESS;
 			}

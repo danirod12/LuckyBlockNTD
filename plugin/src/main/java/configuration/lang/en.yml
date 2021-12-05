@@ -29,7 +29,7 @@ system:
   lb_loaded_not_zero: "&fLoaded &e%amount%&f luckyblock types..."
   
   cant_use_command: "&cSorry, but you cant use any sub commands."
-  cant_use_subcommand: "&cSorry, but you cant use this sub me.DenBeKKer.ntdLuckyBlock.command."
+  cant_use_subcommand: "&cSorry, but you cant use this sub command."
   
   cant_break_color: "&cSorry, but you cant break luckyblock type &e%lb%"
   cant_interact_world: "&cSorry, but you cant interact with LuckyBlocks in world &e%world%"
