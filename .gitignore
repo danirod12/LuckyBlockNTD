@@ -1,0 +1,19 @@
+# Maven
+target
+dependency-reduced-pom.xml
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# IntelliJ
+*.iml
+*.java___jb_tmp___
+.idea/
+
+# Netbeans
+nbproject/
+
+# OS X
+.DS_Store

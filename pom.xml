@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>me.DenBeKKer.ntdLuckyBlock</groupId>
+    <artifactId>luckyblock-parent</artifactId>
+    <packaging>pom</packaging>
+    <version>2.5.0</version>
+    <modules>
+        <module>plugin</module>
+        <module>sk89q</module>
+        <module>logger</module>
+        <module>nms</module>
+    </modules>
+
+    <properties>
+        <maven.compiler.target>8</maven.compiler.target>
+        <maven.compiler.source>8</maven.compiler.source>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+
+        <defaultGoal>clean package</defaultGoal>
+
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <addMavenDescriptor>false</addMavenDescriptor>
+                        <manifest>
+                            <addClasspath>false</addClasspath>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/**/**/**/*.xml</exclude>
+                                <exclude>META-INF/**/**/**/*.properties</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                    <finalName>ntdLuckyBlock-${project.version}</finalName>
+                    <outputDirectory>E:\NTD Studios\plugins\ntdLuckyBlock\maven</outputDirectory>
+                </configuration>
+            </plugin>
+
+        </plugins>
+
+        <resources>
+
+            <!-- Include configuration package -->
+            <resource>
+                <directory>src/main/java/configuration</directory>
+                <includes>
+                    <include>**/*.yml</include>
+                    <include>**/*.schematic</include>
+                    <include>**/*.schem</include>
+                </includes>
+                <targetPath>configuration</targetPath>
+            </resource>
+
+            <!-- config.yml and plugin.yml? -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+
+        </resources>
+
+    </build>
+
+</project>
