@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -14,11 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockExplodeEvent;
-import org.bukkit.event.block.BlockPistonExtendEvent;
-import org.bukkit.event.block.BlockPistonRetractEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.InventoryAction;
@@ -50,12 +47,13 @@ public class LBHandler implements Listener {
 	
 	@EventHandler
 	public void piston(BlockPistonExtendEvent e) {
-		e.getBlocks().forEach(n -> {
-			if(LuckyBlockAPI.isLuckyBlock(n)) {
+
+		for(Block block : e.getBlocks()) {
+			if(LuckyBlockAPI.isLuckyBlock(block)) {
 				e.setCancelled(true);
 				return;
 			}
-		});
+		}
 		
 		if(e.getDirection() == BlockFace.UP) {
 			if(LuckyBlockAPI.isLuckyBlock(e.getBlock().getLocation().add(0, 2, 0).getBlock())) {
@@ -63,16 +61,19 @@ public class LBHandler implements Listener {
 				return;
 			}
 		}
+
 	}
 	
 	@EventHandler
 	public void piston(BlockPistonRetractEvent e) {
-		e.getBlocks().forEach(n -> {
-			if(LuckyBlockAPI.isLuckyBlock(n)) {
+
+		for(Block block : e.getBlocks()) {
+			if(LuckyBlockAPI.isLuckyBlock(block)) {
 				e.setCancelled(true);
 				return;
 			}
-		});
+		}
+
 	}
 	
 	@EventHandler
@@ -185,7 +186,12 @@ public class LBHandler implements Listener {
 				e.blockList().remove(n);
 		});
 	}
-	
+
+	@EventHandler
+	public void fade(BlockFadeEvent e) {
+		if(e.getBlock().getType() == Material.ICE && LuckyBlockAPI.isLuckyBlock(e.getBlock())) e.setCancelled(true);
+	}
+
 	@EventHandler
 	public void explosion(BlockExplodeEvent e) {
 		new ArrayList<>(e.blockList()).forEach(n -> {
@@ -295,7 +301,7 @@ public class LBHandler implements Listener {
 	}
 	
 	@EventHandler
-	public void broke(BlockBreakEvent e) throws LuckyBlockNotLoadedException {
+	public void broke(BlockBreakEvent e) {
 		
 		if(e.getBlock().getType().name().toUpperCase().contains("STAINED_GLASS") ||
 				e.getBlock().getType().name().equalsIgnoreCase("TINTED_GLASS") || e.getBlock().getType() == Material.ICE) {
@@ -320,7 +326,7 @@ public class LBHandler implements Listener {
 							if(LBMain.isBreakPermissions() && !e.getPlayer().hasPermission("luckyblock.break." + type.name().toLowerCase())
 									&& !e.getPlayer().hasPermission("luckyblock.break.*")) {
 								e.getPlayer().sendMessage(Message.CANT_BREAK_LUCKYBLOCK.getAsString().replace("%lb%",
-										type.isLoaded() ? type.get().getCustomName() : type.name()));
+										type.getCustomName(true)));
 								e.setCancelled(true);
 								return;
 							}
@@ -329,7 +335,7 @@ public class LBHandler implements Listener {
 								try {
 									e.setDropItems(false);
 								} catch(Throwable v1_8) { }
-								if(type.get().tryOpen(e.getBlock(), e.getPlayer(), false))
+								if(type.map().get(type).tryOpen(e.getBlock(), e.getPlayer(), false))
 									stand.remove();
 								else e.setCancelled(true);
 							} else stand.remove();
