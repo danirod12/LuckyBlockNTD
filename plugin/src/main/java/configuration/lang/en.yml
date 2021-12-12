@@ -2,7 +2,7 @@
 author: DenBeKKer
 
 special:
-  water_bucket: "&c&lOWNER &cDanirod_Gaming &7-> Check your inventory.. You have &9water bucket&f!"
+  water_bucket: "&c&lOWNER &cDanirod_Gaming &7-> Check your inventory.. You have a &9water bucket&f!"
 
 custom_items:
   item_not_found: "&cItem for identifier %identifier% not found"
@@ -20,11 +20,11 @@ craft:
 system:
   loading_config: "&fLoading configuration... "
   reloaded_config: "&aConfiguration has been reloaded, loaded %amount% luckyblock types..."
-  material_api: "&f%build% material API-version founded"
+  material_api: "&f%build% material API-version found"
   
   lb_not_found: "&cLuckyBlock &e%lb%&c not found, skipping... "
   lb_loading_exception: "&cLuckyBlock &e%lb%&c cant be loaded... Exception: &e%exception%"
-  lb_unknown_exception: "&cLuckyBlock &e%lb%&c not found or unknown exception become, skipping... "
+  lb_unknown_exception: "&cLuckyBlock &e%lb%&c is not found or an unknown exception happened, skipping... "
   lb_loaded_zero: "&fLoaded 0 luckyblock types... Hm..."
   lb_loaded_not_zero: "&fLoaded &e%amount%&f luckyblock types..."
   
@@ -57,7 +57,7 @@ system:
   
   cmd_player_not_found: "&cPlayer &e%player%&c not found :("
   cmd_no_perm_to_color: "&cNo permission for color %lb%"
-  cmd_no_perm: "&cSorry, but you havent got permissions to execute this subcommand"
+  cmd_no_perm: "&cSorry, but you don't have got permissions to execute this subcommand"
   
 gui:
   exit: "&7[ &6Exit from GUI &7]"
@@ -72,4 +72,4 @@ gui:
     back: "&3Go back"
     confirm: "&eConfirm"
     get: "&fYou will get: &6%amount%"
-    give: "&fYou will give: &c%price%"
+    give: "&fYou are going to spend: &c%price%"
