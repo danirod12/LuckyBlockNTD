@@ -115,8 +115,7 @@ public class LuckyBlock {
 			LBMain.getInstance().getLogger().log(Level.WARNING, "[" + type.name() + "] Option for path <craft.custom> not found. Creating...");
 			file.set("craft.custom", LBMain.isPremium());
 		}
-		if(config.need_save() || b) config.save();
-		config.deleteDefault();
+		if(b) config.save();
 		
 		texture = file.getString("texture");
 		eco = file.getBoolean("eco");

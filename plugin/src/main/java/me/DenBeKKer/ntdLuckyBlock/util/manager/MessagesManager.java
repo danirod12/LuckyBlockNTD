@@ -101,9 +101,7 @@ public class MessagesManager {
 		
 		public static void loadAll() {
 			for(Message msg : Message.values()) msg.load();
-			config.deleteDefault();
-			if(config.need_save())
-				config.save();
+			config.gc(false, true);
 		}
 		
 		private void load(boolean copy_path) {
@@ -180,12 +178,12 @@ public class MessagesManager {
 		}
 		
 		if(translation.exists()) {
-			config = new Config(LBMain.getInstance(), lang_folder, lang + ".yml");
+			config = new Config(LBMain.getInstance(), "configuration.lang", lang_folder, lang + ".yml");
 			config.copy(true);
 			
 			if(config.get().getString("author") == null) {
 				config.get().set("author", "Unknown");
-				config.need_save(true);
+				config.save();
 			}
 			
 			LBMain.log(Level.INFO, "Loading language file \"" + lang + "\" by " + config.get().getString("author"));
@@ -196,15 +194,15 @@ public class MessagesManager {
 	
 	public static void updateLocalePath(Config config, String path) {
 		
-		FileConfiguration file = config.getName().contains("custom") ? null : config.getDefault(false, "configuration.lang");
+		FileConfiguration file = config.getName().contains("custom") ? null : config.getDefault();
 		if(file != null && file.isSet(path)) {
 			config.get().set(path, file.get(path));
 		} else {
 			LBMain.log(Level.WARNING, "Translation path <" + path + "> not found for language " + config.getName() + ", using english!");
-			config.get().set(path, new Config(LBMain.getInstance(), "configuration.lang", lang_folder, "en.yml").getDefault(true, "configuration.lang").get(path));
+			config.get().set(path, new Config(LBMain.getInstance(), "configuration.lang", lang_folder, "en.yml").getDefault().get(path));
 		}
 		
-		config.need_save(true);
+		config.save();
 		
 	}
 	
