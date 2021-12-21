@@ -40,7 +40,7 @@ public class Config {
         if((folder == null || resource != null) && plugin == null)
             throw new IllegalArgumentException("You need to provide a plugin instance for this action");
 
-        this.folder = folder == null || !folder.isDirectory() ? plugin.getDataFolder() : folder;
+        this.folder = folder == null ? plugin.getDataFolder() : folder;
         this.name = name.contains(".") ? name : name + ".yml";
 
         if(resource != null) {
