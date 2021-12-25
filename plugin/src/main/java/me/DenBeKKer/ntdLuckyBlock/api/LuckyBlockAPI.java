@@ -37,16 +37,6 @@ public class LuckyBlockAPI {
 	private final static StringLoader LEGACY = new LegacyLoader();
 	private final static PathLoader JSON = new JSONLoader();
 
-	private static boolean old_events = false;
-
-	public static void enableOldEvents() {
-		old_events = true;
-	}
-
-	public static boolean handleOldEvents() {
-		return old_events;
-	}
-
 	/**
 	 * 
 	 * @return LegacyLoader (Free version config loader)
