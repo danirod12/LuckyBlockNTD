@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 public class Identifier {
 
-	private static final Pattern pattern = Pattern.compile("[a-z]{1}[a-z0-9_]{2,}[a-z0-9]{1}");
+	private static final Pattern pattern = Pattern.compile("[a-z][a-z0-9_]{2,}[a-z0-9]");
 	
 	private final String identifier, tag_name;
 	

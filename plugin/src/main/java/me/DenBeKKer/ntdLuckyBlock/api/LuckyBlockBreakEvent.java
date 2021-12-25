@@ -1,70 +1,22 @@
 package me.DenBeKKer.ntdLuckyBlock.api;
 
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
+import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
+import java.util.logging.Level;
 
-public class LuckyBlockBreakEvent extends Event implements Cancellable {
-	
-	private static HandlerList handlers = new HandlerList();
-	private final Block block;
-	private final Player player;
-	private final LuckyBlock luckyblock;
-	private boolean targetable = true, ignore = false, c = false;
-	private boolean drop = true;
-	
-	public LuckyBlockBreakEvent(Block b, Player p, LuckyBlock lb) {
-		block = b;
-		player = p;
-		luckyblock = lb;
-	}
-	
-	public LuckyBlockBreakEvent(Block b, LuckyBlock lb) {
-		this(b, null, lb);
-		targetable = false;
-	}
-	
-	public Block getBlock() {
-		return block;
-	}
-	
-	public boolean isTargetable() {
-		return targetable;
-	}
-	
-	public Player getPlayer() {
-		return player;
-	}
-	
-	public LuckyBlock getLuckyBlock() {
-		return luckyblock;
-	}
-	
-	public void setDrop(boolean drop) {
-		this.drop = drop;
-	}
-	
-	public void setIgnoreCancelled() { ignore = true; }
-	
-	@Override
-	public boolean isCancelled() { return ignore || c; }
-	 
-	@Override
-	public void setCancelled(boolean c) { this.c = c; }
-	 
-	@Override
-	public HandlerList getHandlers() {
-	    return handlers;
-	}
-	 
-	public static HandlerList getHandlerList() {
-	    return handlers;
-	}
-	
-	public boolean isDrop() { return drop; }
-	
+@Deprecated
+public class LuckyBlockBreakEvent extends Event {
+
+    @Override
+    public HandlerList getHandlers() {
+        throw new UnsupportedOperationException();
+    }
+
+    static {
+        MvLogger.log(Level.WARNING, "me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockBreakEvent is unsupported since build 75. " +
+                "Use me.DenBeKKer.ntdLuckyBlock.api.events.LuckyBlockBreakEvent");
+    }
+
 }

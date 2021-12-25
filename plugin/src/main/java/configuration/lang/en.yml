@@ -1,4 +1,5 @@
 
+# Translation configuration author
 author: DenBeKKer
 
 special:
@@ -36,10 +37,10 @@ system:
   
   cmd_lb_disabled: "&cLuckyBlock type &e%lb%&c disabled :("
   cmd_lb_not_found: "&cLuckyBlock type &e%lb%&c not found :("
-  cmd_lb_received: "&aReceived %amount% LuckyBlocks &7(%lb% color)"
+  cmd_lb_received: "&aReceived %amount% LuckyBlocks &7(%lb% &7color)"
   cmd_ci_received: "&aReceived %item%"
   cmd_destroyed_lb: "&cRemoved &e%amount% &cLuckyBlocks"
-  cmd_lb_give: "&aGave %amount% LuckyBlocks &7(%lb% color)"
+  cmd_lb_give: "&aGave %amount% LuckyBlocks &7(%lb% &7color)"
   
   cmd:
     help_title: "&eLuckyBlock's &fcommands help:"

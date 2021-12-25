@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 
+import me.DenBeKKer.ntdLuckyBlock.api.events.CustomItemAddedEvent;
 import me.DenBeKKer.ntdLuckyBlock.nms.ItemTag;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -38,6 +40,7 @@ public class CustomItemFactory {
 			storage.remove(origin);
 		storage.add(item);
 		LBMain.log(Level.INFO, "Registered a new custom item - " + item.getClass().getSimpleName() + " (" + item.getEvents().size() + " events)");
+		Bukkit.getPluginManager().callEvent(new CustomItemAddedEvent(item));
 	}
 	
 	private static void register(BekkerItemStackBuilder builder) {

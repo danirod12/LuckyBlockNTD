@@ -20,7 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.PlayerHead;
-import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockNotLoadedException;
+import me.DenBeKKer.ntdLuckyBlock.api.exceptions.LuckyBlockNotLoadedException;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import me.DenBeKKer.ntdLuckyBlock.util.material.IMat.Mat;
 import me.DenBeKKer.ntdLuckyBlock.variables.ConfirmEvent;
@@ -34,20 +34,12 @@ public class GuiManager implements Listener {
 	private static HashMap<Player, CountGui> map = new HashMap<>();
 	
 	public static void open(GuiType type, Player player) {
-		
-		switch(type) {
-		case GET: {
+
+		if(type == GuiType.GET) {
 			player.openInventory(get);
 			return;
 		}
-		case EDIT: {
-			player.sendMessage("\u00a77[\u00a7eLuckyBlock\u00a77] \u00a7c" + type.name() + " gui feature available only in premium version");
-			return;
-		}
-		default: {
-			player.sendMessage("\u00a77[\u00a7eLuckyBlock\u00a77] \u00a7c" + type.name() + " gui feature is temporarily disabled");
-		}
-		}
+		player.sendMessage("\u00a77[\u00a7eLuckyBlock\u00a77] \u00a7c" + type.name() + " gui feature is disabled or available only in premium version");
 		
 	}
 	

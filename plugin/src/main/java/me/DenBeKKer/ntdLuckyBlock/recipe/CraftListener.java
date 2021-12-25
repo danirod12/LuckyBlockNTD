@@ -1,6 +1,8 @@
 package me.DenBeKKer.ntdLuckyBlock.recipe;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
+import me.DenBeKKer.ntdLuckyBlock.api.events.PrepareLuckyBlockCraftEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -8,7 +10,7 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.CraftingInventory;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
-import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockNotLoadedException;
+import me.DenBeKKer.ntdLuckyBlock.api.exceptions.LuckyBlockNotLoadedException;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 
 public class CraftListener implements Listener {
@@ -27,6 +29,7 @@ public class CraftListener implements Listener {
 		}
 		
 		LBMain.debug("PrepareItemCraftEvent, player - " + (player == null ? "null" : player.getName()));
+		if(player == null) return;
 		
 		for(LuckyBlockType type : LuckyBlockType.map().keySet()) {
 			
@@ -49,7 +52,11 @@ public class CraftListener implements Listener {
 							return;
 						}
 					}
-					
+
+					PrepareLuckyBlockCraftEvent event = new PrepareLuckyBlockCraftEvent(player, inventory.getMatrix(), recipe);
+					Bukkit.getPluginManager().callEvent(event);
+					if(event.isCancelled()) return;
+
 					LBMain.debug("Inserting new craft result");
 					inventory.setResult(recipe.getResult());
 					return;

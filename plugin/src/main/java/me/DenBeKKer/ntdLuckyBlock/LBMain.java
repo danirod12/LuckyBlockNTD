@@ -3,7 +3,7 @@ package me.DenBeKKer.ntdLuckyBlock;
 import com.google.common.io.Files;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockNotLoadedException;
+import me.DenBeKKer.ntdLuckyBlock.api.exceptions.LuckyBlockNotLoadedException;
 import me.DenBeKKer.ntdLuckyBlock.command.CommandsManager;
 import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
 import me.DenBeKKer.ntdLuckyBlock.economy.EconomyBridge;
@@ -50,6 +50,7 @@ public class LBMain extends JavaPlugin {
 	private static LBMain instance;
 	public Config config;
 	public IMat factory;
+	public TintedMaterial tinted;
 	private static boolean inform;
 	private static File folder, schematics_folder;
 	private static String version;
@@ -74,8 +75,8 @@ public class LBMain extends JavaPlugin {
 	
 	
 	// Last update date & Build number
-	private static final String last_update = "21/12/2021";
-	private static final int build = 74;
+	private static final String last_update = "25/12/2021";
+	private static final int build = 75;
 	// Last update date & Build number
 	
 	
@@ -145,14 +146,7 @@ public class LBMain extends JavaPlugin {
         
 	}
 	
-	public static void log(Level level, String message) {
-
-		MvLogger.log(level, message);
-//		if(level == Level.INFO)
-//			Bukkit.getConsoleSender().sendMessage("[ntdLuckyBlock] " + message.replace("&", "\u00a7"));
-//		else LBMain.getInstance().getLogger().log(level, message.replace("&", "\u00a7"));
-		
-	}
+	public static void log(Level level, String message) { MvLogger.log(level, message); }
 
 	@Override
 	public void onDisable() {
@@ -218,8 +212,6 @@ public class LBMain extends JavaPlugin {
 			log(Level.INFO, ChatColor.RED + "Help me make my plugin better! Fill out " + ChatColor.GOLD + "https://forms.gle/GvX5pB4BXU7BhAEi9");
 		
 		loadConfig();
-		
-//		checkForUpdates();
 		if(config.get().getBoolean("scheduled-update-check")) {
 			debug("Loading Bukkit scheduler thread for delayed update check");
 			Bukkit.getScheduler().runTaskTimer(instance, () -> checkForUpdates(), 100L, 72000L);
@@ -235,6 +227,7 @@ public class LBMain extends JavaPlugin {
 		} catch(Exception ex) {
 			old = true;
 		}
+		tinted = new TintedMaterial();
 		
 		factory = old ? new Mat1_12() : new Mat1_13();
 		log(Level.INFO, Message.MATERIAL_API.getAsString().replace("%build%", factory.build()));
@@ -352,9 +345,7 @@ public class LBMain extends JavaPlugin {
 	}
 	
 	public void loadConfig() {
-		
-		//log(Level.INFO, Message.LOADING_CONFIG.get());
-		
+
 		config = new Config(instance, getDataFolder(), "config.yml");
 		config.copy(true);
 		
@@ -664,7 +655,7 @@ public class LBMain extends JavaPlugin {
 		
 		public boolean isAvailable() {
 			
-			if(this == LuckyBlockType.TINTED) return TintedMaterial.isAvailable();
+			if(this == LuckyBlockType.TINTED) return instance.tinted.isAvailable();
 			if(this == LuckyBlockType.ICED) return isPremium();
 			
 			return true;
@@ -700,7 +691,7 @@ public class LBMain extends JavaPlugin {
 		}
 		
 		public Material getMaterial() {
-			if(this == LuckyBlockType.TINTED) return TintedMaterial.getMaterial();
+			if(this == LuckyBlockType.TINTED) return instance.tinted.getMaterial();
 			if(this == LuckyBlockType.ICED) return Material.ICE;
 			return instance.factory.getGlass(asColor(), 1).getType();
 		}
@@ -797,7 +788,6 @@ public class LBMain extends JavaPlugin {
 		case 9: return "3";
 		case 10: return "5";
 		case 11: return "1";
-		//case 12: return "";
 		case 13: return "2";
 		case 14: return "4";
 		case 15: return "0";
@@ -847,7 +837,9 @@ public class LBMain extends JavaPlugin {
 		PlayerHead(String url) { this.url = url; }
 		
 		public void loadHead() { heads.put(this, getHead0(url, "name", new ArrayList<>())); }
-		
+
+		public String getURL() { return url; }
+
 		public ItemStack getHead(String name, List<String> lore) {
 			
 			if(heads.get(this) == null) loadHead();
@@ -883,8 +875,6 @@ public class LBMain extends JavaPlugin {
 	
 	@Deprecated
 	public static boolean inform() { return inform; }
-	@Deprecated
-	public static boolean isInformAbountUpdates() { return inform(); }
 	public static boolean isInformAboutUpdates() { return inform; }
 	
 	@Deprecated

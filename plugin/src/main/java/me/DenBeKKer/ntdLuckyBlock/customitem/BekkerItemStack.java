@@ -5,6 +5,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import me.DenBeKKer.ntdLuckyBlock.api.events.CustomItemHandleEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
@@ -40,11 +42,18 @@ public class BekkerItemStack extends ItemStack {
 		for(Entry<ItemEvent<?>, Consumer<Event>> element : map.entrySet()) {
 			
 			if(element.getKey().getInstance().isAssignableFrom(event.getClass())) {
+
+				CustomItemHandleEvent e = new CustomItemHandleEvent(this, event, true);
+				Bukkit.getPluginManager().callEvent(e);
+				if(e.isCancelled()) return;
+
 				element.getValue().accept(event);
 				return;
+
 			}
 			
 		}
+		Bukkit.getPluginManager().callEvent(new CustomItemHandleEvent(this, event, false));
 		
 	}
 	

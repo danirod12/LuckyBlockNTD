@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
@@ -18,7 +19,7 @@ import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 public class MessagesManager {
 	
 	private static HashMap<Message, Object> map = new HashMap<>();
-	private final static Collection<String> build_in_languages = Arrays.asList("en", "ru", "zh_cn", "de", "pl", "pt_br");
+	private final static Collection<String> build_in_languages = Arrays.asList("en", "ru", "zh_cn", "de", "pl", "pt_br", "tr");
 	private static Config config = null;
 	public static File lang_folder = new File(LBMain.getInstance().getDataFolder() + File.separator + "lang");
 	
@@ -105,15 +106,7 @@ public class MessagesManager {
 		}
 		
 		private void load(boolean copy_path) {
-			
-//			String str = null;
-//			try {
-//				if(!(config.get().get(this.path) instanceof String)) {
-//					for(String h : config.get().getStringList(this.path))
-//						str += str == null ? h : str + "{newline}" + h;
-//				}
-//			} catch(Exception ex) {}
-//			if(str == null) str = config.get().getString(this.path);
+
 			map.put(this, config.get().get(this.path));
 			
 			if(copy_path && map.get(this) == null) {
@@ -176,6 +169,9 @@ public class MessagesManager {
 			translation = new File(lang_folder + File.separator + lang + ".yml");
 			
 		}
+
+		if(!lang.equalsIgnoreCase("en") && !lang.equalsIgnoreCase("ru"))
+			MvLogger.log(Level.WARNING, "Loading unverified language file! It may contains exceptions or illegal words. Check before using is recommended");
 		
 		if(translation.exists()) {
 			config = new Config(LBMain.getInstance(), "configuration.lang", lang_folder, lang + ".yml");

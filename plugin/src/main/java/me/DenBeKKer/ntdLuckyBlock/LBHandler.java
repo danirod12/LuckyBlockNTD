@@ -30,10 +30,8 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
-import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockNotLoadedException;
-import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockPlaceEvent;
+import me.DenBeKKer.ntdLuckyBlock.api.events.LuckyBlockPlaceEvent;
 import me.DenBeKKer.ntdLuckyBlock.customitem.BekkerItemStack;
 import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
 import me.DenBeKKer.ntdLuckyBlock.customitem.HitEvent;

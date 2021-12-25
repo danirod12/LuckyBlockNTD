@@ -1,4 +1,4 @@
-package me.DenBeKKer.ntdLuckyBlock.api;
+package me.DenBeKKer.ntdLuckyBlock.api.exceptions;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 

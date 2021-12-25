@@ -1,3 +1,5 @@
+
+# Translation configuration author
 author: PedroJs
 
 special:
@@ -34,10 +36,10 @@ system:
   
   cmd_lb_disabled: "&cLuckyBlock &e%lb%&c desativada :("
   cmd_lb_not_found: "&cLuckyBlock &e%lb%&c não encontrada :("
-  cmd_lb_received: "&aRecebido %amount% LuckyBlocks &7(cor %lb%)"
+  cmd_lb_received: "&aRecebido %amount% LuckyBlocks &7(cor %lb%&7)"
   cmd_ci_received: "&aRecebido %item%"
   cmd_destroyed_lb: "&e%amount% &cLuckyBlocks destruídas"
-  cmd_lb_give: "&aDado %amount% LuckyBlocks &7(cor %lb%)"
+  cmd_lb_give: "&aDado %amount% LuckyBlocks &7(cor %lb%&7)"
   
   cmd:
     help_title: "&fAjuda de comandos do &eLuckyBlock's:"

@@ -1,4 +1,5 @@
 
+# Translation configuration author
 author: Torwik
 
 special:
@@ -36,8 +37,8 @@ system:
   
   cmd_lb_disabled: "&cTyp LuckyBlocka &e%lb%&c wyłączony :("
   cmd_lb_not_found: "&cNie znaleziono typu LuckyBlocka &e%lb%&c :("
-  cmd_lb_received: "&aOtrzymałeś(aś) LuckyBlocki (%amount% - Kolor: %lb%)"
-  cmd_lb_give: "&aDałeś(aś) LuckyBlocki (%amount% - Kolor: %lb%)"
+  cmd_lb_received: "&aOtrzymałeś(aś) LuckyBlocki (%amount% - Kolor: %lb%&7)"
+  cmd_lb_give: "&aDałeś(aś) LuckyBlocki (%amount% - Kolor: %lb%&7)"
   
   cmd_help:
     help_title: "&eLista komend pluginu na LuckyBlocki:"

@@ -26,7 +26,9 @@ public enum DropChance {
 	HIGH(10);
 	
 	private final int i;
-	
+
+	public int i() { return i; }
+
 	DropChance(int i) {
 		this.i = i;
 	}
@@ -52,6 +54,21 @@ public enum DropChance {
 		}
 		return chance[ThreadLocalRandom.current().nextInt(chance.length)];
 		
+	}
+
+	public static int chance(List<DropChance> chances, DropChance chance) {
+
+		if(chances.size() == 0)
+			throw new UnsupportedOperationException("Chances mismatch, random() got an empty List");
+
+		if(!chances.contains(chance)) return 0;
+		if(chances.size() == 1) return 100;
+
+		int a = 0;
+		for(DropChance c : chances)
+			a += chance.i;
+		return chance.i * 100 / a;
+
 	}
 	
 	public LuckyEntry roll(List<LuckyEntry> items) {

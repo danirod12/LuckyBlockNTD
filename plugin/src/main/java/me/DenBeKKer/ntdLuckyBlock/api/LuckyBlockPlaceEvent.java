@@ -1,60 +1,22 @@
 package me.DenBeKKer.ntdLuckyBlock.api;
 
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
+import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
-import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
+import java.util.logging.Level;
 
-public class LuckyBlockPlaceEvent extends Event implements Cancellable {
-	
-	private static HandlerList handlers = new HandlerList();
-	private Block block;
-	private Player player;
-	private LuckyBlockType luckyblock;
-	
-	public LuckyBlockPlaceEvent(Block b, Player p, LuckyBlockType type) {
-		block = b;
-		player = p;
-		luckyblock = type;
-	}
-	
-	public Block getBlock() {
-		return block;
-	}
-	
-	public Player getPlayer() {
-		return player;
-	}
-	
-	public LuckyBlockType getLuckyBlockType() {
-		return luckyblock;
-	}
-	
-	public LuckyBlock getLuckyBlock() throws LuckyBlockNotLoadedException {
-		if(luckyblock.get() == null)
-			throw new LuckyBlockNotLoadedException(luckyblock);
-		return luckyblock.get();
-	}
-	
-	private boolean c = false;
-	
-	@Override
-	public boolean isCancelled() { return c; }
-	 
-	@Override
-	public void setCancelled(boolean c) { this.c = c; }
-	 
-	@Override
-	public HandlerList getHandlers() {
-	    return handlers;
-	}
-	
-	public static HandlerList getHandlerList() {
-	    return handlers;
-	}
-	
+@Deprecated
+public class LuckyBlockPlaceEvent extends Event {
+
+    @Override
+    public HandlerList getHandlers() {
+        throw new UnsupportedOperationException();
+    }
+
+    static {
+        MvLogger.log(Level.WARNING, "me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockPlaceEvent is unsupported since build 75. " +
+                "Use me.DenBeKKer.ntdLuckyBlock.api.events.LuckyBlockPlaceEvent");
+    }
+
 }

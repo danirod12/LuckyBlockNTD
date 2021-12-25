@@ -1,10 +1,12 @@
+
+# Translation configuration author
 author: Luke
 
 special:
   water_bucket: '&c&lOWNER &cDanirod_Gaming &7-> Prüfe dein Inventar.. Du hast einen &9Wassereimer'
 
 custom_items:
-  item_not_found: - "&cGegenstand zum identifizieren %identifier% nicht gefunden"
+  item_not_found: "&cGegenstand zum identifizieren %identifier% nicht gefunden"
   list: "&7[&eLuckyBlock&7] &f:Liste der individuellen Items:"
   magic_wool: "&6&l&oMagische Wolle"
   sword_of_justice: "&6&l&oSchwert der Gerechtigkeit"
@@ -30,8 +32,8 @@ system:
   cant_interact_world: "&cSorry, Aber du kannst mit LuckyBlocks in Welt &e%world% interagieren"
   cmd_lb_disabled: '&c Der LuckyBlock-Type &e%lb%&c ist deaktiviert  :('
   cmd_lb_not_found: '&c Der LuckyBlock-Type &e%lb%&c wurde nicht gefunden :('
-  cmd_lb_received: '&a Du hast %amount% Luckyblocks erhalten &7(%lb% Farbe)'
-  cmd_lb_give: '&aDu hast %amount% Luckyblocks gegeben &7(%lb% Farbe)'
+  cmd_lb_received: '&a Du hast %amount% Luckyblocks erhalten &7(%lb% &7Farbe)'
+  cmd_lb_give: '&aDu hast %amount% Luckyblocks gegeben &7(%lb% &7Farbe)'
   
   cmd:
     help_title: '&eLuckyBlock''s &fHilfs-Commands:'

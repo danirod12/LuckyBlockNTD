@@ -5,47 +5,48 @@ import java.util.logging.Level;
 import org.bukkit.Material;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.api.TintedMaterialUnavailableException;
+import me.DenBeKKer.ntdLuckyBlock.api.exceptions.TintedMaterialUnavailableException;
 
 public class TintedMaterial {
-	
-	private final static boolean available;
+
 	private final static boolean premium = LBMain.isPremium();
-	private static Material material;
-	
-	static {
-		
+	private final boolean available;
+	private final Material material;
+
+	public TintedMaterial() {
+
+		Material material = null;
 		try {
-			
+
 			material = Material.valueOf("TINTED_GLASS");
-			
+
 		} catch(Exception lower1_17) {
-			
+
 			material = null;
 			LBMain.log(Level.INFO, "Server version not support Tinted LuckyBlock. Skipping...");
-			
+
 		}
-		
+
 		if(material != null && !premium) {
-			
+
 			material = null;
 			LBMain.log(Level.INFO, "Tinted LuckyBlock disabled in free version. Skipping...");
-			
+
 		}
-		
+		this.material = material;
 		available = material != null;
-		
+
 	}
 	
-	public static boolean isAvailable() {
+	public boolean isAvailable() {
 		return is1_17();
 	}
 	
-	public static boolean is1_17() {
+	public boolean is1_17() {
 		return available && premium;
 	}
 	
-	public static Material getMaterial() {
+	public Material getMaterial() {
 		if(material == null)
 			throw new TintedMaterialUnavailableException();
 		return material;

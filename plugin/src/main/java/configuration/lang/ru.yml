@@ -1,4 +1,5 @@
 
+# Translation configuration author
 author: DenBeKKer
 # I am from Russia, translation will be good :D
 # Я из России, так что перевод будет хороший :D
@@ -37,10 +38,10 @@ system:
   
   cmd_lb_disabled: "&cЛаки-блок типа &e%lb%&c отключен :("
   cmd_lb_not_found: "&cЛаки-блок типа &e%lb%&c не найден :("
-  cmd_lb_received: "&aПолучено %amount% лаки-блоков &7(%lb% цвет)"
+  cmd_lb_received: "&aПолучено %amount% лаки-блоков &7(%lb% &7цвет)"
   cmd_ci_received: "&aПолучено %item%"
   cmd_destroyed_lb: "&cРазрушено &e%amount% &cлаки-блоков"
-  cmd_lb_give: "&aВыдано %amount% лаки-блоков &7(%lb% цвет)"
+  cmd_lb_give: "&aВыдано %amount% лаки-блоков &7(%lb% &7цвет)"
   
   cmd:
     help_title: "&eLuckyBlock &fпомощь по командам:"

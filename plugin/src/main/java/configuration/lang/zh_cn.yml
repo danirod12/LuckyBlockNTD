@@ -1,4 +1,5 @@
 
+# Translation configuration author
 author: SnowCutieOwO
 
 special:
@@ -32,8 +33,8 @@ system:
   
   cmd_lb_disabled: "&c幸运方块 &e%lb%&c 已被禁用 :("
   cmd_lb_not_found: "&c幸运方块 &e%lb%&c 未找到 :("
-  cmd_lb_received: "&a得到了 %amount% 个幸运方块 &7(%lb%)"
-  cmd_lb_give: "&a给予了 %amount% 个幸运方块 &7(%lb%)"
+  cmd_lb_received: "&a得到了 %amount% 个幸运方块 &7(%lb%&7)"
+  cmd_lb_give: "&a给予了 %amount% 个幸运方块 &7(%lb%&7)"
   
   cmd_destroyed_lb: "&c已清除了 &e%amount% &c个幸运方块"
   cmd_ci_received: "&a你收到了物品 %item%"
