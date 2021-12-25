@@ -167,7 +167,7 @@ public class Config {
         if(stream == null) stream = getResource();
         try {
             def = new YamlConfiguration();
-            def.load(new InputStreamReader(stream));
+            def.load(new InputStreamReader(stream, "UTF-8"));
             return def;
         } catch(Exception ex) {
             ex.printStackTrace();
