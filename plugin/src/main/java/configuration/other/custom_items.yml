@@ -10,5 +10,13 @@ axe_of_perun:
   enabled: true
   damage: 0.5
 
+chilly_pants:
+  enabled: true
+  only_solid: true
+
+rage_armor:
+  enabled: true
+  percentage: 50
+
 mystery_meat:
   enabled: true

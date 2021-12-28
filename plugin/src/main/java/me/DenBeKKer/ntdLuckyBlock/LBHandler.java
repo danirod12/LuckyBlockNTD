@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map.Entry;
 
+import me.DenBeKKer.ntdLuckyBlock.sk89q.WorldGuardInstance;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -22,10 +24,7 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.InventoryType.SlotType;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -73,7 +72,24 @@ public class LBHandler implements Listener {
 		}
 
 	}
-	
+
+	@EventHandler
+	public void move(PlayerMoveEvent e) {
+
+		if(CustomItemFactory.chilly_pants &&
+				CustomItemFactory.compare(e.getPlayer().getInventory().getLeggings(), "ntdluckyblock-chilly_pants")) {
+
+			if(e.getPlayer().getGameMode() == GameMode.SPECTATOR) return;
+
+			Block target = e.getTo().clone().add(.0D, -1.0D, .0D).getBlock();
+			if(target.getType() == Material.ICE) return;
+			if(CustomItemFactory.solid && !target.getType().isSolid()) return;
+			target.setType(Material.ICE);
+
+		}
+
+	}
+
 	@EventHandler
 	public void hit(EntityDamageByEntityEvent event) {
 		
@@ -81,6 +97,10 @@ public class LBHandler implements Listener {
 		if(event.getEntity() instanceof Player) {
 			
 			final Player player = (Player) event.getEntity();
+
+			if(CustomItemFactory.rage_armor && CustomItemFactory.isRageArmor(player))
+				event.setDamage(event.getDamage() * (100 - CustomItemFactory.rage_armor_percentage));
+
 			final ItemStack stack = player.getInventory().getItem(player.getInventory().getHeldItemSlot());
 			if(stack == null) break victim;
 			BekkerItemStack item = CustomItemFactory.fetchCustomItem(stack);

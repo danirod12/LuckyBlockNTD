@@ -16,13 +16,7 @@ public interface IMat {
 	public enum Mat {
 		
 		PLAYER_SKULL,
-		
-//		YELLOW_GLASS,
-//		GREEN_GLASS,
-//		RED_GLASS,
-//		BLUE_GLASS,
-//		BLACK_GLASS,
-//		
+
 		GRAY_PANE,
 		BLACK_PANE,
 		WHITE_WOOL,

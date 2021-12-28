@@ -33,7 +33,11 @@ public class CustomItemFactory {
 	public static final String TAG_IDENTIFIER_NAME = "bekker_item_identifier";
 	public static final String TAG_LUCKYBLOCK_TYPE = "luckyblock_type";
 	private static Collection<BekkerItemStack> storage;
-	
+
+	public static boolean chilly_pants = false, rage_armor = false;
+	public static boolean solid;
+	public static int rage_armor_percentage;
+
 	public static void register(BekkerItemStack item) {
 		BekkerItemStack origin = fetchCustomItem(item);
 		if(origin != null)
@@ -58,6 +62,8 @@ public class CustomItemFactory {
 	}
 	
 	public static boolean compare(ItemStack item, String tag_name, String identifier) {
+
+		if(item == null || tag_name == null || identifier == null) return false;
 
 		ItemTag adapter = LBMain.getItemTagAdapter();
 		final Object tag = adapter.getTag(adapter.asNMSCopy(item));
@@ -98,12 +104,12 @@ public class CustomItemFactory {
 	public static void loadSystem() throws Throwable {
 		
 		storage = new ArrayList<>();
+		rage_armor = chilly_pants = false;
 		
 		Config custom_items = new Config(LBMain.getInstance(), "configuration.other", null, "custom_items");
 		custom_items.copy(true);
 		
-		// check if new items missed
-		
+		// check if new items is missed
 		if(isEnabled(custom_items, "magic_wool")) {
 			try {
 				register(new BekkerItemStackBuilder(LBMain.getInstance().factory.getItem(Mat.WHITE_WOOL, 1))
@@ -193,6 +199,27 @@ public class CustomItemFactory {
 				th.printStackTrace();
 			}
 		}
+		if(isEnabled(custom_items, "chilly_pants")) {
+			solid = custom_items.get().getBoolean("chilly_pants.only_solid");
+			try {
+				register(new BekkerItemStackBuilder(Material.LEATHER_LEGGINGS).setSerialID("chilly_pants").setName(Message.CI_CHILLY_PANTS.getAsString(true)));
+				chilly_pants = true;
+			} catch(Throwable th) {
+				th.printStackTrace();
+			}
+		}
+		if(isEnabled(custom_items, "rage_armor")) {
+			rage_armor_percentage = custom_items.get().getInt("rage_armor.percentage");
+			try {
+				register(new BekkerItemStackBuilder(Material.LEATHER_LEGGINGS).setSerialID("rage_armor_leggings").setName(Message.CI_RAGE_ARMOR.getAsString(true)));
+				register(new BekkerItemStackBuilder(Material.LEATHER_BOOTS).setSerialID("rage_armor_boots").setName(Message.CI_RAGE_ARMOR.getAsString(true)));
+				register(new BekkerItemStackBuilder(Material.LEATHER_CHESTPLATE).setSerialID("rage_armor_chestplate").setName(Message.CI_RAGE_ARMOR.getAsString(true)));
+				register(new BekkerItemStackBuilder(Material.LEATHER_HELMET).setSerialID("rage_armor_helmet").setName(Message.CI_RAGE_ARMOR.getAsString(true)));
+				rage_armor = true;
+			} catch(Throwable th) {
+				th.printStackTrace();
+			}
+		}
 		if(LBMain.getInstance().factory instanceof Mat1_13 && isEnabled(custom_items, "carrot_corrupter")) {
 			try {
 				register(new BekkerItemStackBuilder(Material.CARROT).addUnsafeEnchantment(Enchantment.DURABILITY, 1)
@@ -245,14 +272,22 @@ public class CustomItemFactory {
 			config.get().set(path + ".enabled", true);
 			
 			switch(path.toLowerCase()) {
-			case "sword_of_justice": {
-				config.get().set(path + ".heal", 2.0D);
-				break;
-			}
-			case "axe_of_perun": {
-				config.get().set(path + ".damage", .5D);
-				break;
-			}
+				case "sword_of_justice": {
+					config.get().set(path + ".heal", 2.0D);
+					break;
+				}
+				case "axe_of_perun": {
+					config.get().set(path + ".damage", .5D);
+					break;
+				}
+				case "chilly_pants": {
+					config.get().set(path + ".only_solid", true);
+					break;
+				}
+				case "rage_armor": {
+					config.get().set(path + ".percentage", 50);
+					break;
+				}
 			default: break;
 			}
 			
@@ -290,5 +325,13 @@ public class CustomItemFactory {
 	public static Collection<BekkerItemStack> copy() {
 		return new ArrayList<>(storage);
 	}
-	
+
+	public static boolean isRageArmor(Player player) {
+
+		PlayerInventory i = player.getInventory();
+		return compare(i.getHelmet(), "ntdluckyblock-rage_armor_helmet") && compare(i.getLeggings(), "ntdluckyblock-rage_armor_leggings") &&
+				compare(i.getChestplate(), "ntdluckyblock-rage_armor_chestplate") && compare(i.getBoots(), "ntdluckyblock-rage_armor_boots");
+
+	}
+
 }

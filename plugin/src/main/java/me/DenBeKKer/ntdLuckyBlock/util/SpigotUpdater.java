@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -69,7 +70,9 @@ public class SpigotUpdater {
     	
     	if(!need_update) return;
     	if(target == null)
-    		Bukkit.getOnlinePlayers().forEach(n -> a(n));
+			Bukkit.getOnlinePlayers().forEach(n -> {
+				if(n.hasPermission(plugin.getName().toLowerCase() + ".update")) a(n);
+			});
     	else a(target);
     	
     }
@@ -85,24 +88,25 @@ public class SpigotUpdater {
     }
     
     public void check$announce(boolean print_exception, boolean inform) {
-    	
-    	final Logger logger = plugin.getLogger();
+
     	try {
 			if(checkForUpdatesFixed()) {
-				
-				logger.info("\u00a76╔");
-				logger.info("\u00a76║   \u00a7c\u00a7l[!] \u00a7aNew plugin version for \u00a7e" + friendly_name
+
+				ConsoleCommandSender logger = Bukkit.getConsoleSender();
+
+				logger.sendMessage("[" + plugin.getName() + "] \u00a76╔");
+				logger.sendMessage("[" + plugin.getName() + "] \u00a76║   \u00a7c\u00a7l[!] \u00a7aNew plugin version for \u00a7e" + friendly_name
 						+ "\u00a7a has been released!");
-				logger.info("\u00a76║ \u00a7aYour current version is \u00a77" + plugin.getDescription().getVersion()
+				logger.sendMessage("[" + plugin.getName() + "] \u00a76║ \u00a7aYour current version is \u00a77" + plugin.getDescription().getVersion()
 						+ "\u00a7a. New version is \u00a7c" + version);
-				logger.info("\u00a76║ \u00a7aCheck \u00a7b" + getResourceURL() + "  \u00a76\u00a7l^_^");
-				logger.info("\u00a76╚");
+				logger.sendMessage("[" + plugin.getName() + "] \u00a76║ \u00a7aCheck \u00a7b" + getResourceURL() + "  \u00a76\u00a7l^_^");
+				logger.sendMessage("[" + plugin.getName() + "] \u00a76╚");
 				if(inform) announce(null);
 				
 			}
 		} catch (Exception e) {
 			if(print_exception) {
-				logger.log(Level.WARNING, "SpigotMC servers is unavailable... Check plugin page for updates " + getResourceURL());
+				plugin.getLogger().log(Level.WARNING, "SpigotMC servers is unavailable... Check plugin page for updates " + getResourceURL());
 				e.printStackTrace();
 			}
 		}

@@ -34,6 +34,8 @@ public class MessagesManager {
 		CI_MAGIC_WOOL("custom_items.magic_wool"),
 		CI_SWORD_OF_JUSTICE("custom_items.sword_of_justice"),
 		CI_AXE_OF_PERUN("custom_items.axe_of_perun"),
+		CI_CHILLY_PANTS("custom_items.chilly_pants"),
+		CI_RAGE_ARMOR("custom_items.rage_armor"),
 		CI_CARROT_CORRUPTER("custom_items.carrot_corrupter"),
 		CI_MYSTERY_MEAT("custom_items.mystery_meat"),
 		CI_LIST("custom_items.list"),
