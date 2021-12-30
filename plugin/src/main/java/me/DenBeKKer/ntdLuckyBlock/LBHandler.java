@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map.Entry;
 
-import me.DenBeKKer.ntdLuckyBlock.sk89q.WorldGuardInstance;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -35,7 +34,7 @@ import me.DenBeKKer.ntdLuckyBlock.customitem.BekkerItemStack;
 import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
 import me.DenBeKKer.ntdLuckyBlock.customitem.HitEvent;
 import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
-import me.DenBeKKer.ntdLuckyBlock.sk89q.LBWorldGuard;
+import me.DenBeKKer.ntdLuckyBlock.hook.sk89q.LBWorldGuard;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.GuiManager;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
@@ -199,10 +198,7 @@ public class LBHandler implements Listener {
 	
 	@EventHandler
 	public void explosion(EntityExplodeEvent e) {
-		new ArrayList<>(e.blockList()).forEach(n -> {
-			if(LuckyBlockAPI.isLuckyBlock(n))
-				e.blockList().remove(n);
-		});
+		e.blockList().removeIf(LuckyBlockAPI::isLuckyBlock);
 	}
 
 	@EventHandler
@@ -212,10 +208,7 @@ public class LBHandler implements Listener {
 
 	@EventHandler
 	public void explosion(BlockExplodeEvent e) {
-		new ArrayList<>(e.blockList()).forEach(n -> {
-			if(LuckyBlockAPI.isLuckyBlock(n))
-				e.blockList().remove(n);
-		});
+		e.blockList().removeIf(LuckyBlockAPI::isLuckyBlock);
 	}
 	
 	@EventHandler

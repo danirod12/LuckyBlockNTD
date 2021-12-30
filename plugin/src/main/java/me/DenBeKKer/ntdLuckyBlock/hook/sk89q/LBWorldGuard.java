@@ -1,4 +1,4 @@
-package me.DenBeKKer.ntdLuckyBlock.sk89q;
+package me.DenBeKKer.ntdLuckyBlock.hook.sk89q;
 
 import java.util.logging.Level;
 

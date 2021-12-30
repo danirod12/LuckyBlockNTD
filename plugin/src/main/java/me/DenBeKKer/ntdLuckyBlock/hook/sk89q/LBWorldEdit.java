@@ -1,4 +1,4 @@
-package me.DenBeKKer.ntdLuckyBlock.sk89q;
+package me.DenBeKKer.ntdLuckyBlock.hook.sk89q;
 
 import java.io.File;
 import java.util.logging.Level;
@@ -7,16 +7,10 @@ import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.util.IWorldEdit;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
-import org.bukkit.plugin.Plugin;
 
-import static me.DenBeKKer.ntdLuckyBlock.sk89q.LBWorldGuard.getClassZ;
+import static me.DenBeKKer.ntdLuckyBlock.hook.sk89q.LBWorldGuard.getClassZ;
 
 public class LBWorldEdit {
-
-	private static Plugin instance;
-	public static void setInstance(Plugin plugin) {
-		instance = plugin;
-	}
 
 	private static IWorldEdit worldedit = null;
 	private static boolean fawe = false;
@@ -61,7 +55,7 @@ public class LBWorldEdit {
 		if(worldedit == null) return;
 		
 		if(fawe) {
-			Bukkit.getScheduler().runTaskLater(instance, () -> worldedit.paste(file, object, true), 1);
+			Bukkit.getScheduler().runTaskLater(LBMain.getInstance(), () -> worldedit.paste(file, object, true), 1);
 			return;
 		}
 		

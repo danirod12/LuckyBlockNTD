@@ -1,4 +1,4 @@
-package me.DenBeKKer.ntdLuckyBlock.sk89q;
+package me.DenBeKKer.ntdLuckyBlock.hook.sk89q;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;

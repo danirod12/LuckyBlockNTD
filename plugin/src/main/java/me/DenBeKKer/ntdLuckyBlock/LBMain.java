@@ -14,8 +14,9 @@ import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
 import me.DenBeKKer.ntdLuckyBlock.nms.*;
 import me.DenBeKKer.ntdLuckyBlock.recipe.CraftListener;
 import me.DenBeKKer.ntdLuckyBlock.recipe.LuckyRecipe;
-import me.DenBeKKer.ntdLuckyBlock.sk89q.LBWorldEdit;
-import me.DenBeKKer.ntdLuckyBlock.sk89q.LBWorldGuard;
+import me.DenBeKKer.ntdLuckyBlock.hook.sk89q.LBWorldEdit;
+import me.DenBeKKer.ntdLuckyBlock.hook.sk89q.LBWorldGuard;
+import me.DenBeKKer.ntdLuckyBlock.hook.thebusybiscuit.SlimeFunListener;
 import me.DenBeKKer.ntdLuckyBlock.util.*;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.GuiManager;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager;
@@ -263,7 +264,6 @@ public class LBMain extends JavaPlugin {
 			this.economy_bridge = new VaultEconomy();
 		}
 
-		LBWorldEdit.setInstance(this);
 		schematics_folder = new File(getDataFolder(), "schematics");
 		if(Hooks.WorldEdit.isEnabled()) {
 			debug("Loading WorldEdit provider...");
@@ -309,6 +309,7 @@ public class LBMain extends JavaPlugin {
 		}
 		
 		debug("Loading event managers...");
+		if(Hooks.SlimeFun.isEnabled()) Bukkit.getPluginManager().registerEvents(new SlimeFunListener(), this);
 		Bukkit.getPluginManager().registerEvents(new LBHandler(), this);
 		Bukkit.getPluginManager().registerEvents(new GuiManager(), this);
 		Bukkit.getPluginManager().registerEvents(new CraftListener(), this);
@@ -545,7 +546,8 @@ public class LBMain extends JavaPlugin {
 		Vault,
 		TokenManager,
 		WorldEdit,
-		WorldGuard;
+		WorldGuard,
+		SlimeFun;
 		
 		private String error = "not found";
 		
