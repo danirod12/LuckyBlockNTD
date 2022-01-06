@@ -227,4 +227,21 @@ public class Config {
         }
     }
 
+    public Config copyMissedFields() {
+
+        if(this.config == null) this.copy(true);
+
+        boolean need_save = false;
+        final YamlConfiguration yml_default = ((YamlConfiguration) getDefault());
+        for(String key : yml_default.getKeys(true)) {
+            if (!this.config.isSet(key)) {
+                this.config.set(key, yml_default.get(key));
+                need_save = true;
+            }
+        }
+        if(need_save) this.save();
+        return this;
+
+    }
+
 }

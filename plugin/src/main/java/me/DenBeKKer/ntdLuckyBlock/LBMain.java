@@ -347,99 +347,7 @@ public class LBMain extends JavaPlugin {
 	
 	public void loadConfig() {
 
-		config = new Config(instance, getDataFolder(), "config.yml");
-		config.copy(true);
-		
-		if(config.get().getString("config-level") == null ||
-				config.get().getString("config-level").equalsIgnoreCase("1.2") ||
-				config.get().getString("config-level").equalsIgnoreCase("1.1") ||
-				config.get().getString("config-level").equalsIgnoreCase("1.0")) {
-			
-			getLogger().log(Level.WARNING, "Your config have old version and will be updated");	
-			getLogger().log(Level.WARNING, "All settings into \"config.yml\" will be deleted");
-			getLogger().log(Level.WARNING, "SETUP CONFIG AND PERFORM /ntdluckyblock reload");
-			
-			getLogger().log(Level.INFO, Message.LOADING_CONFIG.getAsString());
-			config.delete();
-			config.copy(true);
-			
-		} else {
-			if(config.get().getString("config-level").equalsIgnoreCase("1.3")) {
-				getLogger().log(Level.INFO, "Your config level is 1.3, updating to 1.4...");
-				config.get().set("scheduled-update-check", true);
-				config.get().set("debug", false);
-				config.get().set("config-level", "1.4");
-				config.save();
-			}
-			if(config.get().getString("config-level").equalsIgnoreCase("1.4")) {
-				getLogger().log(Level.INFO, "Your config level is 1.4, updating to 1.5...");
-				config.get().set("reduce-command-author-info", false);
-				
-				File messages = new File(getDataFolder() + File.separator + "messages.yml");
-				
-				boolean custom = true;
-				if(messages.exists()) {
-					
-					getLogger().log(Level.WARNING, "Moving messages.yml to /lang/custom.yml");	
-					try {
-						File file = new File(MessagesManager.lang_folder + File.separator + "custom.yml");
-						file.createNewFile();
-						Files.move(messages, file);
-					} catch (IOException e) {
-						e.printStackTrace();
-						custom = false;
-					}
-					if(custom)
-						messages.delete();
-					
-				}
-				
-				config.get().set("language", custom ? "custom" : "en");
-				config.get().set("config-level", "1.5");
-				config.save();
-			}
-			if(config.get().getString("config-level").equalsIgnoreCase("1.5")) {
-				getLogger().log(Level.INFO, "Your config level is 1.5, updating to 1.6...");
-				config.get().set("break-permissions", true);
-				config.get().set("config-level", "1.6");
-				config.save();
-			}
-			if(config.get().getString("config-level").equalsIgnoreCase("1.6")) {
-				getLogger().log(Level.INFO, "Your config level is 1.6, updating to 1.7...");
-				config.get().set("disable-author-info-gui-get", false);
-				config.get().set("config-level", "1.7");
-				config.save();
-			}
-			if(config.get().getString("config-level").equalsIgnoreCase("1.7")) {
-				
-				warning_luckyblock_changed = true;
-				
-				getLogger().log(Level.INFO, "Your config level is 1.7, updating to 1.8...");
-				config.get().set("place.verify-name", true);
-				config.get().set("place.verify-UUID", true);
-				config.get().set("config-level", "1.8");
-				config.save();
-			}
-			if(config.get().getString("config-level").equalsIgnoreCase("1.8")) {
-				getLogger().log(Level.INFO, "Your config level is 1.8, updating to 1.9...");
-				config.get().set("web-unavailable-disable", false);
-				config.get().set("config-level", "1.9");
-				config.save();
-			}
-			if(config.get().getString("config-level").equalsIgnoreCase("1.9")) {
-				getLogger().log(Level.INFO, "Your config level is 1.9, updating to 1.10...");
-				config.get().set("prevent-hat-luckyblocks", true);
-				config.get().set("config-level", "1.10");
-				config.save();
-			}
-			if(config.get().getString("config-level").equalsIgnoreCase("1.10")) {
-				getLogger().log(Level.INFO, "Your config level is 1.10, updating to 1.11...");
-				config.get().set("disable-json-convert-checking", false);
-				config.get().set("skip-factory-broken", true);
-				config.get().set("config-level", "1.11");
-				config.save();
-			}
-		}
+		config = new Config(instance, getDataFolder(), "config.yml").copy(true).copyMissedFields();
 		
 		brperm = config.get().getBoolean("break-permissions");
 		reduce = config.get().getBoolean("reduce-command-author-info");
@@ -450,13 +358,11 @@ public class LBMain extends JavaPlugin {
 		if(config.get().isSet("place.verify-name")) {
 			
 			config.get().set("place.verify-name", null);
-			config.get().set("place.verify-TAG", true);
-			config.get().set("place.convert-factory", true);
 			config.save();
 			log(Level.WARNING, "Old storage scheme found!");
 			log(Level.WARNING, "  > disabling name checking");
 			log(Level.WARNING, "  > enabling tag factory converter");
-			log(Level.WARNING, "THIS MAY CAUSE BAD PERFOMANCE IMPACT!");
+			log(Level.WARNING, "THIS MAY CAUSE BAD PERFORMANCE IMPACT!");
 			
 		}
 		
@@ -467,9 +373,10 @@ public class LBMain extends JavaPlugin {
 			log(Level.WARNING, "You must enable place.verify-TAG or place.verify-UUID option for plugin work");
 		
 		MessagesManager.reload(config.get().getString("language"));
-		
-		debug = config.get().getBoolean("debug");
-		if(debug) getLogger().log(Level.WARNING, "Debug mode enabled! Note that this mode only for developer!");
+
+		if(debug = config.get().getBoolean("debug"))
+			getLogger().log(Level.WARNING, "Debug mode enabled! Note that this mode only for developer!");
+
 		inform = config.get().getBoolean("inform-about-update");
 		
 		disable_author_info = config.get().getBoolean("disable-author-info-gui-get") || config.get().getBoolean("disable-author-info");
@@ -483,8 +390,7 @@ public class LBMain extends JavaPlugin {
 		
 		web_unavailable_disable = config.get().getBoolean("web-unavailable-disable");
 		
-		Config worlds = new Config(this, "configuration.other", null, "worlds");
-		worlds.copy(true);
+		Config worlds = new Config(this, "configuration.other", null, "worlds").copy(true);
 		w = new WorldsList(worlds.get().getString("mode"), worlds.get().getStringList("list"));
 		w.setBreakNoDrop(worlds.get().getBoolean("break-no-drop"));
 		w.setPlaceAdmins(worlds.get().getBoolean("place-admins"));
