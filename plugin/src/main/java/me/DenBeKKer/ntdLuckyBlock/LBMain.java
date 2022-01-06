@@ -46,6 +46,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class LBMain extends JavaPlugin {
 	
@@ -752,10 +753,8 @@ public class LBMain extends JavaPlugin {
 			
 			ItemMeta meta = item.getItemMeta();
 			meta.setDisplayName(name.replace("&", "\u00a7"));
-			if(lore != null) {
-				for(String s : lore) lore.set(lore.indexOf(s), s.replace("&", "\u00a7"));
-				meta.setLore(lore);
-			}
+			if(lore != null)
+				meta.setLore(lore.stream().map(n -> n.replace("&", "\u00a7")).collect(Collectors.toList()));
 			item.setItemMeta(meta);
 			
 			return item;
