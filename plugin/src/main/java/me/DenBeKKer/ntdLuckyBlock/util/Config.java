@@ -12,11 +12,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Config {
 
@@ -228,12 +226,20 @@ public class Config {
     }
 
     public Config copyMissedFields() {
+        return this.copyMissedFields(new ArrayList<>());
+    }
+
+    public Config copyMissedFields(Collection<String> skip) {
 
         if(this.config == null) this.copy(true);
+
+        skip = skip.stream().map(String::toLowerCase).collect(Collectors.toList());
 
         boolean need_save = false;
         final YamlConfiguration yml_default = ((YamlConfiguration) getDefault());
         for(String key : yml_default.getKeys(true)) {
+            for(String string : skip)
+                if(key.toLowerCase().startsWith(string)) continue;
             if (!this.config.isSet(key)) {
                 this.config.set(key, yml_default.get(key));
                 need_save = true;
