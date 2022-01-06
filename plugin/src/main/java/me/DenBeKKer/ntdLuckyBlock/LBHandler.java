@@ -288,8 +288,8 @@ public class LBHandler implements Listener {
 		if(type != null && type.isLoaded()) {
 			
 			if(e.isCancelled()) return;
-			if(!LBMain.getInstance().w.allowed_break(e.getBlock().getWorld())) {
-				if(!LBMain.getInstance().w.getPlaceAdmins() && e.getPlayer().hasPermission("luckyblock.place.disabled")) {
+			if(!LBMain.getInstance().w.allowed(e.getBlock().getWorld().getName())) {
+				if(!LBMain.getInstance().w.getDataHandler().getPlaceAdmins() && e.getPlayer().hasPermission("luckyblock.place.disabled")) {
 					e.getPlayer().sendMessage(Message.CANT_INTERACT_WORLD.getAsString(true).replace("%world%", e.getBlock().getWorld().getName()));
 					e.setCancelled(true);
 					return;

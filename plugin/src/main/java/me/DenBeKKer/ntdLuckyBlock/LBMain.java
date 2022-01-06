@@ -27,6 +27,7 @@ import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_12;
 import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_13;
 import me.DenBeKKer.ntdLuckyBlock.util.material.TintedMaterial;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
+import me.DenBeKKer.ntdLuckyBlock.variables.WorldListDataHandler;
 import me.DenBeKKer.ntdLuckyBlock.variables.WorldsList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -57,7 +58,7 @@ public class LBMain extends JavaPlugin {
 	private static String version;
 	private EconomyBridge economy_bridge;
 	public SpigotUpdater updater;
-	public WorldsList w;
+	public StringMatcher<WorldListDataHandler> w;
 	
 	private static boolean reduce = false,
 			brperm = true,
@@ -215,8 +216,8 @@ public class LBMain extends JavaPlugin {
 		loadConfig();
 		if(config.get().getBoolean("scheduled-update-check")) {
 			debug("Loading Bukkit scheduler thread for delayed update check");
-			Bukkit.getScheduler().runTaskTimer(instance, () -> checkForUpdates(), 100L, 72000L);
-		} else Bukkit.getScheduler().runTaskLater(instance, () -> checkForUpdates(), 100L);
+			Bukkit.getScheduler().runTaskTimerAsynchronously(instance, () -> checkForUpdates(), 100L, 72000L);
+		} else Bukkit.getScheduler().runTaskLaterAsynchronously(instance, () -> checkForUpdates(), 100L);
 		
 		if(web_unavailable_disable)
 			log(Level.INFO, "\"Web-Server is unavailable\" message is disabled. Plugin page - " + updater.getResourceURL());
@@ -391,9 +392,8 @@ public class LBMain extends JavaPlugin {
 		web_unavailable_disable = config.get().getBoolean("web-unavailable-disable");
 		
 		Config worlds = new Config(this, "configuration.other", null, "worlds").copy(true);
-		w = new WorldsList(worlds.get().getString("mode"), worlds.get().getStringList("list"));
-		w.setBreakNoDrop(worlds.get().getBoolean("break-no-drop"));
-		w.setPlaceAdmins(worlds.get().getBoolean("place-admins"));
+		w = new StringMatcher<WorldListDataHandler>(worlds.get().getString("mode"), worlds.get().getStringList("list"));
+		w.connectDataHandler(new WorldListDataHandler(worlds.get().getBoolean("break-no-drop"), worlds.get().getBoolean("place-admins")));
 		try {
 			CustomItemFactory.reloadSystem();
 		} catch (Throwable e) {

@@ -264,9 +264,9 @@ public class LuckyBlock {
 		
 		if(target != null) {
 			
-			if(!LBMain.getInstance().w.allowed_break(block.getWorld())) {
+			if(!LBMain.getInstance().w.allowed(block.getWorld().getName())) {
 				
-				if(LBMain.getInstance().w.getBreakNoDrop()) {
+				if(LBMain.getInstance().w.getDataHandler().getBreakNoDrop()) {
 					event.setDrop(false);
 				} else {
 					target.sendMessage(Message.CANT_INTERACT_WORLD.getAsString(true).replace("%world%", block.getWorld().getName()));
