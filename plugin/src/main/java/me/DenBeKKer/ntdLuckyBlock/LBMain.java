@@ -73,6 +73,8 @@ public class LBMain extends JavaPlugin {
 	private ConvertManager convert_manager = new ConvertManager();
 	private CommandsManager commands_manager;
 	private static String NMS_VERSION;
+	public GuiManager gui_manager;
+
 	public static String getNMSVersion() { return NMS_VERSION; }
 	
 	
@@ -152,8 +154,7 @@ public class LBMain extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		if(GuiManager.isInited())
-			GuiManager.close();
+		gui_manager.close();
 	}
 
 	@Override
@@ -303,16 +304,12 @@ public class LBMain extends JavaPlugin {
 		Hooks.print();
 		system_load();
 		
-		try {
-			GuiManager.init();
-		} catch(Exception ex) {
-			ex.printStackTrace();
-		}
+		gui_manager = new GuiManager();
 		
 		debug("Loading event managers...");
 		if(Hooks.SlimeFun.isEnabled()) Bukkit.getPluginManager().registerEvents(new SlimeFunListener(), this);
 		Bukkit.getPluginManager().registerEvents(new LBHandler(), this);
-		Bukkit.getPluginManager().registerEvents(new GuiManager(), this);
+		Bukkit.getPluginManager().registerEvents(gui_manager, this);
 		Bukkit.getPluginManager().registerEvents(new CraftListener(), this);
 		Bukkit.getPluginManager().registerEvents(convert_manager, this);
 		

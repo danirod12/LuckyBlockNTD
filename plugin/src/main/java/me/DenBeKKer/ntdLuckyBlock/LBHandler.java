@@ -192,7 +192,7 @@ public class LBHandler implements Listener {
 	
 	@EventHandler
 	public void quit(PlayerQuitEvent e) {
-		GuiManager.ramFix(e.getPlayer());
+		LBMain.getInstance().gui_manager.ramFix(e.getPlayer());
 		LBMain.getCommandsManager().fix_ram(e.getPlayer());
 	}
 	

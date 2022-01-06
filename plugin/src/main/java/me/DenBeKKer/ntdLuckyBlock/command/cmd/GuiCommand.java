@@ -1,5 +1,6 @@
 package me.DenBeKKer.ntdLuckyBlock.command.cmd;
 
+import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import org.bukkit.entity.Player;
 
 import me.DenBeKKer.ntdLuckyBlock.command.CommandResponce;
@@ -31,7 +32,7 @@ public class GuiCommand implements LBPlayerCommand {
 			if(type != null) {
 				
 				if(!Misc.hasPermission(player, "luckyblock.command.gui." + type.name())) return CommandResponce.MISSED_PERMISSION;
-				GuiManager.open(type, player);
+				LBMain.getInstance().gui_manager.open(type, player);
 				return CommandResponce.SUCCESS;
 				
 			}

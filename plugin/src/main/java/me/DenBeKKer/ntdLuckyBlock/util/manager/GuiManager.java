@@ -1,22 +1,5 @@
 package me.DenBeKKer.ntdLuckyBlock.util.manager;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.PlayerHead;
@@ -26,14 +9,30 @@ import me.DenBeKKer.ntdLuckyBlock.util.material.IMat.Mat;
 import me.DenBeKKer.ntdLuckyBlock.variables.ConfirmEvent;
 import me.DenBeKKer.ntdLuckyBlock.variables.CountGui;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class GuiManager implements Listener {
+
+	public GuiManager() {
+		reload();
+	}
+
+	public enum GuiType { EDIT, GET }
+	private Inventory get = null;
+	private final HashMap<Player, CountGui> map = new HashMap<>();
 	
-	public enum GuiType { EDIT, GET; }
-	private static Inventory get = null;
-	private static HashMap<Player, CountGui> map = new HashMap<>();
-	
-	public static void open(GuiType type, Player player) {
+	public void open(GuiType type, Player player) {
 
 		if(type == GuiType.GET) {
 			player.openInventory(get);
@@ -101,7 +100,6 @@ public class GuiManager implements Listener {
 					if(current < cost) {
 						player.sendMessage(Message.GUI_GET_NOT_MONEY.getAsString().replace("%eco%", LBMain.getEconomy().format((int) (cost - current))));
 						player.closeInventory();
-						return;
 					} else {
 						if(LBMain.getEconomy().withdraw(player, (int) cost)) {
 							for(int i = 0; i < amount; i++)
@@ -109,10 +107,8 @@ public class GuiManager implements Listener {
 							player.sendMessage(Message.GUI_GET_SUCCESS.getAsString().replace("%eco%", LBMain.getEconomy().format((int) cost))
 									.replace("%amount%", String.valueOf(amount)));
 							player.openInventory(get);
-							return;
 						} else {
 							player.closeInventory();
-							return;
 						}
 					}
 					
@@ -129,15 +125,17 @@ public class GuiManager implements Listener {
 		
 	}
 	
-	public static void ramFix(Player p) {
+	public void ramFix(Player p) {
 		map.remove(p);
 	}
 	
-	public static void init() {
-		
+	public void reload() {
+
+		close();
+
 		Collection<LuckyBlockType> types = LuckyBlockType.enabled().stream()
 				.filter(n -> LuckyBlockType.map().get(n).canBeShoped())
-				.sorted(Comparator.<LuckyBlockType>comparingInt(n -> n.asColor().getData()))
+				.sorted(Comparator.comparingInt(n -> n.asColor().getData()))
 				.collect(Collectors.toList());
 		LBMain.debug("[GUIMANAGER] Found " + types.size() + " types");
 		
@@ -192,14 +190,13 @@ public class GuiManager implements Listener {
 	}
 	
 	public static void createExit(Inventory inventory) {
-		inventory.setItem(inventory.getSize() - 9, PlayerHead.CLOSE_WOOD.getHead(Message.GUI_EXIT.getAsString(true), Arrays.asList("\u00a7f ")));
+		inventory.setItem(inventory.getSize() - 9, PlayerHead.CLOSE_WOOD.getHead(Message.GUI_EXIT.getAsString(true), Collections.singletonList("\u00a7f ")));
 	}
 	
-	public static void close() {
-		new ArrayList<>(map.keySet()).forEach(n -> n.closeInventory());
-		new ArrayList<>(get.getViewers()).forEach(n -> n.closeInventory());
+	public void close() {
+		new ArrayList<>(map.keySet()).forEach(HumanEntity::closeInventory);
+		map.clear();
+		if(get != null) new ArrayList<>(get.getViewers()).forEach(HumanEntity::closeInventory);
 	}
-	
-	public static boolean isInited() { return !(get == null); }
-	
+
 }

@@ -28,11 +28,7 @@ public class ReloadCommand implements LBCommand {
 		
 		LBMain.getInstance().loadConfig();
 		LBMain.getInstance().system_load();
-		try {
-			GuiManager.init();
-		} catch(Exception ex) {
-			ex.printStackTrace();
-		}
+		LBMain.getInstance().gui_manager.reload();
 		
 		sender.sendMessage(Message.RELOADED_CONFIG.getAsString().replace("%amount%", String.valueOf(LuckyBlockType.map().size())));
 		LBMain.log(Level.INFO, "Reloaded (took " + (System.currentTimeMillis() - ms) + " ms)... ");
