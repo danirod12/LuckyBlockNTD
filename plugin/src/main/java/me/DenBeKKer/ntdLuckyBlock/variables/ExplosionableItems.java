@@ -1,5 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.variables;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Location;
@@ -22,13 +24,18 @@ public class ExplosionableItems {
 				ThreadLocalRandom.current().nextDouble(-.25, .25)));
 	}
 	
-	protected void throwExplosion(EntityType type, Location location) {
-		throwExplosion(type, location, 1);
+	protected Collection<Entity> throwExplosion(EntityType type, Location location) {
+		return throwExplosion(type, location, 1);
 	}
 	
-	protected void throwExplosion(EntityType type, Location location, int amount) {
-		for(int i = 0; i < amount; i++)
-			throwExplosion(location.getWorld().spawnEntity(location, type));
+	protected Collection<Entity> throwExplosion(EntityType type, Location location, int amount) {
+		Collection<Entity> collection = new ArrayList<>();
+		for(int i = 0; i < amount; i++) {
+			Entity entity = location.getWorld().spawnEntity(location, type);
+			collection.add(entity);
+			throwExplosion(entity);
+		}
+		return collection;
 	}
 	
 	protected Entity[] create(EntityType type, Location location, int amount) {
