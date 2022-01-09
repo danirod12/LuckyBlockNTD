@@ -17,23 +17,22 @@ import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
 public class DiamondColumnSpecial implements LuckyDrop {
 	
 	@SerializedName(value = "materials")
-	private Collection<Material> collection;
-	
+	private final Collection<Material> collection;
+
+	public Collection<Material> getMaterials() {
+		return collection;
+	}
+
 	public DiamondColumnSpecial(Collection<Material> collection) {
 		this.collection = collection;
 	}
-	
+
 	@Override
-	public void execute(Block b, Player target) {
-		summonColumn(target.getLocation().getBlock());
+	public void execute(LBMain.LuckyBlockType type, Block b, Player target) {
+		this.summonColumn(target == null ? b : target.getLocation().getBlock());
 	}
-	
-	@Override
-	public void execute(Block b) {
-		summonColumn(b);
-	}
-	
-	private void summonColumn(Block block) {
+
+	public void summonColumn(Block block) {
 		
 		if(collection == null) return;
 		int y = collection.size() + 10;

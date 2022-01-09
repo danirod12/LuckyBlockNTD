@@ -10,6 +10,8 @@ import org.bukkit.entity.Player;
 import me.DenBeKKer.ntdLuckyBlock.variables.drop.EntityDrop;
 import me.DenBeKKer.ntdLuckyBlock.variables.drop.ItemDrop;
 
+import java.util.logging.Level;
+
 public interface LuckyDrop {
 	
 	public enum LuckyItemType { LUCKY_BLOCK_ITEM, ITEM, SPECIAL, ENTITY, COMMAND, CONSOLE, MESSAGE, SCHEMATIC, CUSTOM_ITEM; }
@@ -59,18 +61,30 @@ public interface LuckyDrop {
 		}
 	
 	}
-	
-	default void executeProtected(Block block, Player target) {
 
-		LuckyDropEvent event = new LuckyDropEvent(this, target);
+	@Deprecated
+	default void executeProtected(Block block, Player target) {
+		LBMain.log(Level.WARNING, "Method LuckyDrop#executeProtected is deprecated");
+		executeProtected(null, block, target);
+	}
+
+	default void executeProtected(LBMain.LuckyBlockType related, Block block, Player target) {
+
+		LuckyDropEvent event = new LuckyDropEvent(related, this, target);
 		Bukkit.getPluginManager().callEvent(event);
 
 		if(event.isCancelled()) return;
 
 		try {
-			if(target == null)
-				execute(block);
-			else execute(block, target);
+			try {
+				execute(related, block, target);
+			} catch(NoSuchMethodError error) {
+				LBMain.log(Level.WARNING, "Class behind LuckyDrop (" + this.getClass().getName() + ") is deprecated. It should implement " +
+						"execute(LuckyBlockType, Block, Player) since 2.5.8");
+				if(target == null)
+					execute(block);
+				else execute(block, target);
+			}
 		} catch(Throwable th) {
 			if(LBMain.h() && th.getMessage() != null) {
 				
@@ -82,9 +96,18 @@ public interface LuckyDrop {
 		}
 		
 	}
-	
-	void execute(Block b, Player target);
-	
-	void execute(Block b);
+
+	void execute(LBMain.LuckyBlockType related, Block block, Player target);
+
+	@Deprecated
+	default void execute(Block block, Player target) {
+		execute(block);
+	}
+
+	@Deprecated
+	default void execute(Block block) {
+		LBMain.log(Level.WARNING, "Methods LuckyDrop#execute(Block) and LuckyDrop#execute(Block, Player) are deprecated since 2.5.8. It may cause a lot of errors.");
+		execute(null, block, null);
+	}
 	
 }

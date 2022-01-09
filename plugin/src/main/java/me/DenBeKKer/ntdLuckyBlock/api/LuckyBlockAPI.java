@@ -303,17 +303,11 @@ public class LuckyBlockAPI {
 		
 		LuckyBlockType type = LuckyBlockType.parse(uuid);
 		if(type == null) {
-			
-			for(Map.Entry<LuckyBlockType, LuckyBlock> loaded : LuckyBlockType.map().entrySet()) {
-				
-				if(stack.getItemMeta().getDisplayName().equalsIgnoreCase(loaded.getValue().getOldName())) {
-					
-					type = loaded.getKey();
-					break;
-					
-				}
-				
-			}
+
+			if(stack.getItemMeta() == null || stack.getItemMeta().getDisplayName() == null) return null;
+			for(Map.Entry<LuckyBlockType, LuckyBlock> loaded : LuckyBlockType.map().entrySet())
+				if(stack.getItemMeta().getDisplayName().equalsIgnoreCase(loaded.getValue().getOldName()))
+					return loaded.getKey();
 			
 		}
 		return type;

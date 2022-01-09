@@ -1,34 +1,36 @@
 package me.DenBeKKer.ntdLuckyBlock.variables.drop.special;
 
+import com.google.gson.annotations.SerializedName;
+import me.DenBeKKer.ntdLuckyBlock.LBMain;
+import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
+import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import com.google.gson.annotations.SerializedName;
-
-import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
-import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
-
 public class WaterBucketSpecial implements LuckyDrop {
 	
 	@SerializedName(value = "height")
-	private int h;
+	private final int h;
 	
 	public WaterBucketSpecial(int h) {
 		this.h = h;
 	}
-	
-	@Override
-	public void execute(Block b, Player target) {
-		target.sendMessage(Message.WATER_BUCKET.getAsString());
-		target.getInventory().addItem(new ItemStack(Material.WATER_BUCKET));
-		target.teleport(target.getLocation().add(0, h, 0));
+
+	public int getHeight() {
+		return h;
 	}
-	
+
 	@Override
-	public void execute(Block b) {
-		b.getWorld().dropItem(b.getLocation(), new ItemStack(Material.WATER_BUCKET));
+	public void execute(LBMain.LuckyBlockType related, Block b, Player target) {
+		if(target == null) {
+			b.getWorld().dropItem(b.getLocation(), new ItemStack(Material.WATER_BUCKET));
+		} else {
+			target.sendMessage(Message.WATER_BUCKET.getAsString());
+			target.getInventory().addItem(new ItemStack(Material.WATER_BUCKET));
+			target.teleport(target.getLocation().add(0, h, 0));
+		}
 	}
 	
 }

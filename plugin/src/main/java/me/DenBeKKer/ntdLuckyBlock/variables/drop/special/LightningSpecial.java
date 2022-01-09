@@ -12,38 +12,41 @@ import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
 public class LightningSpecial implements LuckyDrop {
 	
 	@SerializedName(value = "amount")
-	private int a;
+	private final int a;
 	
 	public LightningSpecial(int a) {
 		this.a = a;
 	}
-	
+
+	public int getAmount() { return a; }
+
 	@Override
-	public void execute(Block b, Player target) {
-		
-		new BukkitRunnable() {
-			
-			int i = 0;
-			
-			@Override
-			public void run() {
-				
-				if(i >= a || !target.isOnline() || target.isDead()) {
-					cancel();
-					return;
+	public void execute(LBMain.LuckyBlockType related, Block b, Player target) {
+
+		if(target == null) {
+			b.getWorld().strikeLightning(b.getLocation().add(0.5, 0.5, 0.5));
+		} else {
+
+			new BukkitRunnable() {
+
+				int i = 0;
+
+				@Override
+				public void run() {
+
+					if(i >= a || !target.isOnline() || target.isDead()) {
+						cancel();
+						return;
+					}
+					b.getWorld().strikeLightning(target.getLocation());
+					i++;
+
 				}
-				b.getWorld().strikeLightning(target.getLocation());
-				i++;
-				
-			}
-			
-		}.runTaskTimer(LBMain.getInstance(), 15, 15);
-		
-	}
-	
-	@Override
-	public void execute(Block b) {
-		b.getWorld().strikeLightning(b.getLocation().add(0.5, 0.5, 0.5));
+
+			}.runTaskTimer(LBMain.getInstance(), 15, 15);
+
+		}
+
 	}
 	
 }

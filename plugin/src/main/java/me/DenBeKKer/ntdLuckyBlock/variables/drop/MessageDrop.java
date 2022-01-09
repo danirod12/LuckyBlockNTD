@@ -1,16 +1,15 @@
 package me.DenBeKKer.ntdLuckyBlock.variables.drop;
 
+import com.google.gson.annotations.SerializedName;
+import me.DenBeKKer.ntdLuckyBlock.LBMain;
+import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-
-import com.google.gson.annotations.SerializedName;
-
-import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
 
 public class MessageDrop implements LuckyDrop {
 	
 	@SerializedName(value = "message")
-	private String cmd;
+	private final String cmd;
 	
 	/**
 	 * 
@@ -21,11 +20,13 @@ public class MessageDrop implements LuckyDrop {
 	}
 	
 	@Override
-	public void execute(Block b, Player target) {
-		target.sendMessage(cmd.replace("%player%", target.getName()));
+	public void execute(LBMain.LuckyBlockType related, Block b, Player target) {
+		if(target == null && cmd.contains("%player%")) return;
+		target.sendMessage(cmd.replace("%player%", target.getName()).replace("%world%", b.getWorld().getName()));
 	}
-	
-	@Override
-	public void execute(Block b) { return; }
-	
+
+	public String getMessage() {
+		return cmd;
+	}
+
 }

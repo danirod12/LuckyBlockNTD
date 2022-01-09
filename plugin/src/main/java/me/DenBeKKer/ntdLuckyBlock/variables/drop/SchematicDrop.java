@@ -1,25 +1,31 @@
 package me.DenBeKKer.ntdLuckyBlock.variables.drop;
 
-import java.io.File;
-import java.util.logging.Level;
-
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-
 import com.google.gson.annotations.SerializedName;
-
+import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.api.loader.CustomSaver;
 import me.DenBeKKer.ntdLuckyBlock.hook.sk89q.LBWorldEdit;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+
+import java.io.File;
+import java.util.logging.Level;
 
 public class SchematicDrop implements LuckyDrop, CustomSaver {
 	
 	@SerializedName(value = "block")
-	private boolean b;
+	private final boolean b;
 	@SerializedName(value = "file")
-	private File file;
-	
+	private final File file;
+
+	public File getFile() {
+		return file;
+	}
+
+	public boolean atBlock() {
+		return b;
+	}
+
 	/**
 	 * 
 	 * @param file - Schematic file
@@ -29,14 +35,11 @@ public class SchematicDrop implements LuckyDrop, CustomSaver {
 		this.b = b;
 		this.file = file;
 	}
-	
+
 	@Override
-	public void execute(Block b, Player target) {
-		LBWorldEdit.paste(file, this.b ? b : target.getLocation().getBlock());
+	public void execute(LBMain.LuckyBlockType related, Block b, Player target) {
+		LBWorldEdit.paste(file, this.b || target == null ? b : target.getLocation().getBlock());
 	}
-	
-	@Override
-	public void execute(Block b) { if(this.b) LBWorldEdit.paste(file, b); }
 	
 	@Override
 	public String getDescription() {

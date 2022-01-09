@@ -295,7 +295,7 @@ public class LuckyBlock {
 					LBMain.debug("Performing item... [Gson throwable] - " + th.getLocalizedMessage());
 				}
 			}
-			item.executeProtected(block, target);
+			item.executeProtected(type, block, target);
 		}
 		return true;
 		
