@@ -110,8 +110,7 @@ public class CustomItemFactory {
 		
 		Config custom_items = new Config(LBMain.getInstance(), "configuration.other", null, "custom_items");
 		custom_items.copyMissedFields(added -> {
-			if(added.endsWith(".enabled"))
-				LBMain.log(Level.INFO, "A new custom item here (" + added.split("\\.")[0] + "). \u00a7aEnabling!");
+			LBMain.log(Level.INFO, "A new custom item here (" + added + "). \u00a7aEnabling!");
 		});
 		
 		// check if new items is missed
