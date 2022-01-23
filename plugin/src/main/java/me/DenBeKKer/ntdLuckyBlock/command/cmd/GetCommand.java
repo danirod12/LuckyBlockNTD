@@ -1,6 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.command.cmd;
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,6 +44,7 @@ public class GetCommand implements LBPlayerCommand {
 					player.sendMessage(Message.CMD_NO_PERM_TO_COLOR.getAsString().replace("%lb%", "RANDOM"));
 					return CommandResponce.SUCCESS;
 				}
+				type = types.get(ThreadLocalRandom.current().nextInt(types.size()));
 				random = true;
 			}
 			
