@@ -393,7 +393,7 @@ public class LBMain extends JavaPlugin {
 		w = new StringMatcher<WorldListDataHandler>(worlds.get().getString("mode"), worlds.get().getStringList("list"));
 		w.connectDataHandler(new WorldListDataHandler(worlds.get().getBoolean("break-no-drop"), worlds.get().getBoolean("place-admins")));
 		try {
-			CustomItemFactory.reloadSystem();
+			CustomItemFactory.loadSystem();
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}

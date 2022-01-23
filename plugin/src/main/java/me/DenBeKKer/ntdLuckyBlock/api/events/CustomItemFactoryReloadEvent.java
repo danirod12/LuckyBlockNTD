@@ -10,7 +10,7 @@ public class CustomItemFactoryReloadEvent extends Event {
 
     private static HandlerList handlers = new HandlerList();
     private final List<BekkerItemStack> items;
-    private final boolean preloading;
+    private final Action action;
 
     @Override
     public HandlerList getHandlers() {
@@ -21,19 +21,23 @@ public class CustomItemFactoryReloadEvent extends Event {
         return handlers;
     }
 
-    public CustomItemFactoryReloadEvent(List<BekkerItemStack> items, boolean preloading) {
+    public enum Action {
+        PRELOAD, LOADED;
+    }
+
+    public CustomItemFactoryReloadEvent(List<BekkerItemStack> items, Action action) {
         this.items = items;
-        this.preloading = preloading;
+        this.action = action;
     }
 
     public List<BekkerItemStack> getLoadedItems() { return items; }
 
     /**
      *
-     * @return True - You should register custom items. False - You should only listen for added items
+     * @return PRELOAD - You should register custom items. LOADED - You should only listen for added items
      */
-    public boolean isPreLoaded() {
-        return preloading;
+    public Action getAction() {
+        return action;
     }
 
 }

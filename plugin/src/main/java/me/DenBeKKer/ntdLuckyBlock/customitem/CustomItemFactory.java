@@ -1,15 +1,14 @@
 package me.DenBeKKer.ntdLuckyBlock.customitem;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Consumer;
-import java.util.logging.Level;
-
+import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.api.events.CustomItemAddedEvent;
 import me.DenBeKKer.ntdLuckyBlock.api.events.CustomItemFactoryReloadEvent;
 import me.DenBeKKer.ntdLuckyBlock.nms.ItemTag;
+import me.DenBeKKer.ntdLuckyBlock.util.Config;
+import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
+import me.DenBeKKer.ntdLuckyBlock.util.material.IMat;
+import me.DenBeKKer.ntdLuckyBlock.util.material.IMat.Mat;
+import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_13;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -24,12 +23,11 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.util.Config;
-import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
-import me.DenBeKKer.ntdLuckyBlock.util.material.IMat;
-import me.DenBeKKer.ntdLuckyBlock.util.material.IMat.Mat;
-import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_13;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
 
 public class CustomItemFactory {
 	
@@ -98,20 +96,17 @@ public class CustomItemFactory {
 		if(identifier == null) return null;
 		
 		for(BekkerItemStack stack : storage)
-			if(stack.equals((Object) identifier)) return stack;
+			if(stack.equals(identifier)) return stack;
 		return null;
 		
 	}
-	
-	@SuppressWarnings("deprecation")
+
 	public static void loadSystem() throws Throwable {
-		
+
 		storage.clear();
 		
 		Config custom_items = new Config(LBMain.getInstance(), "configuration.other", null, "custom_items");
-		custom_items.copyMissedFields(added -> {
-			LBMain.log(Level.INFO, "A new custom item here (" + added + "). \u00a7aEnabling!");
-		});
+		custom_items.copyMissedFields(added -> LBMain.log(Level.INFO, "A new custom item here (" + added + "). \u00a7aEnabling!"));
 		
 		// check if new items is missed
 		if(custom_items.getBoolean("magic_wool.enabled")) {
@@ -119,32 +114,28 @@ public class CustomItemFactory {
 				register(new BekkerItemStackBuilder(LBMain.getInstance().factory.getItem(Mat.WHITE_WOOL, 1))
 						.addUnsafeEnchantment(Enchantment.DURABILITY, 1).setSerialID("magic_wool")
 						.hideEnchantments().setName(Message.CI_MAGIC_WOOL.getAsString(true))
-						.registerEvent(ItemEvent.PLACE, n -> {
-							
-							new BukkitRunnable() {
-								
-								int rounds = ThreadLocalRandom.current().nextInt(5, 15);
-								final Block block = n.getBlock();
-								
-								@Override
-								public void run() {
-									
-									if(rounds < 0 || !block.getType().name().contains("WOOL")) {
-										cancel();
-										return;
-									}
-									
-									if(LBMain.getInstance().factory instanceof Mat1_13)
-										block.setType(IMat.WOOLS.get(ThreadLocalRandom.current().nextInt(IMat.WOOLS.size())));
-									else IMat.setData(block, (byte)ThreadLocalRandom.current().nextInt(16));
-									
-									rounds--;
-									
+						.registerEvent(ItemEvent.PLACE, n -> new BukkitRunnable() {
+
+							int rounds = ThreadLocalRandom.current().nextInt(5, 15);
+							final Block block = n.getBlock();
+
+							@Override
+							public void run() {
+
+								if(rounds < 0 || !block.getType().name().contains("WOOL")) {
+									cancel();
+									return;
 								}
-								
-							}.runTaskTimer(LBMain.getInstance(), 2L, 5L);
-							
-						}));
+
+								if(LBMain.getInstance().factory instanceof Mat1_13)
+									block.setType(IMat.WOOLS.get(ThreadLocalRandom.current().nextInt(IMat.WOOLS.size())));
+								else IMat.setData(block, (byte)ThreadLocalRandom.current().nextInt(16));
+
+								rounds--;
+
+							}
+
+						}.runTaskTimer(LBMain.getInstance(), 2L, 5L)));
 			} catch(Throwable th) {
 				th.printStackTrace();
 			}
@@ -268,11 +259,11 @@ public class CustomItemFactory {
 
 		final int internal;
 		LBMain.log(Level.INFO, "Loaded " + (internal = storage.size()) + " internal custom items...");
-		Bukkit.getPluginManager().callEvent(new CustomItemFactoryReloadEvent(new ArrayList<>(storage), true));
+		Bukkit.getPluginManager().callEvent(new CustomItemFactoryReloadEvent(new ArrayList<>(storage), CustomItemFactoryReloadEvent.Action.PRELOAD));
 
 		if(storage.size() > internal)
 			LBMain.log(Level.INFO, "Loaded " + (storage.size() - internal) + " external custom items...");
-		Bukkit.getPluginManager().callEvent(new CustomItemFactoryReloadEvent(new ArrayList<>(storage), false));
+		Bukkit.getPluginManager().callEvent(new CustomItemFactoryReloadEvent(new ArrayList<>(storage), CustomItemFactoryReloadEvent.Action.LOADED));
 
 		LBMain.log(Level.INFO, "Loaded " + storage.size() + " custom items... (Total)");
 
@@ -297,23 +288,23 @@ public class CustomItemFactory {
 		return stack == null || stack.getType() == Material.AIR;
 	}
 	
-	public static void reloadSystem() throws Throwable {
-
-		ItemTag adapter = LBMain.getItemTagAdapter();
-		if(storage != null && LBMain.getInstance().factory != null) {
-			
-			new ArrayList<>(storage).stream().filter(item -> {
-				
-				String identifier = adapter.getTagString(adapter.getTag(adapter.asNMSCopy(item)), CustomItemFactory.TAG_IDENTIFIER_NAME);
-				return identifier.split("-")[0].equalsIgnoreCase(LBMain.getInstance().getName());
-				
-			}).forEach(n -> storage.remove(n));
-			
-			loadSystem();
-			
-		}
-		
-	}
+//	public static void reloadSystem() throws Throwable {
+//
+//		ItemTag adapter = LBMain.getItemTagAdapter();
+//		if(LBMain.getInstance().factory != null) {
+//
+//			new ArrayList<>(storage).stream().filter(item -> {
+//
+//				String identifier = adapter.getTagString(adapter.getTag(adapter.asNMSCopy(item)), CustomItemFactory.TAG_IDENTIFIER_NAME);
+//				return identifier.split("-")[0].equalsIgnoreCase(LBMain.getInstance().getName());
+//
+//			}).forEach(n -> storage.remove(n));
+//
+//			loadSystem();
+//
+//		}
+//
+//	}
 	
 	public static BekkerItemStack fetchCustomItem(String string) {
 		for(BekkerItemStack stack : storage)
