@@ -169,6 +169,15 @@ public class LBMain extends JavaPlugin {
 		NMS_VERSION = Bukkit.getServer().getClass().getPackage().getName();
 		NMS_VERSION = NMS_VERSION.substring(NMS_VERSION.lastIndexOf('.') + 1);
 
+		boolean old = false;
+		try {
+			Material mat = Material.valueOf("PLAYER_HEAD");
+			if(mat == null) old = true;
+		} catch(Exception ex) {
+			old = true;
+		}
+		factory = old ? new Mat1_12() : new Mat1_13();
+
 		MvLogger.setInstance((JavaPlugin)(instance = this));
 
 		updater = new SpigotUpdater(instance, 92026, "LuckyBlock");
@@ -223,17 +232,9 @@ public class LBMain extends JavaPlugin {
 		
 		if(web_unavailable_disable)
 			log(Level.INFO, "\"Web-Server is unavailable\" message is disabled. Plugin page - " + updater.getResourceURL());
-		
-		boolean old = false;
-		try {
-			Material mat = Material.valueOf("PLAYER_HEAD");
-			if(mat == null) old = true;
-		} catch(Exception ex) {
-			old = true;
-		}
+
 		tinted = new TintedMaterial();
-		
-		factory = old ? new Mat1_12() : new Mat1_13();
+
 		log(Level.INFO, Message.MATERIAL_API.getAsString().replace("%build%", factory.build()));
 
 		if(NMS_VERSION.equalsIgnoreCase("v1_18_R1")) {
