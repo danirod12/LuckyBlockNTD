@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 
 import me.DenBeKKer.ntdLuckyBlock.api.events.CustomItemAddedEvent;
+import me.DenBeKKer.ntdLuckyBlock.api.events.CustomItemFactoryReloadEvent;
 import me.DenBeKKer.ntdLuckyBlock.nms.ItemTag;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -265,8 +266,17 @@ public class CustomItemFactory {
 				th.printStackTrace();
 			}
 		}
-		LBMain.log(Level.INFO, "Loaded " + storage.size() + " internal custom items...");
-		
+
+		final int internal;
+		LBMain.log(Level.INFO, "Loaded " + (internal = storage.size()) + " internal custom items...");
+		Bukkit.getPluginManager().callEvent(new CustomItemFactoryReloadEvent(new ArrayList<>(storage), true));
+
+		if(storage.size() > internal)
+			LBMain.log(Level.INFO, "Loaded " + (storage.size() - internal) + " external custom items...");
+		Bukkit.getPluginManager().callEvent(new CustomItemFactoryReloadEvent(new ArrayList<>(storage), false));
+
+		LBMain.log(Level.INFO, "Loaded " + storage.size() + " custom items... (Total)");
+
 	}
 	
 	public static void withdrawItem(Player damager) {
