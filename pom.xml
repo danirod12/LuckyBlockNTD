@@ -7,7 +7,7 @@
     <groupId>me.DenBeKKer.ntdLuckyBlock</groupId>
     <artifactId>luckyblock-parent</artifactId>
     <packaging>pom</packaging>
-    <version>2.5.8</version>
+    <version>2.5.9</version>
     <modules>
         <module>plugin</module>
         <module>sk89q</module>
@@ -74,7 +74,7 @@
                         </filter>
                     </filters>
                     <finalName>ntdLuckyBlock-${project.version}</finalName>
-                    <outputDirectory>E:\NTD Studios\plugins\ntdLuckyBlock\maven</outputDirectory>
+<!--                    <outputDirectory>E:\NTD Studios\plugins\ntdLuckyBlock\maven</outputDirectory>-->
                 </configuration>
             </plugin>
 
