@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -195,9 +196,16 @@ public class Config {
         return config.getDouble(path);
     }
 
+    public double getDouble(String path, int min, int max) {
+        double d = getDouble(path);
+        return d < min ? min : max < min || d < max ? d : max;
+    }
+
     public float getFloat(String path) {
         return (float)getDouble(path);
     }
+
+    public boolean getBoolean(String path) { return config.getBoolean(path); }
 
     public List<String> getStringList(String path) {
         return config.getStringList(path);
@@ -226,10 +234,18 @@ public class Config {
     }
 
     public Config copyMissedFields() {
-        return this.copyMissedFields(new ArrayList<>());
+        return this.copyMissedFields(new ArrayList<>(), null);
+    }
+
+    public Config copyMissedFields(Consumer<String> callback) {
+        return this.copyMissedFields(new ArrayList<>(), callback);
     }
 
     public Config copyMissedFields(Collection<String> skip) {
+        return copyMissedFields(skip, null);
+    }
+
+    public Config copyMissedFields(Collection<String> skip, Consumer<String> callback) {
 
         if(this.config == null) this.copy(true);
 
@@ -242,6 +258,7 @@ public class Config {
                 if(key.toLowerCase().startsWith(string)) continue;
             if (!this.config.isSet(key)) {
                 this.config.set(key, yml_default.get(key));
+                callback.accept(key);
                 need_save = true;
             }
         }

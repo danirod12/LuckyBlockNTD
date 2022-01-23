@@ -38,6 +38,7 @@ public class MessagesManager {
 		CI_RAGE_ARMOR("custom_items.rage_armor"),
 		CI_CARROT_CORRUPTER("custom_items.carrot_corrupter"),
 		CI_MYSTERY_MEAT("custom_items.mystery_meat"),
+		CI_WITHER_BLAST_ROD("custom_items.wither_blast_rod"),
 		CI_LIST("custom_items.list"),
 		LB_NOT_FOUND("system.lb_not_found"),
 		LB_LOADING_EXCEPTION("system.lb_loading_exception"),

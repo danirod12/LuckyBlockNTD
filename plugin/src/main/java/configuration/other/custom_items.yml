@@ -18,5 +18,9 @@ rage_armor:
   enabled: true
   percentage: 50
 
+wither_blast_rod:
+  enabled: true
+  yield: 2
+
 mystery_meat:
   enabled: true

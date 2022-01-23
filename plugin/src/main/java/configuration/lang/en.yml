@@ -16,6 +16,7 @@ custom_items:
   rage_armor: "&6&l&oRage Armor"
   carrot_corrupter: "&6&l&oCarrot Corrupter"
   mystery_meat: "&6&l&oMystery meat"
+  wither_blast_rod: "&6&l&oWither blast rod"
 
 craft:
   allowed_one_layer: "&cCrafting is only possible with the use of each ingredient in a single amount for a separate slot"

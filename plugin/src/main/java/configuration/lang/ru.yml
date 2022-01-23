@@ -17,6 +17,8 @@ custom_items:
   chilly_pants: "&6&l&oХолодные штаны"
   rage_armor: "&6&l&oЯростная броня" # ( Rage armor )
   carrot_corrupter: "&6&l&oМорковный разрушитель"
+  mystery_meat: "&6&l&oТаинственное мясо"
+  wither_blast_rod: "&6&l&oСтержень увядания" # ( Wither blast rod )
 
 craft:
   allowed_one_layer: "&cКрафт возможен только с использованием каждого ингридиента в одиночном количестве для отдельного слота"

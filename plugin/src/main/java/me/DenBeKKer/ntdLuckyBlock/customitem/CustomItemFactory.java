@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 import me.DenBeKKer.ntdLuckyBlock.api.events.CustomItemAddedEvent;
@@ -15,6 +16,7 @@ import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.WitherSkull;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
@@ -32,7 +34,7 @@ public class CustomItemFactory {
 	
 	public static final String TAG_IDENTIFIER_NAME = "bekker_item_identifier";
 	public static final String TAG_LUCKYBLOCK_TYPE = "luckyblock_type";
-	private static Collection<BekkerItemStack> storage;
+	private static final Collection<BekkerItemStack> storage = new ArrayList<>();
 
 	public static boolean chilly_pants = false, rage_armor = false;
 	public static boolean solid;
@@ -103,14 +105,16 @@ public class CustomItemFactory {
 	@SuppressWarnings("deprecation")
 	public static void loadSystem() throws Throwable {
 		
-		storage = new ArrayList<>();
-		rage_armor = chilly_pants = false;
+		storage.clear();
 		
 		Config custom_items = new Config(LBMain.getInstance(), "configuration.other", null, "custom_items");
-		custom_items.copy(true);
+		custom_items.copyMissedFields(added -> {
+			if(added.endsWith(".enabled"))
+				LBMain.log(Level.INFO, "A new custom item here (" + added.split("\\.")[0] + "). \u00a7aEnabling!");
+		});
 		
 		// check if new items is missed
-		if(isEnabled(custom_items, "magic_wool")) {
+		if(custom_items.getBoolean("magic_wool.enabled")) {
 			try {
 				register(new BekkerItemStackBuilder(LBMain.getInstance().factory.getItem(Mat.WHITE_WOOL, 1))
 						.addUnsafeEnchantment(Enchantment.DURABILITY, 1).setSerialID("magic_wool")
@@ -145,7 +149,7 @@ public class CustomItemFactory {
 				th.printStackTrace();
 			}
 		}
-		if(isEnabled(custom_items, "sword_of_justice")) {
+		if(custom_items.getBoolean("sword_of_justice.enabled")) {
 			try {
 				double h = custom_items.get().getDouble("sword_of_justice.heal");
 				if(h <= 0) h = 1;
@@ -161,7 +165,7 @@ public class CustomItemFactory {
 				th.printStackTrace();
 			}
 		}
-		if(isEnabled(custom_items, "axe_of_perun")) {
+		if(custom_items.getBoolean("axe_of_perun.enabled")) {
 			try {
 				double d = custom_items.get().getDouble("axe_of_perun.damage");
 				if(d <= 0) d = .1D;
@@ -177,7 +181,7 @@ public class CustomItemFactory {
 				th.printStackTrace();
 			}
 		}
-		if(isEnabled(custom_items, "mystery_meat")) {
+		if(custom_items.getBoolean("mystery_meat.enabled")) {
 			try {
 				register(new BekkerItemStackBuilder(LBMain.getInstance().factory.getItem(Mat.BEEF, 1).getType())
 						.addUnsafeEnchantment(Enchantment.DURABILITY, 1)
@@ -199,7 +203,7 @@ public class CustomItemFactory {
 				th.printStackTrace();
 			}
 		}
-		if(isEnabled(custom_items, "chilly_pants")) {
+		if(custom_items.getBoolean("chilly_pants.enabled")) {
 			solid = custom_items.get().getBoolean("chilly_pants.only_solid");
 			try {
 				register(new BekkerItemStackBuilder(Material.LEATHER_LEGGINGS).setSerialID("chilly_pants").setName(Message.CI_CHILLY_PANTS.getAsString(true)));
@@ -208,7 +212,7 @@ public class CustomItemFactory {
 				th.printStackTrace();
 			}
 		}
-		if(isEnabled(custom_items, "rage_armor")) {
+		if(custom_items.getBoolean("rage_armor.enabled")) {
 			rage_armor_percentage = custom_items.get().getInt("rage_armor.percentage");
 			try {
 				register(new BekkerItemStackBuilder(Material.LEATHER_LEGGINGS).setSerialID("rage_armor_leggings").setName(Message.CI_RAGE_ARMOR.getAsString(true)));
@@ -220,7 +224,24 @@ public class CustomItemFactory {
 				th.printStackTrace();
 			}
 		}
-		if(LBMain.getInstance().factory instanceof Mat1_13 && isEnabled(custom_items, "carrot_corrupter")) {
+		if(custom_items.getBoolean("wither_blast_rod.enabled")) {
+			final float wither_skull_yield = custom_items.getFloat("wither_blast_rod.yield");
+			try {
+				register(new BekkerItemStackBuilder(Material.BLAZE_ROD).setSerialID("wither_blast_rod")
+						.addUnsafeEnchantment(Enchantment.DURABILITY, 1).hideEnchantments()
+						.setName(Message.CI_WITHER_BLAST_ROD.getAsString(true))
+						.registerEvent(ItemEvent.INTERACT, event -> {
+
+							withdrawItem(event.getPlayer());
+							WitherSkull skull = event.getPlayer().launchProjectile(WitherSkull.class);
+							skull.setYield(wither_skull_yield);
+
+						}));
+			} catch (Throwable th) {
+				th.printStackTrace();
+			}
+		}
+		if(LBMain.getInstance().factory instanceof Mat1_13 && custom_items.getBoolean("carrot_corrupter.enabled")) {
 			try {
 				register(new BekkerItemStackBuilder(Material.CARROT).addUnsafeEnchantment(Enchantment.DURABILITY, 1)
 						.hideEnchantments().setSerialID("carrot_corrupter").setName(Message.CI_CARROT_CORRUPTER.getAsString(true))
@@ -244,6 +265,7 @@ public class CustomItemFactory {
 				th.printStackTrace();
 			}
 		}
+		LBMain.log(Level.INFO, "Loaded " + storage.size() + " internal custom items...");
 		
 	}
 	
@@ -264,38 +286,6 @@ public class CustomItemFactory {
 	
 	public static boolean isEmpty(ItemStack stack) {
 		return stack == null || stack.getType() == Material.AIR;
-	}
-	
-	private static boolean isEnabled(Config config, String path) {
-		
-		if(!config.get().isSet(path + ".enabled")) {
-			config.get().set(path + ".enabled", true);
-			
-			switch(path.toLowerCase()) {
-				case "sword_of_justice": {
-					config.get().set(path + ".heal", 2.0D);
-					break;
-				}
-				case "axe_of_perun": {
-					config.get().set(path + ".damage", .5D);
-					break;
-				}
-				case "chilly_pants": {
-					config.get().set(path + ".only_solid", true);
-					break;
-				}
-				case "rage_armor": {
-					config.get().set(path + ".percentage", 50);
-					break;
-				}
-			default: break;
-			}
-			
-			LBMain.log(Level.INFO, "A new custom item here (" + path + "). \u00a7aEnabling!");
-			config.save();
-		}
-		return config.get().getBoolean(path + ".enabled");
-		
 	}
 	
 	public static void reloadSystem() throws Throwable {
