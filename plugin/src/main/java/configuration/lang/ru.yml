@@ -26,7 +26,6 @@ craft:
 system:
   loading_config: "&fЗагрузка конфигурации... "
   reloaded_config: "&aКонфигурация была перезагружена, загружено %amount% типов лаки-блоков..."
-  material_api: "&f%build% версия API найдена"
   
   lb_not_found: "&cЛаки-блок &e%lb%&c не найден, пропускаем... "
   lb_loading_exception: "&cЛаки-блок &e%lb%&c не может быть загружен... Ошибка: &e%exception%"

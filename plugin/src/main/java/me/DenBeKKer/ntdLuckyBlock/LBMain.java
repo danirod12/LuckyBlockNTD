@@ -1,6 +1,5 @@
 package me.DenBeKKer.ntdLuckyBlock;
 
-import com.google.common.io.Files;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import me.DenBeKKer.ntdLuckyBlock.api.exceptions.LuckyBlockNotLoadedException;
@@ -10,13 +9,15 @@ import me.DenBeKKer.ntdLuckyBlock.economy.EconomyBridge;
 import me.DenBeKKer.ntdLuckyBlock.economy.TokenManagerEconomy;
 import me.DenBeKKer.ntdLuckyBlock.economy.VaultEconomy;
 import me.DenBeKKer.ntdLuckyBlock.factory.LBFactory;
-import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
-import me.DenBeKKer.ntdLuckyBlock.nms.*;
-import me.DenBeKKer.ntdLuckyBlock.recipe.CraftListener;
-import me.DenBeKKer.ntdLuckyBlock.recipe.LuckyRecipe;
 import me.DenBeKKer.ntdLuckyBlock.hook.sk89q.LBWorldEdit;
 import me.DenBeKKer.ntdLuckyBlock.hook.sk89q.LBWorldGuard;
 import me.DenBeKKer.ntdLuckyBlock.hook.thebusybiscuit.SlimeFunListener;
+import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
+import me.DenBeKKer.ntdLuckyBlock.nms.ItemTag;
+import me.DenBeKKer.ntdLuckyBlock.nms.ItemTag1_18_R1;
+import me.DenBeKKer.ntdLuckyBlock.nms.ItemTagLegacy;
+import me.DenBeKKer.ntdLuckyBlock.recipe.CraftListener;
+import me.DenBeKKer.ntdLuckyBlock.recipe.LuckyRecipe;
 import me.DenBeKKer.ntdLuckyBlock.util.*;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.GuiManager;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager;
@@ -28,7 +29,6 @@ import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_13;
 import me.DenBeKKer.ntdLuckyBlock.util.material.TintedMaterial;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
 import me.DenBeKKer.ntdLuckyBlock.variables.WorldListDataHandler;
-import me.DenBeKKer.ntdLuckyBlock.variables.WorldsList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -41,7 +41,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -61,17 +60,17 @@ public class LBMain extends JavaPlugin {
 	public SpigotUpdater updater;
 	public StringMatcher<WorldListDataHandler> w;
 	
-	private static boolean reduce = false,
-			brperm = true,
-			debug = false,
-			schematics = false,
-			h = true,
-			warning_luckyblock_changed = false;
-	
+	private static boolean reduce = false;
+	private static boolean brperm = true;
+	private static boolean debug = false;
+	private static boolean schematics = false;
+	private static boolean h = true;
+	private static boolean warning_luckyblock_changed = false;
+
 	public boolean disable_author_info = false;
 	public boolean web_unavailable_disable = false;
 	public boolean reduce_convert = false;
-	private ConvertManager convert_manager = new ConvertManager();
+	private final ConvertManager convert_manager = new ConvertManager();
 	private CommandsManager commands_manager;
 	private static String NMS_VERSION;
 	public GuiManager gui_manager;
@@ -163,32 +162,24 @@ public class LBMain extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		
+
+		// data for onEnable
 		long ms = System.currentTimeMillis();
 		
 		NMS_VERSION = Bukkit.getServer().getClass().getPackage().getName();
 		NMS_VERSION = NMS_VERSION.substring(NMS_VERSION.lastIndexOf('.') + 1);
 
-		boolean old = false;
-		try {
-			Material mat = Material.valueOf("PLAYER_HEAD");
-			if(mat == null) old = true;
-		} catch(Exception ex) {
-			old = true;
-		}
-		factory = old ? new Mat1_12() : new Mat1_13();
-
-		MvLogger.setInstance((JavaPlugin)(instance = this));
+		// Init logger
+		MvLogger.setInstance(instance = this);
 
 		updater = new SpigotUpdater(instance, 92026, "LuckyBlock");
 		folder = new File(instance.getDataFolder() + File.separator + "luckyblocks");
 		folder.mkdirs();
 		version = getDescription().getVersion();
-		
+
+		// Metrics
 		Metrics metrics = new Metrics(this, 11218);
-		metrics.addCustomChart(new Metrics.SimplePie("enabled_luckyblocks", () -> {
-			return String.valueOf(LuckyBlockType.map().size());
-		}));
+		metrics.addCustomChart(new Metrics.SimplePie("enabled_luckyblocks", () -> String.valueOf(LuckyBlockType.map().size())));
 		metrics.addCustomChart(new Metrics.SimplePie("luckydrop_types", () -> {
 			int a = 0, b = 0;
 			for(LuckyBlock z : LuckyBlockType.map().values()) {
@@ -198,14 +189,13 @@ public class LBMain extends JavaPlugin {
 			return a + "/" + b;
 			
 		}));
-		metrics.addCustomChart(new Metrics.SimplePie("version_type", () -> {
-			return premium ? "premium" : "free";
-		}));
+		metrics.addCustomChart(new Metrics.SimplePie("version_type", () -> premium ? "premium" : "free"));
 		metrics.addCustomChart(new Metrics.SimplePie("language", () -> {
 			final String language = MessagesManager.getLanguage();
 			return language == null ? "undefined" : language;
 		}));
-		
+
+		// Plugin title
 		log(Level.INFO, ChatColor.WHITE + "Starting LuckyBlock (ntdLuckyBlock) v" + version + ", build" + getBuild()
 			+ ", " + (premium ? "premium" : "free") + " version");
 		log(Level.INFO, ChatColor.YELLOW + "  ╭╮╱╱╭╮╱╭┳━━━┳╮╭━┳╮╱╱╭┳━━╮╭╮╱╱╭━━━┳━━━┳╮╭━╮");
@@ -221,22 +211,21 @@ public class LBMain extends JavaPlugin {
 		log(Level.INFO, ChatColor.DARK_GRAY + " > " + ChatColor.BLUE + "Vkontakte "
 				+ ChatColor.WHITE + "- https://vk.com/danirodplay " + ChatColor.GRAY + "(Rus)");
 		log(Level.INFO, ChatColor.WHITE + "=-= " + ChatColor.GOLD + "SUPPORT & BUG REPORTING & FEATURE REQUESTING " + ChatColor.WHITE + "=-=");
-		if(ThreadLocalRandom.current().nextBoolean())
-			log(Level.INFO, ChatColor.RED + "Help me make my plugin better! Fill out " + ChatColor.GOLD + "https://forms.gle/GvX5pB4BXU7BhAEi9");
-		
-		loadConfig();
-		if(config.get().getBoolean("scheduled-update-check")) {
-			debug("Loading Bukkit scheduler thread for delayed update check");
-			Bukkit.getScheduler().runTaskTimerAsynchronously(instance, () -> checkForUpdates(), 100L, 72000L);
-		} else Bukkit.getScheduler().runTaskLaterAsynchronously(instance, () -> checkForUpdates(), 100L);
-		
-		if(web_unavailable_disable)
-			log(Level.INFO, "\"Web-Server is unavailable\" message is disabled. Plugin page - " + updater.getResourceURL());
+
+		// Material
+		boolean old = false;
+		try {
+			Material mat = Material.valueOf("PLAYER_HEAD");
+			if(mat == null) old = true;
+		} catch(Exception ex) {
+			old = true;
+		}
+		factory = old ? new Mat1_12() : new Mat1_13();
+		log(Level.INFO, "Loaded " + factory.build() + " material version");
 
 		tinted = new TintedMaterial();
 
-		log(Level.INFO, Message.MATERIAL_API.getAsString().replace("%build%", factory.build()));
-
+		// NMS
 		if(NMS_VERSION.equalsIgnoreCase("v1_18_R1")) {
 			item_tag_adapter = new ItemTag1_18_R1();
 		} else {
@@ -250,13 +239,24 @@ public class LBMain extends JavaPlugin {
 		}
 		log(Level.INFO, "Loaded \"" + item_tag_adapter.getClass().getSimpleName() + "\" tag adapter.");
 
-		for(PlayerHead h : PlayerHead.values()) h.loadHead();
-		Hooks.loadAll();
+		// Loading config
+		loadConfig();
+		if(config.get().getBoolean("scheduled-update-check")) {
+			debug("Loading Bukkit scheduler thread for delayed update check");
+			Bukkit.getScheduler().runTaskTimerAsynchronously(instance, this::checkForUpdates, 100L, 72000L);
+		} else Bukkit.getScheduler().runTaskLaterAsynchronously(instance, this::checkForUpdates, 100L);
 		
+		if(web_unavailable_disable)
+			log(Level.INFO, "\"Web-Server is unavailable\" message is disabled. Plugin page - " + updater.getResourceURL());
+
+		for(PlayerHead h : PlayerHead.values())
+			h.loadHead();
+		Hooks.loadAll();
+
+		// Economy
 		if(Hooks.TokenManager.isEnabled()) {
 			
-			Config token = new Config(instance, "configuration.other", null, "token_manager");
-			token.copy(true);
+			Config token = new Config(instance, "configuration.other", null, "token_manager").copyMissedFields();
 			
 			if(token.get().getBoolean("override-vault")) {
 				this.economy_bridge = new TokenManagerEconomy(token.get().getString("display"));
@@ -268,6 +268,7 @@ public class LBMain extends JavaPlugin {
 			this.economy_bridge = new VaultEconomy();
 		}
 
+		// Schematics
 		schematics_folder = new File(getDataFolder(), "schematics");
 		if(Hooks.WorldEdit.isEnabled()) {
 			debug("Loading WorldEdit provider...");
@@ -294,13 +295,6 @@ public class LBMain extends JavaPlugin {
 			if(Hooks.WorldGuard.isEnabled() && !LBWorldGuard.isAvailable())
 				Hooks.WorldGuard.disable("unsupported version");
 			
-		}
-		
-		debug("Loading custom factory...");
-		try {
-			CustomItemFactory.loadSystem();
-		} catch(Throwable th) {
-			th.printStackTrace();
 		}
 		
 		Hooks.print();
@@ -330,6 +324,7 @@ public class LBMain extends JavaPlugin {
 		debug("Loading commands manager...");
 		commands_manager = new CommandsManager();
 		PluginCommand command = Bukkit.getPluginCommand("ntdluckyblock");
+		if(command == null) throw new UnsupportedOperationException("Command not found");
 		command.setExecutor(commands_manager);
 		command.setTabCompleter(commands_manager);
 		
@@ -369,13 +364,13 @@ public class LBMain extends JavaPlugin {
 		convert_manager.options(config.get().getBoolean("place.verify-UUID"), config.get().getBoolean("place.verify-TAG"));
 		convert_manager.toggleFactory(config.get().getBoolean("place.convert-factory"));
 		
-		if(convert_manager.isVerifyTAG() == false && convert_manager.isVerifyUUID() == false)
+		if(!convert_manager.isVerifyTAG() && !convert_manager.isVerifyUUID())
 			log(Level.WARNING, "You must enable place.verify-TAG or place.verify-UUID option for plugin work");
 		
 		MessagesManager.reload(config.get().getString("language"));
 
-		if(debug = config.get().getBoolean("debug"))
-			getLogger().log(Level.WARNING, "Debug mode enabled! Note that this mode only for developer!");
+		debug = config.get().getBoolean("debug");
+		if(debug) getLogger().log(Level.WARNING, "Debug mode enabled! Note that this mode only for developer!");
 
 		inform = config.get().getBoolean("inform-about-update");
 		
@@ -391,13 +386,8 @@ public class LBMain extends JavaPlugin {
 		web_unavailable_disable = config.get().getBoolean("web-unavailable-disable");
 		
 		Config worlds = new Config(this, "configuration.other", null, "worlds").copy(true);
-		w = new StringMatcher<WorldListDataHandler>(worlds.get().getString("mode"), worlds.get().getStringList("list"));
+		w = new StringMatcher<>(worlds.get().getString("mode"), worlds.get().getStringList("list"));
 		w.connectDataHandler(new WorldListDataHandler(worlds.get().getBoolean("break-no-drop"), worlds.get().getBoolean("place-admins")));
-		try {
-			CustomItemFactory.loadSystem();
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
 		
 	}
 	
@@ -412,27 +402,32 @@ public class LBMain extends JavaPlugin {
 		if(commands_manager != null)
 			commands_manager.fix_ram(null);
 		
-		for(String str : config.get().getStringList("enabled")) { try {
-			LuckyBlockType lb = LuckyBlockType.parse(str);
-			if(lb == null) {
-				log(Level.SEVERE, Message.LB_NOT_FOUND.getAsString().replace("%lb%", str.toUpperCase()));
-				continue;
+		for(String str : config.get().getStringList("enabled")) {
+			try {
+				LuckyBlockType lb = LuckyBlockType.parse(str);
+				if(lb == null) {
+					log(Level.SEVERE, Message.LB_NOT_FOUND.getAsString().replace("%lb%", str.toUpperCase()));
+					continue;
+				}
+				String e = lb.load();
+				if(e != null)
+					log(Level.SEVERE, Message.LB_LOADING_EXCEPTION.getAsString().replace("%lb%", str.toUpperCase()).replace("%exception%", e));
+			} catch(Exception ex) {
+				log(Level.SEVERE, Message.LB_UNKNOWN_EXCEPTION.getAsString().replace("%lb%", str.toUpperCase()));
+				ex.printStackTrace();
 			}
-			String e = lb.load();
-			if(e != null) {
-				log(Level.SEVERE, Message.LB_LOADING_EXCEPTION.getAsString().replace("%lb%", str.toUpperCase()).replace("%exception%", e));
-				continue;
-			}
-		} catch(Exception ex) {
-			log(Level.SEVERE, Message.LB_UNKNOWN_EXCEPTION.getAsString().replace("%lb%", str.toUpperCase()));
-			ex.printStackTrace();
-			continue;
-		} }
+		}
 		
 		if(map.size() == 0) {
 			log(Level.WARNING, Message.LB_LOADED_ZERO.getAsString());
 		} else {
 			log(Level.INFO, Message.LB_LOADED_NOT_ZERO.getAsString().replace("%amount%", String.valueOf(map.size())));
+		}
+
+		try {
+			CustomItemFactory.loadSystem();
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
 		
 		log(Level.INFO, "System loaded (took " + (System.currentTimeMillis() - ms) + " ms)...");
@@ -444,7 +439,7 @@ public class LBMain extends JavaPlugin {
 	
 	public static void checkForUpdates(boolean inform) { getUpdater().check$announce(!instance.web_unavailable_disable || debug, LBMain.inform || inform); }
 	
-	private static HashMap<LuckyBlockType, LuckyBlock> map = new HashMap<>();
+	private static final HashMap<LuckyBlockType, LuckyBlock> map = new HashMap<>();
 	
 	public enum Hooks {
 		
@@ -456,11 +451,7 @@ public class LBMain extends JavaPlugin {
 		
 		private String error = "not found";
 		
-		public static void loadAll() {
-			
-			Arrays.asList(Hooks.values()).forEach(n -> n.load());
-			
-		}
+		public static void loadAll() { Arrays.asList(Hooks.values()).forEach(Hooks::load); }
 		
 		public static void print() {
 			
@@ -704,7 +695,7 @@ public class LBMain extends JavaPlugin {
 		
 	}
 	
-	private static HashMap<PlayerHead, ItemStack> heads = new HashMap<>();
+	private static final HashMap<PlayerHead, ItemStack> heads = new HashMap<>();
 	private static boolean p$s;
 	
 	public static ItemStack getHead0(String url, String name, List<String> lore) { return getHead0(url, name, lore, UUID.randomUUID()); }
@@ -788,6 +779,6 @@ public class LBMain extends JavaPlugin {
 	public static boolean isPreventSkulls() { return p$s; }
 	public static SpigotUpdater getUpdater() { return instance.updater; }
 	
-	public static final String getDiscordURL() { return "https://discord.gg/vbYW3sperj"; }
+	public static String getDiscordURL() { return "https://discord.gg/vbYW3sperj"; }
 	
 }

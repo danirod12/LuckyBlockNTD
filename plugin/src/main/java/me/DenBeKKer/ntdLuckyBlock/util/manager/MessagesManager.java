@@ -28,7 +28,6 @@ public class MessagesManager {
 		WATER_BUCKET("special.water_bucket"),
 		LOADING_CONFIG("system.loading_config"),
 		RELOADED_CONFIG("system.reloaded_config"),
-		MATERIAL_API("system.material_api"),
 		CRAFT_ALLOWED_ONE_LAYER("craft.allowed_one_layer"),
 		CI_NOT_FOUND("custom_items.item_not_found"),
 		CI_MAGIC_WOOL("custom_items.magic_wool"),

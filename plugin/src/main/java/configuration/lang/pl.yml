@@ -21,7 +21,6 @@ craft:
 system:
   loading_config: "&fWczytywanie konfiguracji... "
   reloaded_config: "&aKonfiguracja została przeładowana, załadowano %amount% typy luckyblock..."
-  material_api: "&fZnaleziono %build% material API-version"
   
   lb_not_found: "&cNie znaleziono LuckyBlocka &e%lb%&c pomijam... "
   lb_loading_exception: "&cNie można załadować LuckyBlocka &e%lb%&c Błąd: &e%exception%"

@@ -24,7 +24,6 @@ craft:
 system:
   loading_config: "&fLoading configuration... "
   reloaded_config: "&aConfiguration has been reloaded, loaded %amount% luckyblock types..."
-  material_api: "&f%build% material API-version found"
   
   lb_not_found: "&cLuckyBlock &e%lb%&c not found, skipping... "
   lb_loading_exception: "&cLuckyBlock &e%lb%&c cant be loaded... Exception: &e%exception%"

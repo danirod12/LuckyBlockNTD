@@ -20,7 +20,6 @@ craft:
 system:
   loading_config: "&fCarregando configuração... "
   reloaded_config: "&aA configuração foi recarregada, carregado %amount% LuckyBlocks..."
-  material_api: "&f%build% material API-version encontrado"
   
   lb_not_found: "&cLuckyBlock &e%lb%&c não encontrada, pulando... "
   lb_loading_exception: "&cLuckyBlock &e%lb%&c não pode ser carregada... Exception: &e%exception%"

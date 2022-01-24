@@ -22,7 +22,6 @@ craft:
 system:
   loading_config: '&fLaden von der Konfiguration... '
   reloaded_config: '&aDie Konfiguration wurde neu geladen, geladen wurden %amount% LuckyBlock-Typen...'
-  material_api: '&f%build% Material API-Version gegründet'
   lb_not_found: '&cLuckyBlock &e%lb%&c nicht gefunden, überspringen... '
   lb_loading_exception: '&cLuckyBlock &e%lb%&c kann nicht geladen werden... Ausnahme: &e%exception%'
   lb_unknown_exception: '&cLuckyBlock &e%lb%&c nicht gefunden oder ein unbekannter Fehler ist aufgetreten, überspringen... '

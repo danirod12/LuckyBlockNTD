@@ -29,7 +29,6 @@ craft:
 system:
   loading_config: "&fYapılandırma dosyaları yükleniyor... "
   reloaded_config: "&aYapılandırma dosyaları yüklendi, %amount% adet şans bloğu tanımlandı..."
-  material_api: "&f%build% materyal API-versiyonu bulundu."
   
   lb_not_found: "&cŞans bloklarından &e%lb%&c bulunamadı, bu kısım atlanıyor... "
   lb_loading_exception: "&cŞans bloklarından &e%lb%&c yüklenemedi... Özel Durum: &e%exception%"

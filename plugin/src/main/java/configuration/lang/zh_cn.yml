@@ -17,7 +17,6 @@ craft:
 system:
   loading_config: "&f配置文件载入中... "
   reloaded_config: "&a配置已重载, 载入 %amount% 种幸运方块..."
-  material_api: "&f%build% material API-version 已找到"
   
   lb_not_found: "&c幸运方块 &e%lb%&c 未找到,跳过... "
   lb_loading_exception: "&c幸运方块 &e%lb%&c 不能被载入... 报错: &e%exception%"
