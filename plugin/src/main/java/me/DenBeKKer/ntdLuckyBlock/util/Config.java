@@ -258,7 +258,7 @@ public class Config {
                 if(key.toLowerCase().startsWith(string)) continue;
             if (!this.config.isSet(key)) {
                 this.config.set(key, yml_default.get(key));
-                callback.accept(key);
+                if(callback != null) callback.accept(key);
                 need_save = true;
             }
         }
