@@ -253,9 +253,10 @@ public class Config {
 
         boolean need_save = false;
         final YamlConfiguration yml_default = ((YamlConfiguration) getDefault());
+        keys:
         for(String key : yml_default.getKeys(true)) {
             for(String string : skip)
-                if(key.toLowerCase().startsWith(string)) continue;
+                if(key.toLowerCase().startsWith(string)) continue keys;
             if (!this.config.isSet(key)) {
                 this.config.set(key, yml_default.get(key));
                 if(callback != null) callback.accept(key);
