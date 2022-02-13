@@ -1,9 +1,14 @@
 package me.DenBeKKer.ntdLuckyBlock;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map.Entry;
-
+import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
+import me.DenBeKKer.ntdLuckyBlock.api.events.LuckyBlockPlaceEvent;
+import me.DenBeKKer.ntdLuckyBlock.customitem.BekkerItemStack;
+import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
+import me.DenBeKKer.ntdLuckyBlock.customitem.HitEvent;
+import me.DenBeKKer.ntdLuckyBlock.hook.sk89q.LBWorldGuard;
+import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
+import me.DenBeKKer.ntdLuckyBlock.util.Config;
+import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -28,16 +33,8 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
-import me.DenBeKKer.ntdLuckyBlock.api.events.LuckyBlockPlaceEvent;
-import me.DenBeKKer.ntdLuckyBlock.customitem.BekkerItemStack;
-import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
-import me.DenBeKKer.ntdLuckyBlock.customitem.HitEvent;
-import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
-import me.DenBeKKer.ntdLuckyBlock.hook.sk89q.LBWorldGuard;
-import me.DenBeKKer.ntdLuckyBlock.util.Config;
-import me.DenBeKKer.ntdLuckyBlock.util.manager.GuiManager;
-import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
+import java.util.Collection;
+import java.util.Map.Entry;
 
 public class LBHandler implements Listener {
 	
@@ -51,12 +48,9 @@ public class LBHandler implements Listener {
 			}
 		}
 		
-		if(e.getDirection() == BlockFace.UP) {
-			if(LuckyBlockAPI.isLuckyBlock(e.getBlock().getLocation().add(0, 2, 0).getBlock())) {
-				e.setCancelled(true);
-				return;
-			}
-		}
+		if(e.getDirection() == BlockFace.UP &&
+				LuckyBlockAPI.isLuckyBlock(e.getBlock().getLocation().add(0, 2, 0).getBlock()))
+			e.setCancelled(true);
 
 	}
 	
@@ -226,7 +220,7 @@ public class LBHandler implements Listener {
 					
 				}
 				
-			}.runTaskLaterAsynchronously(LBMain.getInstance(), 40);
+			}.runTaskLater(LBMain.getInstance(), 40);
 			
 		}
 		if(e.getPlayer().hasPermission("luckyblock.warning-luckyblock-changed") &&
@@ -346,7 +340,7 @@ public class LBHandler implements Listener {
 								try {
 									e.setDropItems(false);
 								} catch(Throwable v1_8) { }
-								if(type.map().get(type).tryOpen(e.getBlock(), e.getPlayer(), false))
+								if(LBMain.LuckyBlockType.map().get(type).tryOpen(e.getBlock(), e.getPlayer(), false))
 									stand.remove();
 								else e.setCancelled(true);
 							} else stand.remove();
