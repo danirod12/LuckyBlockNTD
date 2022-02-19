@@ -293,7 +293,11 @@ public class LBHandler implements Listener {
 			LuckyBlockPlaceEvent event = new LuckyBlockPlaceEvent(e.getBlock(), e.getPlayer(), type);
 			Bukkit.getPluginManager().callEvent(event);
 			if(event.isCancelled()) return;
-			Bukkit.getScheduler().runTaskLater(LBMain.getInstance(), () -> LBMain.LuckyBlockType.map().get(type).placeBlock(e.getBlock(), true), 1L);
+			Bukkit.getScheduler().runTaskLater(LBMain.getInstance(), () -> {
+				LBMain.LuckyBlockType.map().get(type).placeBlock(e.getBlock(), true);
+				if(LBMain.fui() && e.getPlayer().isOnline())
+					e.getPlayer().updateInventory();
+			}, 1L);
 			return;
 			
 		}
@@ -337,9 +341,8 @@ public class LBHandler implements Listener {
 							}
 							
 							if(type.isLoaded()) {
-								try {
-									e.setDropItems(false);
-								} catch(Throwable v1_8) { }
+								e.setCancelled(true);
+								e.getBlock().setType(Material.AIR);
 								if(LBMain.LuckyBlockType.map().get(type).tryOpen(e.getBlock(), e.getPlayer(), false))
 									stand.remove();
 								else e.setCancelled(true);

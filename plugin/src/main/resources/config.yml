@@ -72,6 +72,9 @@ place:
   #		to replace old LuckyBlock items (Name & UUID) to new one (Tag & UUID)
   convert-factory: false
 
+# Force update player inventory on luckyblock place
+force-update-inventory: false
+
 # Enabled colors of luckyblocks
 enabled:
 - black

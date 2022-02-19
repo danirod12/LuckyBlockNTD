@@ -59,7 +59,8 @@ public class LBMain extends JavaPlugin {
 	private EconomyBridge economy_bridge;
 	public SpigotUpdater updater;
 	public StringMatcher<WorldListDataHandler> w;
-	
+
+	private static boolean fui = false;
 	private static boolean reduce = false;
 	private static boolean brperm = true;
 	private static boolean debug = false;
@@ -96,6 +97,7 @@ public class LBMain extends JavaPlugin {
 	public static boolean getIsSk89q() { return schematics; }
 	public static boolean isReduced() { return reduce; }
 	public static boolean h() { return h; }
+	public static boolean fui() { return fui; }
 	public static EconomyBridge getEconomy() { return instance.economy_bridge; }
 	public static boolean isBreakPermissions() { return brperm; }
 	@Deprecated
@@ -349,6 +351,7 @@ public class LBMain extends JavaPlugin {
 		reduce_convert = config.get().getBoolean("disable-json-convert-checking");
 		h = config.get().getBoolean("skip-factory-broken");
 		p$s = config.get().getBoolean("prevent-hat-luckyblocks");
+		fui = config.getBoolean("force-update-inventory");
 		
 		if(config.get().isSet("place.verify-name")) {
 			
