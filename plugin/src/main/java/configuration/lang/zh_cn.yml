@@ -50,6 +50,7 @@ system:
     customitemget: "&8 > &6/%label% getcustomitemget <id> &f- 获取自定义物品"
     customitemlist: "&8 > &6/%label% customitemslist &f- 列出自定义物品"
     destroy: "&8 > &e/%label% destroy <radius(半径)/chunk(区块)> [-all(清除所有)] &f- 清理幸运方块"
+    item_to_json: "&8 > &e/%label% itemtojson &f- 获取物品 JSON 数据"
   
   cmd_player_not_found: "&c玩家 &e%player%&c 未找到 :("
   cmd_no_perm_to_color: "&c颜色 %lb% 无权限"
