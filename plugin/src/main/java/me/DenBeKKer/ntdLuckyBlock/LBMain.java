@@ -477,8 +477,8 @@ public class LBMain extends JavaPlugin {
 		public boolean isEnabled() { return error == null; }
 		
 		public void load() {
-			
-			if(Bukkit.getPluginManager().isPluginEnabled(this.name())) error = null;
+
+			if(Bukkit.getPluginManager().getPlugin(this.name()) != null) error = null;
 			
 		}
 		
