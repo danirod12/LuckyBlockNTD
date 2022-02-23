@@ -73,8 +73,7 @@
                             </excludes>
                         </filter>
                     </filters>
-                    <finalName>ntdLuckyBlock-${project.version}</finalName>
-<!--                    <outputDirectory>E:\NTD Studios\plugins\ntdLuckyBlock\maven</outputDirectory>-->
+                    <finalName>ntdLuckyBlock-${project.version}-unobfuscated</finalName>
                 </configuration>
             </plugin>
 

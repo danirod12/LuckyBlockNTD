@@ -123,6 +123,72 @@
 
     </dependencies>
 
+    <build>
+
+        <plugins>
+
+            <plugin>
+                <groupId>com.github.wvengen</groupId>
+                <artifactId>proguard-maven-plugin</artifactId>
+                <version>2.5.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals><goal>proguard</goal></goals>
+                    </execution>
+                </executions>
+                <configuration>
+
+                    <injar>ntdLuckyBlock-${project.version}-unobfuscated.jar</injar>
+
+                    <options>
+
+                        <option>-dontshrink</option>
+                        <option>-dontoptimize</option>
+                        <option>-obfuscationdictionary ${project.parent.basedir}/java-ob.txt</option>
+                        <option>-overloadaggressively</option>
+                        <option>-keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,LocalVariable*Table,*Annotation*,Synthetic,EnclosingMethod</option>
+                        <option>-dontnote</option>
+                        <option>-dontwarn</option>
+                        <option>-ignorewarnings</option>
+
+                        <option>-keep enum me.DenBeKKer.ntdLuckyBlock.LBMain** { *; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.LBMain { int build;
+                            java.lang.String user; java.lang.String resource; java.lang.String nonce;
+                            *** get*(...); *** system_load(...); *** is*(...); } </option>
+
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.api.** { &lt;methods&gt;; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.api.DropChance { *; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.drop.** { &lt;methods&gt;; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.Lucky* { *; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.Metrics** { *; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.ColorData { &lt;fields&gt;; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.particle.ParticleManager { &lt;methods&gt;; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.particle.ParticleType { *; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.* { &lt;methods&gt;; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.factory.LBFactory { *; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory { *** TAG_IDENTIFIER_NAME; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.customitem.** { &lt;methods&gt;; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager { &lt;methods&gt;; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop$* { *; }</option>
+
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.CooldownStorage { static final &lt;fields&gt;; }</option>
+
+                    </options>
+
+                    <libs>
+                        <lib>${java.home}/lib/rt.jar</lib>
+                    </libs>
+
+                    <outjar>ntdLuckyBlock-${project.parent.version}.jar</outjar>
+
+                </configuration>
+            </plugin>
+
+        </plugins>
+
+    </build>
+
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
