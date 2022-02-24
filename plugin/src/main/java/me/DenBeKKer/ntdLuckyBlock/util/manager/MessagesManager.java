@@ -18,8 +18,8 @@ import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 
 public class MessagesManager {
 	
-	private static HashMap<Message, Object> map = new HashMap<>();
-	private final static Collection<String> build_in_languages = Arrays.asList("en", "ru", "zh_cn", "de", "pl", "pt_br", "tr");
+	private static final HashMap<Message, Object> map = new HashMap<>();
+	private final static Collection<String> build_in_languages = Arrays.asList("en", "ru", "zh_cn", "de", "pl", "pt_br", "tr", "es");
 	private static Config config = null;
 	public static File lang_folder = new File(LBMain.getInstance().getDataFolder() + File.separator + "lang");
 	
@@ -83,7 +83,7 @@ public class MessagesManager {
 		
 		private String path;
 		
-		private Message(String string) {
+		Message(String string) {
 			this.path = string;
 		}
 		
@@ -122,9 +122,9 @@ public class MessagesManager {
 		private void load() { load(true); }
 		
 		public List<String> getAsList(boolean formated) {
-			return formated ? getAsList().stream().map(n -> Misc.setColors(n)).collect(Collectors.toList()) : getAsList();
+			return formated ? getAsList().stream().map(Misc::setColors).collect(Collectors.toList()) : getAsList();
 		}
-		
+
 		@SuppressWarnings("unchecked")
 		public List<String> getAsList() {
 			if(map.containsKey(this)) {
@@ -137,7 +137,7 @@ public class MessagesManager {
 		
 	}
 	
-	/*
+	/**
 	 * @deprecated
 	 * <p> Use {@link MessagesManager#getBuildInLanguages()} instead.
 	 */
@@ -149,7 +149,8 @@ public class MessagesManager {
 	}
 	
 	public static Collection<String> getActualLanguages() {
-		return Stream.of(lang_folder.listFiles()).map(n -> n.getName())
+		if(!lang_folder.exists()) lang_folder.mkdirs();
+		return Stream.of(lang_folder.listFiles()).map(File::getName)
 				.filter(n -> n.endsWith(".yml")).map(n -> n.toLowerCase().substring(0, n.length() - 4)).collect(Collectors.toList());
 	}
 	
