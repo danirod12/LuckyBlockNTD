@@ -80,8 +80,8 @@ public class LBMain extends JavaPlugin {
 	
 	
 	// Last update date & Build number
-	private static final String last_update = "21/02/2022";
-	private static final int build = 87;
+	private static final String last_update = "24/02/2022";
+	private static final int build = 88;
 	// Last update date & Build number
 	
 	
