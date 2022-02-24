@@ -478,7 +478,7 @@ public class LBMain extends JavaPlugin {
 		
 		public void load() {
 
-			if(Bukkit.getPluginManager().getPlugin(this.name()) != null) error = null;
+			if(Bukkit.getPluginManager().isPluginEnabled(this.name())) error = null;
 			
 		}
 		
