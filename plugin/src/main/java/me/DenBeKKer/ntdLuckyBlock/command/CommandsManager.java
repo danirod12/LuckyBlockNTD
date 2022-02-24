@@ -83,7 +83,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter {
 			if(LBMain.isReduced() && reduced.contains((Player) sender)) break n;
 			
 			sender.sendMessage("\u00a77[\u00a7eLuckyBlock\u00a77] \u00a7fRunning \u00a7antdLuckyBlock v"
-					+ LBMain.getVersion() + " " + (LBMain.isPremium() ? "\u00a7dprem" : "free") + " \u00a7fby \u00a7aDenBeKKer");
+					+ LBMain.getVersion() + " " + (LBMain.isPremium() ? "\u00a7dprem" : "free") + " \u00a7fby \u00a7adanirod12");
 			if(LBMain.isReduced()) reduced.add((Player) sender);
 			
 		}

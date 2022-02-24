@@ -24,7 +24,7 @@ public class VersionCommand implements LBCommand {
 				(LBMain.isPremium() ? "\u00a7bprem" : "\u00a7afree") + "\u00a77) " + (LBMain.getUpdater().need_update$cache() ?
 						"\u00a7c\u00a7l[!] \u00a7cVersion " + LBMain.getInstance().updater.getLatestVersion() + " available" : "\u00a7aLatest version"));
 		sender.sendMessage("\u00a78 • \u00a7fBuild - \u00a7e" + LBMain.getBuild() + "\u00a7f, last update - \u00a7e" + LBMain.getLastUpdate());
-		sender.sendMessage("\u00a78 • \u00a7fPlugin author - \u00a7eDenBeKKer \u00a77(Known as danirod12)");
+		sender.sendMessage("\u00a78 • \u00a7fPlugin author - \u00a7edanirod12 \u00a77(aka DenBeKKer)");
 		
 		for(String arg : args) {
 			
