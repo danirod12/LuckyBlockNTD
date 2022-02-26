@@ -1,14 +1,12 @@
 package me.DenBeKKer.ntdLuckyBlock.command.cmd;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import org.bukkit.entity.Player;
-
 import me.DenBeKKer.ntdLuckyBlock.command.CommandResponce;
 import me.DenBeKKer.ntdLuckyBlock.command.LBPlayerCommand;
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
-import me.DenBeKKer.ntdLuckyBlock.util.manager.GuiManager;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.GuiManager.GuiType;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
+import org.bukkit.entity.Player;
 
 public class GuiCommand implements LBPlayerCommand {
 	
@@ -25,14 +23,11 @@ public class GuiCommand implements LBPlayerCommand {
 		
 		if(args.length > 0) {
 			
-			GuiType type = null;
-			try {
-				type = GuiType.valueOf(args[0].toUpperCase());
-			} catch(Exception ingnored) {}
+			GuiType type = GuiType.parseGuiType(args[0]);
 			if(type != null) {
 				
 				if(!Misc.hasPermission(player, "luckyblock.command.gui." + type.name())) return CommandResponce.MISSED_PERMISSION;
-				LBMain.getInstance().gui_manager.open(type, player);
+				LBMain.getInstance().gui_manager.open(player, type);
 				return CommandResponce.SUCCESS;
 				
 			}

@@ -25,20 +25,39 @@ import java.util.stream.Collectors;
 public class GuiManager implements Listener {
 
 	public GuiManager() {
+
 		reload();
+
 	}
 
-	public enum GuiType { EDIT, GET }
+	public enum GuiType {
+
+		EDIT, GET;
+
+		public static GuiType parseGuiType(String name) {
+			for(GuiType type : values())
+				if(type.name().equalsIgnoreCase(name))
+					return type; return null;
+		}
+
+	}
+
 	private Inventory get = null;
 	private final HashMap<Player, CountGui> map = new HashMap<>();
-	
+
+	@Deprecated
 	public void open(GuiType type, Player player) {
+		open(player, type);
+	}
+
+	public void open(Player player, GuiType type) {
 
 		if(type == GuiType.GET) {
 			player.openInventory(get);
 			return;
 		}
-		player.sendMessage("\u00a77[\u00a7eLuckyBlock\u00a77] \u00a7c" + type.name() + " gui feature is disabled or available only in premium version");
+		player.sendMessage("\u00a77[\u00a7eLuckyBlock\u00a77] \u00a7c" + type.name()
+				+ " gui feature is disabled or available only in premium version");
 		
 	}
 	
