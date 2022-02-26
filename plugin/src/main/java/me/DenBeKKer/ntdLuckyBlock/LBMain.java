@@ -156,7 +156,8 @@ public class LBMain extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		gui_manager.close();
+		if(this.gui_manager != null)
+			this.gui_manager.close();
 	}
 
 	@Override
