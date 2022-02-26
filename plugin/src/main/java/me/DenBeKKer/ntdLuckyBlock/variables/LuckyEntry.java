@@ -1,14 +1,14 @@
 package me.DenBeKKer.ntdLuckyBlock.variables;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import me.DenBeKKer.ntdLuckyBlock.api.DropChance;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+
 public class LuckyEntry extends ArrayList<LuckyDrop> {
-	
-	private static final long serialVersionUID = -8843202586727811223L;
+
 	private DropChance chance;
 	
 	public LuckyEntry(DropChance chance) {
@@ -21,14 +21,12 @@ public class LuckyEntry extends ArrayList<LuckyDrop> {
 	
 	public LuckyEntry(DropChance chance, LuckyDrop... drop) {
 		this(chance);
-		for(LuckyDrop drop0 : drop)
-			this.add(drop0);
+		this.addAll(Arrays.asList(drop));
 	}
 	
 	public LuckyEntry(LuckyDrop... drop) {
 		this();
-		for(LuckyDrop drop0 : drop)
-			this.add(drop0);
+		this.addAll(Arrays.asList(drop));
 	}
 	
 	public LuckyEntry(Collection<LuckyDrop> drop) {
