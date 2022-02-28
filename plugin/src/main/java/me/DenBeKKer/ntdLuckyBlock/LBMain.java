@@ -15,6 +15,7 @@ import me.DenBeKKer.ntdLuckyBlock.hook.thebusybiscuit.SlimeFunListener;
 import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
 import me.DenBeKKer.ntdLuckyBlock.nms.ItemTag;
 import me.DenBeKKer.ntdLuckyBlock.nms.ItemTag1_18_R1;
+import me.DenBeKKer.ntdLuckyBlock.nms.ItemTag1_18_R2;
 import me.DenBeKKer.ntdLuckyBlock.nms.ItemTagLegacy;
 import me.DenBeKKer.ntdLuckyBlock.recipe.CraftListener;
 import me.DenBeKKer.ntdLuckyBlock.recipe.LuckyRecipe;
@@ -229,17 +230,7 @@ public class LBMain extends JavaPlugin {
 		tinted = new TintedMaterial();
 
 		// NMS
-		if(NMS_VERSION.equalsIgnoreCase("v1_18_R1")) {
-			item_tag_adapter = new ItemTag1_18_R1();
-		} else {
-			try {
-				item_tag_adapter = new ItemTagLegacy();
-			} catch(UnsupportedOperationException ex) {
-				log(Level.WARNING, "You platform is not supported. Supported versions 1.8 - 1.18");
-				Bukkit.getPluginManager().disablePlugin(this);
-				return;
-			}
-		}
+		if(!loadNMS()) return;
 		log(Level.INFO, "Loaded \"" + item_tag_adapter.getClass().getSimpleName() + "\" tag adapter.");
 
 		// Loading config
@@ -336,7 +327,38 @@ public class LBMain extends JavaPlugin {
 		if(ms > 5000) log(Level.INFO, "\u00a7c\u00a7l[!] \u00a7ePlugin initialization took over 5 second (" + ms + " ms)");
 		
 	}
-	
+
+	private boolean loadNMS() {
+
+		switch (NMS_VERSION) {
+
+			case "v1_18_R2": {
+				item_tag_adapter = new ItemTag1_18_R2();
+				return true;
+			}
+
+			case "v1_18_R1": {
+				item_tag_adapter = new ItemTag1_18_R1();
+				return true;
+			}
+
+			default: {
+
+				try {
+					item_tag_adapter = new ItemTagLegacy();
+					return true;
+				} catch(UnsupportedOperationException ex) {
+					log(Level.WARNING, "You platform is not supported. Supported versions 1.8 - 1.18");
+					Bukkit.getPluginManager().disablePlugin(this);
+					return false;
+				}
+
+			}
+
+		}
+
+	}
+
 	private ChatColor msIndicator(long ms, int yellow, int red) {
 		if(ms > red) return ChatColor.RED;
 		if(ms > yellow) return ChatColor.YELLOW;
