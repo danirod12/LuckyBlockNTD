@@ -119,7 +119,8 @@ public class LBMain extends JavaPlugin {
 	public static boolean isDebug() { return debug; }
 	@Deprecated
 	public static boolean getDebug() { return debug; }
-	
+
+	@Deprecated
 	public static Class<?> getClass(String path) {
 		try {
 			return Class.forName(path);
@@ -302,8 +303,9 @@ public class LBMain extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(gui_manager, this);
 		Bukkit.getPluginManager().registerEvents(new CraftListener(), this);
 		Bukkit.getPluginManager().registerEvents(convert_manager, this);
-		
-		Bukkit.getScheduler().runTaskLater(instance, () -> {
+
+		// TODO remove back when payments will be available
+//		Bukkit.getScheduler().runTaskLater(instance, () -> {
 			
 			log(Level.INFO, "If you are love my plugin, support me with 5 stars review (https://www.spigotmc.org/resources/92026/) or consider " +
 					"to purchase premium plugin version (https://www.spigotmc.org/resources/94872/)");
@@ -313,7 +315,7 @@ public class LBMain extends JavaPlugin {
 						" version \u00a7e( \u00a7bhttps://www.spigotmc.org/resources/94872/ \u00a7e)");
 			});
 			
-		}, 120);
+//		}, 120);
 		
 		debug("Loading commands manager...");
 		commands_manager = new CommandsManager();
