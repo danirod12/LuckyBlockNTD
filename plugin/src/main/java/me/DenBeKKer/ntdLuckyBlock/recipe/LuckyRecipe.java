@@ -1,13 +1,12 @@
 package me.DenBeKKer.ntdLuckyBlock.recipe;
 
-import java.util.stream.Stream;
-
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.exceptions.LuckyBlockNotLoadedException;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.stream.Stream;
 
 public class LuckyRecipe {
 	

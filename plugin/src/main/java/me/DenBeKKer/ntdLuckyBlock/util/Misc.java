@@ -1,8 +1,8 @@
 package me.DenBeKKer.ntdLuckyBlock.util;
 
-import java.util.List;
-
 import org.bukkit.entity.Player;
+
+import java.util.List;
 
 public class Misc {
 	

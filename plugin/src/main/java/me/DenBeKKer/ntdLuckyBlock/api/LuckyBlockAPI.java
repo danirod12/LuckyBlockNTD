@@ -1,13 +1,20 @@
 package me.DenBeKKer.ntdLuckyBlock.api;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.logging.Level;
-
+import me.DenBeKKer.ntdLuckyBlock.LBMain;
+import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.exceptions.LuckyBlockNotLoadedException;
+import me.DenBeKKer.ntdLuckyBlock.api.loader.PathLoader;
+import me.DenBeKKer.ntdLuckyBlock.api.loader.StringLoader;
+import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
+import me.DenBeKKer.ntdLuckyBlock.customitem.Identifier;
+import me.DenBeKKer.ntdLuckyBlock.loader.JSONLoader;
+import me.DenBeKKer.ntdLuckyBlock.loader.LegacyLoader;
+import me.DenBeKKer.ntdLuckyBlock.util.Config;
+import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_13;
+import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
+import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
+import me.DenBeKKer.ntdLuckyBlock.variables.LuckyEntry;
+import me.DenBeKKer.ntdLuckyBlock.variables.drop.ItemDrop;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -18,19 +25,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
-import me.DenBeKKer.ntdLuckyBlock.api.loader.PathLoader;
-import me.DenBeKKer.ntdLuckyBlock.api.loader.StringLoader;
-import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
-import me.DenBeKKer.ntdLuckyBlock.customitem.Identifier;
-import me.DenBeKKer.ntdLuckyBlock.loader.JSONLoader;
-import me.DenBeKKer.ntdLuckyBlock.loader.LegacyLoader;
-import me.DenBeKKer.ntdLuckyBlock.util.Config;
-import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
-import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
-import me.DenBeKKer.ntdLuckyBlock.variables.LuckyEntry;
-import me.DenBeKKer.ntdLuckyBlock.variables.drop.ItemDrop;
+import java.util.*;
+import java.util.logging.Level;
 
 public class LuckyBlockAPI {
 	
@@ -288,11 +284,7 @@ public class LuckyBlockAPI {
 	 * @throws LuckyBlockNotLoadedException
 	 */
 	public static void placeLuckyBlock(Block b, LuckyBlockType type) throws LuckyBlockNotLoadedException {
-		
-		if(type.get() != null) {
-			type.get().placeBlock(b, false);
-		} else throw new LuckyBlockNotLoadedException(type);
-		
+		type.get().placeBlock(b, false);
 	}
 	
 	public static LuckyBlockType parseOldLuckyBlock(ItemStack stack) {
@@ -352,7 +344,12 @@ public class LuckyBlockAPI {
 		
 	}
 
+	@Deprecated
 	public static void resolve_sign(Block block, boolean update) {
+		resolveSign(block, update);
+	}
+
+	public static void resolveSign(Block block, boolean update) {
 
 		if(LBMain.getInstance().factory.isOakSign(block.getType())) {
 			Sign sign = (Sign) block.getState();
@@ -362,15 +359,13 @@ public class LuckyBlockAPI {
 				LuckyBlockType type = lines[1].equalsIgnoreCase("random") ? LuckyBlockType.random(true) : LuckyBlockType.parse(lines[1]);
 
 				if(type == null) {
-					LBMain.log(Level.WARNING, "LuckyBlockType " + lines[1].toUpperCase()
-							+ " for API call #resolve_sign");
+					LBMain.log(Level.WARNING, "LuckyBlock type " + lines[1].toUpperCase() + " not found");
 				} else {
 
 					try {
 						LuckyBlockAPI.placeLuckyBlock(block, type);
 					} catch (LuckyBlockNotLoadedException e) {
-						LBMain.log(Level.WARNING, "LuckyBlockType " + lines[1].toUpperCase()
-								+ " for API call #resolve_sign");
+						LBMain.log(Level.WARNING, "LuckyBlock type " + type.name() + " was not loaded");
 					}
 
 				}
@@ -503,7 +498,36 @@ public class LuckyBlockAPI {
 		}
 		
 	}
-	
+
+	public static int destroyEntity(Entity[] array, boolean destroyAll) {
+
+		int removed = 0;
+		for(Entity entity : array) {
+
+			if(entity.getType() != EntityType.ARMOR_STAND) continue;
+			ArmorStand stand = (ArmorStand) entity;
+			if(stand.getCustomName() == null || !stand.getCustomName().contains(";")) continue;
+
+			final LuckyBlockType type = LuckyBlockType.parse(stand.getCustomName().split(";")[0]);
+			if(type == null) continue;
+
+			final Block block = stand.getWorld().getBlockAt(stand.getLocation().add(-.5, 1.2, -.5));
+			if(type.getMaterial() == block.getType() && (!type.isColoredGlass()
+							|| LBMain.getInstance().factory instanceof Mat1_13
+							|| block.getData() == type.asColor().getData())) {
+
+				if(!destroyAll) continue;
+				block.setType(Material.AIR);
+
+			}
+			entity.remove();
+			removed++;
+
+		}
+		return removed;
+
+	}
+
 	/**
 	 * Change {@link LuckyBlockType#map()} element to null
 	 * @param type LuckyBlockType
@@ -527,12 +551,14 @@ public class LuckyBlockAPI {
 	public static void rewrite(LuckyBlock luckyblock) {
 		LuckyBlockType.map().put(luckyblock.getType(), luckyblock);
 	}
-	
-	public static void system_load(Plugin your_plugin_instance) {
-		if(your_plugin_instance.equals(LBMain.getInstance()) || your_plugin_instance == null)
-			throw new UnsupportedOperationException("Provide your plugin instance, not NTD LuckyBlock");
-		LBMain.log(Level.WARNING, "Loading system by plugin " + your_plugin_instance.getName() + " v" + your_plugin_instance.getDescription().getVersion());
-		LBMain.getInstance().system_load();
+
+	public static void reloadSystem() {
+		LBMain.getInstance().reloadSystem();
+	}
+
+	@Deprecated
+	public static void system_load(Plugin deprecated) {
+		reloadSystem();
 	}
 	
 	public static String getVersion() { return LBMain.getVersion(); }

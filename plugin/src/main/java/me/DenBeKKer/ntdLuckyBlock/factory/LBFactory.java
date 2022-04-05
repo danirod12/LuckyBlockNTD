@@ -1,10 +1,9 @@
 package me.DenBeKKer.ntdLuckyBlock.factory;
 
-import java.util.List;
-
+import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
+import java.util.List;
 
 public abstract interface LBFactory {
 	

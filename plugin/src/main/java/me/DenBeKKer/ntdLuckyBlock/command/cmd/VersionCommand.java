@@ -1,12 +1,11 @@
 package me.DenBeKKer.ntdLuckyBlock.command.cmd;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-
 import me.DenBeKKer.ntdLuckyBlock.command.CommandResponce;
 import me.DenBeKKer.ntdLuckyBlock.command.LBCommand;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 
 public class VersionCommand implements LBCommand {
 	

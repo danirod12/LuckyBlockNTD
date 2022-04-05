@@ -1,16 +1,15 @@
 package me.DenBeKKer.ntdLuckyBlock.customitem;
 
-import java.util.HashMap;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.function.Consumer;
-
+import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.api.events.CustomItemHandleEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
+import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.function.Consumer;
 
 public class BekkerItemStack extends ItemStack {
 	

@@ -1,11 +1,10 @@
 package me.DenBeKKer.ntdLuckyBlock.util.material;
 
-import java.util.logging.Level;
-
-import org.bukkit.Material;
-
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.api.exceptions.TintedMaterialUnavailableException;
+import org.bukkit.Material;
+
+import java.util.logging.Level;
 
 public class TintedMaterial {
 

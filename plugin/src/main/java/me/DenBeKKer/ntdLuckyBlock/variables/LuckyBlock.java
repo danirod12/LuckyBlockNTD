@@ -1,12 +1,20 @@
 package me.DenBeKKer.ntdLuckyBlock.variables;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
-import java.util.logging.Level;
-
+import com.google.gson.Gson;
+import me.DenBeKKer.ntdLuckyBlock.LBMain;
+import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
+import me.DenBeKKer.ntdLuckyBlock.api.DropChance;
+import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.api.events.LuckyBlockBreakEvent;
+import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
+import me.DenBeKKer.ntdLuckyBlock.customitem.Identifier;
+import me.DenBeKKer.ntdLuckyBlock.recipe.CraftTheory;
+import me.DenBeKKer.ntdLuckyBlock.recipe.LuckyRecipe;
+import me.DenBeKKer.ntdLuckyBlock.util.Config;
+import me.DenBeKKer.ntdLuckyBlock.util.Misc;
+import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
+import me.DenBeKKer.ntdLuckyBlock.util.material.IMat;
+import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_12;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Material;
@@ -17,21 +25,11 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import com.google.gson.Gson;
-
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
-import me.DenBeKKer.ntdLuckyBlock.api.DropChance;
-import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
-import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
-import me.DenBeKKer.ntdLuckyBlock.customitem.Identifier;
-import me.DenBeKKer.ntdLuckyBlock.recipe.CraftTheory;
-import me.DenBeKKer.ntdLuckyBlock.recipe.LuckyRecipe;
-import me.DenBeKKer.ntdLuckyBlock.util.Config;
-import me.DenBeKKer.ntdLuckyBlock.util.Misc;
-import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
-import me.DenBeKKer.ntdLuckyBlock.util.material.IMat;
-import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_12;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
+import java.util.logging.Level;
 
 public class LuckyBlock {
 	

@@ -1,10 +1,9 @@
 package me.DenBeKKer.ntdLuckyBlock.economy;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 import me.realized.tokenmanager.api.TokenManager;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 public class TokenManagerEconomy implements EconomyBridge {
 	

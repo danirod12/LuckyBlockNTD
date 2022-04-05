@@ -1,10 +1,10 @@
 package me.DenBeKKer.ntdLuckyBlock.hook.sk89q;
 
-import java.util.logging.Level;
-
 import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
+
+import java.util.logging.Level;
 
 public class LBWorldGuard {
 	

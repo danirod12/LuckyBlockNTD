@@ -1,38 +1,24 @@
 package me.DenBeKKer.ntdLuckyBlock.loader;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.logging.Level;
-
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.EntityType;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.loader.StringLoader;
 import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop.LuckyItemType;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop.Special;
-import me.DenBeKKer.ntdLuckyBlock.variables.drop.CommandDrop;
-import me.DenBeKKer.ntdLuckyBlock.variables.drop.ConsoleDrop;
-import me.DenBeKKer.ntdLuckyBlock.variables.drop.EntityDrop;
-import me.DenBeKKer.ntdLuckyBlock.variables.drop.ItemDrop;
-import me.DenBeKKer.ntdLuckyBlock.variables.drop.LuckyItemDrop;
-import me.DenBeKKer.ntdLuckyBlock.variables.drop.MessageDrop;
-import me.DenBeKKer.ntdLuckyBlock.variables.drop.RandomLuckyItemDrop;
-import me.DenBeKKer.ntdLuckyBlock.variables.drop.SchematicDrop;
-import me.DenBeKKer.ntdLuckyBlock.variables.drop.special.DiamondColumnSpecial;
-import me.DenBeKKer.ntdLuckyBlock.variables.drop.special.ExperienceExplosionSpecial;
-import me.DenBeKKer.ntdLuckyBlock.variables.drop.special.LightningSpecial;
-import me.DenBeKKer.ntdLuckyBlock.variables.drop.special.PigSpecial;
-import me.DenBeKKer.ntdLuckyBlock.variables.drop.special.TntColumnSpecial;
-import me.DenBeKKer.ntdLuckyBlock.variables.drop.special.TntExplosionSpecial;
-import me.DenBeKKer.ntdLuckyBlock.variables.drop.special.WaterBucketSpecial;
+import me.DenBeKKer.ntdLuckyBlock.variables.drop.*;
+import me.DenBeKKer.ntdLuckyBlock.variables.drop.special.*;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.logging.Level;
 
 public class LegacyLoader implements StringLoader {
 	

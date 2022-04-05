@@ -1,18 +1,16 @@
 package me.DenBeKKer.ntdLuckyBlock.variables.drop.special;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
+import com.google.gson.annotations.SerializedName;
+import me.DenBeKKer.ntdLuckyBlock.LBMain;
+import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.google.gson.annotations.SerializedName;
-
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class DiamondColumnSpecial implements LuckyDrop {
 	

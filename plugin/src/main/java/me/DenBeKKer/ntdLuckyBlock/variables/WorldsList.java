@@ -1,9 +1,9 @@
 package me.DenBeKKer.ntdLuckyBlock.variables;
 
+import org.bukkit.World;
+
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.bukkit.World;
 
 public class WorldsList {
 	

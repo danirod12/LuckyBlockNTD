@@ -1,13 +1,12 @@
 package me.DenBeKKer.ntdLuckyBlock.recipe;
 
+import me.DenBeKKer.ntdLuckyBlock.LBMain;
+import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
+import org.bukkit.Material;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Level;
-
-import org.bukkit.Material;
-
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 
 public class CraftTheory {
 	

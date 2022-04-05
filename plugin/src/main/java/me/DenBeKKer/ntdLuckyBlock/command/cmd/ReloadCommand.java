@@ -1,15 +1,13 @@
 package me.DenBeKKer.ntdLuckyBlock.command.cmd;
 
-import java.util.logging.Level;
-
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import org.bukkit.command.CommandSender;
-
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.command.CommandResponce;
 import me.DenBeKKer.ntdLuckyBlock.command.LBCommand;
-import me.DenBeKKer.ntdLuckyBlock.util.manager.GuiManager;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
+import org.bukkit.command.CommandSender;
+
+import java.util.logging.Level;
 
 public class ReloadCommand implements LBCommand {
 	
@@ -27,7 +25,7 @@ public class ReloadCommand implements LBCommand {
 		final long ms = System.currentTimeMillis();
 		
 		LBMain.getInstance().loadConfig();
-		LBMain.getInstance().system_load();
+		LBMain.getInstance().reloadSystem();
 		LBMain.getInstance().gui_manager.reload();
 		
 		sender.sendMessage(Message.RELOADED_CONFIG.getAsString().replace("%amount%", String.valueOf(LuckyBlockType.map().size())));

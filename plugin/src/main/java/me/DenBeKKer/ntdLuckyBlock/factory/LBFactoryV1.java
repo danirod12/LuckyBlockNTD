@@ -1,20 +1,19 @@
 package me.DenBeKKer.ntdLuckyBlock.factory;
 
+import me.DenBeKKer.ntdLuckyBlock.LBMain;
+import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
+import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_13;
+import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop.Special;
+import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.EntityType;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.EntityType;
-
-import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
-import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_13;
-import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop.Special;
 
 public class LBFactoryV1 implements LBFactory {
 	

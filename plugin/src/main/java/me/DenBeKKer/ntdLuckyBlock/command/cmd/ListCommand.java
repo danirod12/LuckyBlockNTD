@@ -1,15 +1,14 @@
 package me.DenBeKKer.ntdLuckyBlock.command.cmd;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import org.bukkit.command.CommandSender;
-
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.command.CommandResponce;
 import me.DenBeKKer.ntdLuckyBlock.command.LBCommand;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
+import org.bukkit.command.CommandSender;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class ListCommand implements LBCommand {
 	

@@ -2,13 +2,12 @@ package me.DenBeKKer.ntdLuckyBlock.variables;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.api.events.LuckyDropEvent;
+import me.DenBeKKer.ntdLuckyBlock.variables.drop.EntityDrop;
+import me.DenBeKKer.ntdLuckyBlock.variables.drop.ItemDrop;
 import me.DenBeKKer.ntdLuckyBlock.variables.drop.special.*;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-
-import me.DenBeKKer.ntdLuckyBlock.variables.drop.EntityDrop;
-import me.DenBeKKer.ntdLuckyBlock.variables.drop.ItemDrop;
 
 import java.util.logging.Level;
 

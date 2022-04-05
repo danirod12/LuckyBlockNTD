@@ -1,5 +1,11 @@
 package me.DenBeKKer.ntdLuckyBlock.util.manager;
 
+import me.DenBeKKer.ntdLuckyBlock.LBMain;
+import me.DenBeKKer.ntdLuckyBlock.util.Config;
+import me.DenBeKKer.ntdLuckyBlock.util.Misc;
+import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
+import org.bukkit.configuration.file.FileConfiguration;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
@@ -8,13 +14,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
-import org.bukkit.configuration.file.FileConfiguration;
-
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.util.Config;
-import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 
 public class MessagesManager {
 	

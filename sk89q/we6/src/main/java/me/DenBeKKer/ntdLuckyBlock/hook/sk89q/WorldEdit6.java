@@ -1,24 +1,22 @@
 package me.DenBeKKer.ntdLuckyBlock.hook.sk89q;
 
-import java.io.File;
-import java.util.logging.Level;
-
-import me.DenBeKKer.ntdLuckyBlock.util.IWorldEdit;
-import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
-import org.bukkit.Bukkit;
-import org.bukkit.block.Block;
-
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.schematic.MCEditSchematicFormat;
+import me.DenBeKKer.ntdLuckyBlock.util.IWorldEdit;
+import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
+import org.bukkit.Bukkit;
+import org.bukkit.block.Block;
+
+import java.io.File;
+import java.util.logging.Level;
 
 @SuppressWarnings("deprecation")
 public class WorldEdit6 implements IWorldEdit {
 	
-	private WorldEditPlugin worldedit = (WorldEditPlugin)Bukkit.getPluginManager().getPlugin("WorldEdit");
-//	private StateFlag BREAK;
+	private final WorldEditPlugin worldedit = (WorldEditPlugin)Bukkit.getPluginManager().getPlugin("WorldEdit");
 	
 	@Override
 	public void paste(File file, Block obj, boolean a) {
@@ -33,68 +31,100 @@ public class WorldEdit6 implements IWorldEdit {
 		}
 		
 	}
-	
+
+//	private final WorldEditPlugin worldedit = (WorldEditPlugin)Bukkit.getPluginManager().getPlugin("WorldEdit");
+//
 //	@Override
-//	public boolean canBreak(Block block) {
-//		
-//		ApplicableRegionSet set = null;
-//		
+//	public void paste(File file, final Block obj, boolean a) {
+//
 //		try {
-//			Object container = worldguard.getClass().getMethod("getRegionContainer").invoke(worldguard);
-//			container = container.getClass().getMethod("get", World.class).invoke(container, block.getWorld());
-//			set = (ApplicableRegionSet) container.getClass().getMethod("getApplicableRegions", Location.class)
-//					.invoke(container, block.getLocation());
-//		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-//				| SecurityException e) {
+//			CuboidClipboard clipboard = MCEditSchematicFormat.getFormat(file).load(file);
+//			EditSession session = worldedit.getWorldEdit().getEditSessionFactory()
+//					.getEditSession(new BukkitWorld(obj.getWorld()), -1);
+//
+//			final Vector origin;
+//			clipboard.paste(session, origin = new Vector(obj.getX(), obj.getY(), obj.getZ()), true);
+//
+////			min = max.add(clipboard.getWidth(), -clipboard.getHeight(), clipboard.getLength());
+//			Vector min = origin.add(clipboard.getOffset());
+//			Vector max = min.add(clipboard.getSize());
+//
+//			Bukkit.getScheduler().runTaskLater(MvLogger.getInstance(), () -> {
+//
+//				try {
+//
+//					int chunkZ = min.getBlockZ() >> 4 - 1;
+//					for(int x = min.getBlockX(); x <= max.getBlockX(); x++) {
+//						for(int z = min.getBlockX(); z <= max.getBlockX(); z++) {
+//
+//							Bukkit.broadcastMessage("x: " + x + ", z: " + z);
+//
+//							int i0 = z >> 4;
+//							if(i0 != chunkZ) {
+//
+//								Chunk chunk = obj.getWorld().getChunkAt(x >> 4, i0);
+//
+//								List<Entity> list = new ArrayList<>();
+//								for(Entity entity : chunk.getEntities()) {
+//									Bukkit.broadcastMessage(entity.getType().name());
+//									if(entity.getType() != EntityType.ARMOR_STAND)
+//										continue;
+//									Location location = entity.getLocation();
+//									if(location.getX() >= min.getX() && location.getZ() >= min.getZ() && location.getY() >= min.getY() - 1.2D &&
+//											location.getX() <= max.getX() && location.getZ() <= max.getZ() && location.getY() <= max.getY()) {
+//										list.add(entity);
+//									}
+//								}
+//
+//								if(list.size() > 0)
+//									destroyEntity.invoke(null, list.toArray(new Entity[0]), false);
+//
+//								chunkZ = i0;
+//
+//							}
+//
+//							for(int y = min.getBlockY(); y <= max.getBlockY(); y++) {
+//								Block block;
+//								resolveSign.invoke(null, block = obj.getWorld().getBlockAt(x, y, z), a);
+//								block.setType(Material.STAINED_GLASS);
+//							}
+//
+//						}
+//					}
+//
+//				} catch (Exception exception) {
+//					exception.printStackTrace();
+//					MvLogger.log(Level.SEVERE, "Something went wrong");
+//				}
+//
+//			}, 1L);
+//
+//		} catch (Exception e) {
 //			e.printStackTrace();
-//			return true;
+//			MvLogger.log(Level.SEVERE, "Something went wrong");
 //		}
-//		
-//		if(set == null) return true;
-//		
-//		for(ProtectedRegion entry : set) {
-//			if(entry != null && entry.getFlags() != null && entry.getFlags().get(BREAK) != null &&
-//					entry.getFlags().get(BREAK) == StateFlag.State.DENY) return false;
-//		}
-//		return true;
-//		
+//
 //	}
-//	
-//	@Override
-//	public void registerFlags() {
-//		
-////		FlagRegistry registry = worldguard.getRegionContainer().getInstance().getFlagRegistry();
-//		
-//		FlagRegistry registry = null;
-//		
+//
+//	private static final Method resolveSign, destroyEntity;
+//
+//	static {
+//
+//		Method method0, method1;
 //		try {
-//			
-////			Object container = worldguard.getClass().getMethod("getRegionContainer").invoke(worldguard);
-////			container = container.getClass().getMethod("getInstance").invoke(container);
-////			registry = (FlagRegistry)container.getClass().getMethod("getFlagRegistry").invoke(container);
-//			registry = (FlagRegistry) worldguard.getClass().getMethod("getFlagRegistry").invoke(worldguard);
-//			
-//		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-//				| SecurityException e1) {
-//			e1.printStackTrace();
-//			return;
+//
+//			Class<?> clazz = Class.forName("me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI");
+//			method0 = clazz.getDeclaredMethod("resolveSign", Block.class, boolean.class);
+//			method1 = clazz.getDeclaredMethod("destroyEntity", Entity[].class, boolean.class);
+//
+//		} catch (Throwable e) {
+//			e.printStackTrace();
+//			method0 = method1 = null;
 //		}
-//		
-//		try {
-//			StateFlag flag = new StateFlag("ntd-lb-break", true);
-//			registry.register(flag);
-//			BREAK = flag;
-//		} catch (FlagConflictException e) {
-//			Flag<?> existing = registry.get("ntd-lb-break");
-//			if (existing instanceof StateFlag) {
-//				BREAK = (StateFlag) existing;
-//			} else {
-//				LBMain.log(Level.INFO, "WorldGuard flag ntd-lb-break already found and cant be enjected");
-//			}
-//		} catch(IllegalStateException e) {
-//			LBMain.log(Level.INFO, "WorldGuard flags cant be registered at this time (Only on server startup available)");
-//		}
-//		
+//
+//		resolveSign = method0;
+//		destroyEntity = method1;
+//
 //	}
 	
 }

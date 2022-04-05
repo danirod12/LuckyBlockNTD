@@ -1,14 +1,13 @@
 package me.DenBeKKer.ntdLuckyBlock.economy;
 
-import java.text.DecimalFormat;
-
+import me.DenBeKKer.ntdLuckyBlock.LBMain.Hooks;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.economy.EconomyResponse.ResponseType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
-import me.DenBeKKer.ntdLuckyBlock.LBMain.Hooks;
-import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.economy.EconomyResponse.ResponseType;
+import java.text.DecimalFormat;
 
 public class VaultEconomy implements EconomyBridge {
 	

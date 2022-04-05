@@ -1,12 +1,11 @@
 package me.DenBeKKer.ntdLuckyBlock.command;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
+import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
+import me.DenBeKKer.ntdLuckyBlock.command.cmd.*;
+import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
+import me.DenBeKKer.ntdLuckyBlock.util.Misc;
+import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,23 +13,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
-import me.DenBeKKer.ntdLuckyBlock.command.cmd.ConvertCommand;
-import me.DenBeKKer.ntdLuckyBlock.command.cmd.DestroyCommand;
-import me.DenBeKKer.ntdLuckyBlock.command.cmd.GetCommand;
-import me.DenBeKKer.ntdLuckyBlock.command.cmd.GetCustomItemCommand;
-import me.DenBeKKer.ntdLuckyBlock.command.cmd.GiveCommand;
-import me.DenBeKKer.ntdLuckyBlock.command.cmd.GuiCommand;
-import me.DenBeKKer.ntdLuckyBlock.command.cmd.ItemInfoCommand;
-import me.DenBeKKer.ntdLuckyBlock.command.cmd.ListCommand;
-import me.DenBeKKer.ntdLuckyBlock.command.cmd.ListCustomItemsCommand;
-import me.DenBeKKer.ntdLuckyBlock.command.cmd.ReloadCommand;
-import me.DenBeKKer.ntdLuckyBlock.command.cmd.SupportCommand;
-import me.DenBeKKer.ntdLuckyBlock.command.cmd.UpdatesCommand;
-import me.DenBeKKer.ntdLuckyBlock.command.cmd.VersionCommand;
-import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
-import me.DenBeKKer.ntdLuckyBlock.util.Misc;
-import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class CommandsManager implements CommandExecutor, TabCompleter {
 	

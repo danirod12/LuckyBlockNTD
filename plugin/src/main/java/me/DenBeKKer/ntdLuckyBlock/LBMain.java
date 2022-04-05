@@ -293,7 +293,7 @@ public class LBMain extends JavaPlugin {
 		}
 		
 		Hooks.print();
-		system_load();
+		reloadSystem();
 		
 		gui_manager = new GuiManager();
 		
@@ -420,8 +420,13 @@ public class LBMain extends JavaPlugin {
 	}
 	
 	public static void debug(String string) { if(debug) log(Level.INFO, "[DEBUG] " + string); }
-	
+
+	@Deprecated
 	public void system_load() {
+		reloadSystem();
+	}
+
+	public void reloadSystem() {
 		
 		long ms = System.currentTimeMillis();
 		debug("Loading system...");

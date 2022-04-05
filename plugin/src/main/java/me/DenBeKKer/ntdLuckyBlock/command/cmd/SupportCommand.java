@@ -1,14 +1,13 @@
 package me.DenBeKKer.ntdLuckyBlock.command.cmd;
 
-import java.util.logging.Level;
-
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.command.CommandResponce;
 import me.DenBeKKer.ntdLuckyBlock.command.LBCommand;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import java.util.logging.Level;
 
 import static me.DenBeKKer.ntdLuckyBlock.LBMain.getDiscordURL;
 

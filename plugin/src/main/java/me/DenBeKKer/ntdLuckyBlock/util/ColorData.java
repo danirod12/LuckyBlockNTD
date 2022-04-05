@@ -1,9 +1,8 @@
 package me.DenBeKKer.ntdLuckyBlock.util;
 
-import org.bukkit.DyeColor;
-
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_12;
+import org.bukkit.DyeColor;
 
 public enum ColorData {
 	

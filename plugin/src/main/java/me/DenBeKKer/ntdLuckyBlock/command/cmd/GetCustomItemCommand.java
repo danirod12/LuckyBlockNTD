@@ -1,12 +1,11 @@
 package me.DenBeKKer.ntdLuckyBlock.command.cmd;
 
-import org.bukkit.entity.Player;
-
 import me.DenBeKKer.ntdLuckyBlock.command.CommandResponce;
 import me.DenBeKKer.ntdLuckyBlock.command.LBPlayerCommand;
 import me.DenBeKKer.ntdLuckyBlock.customitem.BekkerItemStack;
 import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
+import org.bukkit.entity.Player;
 
 public class GetCustomItemCommand implements LBPlayerCommand {
 	

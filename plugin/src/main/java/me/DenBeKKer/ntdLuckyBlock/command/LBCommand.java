@@ -1,8 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.command;
 
-import org.bukkit.command.CommandSender;
-
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
+import org.bukkit.command.CommandSender;
 
 public interface LBCommand {
 	

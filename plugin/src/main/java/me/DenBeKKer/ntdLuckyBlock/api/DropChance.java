@@ -1,10 +1,10 @@
 package me.DenBeKKer.ntdLuckyBlock.api;
 
+import me.DenBeKKer.ntdLuckyBlock.variables.LuckyEntry;
+
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-
-import me.DenBeKKer.ntdLuckyBlock.variables.LuckyEntry;
 
 public enum DropChance {
 	

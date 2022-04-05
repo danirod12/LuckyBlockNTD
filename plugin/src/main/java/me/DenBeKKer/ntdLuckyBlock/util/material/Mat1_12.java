@@ -1,10 +1,9 @@
 package me.DenBeKKer.ntdLuckyBlock.util.material;
 
+import me.DenBeKKer.ntdLuckyBlock.util.ColorData;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import me.DenBeKKer.ntdLuckyBlock.util.ColorData;
 
 public class Mat1_12 implements IMat {
 	

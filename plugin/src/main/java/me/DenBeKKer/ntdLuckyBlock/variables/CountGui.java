@@ -1,8 +1,8 @@
 package me.DenBeKKer.ntdLuckyBlock.variables;
 
-import java.util.Arrays;
-
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
+import me.DenBeKKer.ntdLuckyBlock.LBMain.PlayerHead;
+import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,8 +13,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import me.DenBeKKer.ntdLuckyBlock.LBMain.PlayerHead;
-import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
+import java.util.Arrays;
 
 public class CountGui implements Listener {
 	

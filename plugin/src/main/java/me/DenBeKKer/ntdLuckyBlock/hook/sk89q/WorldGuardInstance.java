@@ -1,13 +1,5 @@
 package me.DenBeKKer.ntdLuckyBlock.hook.sk89q;
 
-import java.util.logging.Level;
-
-import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -16,6 +8,13 @@ import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+
+import java.util.logging.Level;
 
 public class WorldGuardInstance {
 	

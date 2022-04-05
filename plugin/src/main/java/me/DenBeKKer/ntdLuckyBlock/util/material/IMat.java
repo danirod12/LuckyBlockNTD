@@ -1,15 +1,14 @@
 package me.DenBeKKer.ntdLuckyBlock.util.material;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
+import me.DenBeKKer.ntdLuckyBlock.util.ColorData;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import me.DenBeKKer.ntdLuckyBlock.util.ColorData;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public interface IMat {
 	
