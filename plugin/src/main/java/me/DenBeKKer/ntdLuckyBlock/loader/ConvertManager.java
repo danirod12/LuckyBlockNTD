@@ -16,10 +16,11 @@ import org.bukkit.inventory.PlayerInventory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 public class ConvertManager implements Listener {
 	
-	private HashMap<Config, Collection<String>> map = new HashMap<>();
+	private final Map<Config, Collection<String>> map = new HashMap<>();
 	private boolean verify_uuid, verify_tag;
 	private boolean factory;
 	
@@ -38,7 +39,7 @@ public class ConvertManager implements Listener {
 		return i;
 	}
 	
-	public HashMap<Config, Collection<String>> getRequestMap() {
+	public Map<Config, Collection<String>> getRequestMap() {
 		return map;
 	}
 	

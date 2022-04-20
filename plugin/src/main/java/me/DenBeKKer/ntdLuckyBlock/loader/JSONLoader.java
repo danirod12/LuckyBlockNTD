@@ -24,11 +24,11 @@ public class JSONLoader implements PathLoader {
 	
 	@Override
 	public LuckyDrop load(Config config, String path) {
-		throw new UnsupportedOperationException("Feature unavailable in free version");
+		throw new UnsupportedOperationException("Feature is unavailable in free version");
 	}
 	
 	public void save(Config loaded, String path, LuckyEntry entry) {
-		throw new UnsupportedOperationException("Feature unavailable in free version");
+		throw new UnsupportedOperationException("Feature is unavailable in free version");
 	}
 	
 }

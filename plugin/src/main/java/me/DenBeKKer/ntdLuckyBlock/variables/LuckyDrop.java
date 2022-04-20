@@ -13,9 +13,22 @@ import java.util.logging.Level;
 
 public interface LuckyDrop {
 	
-	public enum LuckyItemType { LUCKY_BLOCK_ITEM, ITEM, SPECIAL, ENTITY, COMMAND, CONSOLE, MESSAGE, SCHEMATIC, CUSTOM_ITEM; }
+	enum LuckyItemType {
+
+		LUCKY_BLOCK_ITEM,
+		ITEM,
+		SPECIAL,
+		ENTITY,
+		COMMAND,
+		CONSOLE,
+		OPPED,
+		MESSAGE,
+		SCHEMATIC,
+		CUSTOM_ITEM
+
+	}
 	
-	public enum Special {
+	enum Special {
 		
 		PIG,
 		LIGHTNING,
