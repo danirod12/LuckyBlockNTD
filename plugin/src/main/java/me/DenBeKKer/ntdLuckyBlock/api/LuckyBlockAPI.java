@@ -296,6 +296,7 @@ public class LuckyBlockAPI {
 		LuckyBlockType type = LuckyBlockType.parse(uuid);
 		if(type == null) {
 
+			// 1.8 display name could be null
 			if(stack.getItemMeta() == null || stack.getItemMeta().getDisplayName() == null) return null;
 			for(Map.Entry<LuckyBlockType, LuckyBlock> loaded : LuckyBlockType.map().entrySet())
 				if(stack.getItemMeta().getDisplayName().equalsIgnoreCase(loaded.getValue().getOldName()))

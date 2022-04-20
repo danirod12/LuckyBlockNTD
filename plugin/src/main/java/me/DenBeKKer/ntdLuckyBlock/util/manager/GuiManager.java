@@ -74,7 +74,8 @@ public class GuiManager implements Listener {
 			}
 			
 			ItemStack item = e.getInventory().getItem(e.getSlot());
-			if(item == null || !LBMain.getInstance().factory.isSkull(item)) return;
+			// 1.8 item display name could be null
+			if(item == null || !LBMain.getInstance().factory.isSkull(item) || item.getItemMeta().getDisplayName() == null) return;
 			
 			final Player player = (Player) e.getWhoClicked();
 			List<LuckyBlockType> types = LuckyBlockType.enabled().stream()
