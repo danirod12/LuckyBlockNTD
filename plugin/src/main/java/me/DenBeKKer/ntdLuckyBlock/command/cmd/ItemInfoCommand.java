@@ -14,6 +14,13 @@ import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class ItemInfoCommand implements LBPlayerCommand {
 	
 	@Override
@@ -71,11 +78,60 @@ public class ItemInfoCommand implements LBPlayerCommand {
 		}
 		
 		player.sendMessage("\u00a7cItem type - \u00a7e" + item.getType());
-		for(String arg : args) {
-			if(arg.equalsIgnoreCase("-tag")) {
-				ItemTag adapter = LBMain.getItemTagAdapter();
-				player.sendMessage(new Gson().toJson(adapter.getTag(adapter.asNMSCopy(item))));
+
+		boolean tag = false, write = false;
+		for (String arg : args) {
+			if(arg.equalsIgnoreCase("-tag"))
+				tag = true;
+			else if(arg.equalsIgnoreCase("-write"))
+				write = true;
+		}
+
+		if(tag) {
+			ItemTag adapter = LBMain.getItemTagAdapter();
+			String tagJson = new Gson().toJson(adapter.getTag(adapter.asNMSCopy(item)));
+			player.sendMessage(tagJson);
+			if(write) {
+
+				File file = new File(LBMain.getInstance().getDataFolder(), "item-tags.txt");
+
+				boolean appendWelcomeMessage = false;
+				if(!file.exists()) {
+
+					// Should do nothing
+					LBMain.getInstance().getDataFolder().mkdirs();
+
+					try {
+						file.createNewFile();
+					} catch (IOException e) {
+						e.printStackTrace();
+						return CommandResponce.SUCCESS;
+					}
+					appendWelcomeMessage = true;
+
+				}
+
+				try(BufferedWriter buffer = new BufferedWriter(new FileWriter(file, true))) {
+					if(appendWelcomeMessage)
+						buffer.write("###   File for logging \"/ntdluckyblock iteminfo -tag -write\". Item tags in JSON   ###");
+					buffer.newLine();
+					buffer.newLine();
+					buffer.write(new SimpleDateFormat("dd-MM-yyyy hh:mm").format(new Date())
+							+ " " + item.getType() + " (" + LBMain.getNMSVersion() + "):");
+					buffer.newLine();
+					buffer.write("ItemStack TAG: " + tagJson);
+					buffer.newLine();
+					buffer.write("ItemStack JSON: " + "Supported only in premium version");
+				} catch (IOException exception) {
+					exception.printStackTrace();
+				}
+
 			}
+
+		} else {
+			player.sendMessage("\u00a77[\u00a7eLuckyBlock\u00a77] \u00a7aTip: \u00a7fTo see item tag, add \u00a7e-tag" +
+					"\u00a7f param. Also, you can add \u00a7e-write\u00a7f param to save output to " +
+					"\u00a7e../ntdLuckyBlock/item-tags.txt\u00a77 (If you want to copy it and use somewhere)");
 		}
 		return CommandResponce.SUCCESS;
 		
