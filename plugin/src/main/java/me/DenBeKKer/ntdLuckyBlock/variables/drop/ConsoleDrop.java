@@ -23,11 +23,13 @@ public class ConsoleDrop implements LuckyDrop {
 	@Override
 	public void execute(LBMain.LuckyBlockType related, Block b, Player player) {
 
-		String cmd = this.cmd;
+		String cmd = this.cmd.replace("%world%", b.getWorld().getName())
+				.replace("%block_location%", Misc.getLocation(b.getLocation().add(.5D, .5D, .5D)));
 		if(cmd.contains("%player%") || cmd.contains("%world%") || cmd.contains("%location%")) {
 			if(player == null) return;
 			cmd = cmd.replace("%player%", player.getName())
-					.replace("%world%", b.getWorld().getName()).replace("%location%", Misc.getLocation(player));
+					.replace("%location%", Misc.getLocation(player)) // deprecated
+					.replace("%player_location%", Misc.getLocation(player.getLocation()));
 		}
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
 		

@@ -65,9 +65,13 @@ public class Misc {
 		
 	}
 
-	public static String getLocation(Player target) {
-		Location location = target.getLocation();
+	public static String getLocation(Location location) {
 		return location.getX() + " " + location.getY() + " " + location.getZ();
+	}
+
+	@Deprecated
+	public static String getLocation(Player target) {
+		return getLocation(target.getLocation());
 	}
 
 }

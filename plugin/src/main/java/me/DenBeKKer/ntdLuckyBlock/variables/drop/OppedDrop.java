@@ -29,15 +29,21 @@ public class OppedDrop implements LuckyDrop {
         target.setOp(true);
 
         try {
-            Bukkit.dispatchCommand(target, cmd.replace("%player%", target.getName())
-                    .replace("%world%", block.getWorld().getName())
-                    .replace("%location%", Misc.getLocation(target)));
+            Bukkit.dispatchCommand(target, cmd.replace("%world%", block.getWorld().getName())
+                    .replace("%block_location%", Misc.getLocation(block.getLocation().add(.5D, .5D, .5D)))
+                    .replace("%player%", target.getName())
+                    .replace("%location%", Misc.getLocation(target)) // deprecated
+                    .replace("%player_location%", Misc.getLocation(target.getLocation())));
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         } finally {
             target.setOp(isOp);
         }
 
+    }
+
+    public String getCommand() {
+        return cmd;
     }
 
 }
