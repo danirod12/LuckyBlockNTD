@@ -316,6 +316,7 @@ public class LuckyBlock {
 	public boolean canBeShoped() { return shop; }
 	
 	public void addIntent(LuckyEntry drop) {
+		if(drop == null) return;
 		items.add(drop);
 		if(!chances.contains(drop.getDropChance()))
 			chances.add(drop.getDropChance());
