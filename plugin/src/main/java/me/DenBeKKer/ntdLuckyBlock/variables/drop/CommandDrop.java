@@ -25,7 +25,7 @@ public class CommandDrop implements LuckyDrop {
 
 		String cmd = this.cmd.replace("%world%", b.getWorld().getName())
 				.replace("%block_location%", Misc.getLocation(b.getLocation().add(.5D, .5D, .5D)));
-		if(cmd.contains("%player%") || cmd.contains("%world%") || cmd.contains("%location%")) {
+		if(cmd.contains("%player%") || cmd.contains("%location%")) {
 			if(player == null) return;
 			cmd = cmd.replace("%player%", player.getName())
 					.replace("%location%", Misc.getLocation(player)) // deprecated
