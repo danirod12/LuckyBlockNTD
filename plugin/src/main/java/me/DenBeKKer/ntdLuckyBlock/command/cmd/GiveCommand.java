@@ -2,7 +2,7 @@ package me.DenBeKKer.ntdLuckyBlock.command.cmd;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
-import me.DenBeKKer.ntdLuckyBlock.command.CommandResponce;
+import me.DenBeKKer.ntdLuckyBlock.command.CommandResponse;
 import me.DenBeKKer.ntdLuckyBlock.command.LBCommand;
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
@@ -20,7 +20,7 @@ public class GiveCommand implements LBCommand {
 	public boolean permission() { return true; }
 	
 	@Override
-	public CommandResponce execute(CommandSender sender, String label, String[] args) {
+	public CommandResponse execute(CommandSender sender, String label, String[] args) {
 		
 		if(args.length > 1) {
 			
@@ -35,17 +35,19 @@ public class GiveCommand implements LBCommand {
 				p = Bukkit.getPlayerExact(args[0]);
 				if(p == null) {
 					sender.sendMessage(Message.CMD_PLAYER_NOT_FOUND.getAsString().replace("%player%", args[0]));
-					return CommandResponce.SUCCESS;
+					return CommandResponse.SUCCESS;
 				}
 			}
 			
 			boolean random = false;
 			LuckyBlockType type = null;
 			if(args[1].equalsIgnoreCase("RANDOM")) {
-				
-				if(sender instanceof Player && !Misc.hasPermission((Player) sender, "luckyblock.command.give.random")) {
-					sender.sendMessage(Message.CMD_NO_PERM_TO_COLOR.getAsString().replace("%lb%", "RANDOM"));
-					return CommandResponce.SUCCESS;
+
+				if(LBMain.getInstance().config.get().getBoolean("permission-for-each-give-get")) {
+					if(sender instanceof Player && !Misc.hasPermission((Player) sender, "luckyblock.command.give.random")) {
+						sender.sendMessage(Message.CMD_NO_PERM_TO_COLOR.getAsString().replace("%lb%", "RANDOM"));
+						return CommandResponse.SUCCESS;
+					}
 				}
 				type = LuckyBlockType.random(true);
 				random = true;
@@ -55,22 +57,18 @@ public class GiveCommand implements LBCommand {
 				type = LuckyBlockType.valueOf(args[1].toUpperCase());
 			} catch(Exception ex) {
 				sender.sendMessage(Message.CMD_LB_NOT_FOUND.getAsString().replace("%lb%", args[1]));
-				return CommandResponce.SUCCESS;
+				return CommandResponse.SUCCESS;
 			}
-			
-			if(type == null) {
-				sender.sendMessage(Message.CMD_LB_NOT_FOUND.getAsString().replace("%lb%", args[1]));
-				return CommandResponce.SUCCESS;
-			}
+
 			if(!type.isLoaded()) {
 				sender.sendMessage(Message.CMD_LB_DISABLED.getAsString().replace("%lb%", args[1]));
-				return CommandResponce.SUCCESS;
+				return CommandResponse.SUCCESS;
 			}
 			
 			if(!random && sender instanceof Player && LBMain.getInstance().config.get().getBoolean("permission-for-each-give-get") &&
 					!Misc.hasPermission((Player) sender, "luckyblock.command.give." + type.name())) {
 				sender.sendMessage(Message.CMD_NO_PERM_TO_COLOR.getAsString().replace("%lb%", LuckyBlockType.map().get(type).getCustomName()));
-				return CommandResponce.SUCCESS;
+				return CommandResponse.SUCCESS;
 			}
 			
 			int amount = 1;
@@ -96,7 +94,7 @@ public class GiveCommand implements LBCommand {
 					((Player)sender).getWorld().getPlayers().forEach(n -> n.getInventory().addItem(item));
 				} else {
 					sender.sendMessage("Argument world only for players ;(");
-					return CommandResponce.SUCCESS;
+					return CommandResponse.SUCCESS;
 				}
 				
 				break;
@@ -106,10 +104,10 @@ public class GiveCommand implements LBCommand {
 			}
 			sender.sendMessage(Message.CMD_LB_GIVE.getAsString().replace("%lb%", type.getCustomName(true))
 					.replace("%amount%", String.valueOf(amount)));
-			return CommandResponce.SUCCESS;
+			return CommandResponse.SUCCESS;
 			
 		}
-		return CommandResponce.SEND_HELP;
+		return CommandResponse.SEND_HELP;
 		
 	}
 	

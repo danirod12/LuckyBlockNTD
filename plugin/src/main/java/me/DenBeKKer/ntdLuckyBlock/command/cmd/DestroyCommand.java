@@ -1,7 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.command.cmd;
 
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
-import me.DenBeKKer.ntdLuckyBlock.command.CommandResponce;
+import me.DenBeKKer.ntdLuckyBlock.command.CommandResponse;
 import me.DenBeKKer.ntdLuckyBlock.command.LBPlayerCommand;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import org.bukkit.entity.Entity;
@@ -25,7 +25,7 @@ public class DestroyCommand implements LBPlayerCommand {
 	}
 	
 	@Override
-	public CommandResponce execute(Player player, String label, String[] args) {
+	public CommandResponse execute(Player player, String label, String[] args) {
 		
 		z:
 		if(args.length > 0) {
@@ -56,10 +56,10 @@ public class DestroyCommand implements LBPlayerCommand {
 				
 			}
 			player.sendMessage(Message.CMD_DESTROYED_LB.getAsString(true).replace("%amount%", String.valueOf(removed)));
-			return CommandResponce.SUCCESS;
+			return CommandResponse.SUCCESS;
 			
 		}
-		return CommandResponce.SEND_HELP;
+		return CommandResponse.SEND_HELP;
 		
 	}
 	

@@ -1,7 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.command.cmd;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
-import me.DenBeKKer.ntdLuckyBlock.command.CommandResponce;
+import me.DenBeKKer.ntdLuckyBlock.command.CommandResponse;
 import me.DenBeKKer.ntdLuckyBlock.command.LBCommand;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
@@ -19,7 +19,7 @@ public class ListCommand implements LBCommand {
 	public boolean permission() { return true; }
 	
 	@Override
-	public CommandResponce execute(CommandSender sender, String label, String[] args) {
+	public CommandResponse execute(CommandSender sender, String label, String[] args) {
 		
 		Collection<LuckyBlockType> disabled = new ArrayList<>();
 		for(LuckyBlockType type : LuckyBlockType.values()) {
@@ -34,7 +34,7 @@ public class ListCommand implements LBCommand {
 			
 		}
 		disabled.forEach(n -> sender.sendMessage("\u00a78 • \u00a7" + n.toColorSymbol() + n.name() + " \u00a7cdisabled"));
-		return CommandResponce.SUCCESS;
+		return CommandResponse.SUCCESS;
 		
 	}
 	

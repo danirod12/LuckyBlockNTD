@@ -1,7 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.command.cmd;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.command.CommandResponce;
+import me.DenBeKKer.ntdLuckyBlock.command.CommandResponse;
 import me.DenBeKKer.ntdLuckyBlock.command.LBCommand;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import org.bukkit.command.CommandSender;
@@ -20,7 +20,7 @@ public class SupportCommand implements LBCommand {
 	public boolean permission() { return true; }
 	
 	@Override
-	public CommandResponce execute(CommandSender sender, String label, String[] args) {
+	public CommandResponse execute(CommandSender sender, String label, String[] args) {
 		
 		LBMain.log(Level.INFO, "&f=-= &6SUPPORT & BUG REPORTING & FEATURE REQUESTING &f=-=");
 		LBMain.log(Level.INFO, "\u00a78 > \u00a7bDiscord \u00a7f- " + getDiscordURL());
@@ -36,7 +36,7 @@ public class SupportCommand implements LBCommand {
 			sender.sendMessage("\u00a78 > \u00a76LuckyBlock setup \u00a7f- https://clck.ru/VnqVN");
 			sender.sendMessage("\u00a7f=-= \u00a76SUPPORT & BUG REPORTING & FEATURE REQUESTING \u00a7f=-=");
 		}
-		return CommandResponce.SUCCESS;
+		return CommandResponse.SUCCESS;
 		
 	}
 	

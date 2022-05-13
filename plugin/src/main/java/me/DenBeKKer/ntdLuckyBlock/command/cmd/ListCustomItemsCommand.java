@@ -1,7 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.command.cmd;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.command.CommandResponce;
+import me.DenBeKKer.ntdLuckyBlock.command.CommandResponse;
 import me.DenBeKKer.ntdLuckyBlock.command.LBCommand;
 import me.DenBeKKer.ntdLuckyBlock.customitem.BekkerItemStack;
 import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
@@ -19,7 +19,7 @@ public class ListCustomItemsCommand implements LBCommand {
 	public boolean permission() { return true; }
 	
 	@Override
-	public CommandResponce execute(CommandSender sender, String label, String[] args) {
+	public CommandResponse execute(CommandSender sender, String label, String[] args) {
 		
 		sender.sendMessage(Message.CI_LIST.getAsString(true));
 		
@@ -31,7 +31,7 @@ public class ListCustomItemsCommand implements LBCommand {
 			sender.sendMessage("\u00a78 > \u00a7e" + stack.getIdentifier().getIdentifier()
 					+ " \u00a77(" + (plugin.equalsIgnoreCase(LBMain.getInstance().getName()) ? "\u00a76" : "\u00a7e") + plugin + "\u00a77)");
 		}
-		return CommandResponce.SUCCESS;
+		return CommandResponse.SUCCESS;
 		
 	}
 	

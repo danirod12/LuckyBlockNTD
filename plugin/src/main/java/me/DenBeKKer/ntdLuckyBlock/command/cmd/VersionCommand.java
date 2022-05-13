@@ -1,7 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.command.cmd;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.command.CommandResponce;
+import me.DenBeKKer.ntdLuckyBlock.command.CommandResponse;
 import me.DenBeKKer.ntdLuckyBlock.command.LBCommand;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import org.bukkit.Bukkit;
@@ -16,7 +16,7 @@ public class VersionCommand implements LBCommand {
 	public boolean permission() { return false; }
 	
 	@Override
-	public CommandResponce execute(CommandSender sender, String label, String[] args) {
+	public CommandResponse execute(CommandSender sender, String label, String[] args) {
 		
 		sender.sendMessage("\u00a77[\u00a7eLuckyBlock\u00a77] \u00a7fThis server is running \u00a7eLuckyBlock NTD");
 		sender.sendMessage("\u00a78 • \u00a7fRunning version - \u00a7e" + LBMain.getVersion() + " \u00a77(" +
@@ -42,7 +42,7 @@ public class VersionCommand implements LBCommand {
 		
 		sender.sendMessage("\u00a78 • \u00a7fSpigotMC url - \u00a7b" + LBMain.getUpdater().getResourceURL());
 		sender.sendMessage("\u00a78 • \u00a7fbStats metrics - \u00a7bhttps://clck.ru/X9Z6e");
-		return CommandResponce.SUCCESS;
+		return CommandResponse.SUCCESS;
 		
 	}
 	

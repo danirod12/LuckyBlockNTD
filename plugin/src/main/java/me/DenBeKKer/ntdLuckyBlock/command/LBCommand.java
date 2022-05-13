@@ -9,7 +9,7 @@ public interface LBCommand {
 	
 	boolean permission();
 	
-	CommandResponce execute(CommandSender sender, String label, String args[]);
+	CommandResponse execute(CommandSender sender, String label, String args[]);
 	
 	String[] commands();
 	

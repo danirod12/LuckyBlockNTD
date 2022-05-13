@@ -1,7 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.command.cmd;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.command.CommandResponce;
+import me.DenBeKKer.ntdLuckyBlock.command.CommandResponse;
 import me.DenBeKKer.ntdLuckyBlock.command.LBPlayerCommand;
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.GuiManager.GuiType;
@@ -19,21 +19,21 @@ public class GuiCommand implements LBPlayerCommand {
 	}
 	
 	@Override
-	public CommandResponce execute(Player player, String label, String[] args) {
+	public CommandResponse execute(Player player, String label, String[] args) {
 		
 		if(args.length > 0) {
 			
 			GuiType type = GuiType.parseGuiType(args[0]);
 			if(type != null) {
 				
-				if(!Misc.hasPermission(player, "luckyblock.command.gui." + type.name())) return CommandResponce.MISSED_PERMISSION;
+				if(!Misc.hasPermission(player, "luckyblock.command.gui." + type.name())) return CommandResponse.MISSED_PERMISSION;
 				LBMain.getInstance().gui_manager.open(player, type);
-				return CommandResponce.SUCCESS;
+				return CommandResponse.SUCCESS;
 				
 			}
 			
 		}
-		return CommandResponce.SEND_HELP;
+		return CommandResponse.SEND_HELP;
 		
 	}
 	

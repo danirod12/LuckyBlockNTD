@@ -7,10 +7,10 @@ public interface LBPlayerCommand extends LBCommand {
 	
 	default boolean onlyPlayer() { return true; }
 	
-	default CommandResponce execute(CommandSender sender, String label, String args[]) {
+	default CommandResponse execute(CommandSender sender, String label, String args[]) {
 		return execute((Player) sender, label, args);
 	}
 	
-	CommandResponce execute(Player player, String label, String[] args);
+	CommandResponse execute(Player player, String label, String[] args);
 	
 }

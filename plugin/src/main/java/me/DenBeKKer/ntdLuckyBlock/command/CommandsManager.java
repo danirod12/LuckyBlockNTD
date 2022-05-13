@@ -70,7 +70,8 @@ public class CommandsManager implements CommandExecutor, TabCompleter {
 			if(LBMain.isReduced() && reduced.contains((Player) sender)) break n;
 			
 			sender.sendMessage("\u00a77[\u00a7eLuckyBlock\u00a77] \u00a7fRunning \u00a7antdLuckyBlock v"
-					+ LBMain.getVersion() + " " + (LBMain.isPremium() ? "\u00a7dprem" : "free") + " \u00a7fby \u00a7adanirod12");
+					+ LBMain.getVersion() + " " + (LBMain.isPremium() ? "\u00a7dprem" : "free")
+					+ " \u00a7fby\u00a7a danirod12");
 			if(LBMain.isReduced()) reduced.add((Player) sender);
 			
 		}
@@ -83,7 +84,8 @@ public class CommandsManager implements CommandExecutor, TabCompleter {
 			
 			if(sender instanceof Player) {
 				
-				if(command.permission() && !Misc.hasPermission((Player) sender, "luckyblock.command." + args[0].toLowerCase())) {
+				if(command.permission() && !Misc.hasPermission((Player) sender, "luckyblock.command."
+						+ command.commands()[0].toLowerCase())) {
 					sender.sendMessage(Message.CMD_NO_PERM.getAsString(true));
 					return true;
 				}
@@ -91,7 +93,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter {
 			} else {
 				
 				if(command.onlyPlayer()) {
-					sender.sendMessage("Sorry, but command `/" + label + " " + args[0] + "` only for players");
+					sender.sendMessage("Sorry, but command `/" + label + " " + args[0] + "` is only for players");
 					return true;
 				}
 				
@@ -99,9 +101,10 @@ public class CommandsManager implements CommandExecutor, TabCompleter {
 			
 			try {
 				
-				CommandResponce responce = command.execute(sender, label, args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[0]);
-				if(responce == CommandResponce.SUCCESS) return true;
-				if(responce == CommandResponce.MISSED_PERMISSION) {
+				CommandResponse response = command.execute(sender, label,
+						args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[0]);
+				if(response == CommandResponse.SUCCESS) return true;
+				if(response == CommandResponse.MISSED_PERMISSION) {
 					sender.sendMessage(Message.CMD_NO_PERM.getAsString(true));
 					return true;
 				}
@@ -118,15 +121,15 @@ public class CommandsManager implements CommandExecutor, TabCompleter {
 		
 		final List<String> messages = commands.stream().filter(command -> {
 			if(sender instanceof Player)
-				return !(command.permission() && !Misc.hasPermission((Player) sender, "luckyblock.command." + command.commands()[0]));
+				return !(command.permission()
+						&& !Misc.hasPermission((Player) sender, "luckyblock.command." + command.commands()[0]));
 			else return !command.onlyPlayer();
-		}).filter(n -> n.helpMessage() != null).map(n -> n.helpMessage().getAsString(true).replace("%label%", label)).collect(Collectors.toList());
+		}).filter(n -> n.helpMessage() != null).map(n -> n.helpMessage().getAsString(true)
+				.replace("%label%", label)).collect(Collectors.toList());
 		if(messages.size() == 0)
 			return true;
-		else {
-			sender.sendMessage(Message.CMD_HELP.getAsString(true));
-			messages.forEach(n -> sender.sendMessage(n));
-		}
+		sender.sendMessage(Message.CMD_HELP.getAsString(true));
+		messages.forEach(sender::sendMessage);
 		return true;
 		
 	}

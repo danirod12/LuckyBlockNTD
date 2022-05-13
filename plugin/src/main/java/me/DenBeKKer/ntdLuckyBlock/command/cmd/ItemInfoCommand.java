@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
-import me.DenBeKKer.ntdLuckyBlock.command.CommandResponce;
+import me.DenBeKKer.ntdLuckyBlock.command.CommandResponse;
 import me.DenBeKKer.ntdLuckyBlock.command.LBPlayerCommand;
 import me.DenBeKKer.ntdLuckyBlock.customitem.BekkerItemStack;
 import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
@@ -27,13 +27,13 @@ public class ItemInfoCommand implements LBPlayerCommand {
 	public boolean permission() { return true; }
 	
 	@Override
-	public CommandResponce execute(Player player, String label, String[] args) {
+	public CommandResponse execute(Player player, String label, String[] args) {
 		
 		final ItemStack item = LBMain.getInstance().factory.getItemInMainHand(player);
 		
 		if(item == null) {
 			player.sendMessage("\u00a7cTake item in hand for this command");
-			return CommandResponce.SUCCESS;
+			return CommandResponse.SUCCESS;
 		}
 		
 		final BekkerItemStack stack = CustomItemFactory.fetchCustomItem(item);
@@ -43,7 +43,7 @@ public class ItemInfoCommand implements LBPlayerCommand {
 			final LuckyBlockType old = LuckyBlockAPI.parseOldLuckyBlock(item);
 			if(old != null) {
 				player.sendMessage("\u00a7cOld unconverted LuckyBlock - \u00a7e" + old.name());
-				return CommandResponce.SUCCESS;
+				return CommandResponse.SUCCESS;
 			}
 			
 			final LuckyBlockType uuid = LuckyBlockAPI.parseLuckyBlock(item, false);
@@ -105,7 +105,7 @@ public class ItemInfoCommand implements LBPlayerCommand {
 						file.createNewFile();
 					} catch (IOException e) {
 						e.printStackTrace();
-						return CommandResponce.SUCCESS;
+						return CommandResponse.SUCCESS;
 					}
 					appendWelcomeMessage = true;
 
@@ -133,7 +133,7 @@ public class ItemInfoCommand implements LBPlayerCommand {
 					"\u00a7f param. Also, you can add \u00a7e-write\u00a7f param to save output to " +
 					"\u00a7e../ntdLuckyBlock/item-tags.txt\u00a77 (If you want to copy it and use somewhere)");
 		}
-		return CommandResponce.SUCCESS;
+		return CommandResponse.SUCCESS;
 		
 	}
 	

@@ -1,7 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.command.cmd;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.command.CommandResponce;
+import me.DenBeKKer.ntdLuckyBlock.command.CommandResponse;
 import me.DenBeKKer.ntdLuckyBlock.command.LBCommand;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import org.bukkit.command.CommandSender;
@@ -15,16 +15,16 @@ public class ConvertCommand implements LBCommand {
 	public boolean permission() { return true; }
 	
 	@Override
-	public CommandResponce execute(CommandSender sender, String label, String[] args) {
+	public CommandResponse execute(CommandSender sender, String label, String[] args) {
 		
 		if(LBMain.getConvertManager().getRequests() == 0) {
 			sender.sendMessage("\u00a7cThere is no convert requests");
-			return CommandResponce.SUCCESS;
+			return CommandResponse.SUCCESS;
 		}
 		
 		if(!LBMain.isPremium()) {
 			sender.sendMessage("\u00a7cThis feature available only in premium plugin version");
-			return CommandResponce.SUCCESS;
+			return CommandResponse.SUCCESS;
 		}
 		
 		// premium command implementation
