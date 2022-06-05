@@ -45,20 +45,28 @@ import java.util.logging.Level;
 
 public class LBMain extends JavaPlugin {
 
-    // Last update date & Build number
-    private static final PluginVersion VERSION = PluginVersion.FREE;
-    private static final String LAST_UPDATE = Templates.COMPILE_DATE;
-    private static final int BUILD = 97;
-    private static final Map<LuckyBlockType, LuckyBlock> map = new HashMap<>();
     private static LBMain instance;
-    // Last update date & Build number
     private static String NMS_VERSION;
+
     // General variables
+    private static final Map<LuckyBlockType, LuckyBlock> map = new HashMap<>();
+    private File folder;
+    private File schematicsFolder = null;
     public Config config;
     public IMat factory;
     public Material tinted;
     public SpigotUpdater updater;
     public StringMatcher<WorldListDataHandler> worldsFilter;
+
+    // Managers
+    private EconomyBridge economy;
+    private GuiManager guiManager;
+    private ItemTag itemTagAdapter;
+    private ConvertManager convertManager;
+    private CommandsManager commandsManager;
+
+    // Config fields
+    private boolean debug = false;
     public boolean preventHatLB = true;
     public boolean breakPermissions = true;
     public boolean reduceAuthorInfo = false;
@@ -67,31 +75,21 @@ public class LBMain extends JavaPlugin {
     public boolean disableConvertCheck = false;
     public boolean disableWebIssuePrint = false;
     public boolean forceUpdateInventory = false;
-    private File folder;
-    private File schematicsFolder = null;
-    private EconomyBridge economy;
-    // Managers
-    private CommandsManager commandsManager;
-    private ConvertManager convertManager;
-    private ItemTag itemTagAdapter;
-    private GuiManager guiManager;
-    // Config fields
-    private boolean debug = false;
 
     public static boolean isPremium() {
-        return VERSION.isPremium();
+        return Templates.VERSION.isPremium();
     }
 
     public static PluginVersion getVersionType() {
-        return VERSION;
+        return Templates.VERSION;
     }
 
     public static String getLastUpdate() {
-        return LAST_UPDATE;
+        return Templates.COMPILE_DATE;
     }
 
     public static int getBuild() {
-        return BUILD;
+        return Templates.BUILD;
     }
 
     public static String getNMSVersion() {
@@ -194,7 +192,7 @@ public class LBMain extends JavaPlugin {
             return a + "/" + b;
 
         }));
-        metrics.addCustomChart(new Metrics.SimplePie("version_type", VERSION::getSimpleName));
+        metrics.addCustomChart(new Metrics.SimplePie("version_type", Templates.VERSION::getSimpleName));
         metrics.addCustomChart(new Metrics.SimplePie("language", () -> {
             final String language = MessagesManager.getLanguage();
             return language == null ? "undefined" : language;
@@ -202,7 +200,7 @@ public class LBMain extends JavaPlugin {
 
         // Plugin title
         log(Level.INFO, ChatColor.WHITE + "Starting LuckyBlock (ntdLuckyBlock) v" + getVersion()
-                + ", build" + getBuild() + "(" + LAST_UPDATE + "), " + VERSION.getSimpleName());
+                + ", build" + getBuild() + "(" + getLastUpdate() + "), " + getVersionType().getSimpleName());
         log(Level.INFO, ChatColor.YELLOW + "  ╭╮╱╱╭╮╱╭┳━━━┳╮╭━┳╮╱╱╭┳━━╮╭╮╱╱╭━━━┳━━━┳╮╭━╮");
         log(Level.INFO, ChatColor.YELLOW + "  ┃┃╱╱┃┃╱┃┃╭━╮┃┃┃╭┫╰╮╭╯┃╭╮┃┃┃╱╱┃╭━╮┃╭━╮┃┃┃╭╯");
         log(Level.INFO, ChatColor.YELLOW + "  ┃┃╱╱┃┃╱┃┃┃╱╰┫╰╯╯╰╮╰╯╭┫╰╯╰┫┃╱╱┃┃╱┃┃┃╱╰┫╰╯╯");
@@ -222,7 +220,7 @@ public class LBMain extends JavaPlugin {
         log(Level.INFO, "Loaded " + factory.build() + " material version");
 
         Material tinted = Misc.getEnum(Material.class, "TINTED_GLASS");
-        this.tinted = tinted == null || !VERSION.isPremium() ? null : tinted;
+        this.tinted = tinted == null || !getVersionType().isPremium() ? null : tinted;
 
         // NMS
         log(Level.INFO, "Loading NMS for your platform (" + Bukkit.getVersion() + ", " + NMS_VERSION + ")...");
@@ -348,7 +346,7 @@ public class LBMain extends JavaPlugin {
                     itemTagAdapter = new ItemTagLegacy();
                     return true;
                 } catch (UnsupportedOperationException ex) {
-                    log(Level.WARNING, "You platform is not supported. Supported versions 1.8 - 1.18");
+                    log(Level.WARNING, "Your platform is not supported. Supported versions 1.8 - 1.18");
                     Bukkit.getPluginManager().disablePlugin(this);
                     return false;
                 }
@@ -396,7 +394,7 @@ public class LBMain extends JavaPlugin {
 
         disableAuthorInfo = config.getBoolean("disable-author-info-gui-get")
                 || config.getBoolean("disable-author-info");
-        if (disableAuthorInfo && VERSION.isFree()) {
+        if (disableAuthorInfo && getVersionType().isFree()) {
             disableAuthorInfo = false;
 
             log(Level.WARNING, "Sorry, but you cant disable author info in free plugin version.");
