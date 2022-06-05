@@ -15,22 +15,22 @@ import java.util.logging.Level;
 
 @SuppressWarnings("deprecation")
 public class WorldEdit6 implements IWorldEdit {
-	
-	private final WorldEditPlugin worldedit = (WorldEditPlugin)Bukkit.getPluginManager().getPlugin("WorldEdit");
-	
-	@Override
-	public void paste(File file, Block obj, boolean a) {
-		
-		try {
-			CuboidClipboard clipboard = MCEditSchematicFormat.getFormat(file).load(file);
-			clipboard.paste(worldedit.getWorldEdit().getEditSessionFactory()
-					 .getEditSession(new BukkitWorld(obj.getWorld()), -1), new Vector(obj.getX(), obj.getY(), obj.getZ()), true);
-		} catch (Exception e) {
-			e.printStackTrace();
-			MvLogger.log(Level.SEVERE, "Something went wrong");
-		}
-		
-	}
+
+    private final WorldEditPlugin worldedit = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
+
+    @Override
+    public void paste(File file, Block obj, boolean a) {
+
+        try {
+            CuboidClipboard clipboard = MCEditSchematicFormat.getFormat(file).load(file);
+            clipboard.paste(worldedit.getWorldEdit().getEditSessionFactory()
+                    .getEditSession(new BukkitWorld(obj.getWorld()), -1), new Vector(obj.getX(), obj.getY(), obj.getZ()), true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            MvLogger.log(Level.SEVERE, "Something went wrong");
+        }
+
+    }
 
 //	private final WorldEditPlugin worldedit = (WorldEditPlugin)Bukkit.getPluginManager().getPlugin("WorldEdit");
 //
@@ -126,5 +126,5 @@ public class WorldEdit6 implements IWorldEdit {
 //		destroyEntity = method1;
 //
 //	}
-	
+
 }

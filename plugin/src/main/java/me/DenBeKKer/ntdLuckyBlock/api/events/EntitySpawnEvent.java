@@ -10,19 +10,10 @@ import java.util.Collection;
 
 public class EntitySpawnEvent extends Event {
 
-    private static HandlerList handlers = new HandlerList();
+    private static final HandlerList handlers = new HandlerList();
     private final LBMain.LuckyBlockType r;
     private final Collection<Entity> i;
     private final Player p;
-
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
 
     public EntitySpawnEvent(LBMain.LuckyBlockType related, Collection<Entity> entity, Player player) {
 
@@ -31,8 +22,19 @@ public class EntitySpawnEvent extends Event {
         this.p = player;
 
     }
-    
-    public Player getPlayer() { return p; }
+
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+
+    public Player getPlayer() {
+        return p;
+    }
 
     public LBMain.LuckyBlockType getSource() {
         return r;

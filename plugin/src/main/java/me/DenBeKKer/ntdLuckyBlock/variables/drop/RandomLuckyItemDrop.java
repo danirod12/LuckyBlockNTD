@@ -11,29 +11,30 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class RandomLuckyItemDrop implements LuckyDrop {
-	
-	@SerializedName(value = "amount")
-	private final int a;
-	
-	/**
-	 * 
-	 * @param a - Amount
-	 */
-	public RandomLuckyItemDrop(int a) {
-		this.a = a;
-	}
 
-	public int getAmount() { return a; }
+    @SerializedName(value = "amount")
+    private final int a;
 
-	@Override
-	public void execute(LuckyBlockType related, Block b, Player target) {
+    /**
+     * @param a - Amount
+     */
+    public RandomLuckyItemDrop(int a) {
+        this.a = a;
+    }
 
-		if(LuckyBlockType.map().size() == 0) return;
-		ItemStack stack = LuckyBlockType.map().get(LuckyBlockType.random(true)).getSkull();
-		stack.setAmount(a);
-		Item item = b.getWorld().dropItem(b.getLocation().add(.5, .4, .5), stack);
-		Bukkit.getPluginManager().callEvent(new ItemSpawnEvent(related, item, target));
+    public int getAmount() {
+        return a;
+    }
 
-	}
-	
+    @Override
+    public void execute(LuckyBlockType related, Block b, Player target) {
+
+        if (LuckyBlockType.map().size() == 0) return;
+        ItemStack stack = LuckyBlockType.map().get(LuckyBlockType.random(true)).getSkull();
+        stack.setAmount(a);
+        Item item = b.getWorld().dropItem(b.getLocation().add(.5, .4, .5), stack);
+        Bukkit.getPluginManager().callEvent(new ItemSpawnEvent(related, item, target));
+
+    }
+
 }

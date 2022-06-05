@@ -6,85 +6,86 @@ import me.DenBeKKer.ntdLuckyBlock.api.exceptions.LuckyBlockNotLoadedException;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Objects;
 import java.util.stream.Stream;
 
 public class LuckyRecipe {
-	
-	private LuckyRecipeItem[] items;
-	private LuckyBlockType type;
-	private String permission;
-	private boolean any_matrix = false;
-	
-	public LuckyRecipe(LuckyBlockType type, LuckyRecipeItem[] items, boolean anymatrix) {
-		
-		if(!anymatrix && items.length != 9) throw new IllegalArgumentException("Please, provide 9 LuckyRecipeItems");
-		
-		if(!type.isLoaded()) throw new UnsupportedOperationException("LuckyBlockType " + type.name() + " is unloaded");
-		
-		this.items = items;
-		this.type = type;
-		this.any_matrix = anymatrix;
-		
-	}
-	
-	public LuckyRecipe(LuckyBlockType type, LuckyRecipeItem[] items, String permission, boolean anymatrix) {
-		this(type, items, anymatrix);
-		this.permission = permission;
-	}
-	
-	public boolean verify(ItemStack[] origin) {
-		
-		if(origin.length != 9) {
-			return false;
-		}
-		
-		if(any_matrix) return verifyAny(origin);
-		
-		for(int i = 0; i < origin.length; i++) {
-			if(items[i] == null) {
-				if(origin[i] == null) continue;
-				return false;
-			}
-			if(!items[i].isMatch(origin[i])) {
-				LBMain.debug("Item " + items[i].toString() + " not matchs " + (origin[i] == null ? "null" : origin[i].getType().name()));
-				return false;
-			}
-		}
-		
-		return true;
-		
-	}
-	
-	public boolean verifyAny(ItemStack[] origin) {
-		
-		if(origin.length != 9) return false;
-		
-		ItemStack[] array = origin.clone();
-		
-		items:
-		for(LuckyRecipeItem item : items) {
-			
-			if(item == null) continue items;
-			for(int i = 0; i < array.length; i++) {
-				
-				if(item.isMatch(array[i])) {
-					array[i] = null;
-					continue items;
-				}
-				
-			}
-			return false;
-			
-		}
-		return Stream.of(array).filter(n -> n != null).count() == 0;
-		
-	}
-	
-	public ItemStack getResult() throws LuckyBlockNotLoadedException { return type.get().getSkull(); }
-	
-	public boolean hasAccess(Player player) {
-		if(permission == null || player == null) return true;
-		return player.hasPermission(permission);
-	}
-	
+
+    private final LuckyRecipeItem[] items;
+    private final LuckyBlockType type;
+    private final boolean any_matrix;
+    private final String permission;
+
+    public LuckyRecipe(LuckyBlockType type, LuckyRecipeItem[] items, String permission, boolean anymatrix) {
+
+        if (!anymatrix && items.length != 9)
+            throw new IllegalArgumentException("You should provide 9 LuckyRecipeItems");
+
+        if (!type.isLoaded()) throw new UnsupportedOperationException("LuckyBlockType " + type.name() + " is unloaded");
+
+        this.items = items;
+        this.type = type;
+        this.any_matrix = anymatrix;
+        this.permission = permission;
+
+    }
+
+    public boolean verify(ItemStack[] origin) {
+
+        if (origin.length != 9) {
+            return false;
+        }
+
+        if (any_matrix) return verifyAny(origin);
+
+        for (int i = 0; i < origin.length; i++) {
+            if (items[i] == null) {
+                if (origin[i] == null) continue;
+                return false;
+            }
+            if (!items[i].isMatch(origin[i])) {
+                LBMain.debug("Item " + items[i].toString() + " not matches "
+                        + (origin[i] == null ? "null" : origin[i].getType().name()));
+                return false;
+            }
+        }
+
+        return true;
+
+    }
+
+    public boolean verifyAny(ItemStack[] origin) {
+
+        if (origin.length != 9) return false;
+
+        ItemStack[] array = origin.clone();
+
+        items:
+        for (LuckyRecipeItem item : items) {
+
+            if (item == null) continue;
+            for (int i = 0; i < array.length; i++) {
+
+                if (item.isMatch(array[i])) {
+                    array[i] = null;
+                    continue items;
+                }
+
+            }
+            return false;
+
+        }
+        return Stream.of(array).noneMatch(Objects::nonNull);
+
+    }
+
+    public ItemStack getResult() throws LuckyBlockNotLoadedException {
+        return type.get().getSkull();
+    }
+
+    public boolean hasAccess(Player player) {
+        if (permission == null || player == null) return true;
+        return player.hasPermission(permission);
+    }
+
 }

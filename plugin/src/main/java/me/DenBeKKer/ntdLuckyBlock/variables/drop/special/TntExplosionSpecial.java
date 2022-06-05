@@ -9,19 +9,21 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 public class TntExplosionSpecial extends ExplosionableItems implements LuckyDrop {
-	
-	@SerializedName(value = "amount")
-	private final int a;
-	
-	public TntExplosionSpecial(int a) {
-		this.a = a;
-	}
 
-	public int getAmount() { return a; }
+    @SerializedName(value = "amount")
+    private final int a;
 
-	@Override
-	public void execute(LBMain.LuckyBlockType related, Block b, Player target) {
-		throwExplosion(EntityType.PRIMED_TNT, (target == null ? b.getLocation() : target.getLocation()).add(.5, .5, .5), a);
-	}
-	
+    public TntExplosionSpecial(int a) {
+        this.a = a;
+    }
+
+    public int getAmount() {
+        return a;
+    }
+
+    @Override
+    public void execute(LBMain.LuckyBlockType related, Block b, Player target) {
+        throwExplosion(EntityType.PRIMED_TNT, (target == null ? b.getLocation() : target.getLocation()).add(.5, .5, .5), a);
+    }
+
 }

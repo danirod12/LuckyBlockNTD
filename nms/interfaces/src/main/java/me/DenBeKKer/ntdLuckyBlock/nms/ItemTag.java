@@ -6,7 +6,6 @@ public interface ItemTag {
 
     ItemStack asBukkitCopy(Object nmsItem);
 
-    @SuppressWarnings("deprecation")
     Object newTag();
 
     Object asNMSCopy(ItemStack origin);

@@ -9,32 +9,34 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 public class ConsoleDrop implements LuckyDrop {
-	
-	@SerializedName(value = "command")
-	private final String cmd;
-	
-	/**
-	 * @param command - Command that will be executed
-	 */
-	public ConsoleDrop(String command) {
-		this.cmd = command;
-	}
 
-	@Override
-	public void execute(LBMain.LuckyBlockType related, Block b, Player player) {
+    @SerializedName(value = "command")
+    private final String cmd;
 
-		String cmd = this.cmd.replace("%world%", b.getWorld().getName())
-				.replace("%block_location%", Misc.getLocation(b.getLocation().add(.5D, .5D, .5D)));
-		if(cmd.contains("%player%") || cmd.contains("%location%")) {
-			if(player == null) return;
-			cmd = cmd.replace("%player%", player.getName())
-					.replace("%location%", Misc.getLocation(player)) // deprecated
-					.replace("%player_location%", Misc.getLocation(player.getLocation()));
-		}
-		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
-		
-	}
+    /**
+     * @param command - Command that will be executed
+     */
+    public ConsoleDrop(String command) {
+        this.cmd = command;
+    }
 
-	public String getCommand() { return cmd; }
-	
+    @Override
+    public void execute(LBMain.LuckyBlockType related, Block b, Player player) {
+
+        String cmd = this.cmd.replace("%world%", b.getWorld().getName())
+                .replace("%block_location%", Misc.getLocation(b.getLocation().add(.5D, .5D, .5D)));
+        if (cmd.contains("%player%") || cmd.contains("%location%")) {
+            if (player == null) return;
+            cmd = cmd.replace("%player%", player.getName())
+                    .replace("%location%", Misc.getLocation(player)) // deprecated
+                    .replace("%player_location%", Misc.getLocation(player.getLocation()));
+        }
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
+
+    }
+
+    public String getCommand() {
+        return cmd;
+    }
+
 }

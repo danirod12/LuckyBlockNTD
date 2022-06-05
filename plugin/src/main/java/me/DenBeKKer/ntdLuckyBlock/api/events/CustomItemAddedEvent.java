@@ -10,21 +10,20 @@ import org.bukkit.plugin.Plugin;
 
 public class CustomItemAddedEvent extends Event {
 
-    private static HandlerList handlers = new HandlerList();
+    private static final HandlerList handlers = new HandlerList();
+    private final BekkerItemStack item;
 
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
+    public CustomItemAddedEvent(BekkerItemStack item) {
+        this.item = item;
     }
 
     public static HandlerList getHandlerList() {
         return handlers;
     }
 
-    private final BekkerItemStack item;
-
-    public CustomItemAddedEvent(BekkerItemStack item) {
-        this.item = item;
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
 
     public BekkerItemStack getItem() {
@@ -41,8 +40,8 @@ public class CustomItemAddedEvent extends Event {
 
     public Plugin getPlugin() {
         final String name = item.getIdentifier().getIdentifier().split("-")[0];
-        for(Plugin plugin : Bukkit.getPluginManager().getPlugins())
-            if(plugin.getName().equalsIgnoreCase(name)) return plugin;
+        for (Plugin plugin : Bukkit.getPluginManager().getPlugins())
+            if (plugin.getName().equalsIgnoreCase(name)) return plugin;
         return null;
     }
 

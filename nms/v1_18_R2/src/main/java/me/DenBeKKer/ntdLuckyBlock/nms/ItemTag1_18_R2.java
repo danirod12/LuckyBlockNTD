@@ -23,22 +23,22 @@ public class ItemTag1_18_R2 implements ItemTag {
 
     @Override
     public String getTagString(Object tag, String element) {
-        return ((CompoundTag)tag).getString(element);
+        return ((CompoundTag) tag).getString(element);
     }
 
     @Override
     public void setTagString(Object tag, String element, String value) {
-        ((CompoundTag)tag).putString(element, value);
+        ((CompoundTag) tag).putString(element, value);
     }
 
     @Override
     public Object getTag(Object nmsItem) {
-        return ((net.minecraft.world.item.ItemStack)nmsItem).getTag();
+        return ((net.minecraft.world.item.ItemStack) nmsItem).getTag();
     }
 
     @Override
     public void setTag(Object nmsItem, Object newTag) {
-        ((net.minecraft.world.item.ItemStack)nmsItem).setTag((CompoundTag) newTag);
+        ((net.minecraft.world.item.ItemStack) nmsItem).setTag((CompoundTag) newTag);
     }
 
 }

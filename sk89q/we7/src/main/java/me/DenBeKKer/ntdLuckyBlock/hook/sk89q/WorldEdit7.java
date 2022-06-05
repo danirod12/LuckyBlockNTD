@@ -35,109 +35,109 @@ import java.util.logging.Level;
 
 public class WorldEdit7 implements IWorldEdit {
 
-	public void paste(File file, Block obj, boolean a) {
+    private static final Method resolveSign, destroyEntity;
 
-		Clipboard clipboard = null;
-		
-		ClipboardFormat format = ClipboardFormats.findByFile(file);
-		try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
-		    clipboard = reader.read();
-		} catch (Exception e) {
-			e.printStackTrace();
-			MvLogger.log(Level.SEVERE, "Schematic " + file.getPath() + " not found or something went wrong");
-		}
-		
-		if(clipboard == null) {
-			MvLogger.log(Level.SEVERE, "Schematic " + file.getPath() + " not found or something went wrong");
-			return;
-		}
+    static {
 
-		try (EditSession editSession = createEditSession(obj.getWorld())) {
-			ClipboardHolder holder = new ClipboardHolder(clipboard);
-		    Operation operation = holder
-		            .createPaste(editSession)
-		            .to(BukkitAdapter.asBlockVector(obj.getLocation()))
-		            .build();
-		    Operations.complete(operation);
-		    
-		    if(clipboard instanceof BlockArrayClipboard) {
-		    	Region region = clipboard.getRegion();
-		    	BlockVector3 clipboardOffset = clipboard.getRegion().getMinimumPoint().subtract(clipboard.getOrigin());
-	            Vector3 realTo = BukkitAdapter.asVector(obj.getLocation()).add(holder.getTransform().apply(clipboardOffset.toVector3()));
-	            Vector3 max = realTo.add(holder.getTransform().apply(region.getMaximumPoint().subtract(region.getMinimumPoint()).toVector3()));
-	            
-	            Bukkit.getScheduler().runTaskLater(MvLogger.getInstance(), () ->
-	            	formatPastedSchematic(obj.getWorld(), new CuboidRegion(realTo.toBlockPoint(), max.toBlockPoint()), a), 1);
-	            
-		    }
-		    
-		} catch (WorldEditException e) {
-			e.printStackTrace();
-			MvLogger.log(Level.SEVERE, "Something went wrong");
-		}
-		
-	}
+        Method method0, method1;
+        try {
 
-	private static final Method resolveSign, destroyEntity;
+            Class<?> clazz = Class.forName("me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI");
+            method0 = clazz.getDeclaredMethod("resolveSign", Block.class, boolean.class);
+            method1 = clazz.getDeclaredMethod("destroyEntity", Entity[].class, boolean.class);
 
-	static {
+        } catch (Throwable e) {
+            e.printStackTrace();
+            method0 = method1 = null;
+        }
 
-		Method method0, method1;
-		try {
+        resolveSign = method0;
+        destroyEntity = method1;
 
-			Class<?> clazz = Class.forName("me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI");
-			method0 = clazz.getDeclaredMethod("resolveSign", Block.class, boolean.class);
-			method1 = clazz.getDeclaredMethod("destroyEntity", Entity[].class, boolean.class);
+    }
 
-		} catch (Throwable e) {
-			e.printStackTrace();
-			method0 = method1 = null;
-		}
+    public void paste(File file, Block obj, boolean a) {
 
-		resolveSign = method0;
-		destroyEntity = method1;
+        Clipboard clipboard = null;
 
-	}
+        ClipboardFormat format = ClipboardFormats.findByFile(file);
+        try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
+            clipboard = reader.read();
+        } catch (Exception e) {
+            e.printStackTrace();
+            MvLogger.log(Level.SEVERE, "Schematic " + file.getPath() + " not found or something went wrong");
+        }
 
-	private void formatPastedSchematic(World world, CuboidRegion region, boolean a) {
+        if (clipboard == null) {
+            MvLogger.log(Level.SEVERE, "Schematic " + file.getPath() + " not found or something went wrong");
+            return;
+        }
 
-		try {
+        try (EditSession editSession = createEditSession(obj.getWorld())) {
+            ClipboardHolder holder = new ClipboardHolder(clipboard);
+            Operation operation = holder
+                    .createPaste(editSession)
+                    .to(BukkitAdapter.asBlockVector(obj.getLocation()))
+                    .build();
+            Operations.complete(operation);
 
-			List<Entity> list = new ArrayList<>();
+            if (clipboard instanceof BlockArrayClipboard) {
+                Region region = clipboard.getRegion();
+                BlockVector3 clipboardOffset = clipboard.getRegion().getMinimumPoint().subtract(clipboard.getOrigin());
+                Vector3 realTo = BukkitAdapter.asVector(obj.getLocation()).add(holder.getTransform().apply(clipboardOffset.toVector3()));
+                Vector3 max = realTo.add(holder.getTransform().apply(region.getMaximumPoint().subtract(region.getMinimumPoint()).toVector3()));
 
-			BlockVector3 min = region.getMinimumPoint(), max = region.getMaximumPoint();
-			for(BlockVector2 vector : region.getChunks()) {
+                Bukkit.getScheduler().runTaskLater(MvLogger.getInstance(), () ->
+                        formatPastedSchematic(obj.getWorld(), new CuboidRegion(realTo.toBlockPoint(), max.toBlockPoint()), a), 1);
 
-				Chunk chunk = world.getChunkAt(vector.getBlockX(), vector.getBlockZ());
-				for(Entity entity : chunk.getEntities()) {
-					Location location = entity.getLocation();
-					if(location.getX() >= min.getX() && location.getZ() >= min.getZ() && location.getY() >= min.getY() - 1.2D &&
-							location.getX() <= max.getX() && location.getZ() <= max.getZ() && location.getY() <= max.getY()) {
-						list.add(entity);
-					}
-				}
+            }
 
-			}
-			destroyEntity.invoke(null, list.toArray(new Entity[0]), true);
+        } catch (WorldEditException e) {
+            e.printStackTrace();
+            MvLogger.log(Level.SEVERE, "Something went wrong");
+        }
 
-			for(BlockVector3 vector : region) {
-				Block block = world.getBlockAt(vector.getX(), vector.getY(), vector.getZ());
-				resolveSign.invoke(null, block, a);
-			}
+    }
 
-		} catch (Exception exception) {
-			exception.printStackTrace();
-		}
+    private void formatPastedSchematic(World world, CuboidRegion region, boolean a) {
 
-	}
-	
-	@SuppressWarnings("deprecation")
-	private EditSession createEditSession(World world) {
-		try {
-			return WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world));
-		} catch(Throwable th) {
-			return WorldEdit.getInstance().getEditSessionFactory().getEditSession(BukkitAdapter.adapt(world), -1);
-		}
-	}
+        try {
+
+            List<Entity> list = new ArrayList<>();
+
+            BlockVector3 min = region.getMinimumPoint(), max = region.getMaximumPoint();
+            for (BlockVector2 vector : region.getChunks()) {
+
+                Chunk chunk = world.getChunkAt(vector.getBlockX(), vector.getBlockZ());
+                for (Entity entity : chunk.getEntities()) {
+                    Location location = entity.getLocation();
+                    if (location.getX() >= min.getX() && location.getZ() >= min.getZ() && location.getY() >= min.getY() - 1.2D &&
+                            location.getX() <= max.getX() && location.getZ() <= max.getZ() && location.getY() <= max.getY()) {
+                        list.add(entity);
+                    }
+                }
+
+            }
+            destroyEntity.invoke(null, list.toArray(new Entity[0]), true);
+
+            for (BlockVector3 vector : region) {
+                Block block = world.getBlockAt(vector.getX(), vector.getY(), vector.getZ());
+                resolveSign.invoke(null, block, a);
+            }
+
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+
+    }
+
+    @SuppressWarnings("deprecation")
+    private EditSession createEditSession(World world) {
+        try {
+            return WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world));
+        } catch (Throwable th) {
+            return WorldEdit.getInstance().getEditSessionFactory().getEditSession(BukkitAdapter.adapt(world), -1);
+        }
+    }
 
 }

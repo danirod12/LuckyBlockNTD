@@ -5,7 +5,7 @@
     <parent>
         <artifactId>luckyblock-parent</artifactId>
         <groupId>me.DenBeKKer.ntdLuckyBlock</groupId>
-        <version>2.6.5</version>
+        <version>2.7.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -153,7 +153,9 @@
                         <option>-dontoptimize</option>
                         <option>-obfuscationdictionary ${project.parent.basedir}/java-ob.txt</option>
                         <option>-overloadaggressively</option>
-                        <option>-keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,LocalVariable*Table,*Annotation*,Synthetic,EnclosingMethod</option>
+                        <option>-keepattributes
+                            Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,LocalVariable*Table,*Annotation*,Synthetic,EnclosingMethod
+                        </option>
                         <option>-dontnote</option>
                         <option>-dontwarn</option>
                         <option>-ignorewarnings</option>
@@ -161,15 +163,21 @@
                         <option>-keep enum me.DenBeKKer.ntdLuckyBlock.LBMain** { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.LBMain { int build;
                             java.lang.String user; java.lang.String resource; java.lang.String nonce;
-                            *** get*(...); *** system_load(...); *** is*(...); } </option>
+                            *** get*(...); *** system_load(...); *** is*(...); }
+                        </option>
 
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.PlayerHead { *; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.PluginVersion { *; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.hook.Hook { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.api.** { &lt;methods&gt;; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.api.DropChance { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.drop.** { &lt;methods&gt;; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.Lucky* { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.Metrics** { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.ColorData { &lt;fields&gt;; }</option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.particle.ParticleManager { &lt;methods&gt;; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.particle.ParticleManager { &lt;methods&gt;;
+                            }
+                        </option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.particle.ParticleType { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.* { &lt;methods&gt;; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.factory.LBFactory { *; }</option>

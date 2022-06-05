@@ -35,16 +35,16 @@ public class Config {
 
     public Config(Plugin plugin, String resource, File folder, String name) {
 
-        if(name == null) throw new IllegalArgumentException("You need to provide a config name");
-        if((folder == null || resource != null) && plugin == null)
+        if (name == null) throw new IllegalArgumentException("You need to provide a config name");
+        if ((folder == null || resource != null) && plugin == null)
             throw new IllegalArgumentException("You need to provide a plugin instance for this action");
 
         this.folder = folder == null ? plugin.getDataFolder() : folder;
         this.name = name.contains(".") ? name : name + ".yml";
 
-        if(resource != null) {
+        if (resource != null) {
             resource = resource.replace(".", "/");
-            if(!resource.endsWith("/")) resource += "/";
+            if (!resource.endsWith("/")) resource += "/";
         }
         this.resource = resource;
         this.plugin = plugin;
@@ -57,49 +57,66 @@ public class Config {
                 ",folder=" + (folder == null ? "null" : folder.toString()) + ",name=" + name + "}";
     }
 
-    public File getFolder() { return folder; }
+    public File getFolder() {
+        return folder;
+    }
 
-    public File getFile() { return new File(folder, name); }
+    public File getFile() {
+        return new File(folder, name);
+    }
 
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
 
-    public String getResourceURL() { return resource; }
+    public String getResourceURL() {
+        return resource;
+    }
 
     public InputStream getResource() {
-        if(plugin == null) throw new UnsupportedOperationException("Instance not provided to copy resource. Use \"#write\" method");
+        if (plugin == null)
+            throw new UnsupportedOperationException("Instance not provided to copy resource. Use \"#write\" method");
         return plugin.getResource((resource == null ? "" : resource) + name);
     }
 
-    public Plugin getPlugin() { return plugin; }
+    public Plugin getPlugin() {
+        return plugin;
+    }
 
-    public FileConfiguration get() { return config; }
-
-    public FileConfiguration getSafe() {
-        if(config == null) load();
+    public FileConfiguration get() {
         return config;
     }
 
-    public Config write() { return write(getFile()); }
+    public FileConfiguration getSafe() {
+        if (config == null) load();
+        return config;
+    }
+
+    public Config write() {
+        return write(getFile());
+    }
 
     public Config write(File target) {
         try {
             File folder = target.getParentFile();
-            if(!folder.exists() && folder.isDirectory()) folder.mkdirs();
-            if(!target.exists()) target.createNewFile();
-        } catch(IOException ex) {
+            if (!folder.exists() && folder.isDirectory()) folder.mkdirs();
+            if (!target.exists()) target.createNewFile();
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
         return this;
     }
 
     @Deprecated
-    public Config copy() { return copy(true); }
+    public Config copy() {
+        return copy(true);
+    }
 
     public Config copy(boolean load) {
 
         folder.mkdirs();
         File file = getFile();
-        if(!file.exists()) {
+        if (!file.exists()) {
             try {
                 Files.copy(getResource(), file.toPath(), new CopyOption[0]);
             } catch (IOException ex) {
@@ -107,28 +124,34 @@ public class Config {
                 return this;
             }
         }
-        if(load) load();
+        if (load) load();
         return this;
 
     }
 
-    public Config save() { return save(getFile()); }
+    public Config save() {
+        return save(getFile());
+    }
 
     public Config save(File target) {
-        if(config == null) throw new UnsupportedOperationException("Config not loaded. Use \"#load\" first");
+        if (config == null) throw new UnsupportedOperationException("Config not loaded. Use \"#load\" first");
         try {
-            if(!folder.exists()) folder.mkdirs();
+            if (!folder.exists()) folder.mkdirs();
             if (!target.exists()) write(target);
             config.save(target);
-        } catch(IOException ex) {
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
         return this;
     }
 
-    public boolean hasResource() { return getFile().exists() || (plugin != null && getResource() != null); }
+    public boolean hasResource() {
+        return getFile().exists() || (plugin != null && getResource() != null);
+    }
 
-    public Config reload() { return load(); }
+    public Config reload() {
+        return load();
+    }
 
     public Config load() {
         try {
@@ -140,16 +163,18 @@ public class Config {
         return this;
     }
 
-    public void delete() { delete(true); }
+    public void delete() {
+        delete(true);
+    }
 
     public void delete(boolean folder) {
 
         File file = getFile();
-        if(file.exists()) {
+        if (file.exists()) {
             do {
                 file.delete();
                 file = file.getParentFile();
-            } while(folder && file.isDirectory() && file.listFiles().length == 0);
+            } while (folder && file.isDirectory() && file.listFiles().length == 0);
         }
 
     }
@@ -157,26 +182,30 @@ public class Config {
     // Configuration copy to load new language entries, etc
     private FileConfiguration def;
 
-    public FileConfiguration getDefault() { return getDefault(null, false); }
+    public FileConfiguration getDefault() {
+        return getDefault(null, false);
+    }
 
-    public FileConfiguration getDefault(boolean reload) { return getDefault(null, reload); }
+    public FileConfiguration getDefault(boolean reload) {
+        return getDefault(null, reload);
+    }
 
     public FileConfiguration getDefault(InputStream stream, boolean reload) {
-        if(def != null && !reload) return def;
-        if(stream == null) stream = getResource();
+        if (def != null && !reload) return def;
+        if (stream == null) stream = getResource();
         try {
             def = new YamlConfiguration();
             def.load(new InputStreamReader(stream, "UTF-8"));
             return def;
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         return null;
     }
 
     public void gc(boolean origin, boolean copy) {
-        if(origin) config = null;
-        if(copy) def = null;
+        if (origin) config = null;
+        if (copy) def = null;
     }
 
     // Some methods from FileConfiguration
@@ -202,10 +231,16 @@ public class Config {
     }
 
     public float getFloat(String path) {
-        return (float)getDouble(path);
+        return (float) getDouble(path);
     }
 
-    public boolean getBoolean(String path) { return config.getBoolean(path); }
+    public boolean getBoolean(String path) {
+        return config.getBoolean(path);
+    }
+
+    public boolean isSet(String s) {
+        return config.isSet(s);
+    }
 
     public List<String> getStringList(String path) {
         return config.getStringList(path);
@@ -214,9 +249,9 @@ public class Config {
     // Smart collectionable list storing
     public <T> List<T> getList(String path, Function<Map.Entry<FileConfiguration, String>, T> function) {
         List<T> list = new ArrayList<>();
-        for(String element : config.getConfigurationSection(path).getKeys(false)) {
+        for (String element : config.getConfigurationSection(path).getKeys(false)) {
             T t = function.apply(Maps.immutableEntry(config, path + "." + element));
-            if(t == null) continue;
+            if (t == null) continue;
             list.add(t);
         }
         return list;
@@ -225,9 +260,9 @@ public class Config {
     public <T> void saveList(String path, List<T> list, Function<T, String> name, Function<T, HashMap<String, Object>> save) {
         config.set(path, null);
         int id = 0;
-        for(T element : list) {
+        for (T element : list) {
             String field = name == null ? String.valueOf(id++) : name.apply(element);
-            for(Map.Entry<String, Object> entry : save.apply(element).entrySet()) {
+            for (Map.Entry<String, Object> entry : save.apply(element).entrySet()) {
                 config.set(path + "." + field + "." + entry.getKey(), entry.getValue());
             }
         }
@@ -247,23 +282,23 @@ public class Config {
 
     public Config copyMissedFields(Collection<String> skip, Consumer<String> callback) {
 
-        if(this.config == null) this.copy(true);
+        if (this.config == null) this.copy(true);
 
         skip = skip.stream().map(String::toLowerCase).collect(Collectors.toList());
 
         boolean need_save = false;
         final YamlConfiguration yml_default = ((YamlConfiguration) getDefault());
         keys:
-        for(String key : yml_default.getKeys(true)) {
-            for(String string : skip)
-                if(key.toLowerCase().startsWith(string)) continue keys;
+        for (String key : yml_default.getKeys(true)) {
+            for (String string : skip)
+                if (key.toLowerCase().startsWith(string)) continue keys;
             if (!this.config.isSet(key)) {
                 this.config.set(key, yml_default.get(key));
-                if(callback != null) callback.accept(key);
+                if (callback != null) callback.accept(key);
                 need_save = true;
             }
         }
-        if(need_save) this.save();
+        if (need_save) this.save();
         return this;
 
     }

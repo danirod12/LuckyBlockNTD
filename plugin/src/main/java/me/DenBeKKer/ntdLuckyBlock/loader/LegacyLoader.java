@@ -5,7 +5,9 @@ import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.loader.StringLoader;
 import me.DenBeKKer.ntdLuckyBlock.customitem.BekkerItemStack;
 import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
+import me.DenBeKKer.ntdLuckyBlock.hook.Hook;
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
+import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop.LuckyItemType;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop.Special;
@@ -88,18 +90,18 @@ public class LegacyLoader implements StringLoader {
 				}
 				case SCHEMATIC: {
 
-					if(!LBMain.getIsSk89q() && LBMain.isDebug()) {
-						LBMain.getInstance().getLogger().log(Level.WARNING, "WorldEdit was not found, lucky item \""
-								+ drop + "\" wont be loaded");
-						return null;
-					}
+                    if (!Hook.WorldEdit.isEnabled()) {
+                        MvLogger.log(Level.WARNING, "WorldEdit was not found, lucky item \""
+                                + drop + "\" wont be loaded");
+                        return null;
+                    }
 
-					boolean b;
-					if(sp[2].equalsIgnoreCase("block")) {
-						b = true;
-					} else if(sp[2].equalsIgnoreCase("player")) {
-						b = false;
-					} else throw new IllegalArgumentException("Schematic format allow only player and block arguments");
+                    boolean b;
+                    if (sp[2].equalsIgnoreCase("block")) {
+                        b = true;
+                    } else if (sp[2].equalsIgnoreCase("player")) {
+                        b = false;
+                    } else throw new IllegalArgumentException("Schematic format allow only player and block arguments");
 
 					String file$name = sp[1].endsWith(".schem") ? sp[1] : sp[1] + ".schem";
 

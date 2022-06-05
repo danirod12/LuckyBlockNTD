@@ -12,114 +12,117 @@ import org.bukkit.entity.Player;
 import java.util.logging.Level;
 
 public interface LuckyDrop {
-	
-	enum LuckyItemType {
 
-		LUCKY_BLOCK_ITEM,
-		ITEM,
-		SPECIAL,
-		ENTITY,
-		COMMAND,
-		CONSOLE,
-		OPPED,
-		MESSAGE,
-		SCHEMATIC,
-		CUSTOM_ITEM
+    @Deprecated
+    default void executeProtected(Block block, Player target) {
+        LBMain.log(Level.WARNING, "Method LuckyDrop#executeProtected is deprecated");
+        executeProtected(null, block, target);
+    }
 
-	}
-	
-	enum Special {
-		
-		PIG,
-		LIGHTNING,
-		WATER_BUCKET,
-		DIAMOND_COLUMN,
-		TNT_COLUMN,
-		TNT_EXPLOSION,
-		EXPERIENCE_EXPLOSION;
+    default void executeProtected(LBMain.LuckyBlockType related, Block block, Player target) {
 
-		public static Special parse(LuckyDrop drop) {
+        LuckyDropEvent event = new LuckyDropEvent(related, this, target);
+        Bukkit.getPluginManager().callEvent(event);
 
-			if (drop instanceof DiamondColumnSpecial) {
-				return DIAMOND_COLUMN;
-			} else if(drop instanceof ExperienceExplosionSpecial) {
-				return EXPERIENCE_EXPLOSION;
-			} else if(drop instanceof LightningSpecial) {
-				return LIGHTNING;
-			} else if(drop instanceof PigSpecial) {
-				return PIG;
-			} else if(drop instanceof TntColumnSpecial) {
-				return TNT_COLUMN;
-			} else if(drop instanceof TntExplosionSpecial) {
-				return TNT_EXPLOSION;
-			} else if(drop instanceof WaterBucketSpecial) {
-				return WATER_BUCKET;
-			}
+        if (event.isCancelled()) return;
 
-			return null;
+        try {
+            try {
+                execute(related, block, target);
+            } catch (NoSuchMethodError error) {
+                LBMain.log(Level.WARNING, "Class behind LuckyDrop (" + this.getClass().getName() + ") is deprecated. It should implement " +
+                        "execute(LuckyBlockType, Block, Player) since 2.5.8");
+                if (target == null)
+                    execute(block);
+                else execute(block, target);
+            }
+        } catch (Throwable th) {
+            if (this instanceof EntityDrop && th.getMessage().contains("Cannot spawn an entity")) return;
+            if (this instanceof ItemDrop && th.getMessage().toLowerCase().contains("air")) return;
+            th.printStackTrace();
+        }
 
-		}
+    }
 
-		public int defaultValue() {
-			switch(this) {
-				case LIGHTNING: return 3;
-				case PIG: return 4;
-				case WATER_BUCKET: return 64;
-				case TNT_COLUMN: return 5;
-				case TNT_EXPLOSION: return 20;
-				case EXPERIENCE_EXPLOSION: return 45;
-				default: return 1;
-			}
-		}
-	
-	}
+    void execute(LBMain.LuckyBlockType related, Block block, Player target);
 
-	@Deprecated
-	default void executeProtected(Block block, Player target) {
-		LBMain.log(Level.WARNING, "Method LuckyDrop#executeProtected is deprecated");
-		executeProtected(null, block, target);
-	}
+    @Deprecated
+    default void execute(Block block, Player target) {
+        execute(block);
+    }
 
-	default void executeProtected(LBMain.LuckyBlockType related, Block block, Player target) {
+    @Deprecated
+    default void execute(Block block) {
+        LBMain.log(Level.WARNING, "Methods LuckyDrop#execute(Block) and LuckyDrop#execute(Block, Player) are deprecated since 2.5.8. It may cause a lot of errors.");
+        execute(null, block, null);
+    }
 
-		LuckyDropEvent event = new LuckyDropEvent(related, this, target);
-		Bukkit.getPluginManager().callEvent(event);
+    enum LuckyItemType {
 
-		if(event.isCancelled()) return;
+        LUCKY_BLOCK_ITEM,
+        ITEM,
+        SPECIAL,
+        ENTITY,
+        COMMAND,
+        CONSOLE,
+        OPPED,
+        MESSAGE,
+        SCHEMATIC,
+        CUSTOM_ITEM
 
-		try {
-			try {
-				execute(related, block, target);
-			} catch(NoSuchMethodError error) {
-				LBMain.log(Level.WARNING, "Class behind LuckyDrop (" + this.getClass().getName() + ") is deprecated. It should implement " +
-						"execute(LuckyBlockType, Block, Player) since 2.5.8");
-				if(target == null)
-					execute(block);
-				else execute(block, target);
-			}
-		} catch(Throwable th) {
-			if(LBMain.h() && th.getMessage() != null) {
-				
-				if(this instanceof EntityDrop && th.getMessage().contains("Cannot spawn an entity")) return;
-				if(this instanceof ItemDrop && th.getMessage().toLowerCase().contains("air")) return;
-				
-			}
-			th.printStackTrace();
-		}
-		
-	}
+    }
 
-	void execute(LBMain.LuckyBlockType related, Block block, Player target);
+    enum Special {
 
-	@Deprecated
-	default void execute(Block block, Player target) {
-		execute(block);
-	}
+        PIG,
+        LIGHTNING,
+        WATER_BUCKET,
+        DIAMOND_COLUMN,
+        TNT_COLUMN,
+        TNT_EXPLOSION,
+        EXPERIENCE_EXPLOSION;
 
-	@Deprecated
-	default void execute(Block block) {
-		LBMain.log(Level.WARNING, "Methods LuckyDrop#execute(Block) and LuckyDrop#execute(Block, Player) are deprecated since 2.5.8. It may cause a lot of errors.");
-		execute(null, block, null);
-	}
-	
+        public static Special parse(LuckyDrop drop) {
+
+            if (drop instanceof DiamondColumnSpecial) {
+                return DIAMOND_COLUMN;
+            } else if (drop instanceof ExperienceExplosionSpecial) {
+                return EXPERIENCE_EXPLOSION;
+            } else if (drop instanceof LightningSpecial) {
+                return LIGHTNING;
+            } else if (drop instanceof PigSpecial) {
+                return PIG;
+            } else if (drop instanceof TntColumnSpecial) {
+                return TNT_COLUMN;
+            } else if (drop instanceof TntExplosionSpecial) {
+                return TNT_EXPLOSION;
+            } else if (drop instanceof WaterBucketSpecial) {
+                return WATER_BUCKET;
+            }
+
+            return null;
+
+        }
+
+        public int defaultValue() {
+            switch (this) {
+                case LIGHTNING:
+                    return 3;
+                case PIG:
+                    return 4;
+                case WATER_BUCKET:
+                    return 64;
+                case TNT_COLUMN:
+                    return 5;
+                case TNT_EXPLOSION:
+                    return 20;
+                case EXPERIENCE_EXPLOSION:
+                    return 45;
+                default:
+                    return 1;
+            }
+        }
+
+    }
+
 }

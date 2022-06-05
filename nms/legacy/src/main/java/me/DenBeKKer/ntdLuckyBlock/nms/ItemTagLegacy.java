@@ -14,7 +14,7 @@ public class ItemTagLegacy implements ItemTag {
         String nms_version = Bukkit.getServer().getClass().getPackage().getName();
         nms_version = nms_version.substring(nms_version.lastIndexOf('.') + 1);
 
-        Class<?> clazz = null;
+        Class<?> clazz;
         try {
             clazz = Class.forName("org.bukkit.craftbukkit." + nms_version + ".inventory.CraftItemStack");
         } catch (ClassNotFoundException e) {
@@ -25,10 +25,10 @@ public class ItemTagLegacy implements ItemTag {
 
         try {
             clazz = Class.forName("net.minecraft.server." + nms_version + ".NBTTagCompound");
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             try {
                 clazz = Class.forName("net.minecraft.nbt.NBTTagCompound");
-            } catch(Exception ex2) {
+            } catch (Exception ex2) {
                 ex.printStackTrace();
                 ex2.printStackTrace();
                 throw new UnsupportedOperationException();
@@ -42,7 +42,8 @@ public class ItemTagLegacy implements ItemTag {
     public ItemStack asBukkitCopy(Object nmsItem) {
         try {
             return (ItemStack) CraftItemStack.getMethod("asBukkitCopy", nmsItem.getClass()).invoke(null, nmsItem);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException |
+                 NoSuchMethodException | SecurityException e) {
             e.printStackTrace();
             return null;
         }
@@ -63,7 +64,8 @@ public class ItemTagLegacy implements ItemTag {
     public Object asNMSCopy(ItemStack origin) {
         try {
             return CraftItemStack.getMethod("asNMSCopy", ItemStack.class).invoke(null, origin);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException |
+                 NoSuchMethodException | SecurityException e) {
             e.printStackTrace();
             return null;
         }
@@ -73,7 +75,8 @@ public class ItemTagLegacy implements ItemTag {
     public String getTagString(Object tag, String element) {
         try {
             return (String) tag.getClass().getMethod("getString", String.class).invoke(tag, element);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException |
+                 NoSuchMethodException | SecurityException e) {
             e.printStackTrace();
             return null;
         }
@@ -83,8 +86,8 @@ public class ItemTagLegacy implements ItemTag {
     public void setTagString(Object tag, String element, String value) {
         try {
             tag.getClass().getMethod("setString", String.class, String.class).invoke(tag, element, value);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-                | SecurityException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException |
+                 NoSuchMethodException | SecurityException e) {
             e.printStackTrace();
         }
     }
@@ -93,7 +96,8 @@ public class ItemTagLegacy implements ItemTag {
     public Object getTag(Object nmsItem) {
         try {
             return nmsItem.getClass().getMethod("getTag").invoke(nmsItem);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException |
+                 NoSuchMethodException | SecurityException e) {
             e.printStackTrace();
             return null;
         }
@@ -103,8 +107,8 @@ public class ItemTagLegacy implements ItemTag {
     public void setTag(Object nmsItem, Object newTag) {
         try {
             nmsItem.getClass().getMethod("setTag", newTag.getClass()).invoke(nmsItem, newTag);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-                | SecurityException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException |
+                 NoSuchMethodException | SecurityException e) {
             e.printStackTrace();
         }
     }

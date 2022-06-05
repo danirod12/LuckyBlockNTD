@@ -1,7 +1,5 @@
 package me.DenBeKKer.ntdLuckyBlock;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import me.DenBeKKer.ntdLuckyBlock.api.exceptions.LuckyBlockNotLoadedException;
 import me.DenBeKKer.ntdLuckyBlock.command.CommandsManager;
 import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
@@ -9,6 +7,7 @@ import me.DenBeKKer.ntdLuckyBlock.economy.EconomyBridge;
 import me.DenBeKKer.ntdLuckyBlock.economy.TokenManagerEconomy;
 import me.DenBeKKer.ntdLuckyBlock.economy.VaultEconomy;
 import me.DenBeKKer.ntdLuckyBlock.factory.LBFactory;
+import me.DenBeKKer.ntdLuckyBlock.hook.Hook;
 import me.DenBeKKer.ntdLuckyBlock.hook.sk89q.LBWorldEdit;
 import me.DenBeKKer.ntdLuckyBlock.hook.sk89q.LBWorldGuard;
 import me.DenBeKKer.ntdLuckyBlock.hook.thebusybiscuit.SlimeFunListener;
@@ -24,11 +23,11 @@ import me.DenBeKKer.ntdLuckyBlock.util.manager.GuiManager;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import me.DenBeKKer.ntdLuckyBlock.util.material.IMat;
-import me.DenBeKKer.ntdLuckyBlock.util.material.IMat.Mat;
 import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_12;
 import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_13;
-import me.DenBeKKer.ntdLuckyBlock.util.material.TintedMaterial;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
+import me.DenBeKKer.ntdLuckyBlock.variables.PlayerHead;
+import me.DenBeKKer.ntdLuckyBlock.variables.PluginVersion;
 import me.DenBeKKer.ntdLuckyBlock.variables.WorldListDataHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -37,781 +36,624 @@ import org.bukkit.Material;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 public class LBMain extends JavaPlugin {
-	
-	private static LBMain instance;
-	public Config config;
-	public IMat factory;
-	public TintedMaterial tinted;
-	private static boolean inform;
-	private static File folder, schematics_folder;
-	private static String version;
-	private EconomyBridge economy_bridge;
-	public SpigotUpdater updater;
-	public StringMatcher<WorldListDataHandler> w;
 
-	private static boolean fui = false;
-	private static boolean reduce = false;
-	private static boolean brperm = true;
-	private static boolean debug = false;
-	private static boolean schematics = false;
-	private static boolean h = true;
-	private static boolean warning_luckyblock_changed = false;
+    // Last update date & Build number
+    private static final PluginVersion VERSION = PluginVersion.FREE;
+    private static final String LAST_UPDATE = Templates.COMPILE_DATE;
+    private static final int BUILD = 97;
+    private static final Map<LuckyBlockType, LuckyBlock> map = new HashMap<>();
+    private static LBMain instance;
+    // Last update date & Build number
+    private static String NMS_VERSION;
+    // General variables
+    public Config config;
+    public IMat factory;
+    public Material tinted;
+    public SpigotUpdater updater;
+    public StringMatcher<WorldListDataHandler> worldsFilter;
+    public boolean preventHatLB = true;
+    public boolean breakPermissions = true;
+    public boolean reduceAuthorInfo = false;
+    public boolean disableAuthorInfo = false;
+    public boolean informAboutUpdates = true;
+    public boolean disableConvertCheck = false;
+    public boolean disableWebIssuePrint = false;
+    public boolean forceUpdateInventory = false;
+    private File folder;
+    private File schematicsFolder = null;
+    private EconomyBridge economy;
+    // Managers
+    private CommandsManager commandsManager;
+    private ConvertManager convertManager;
+    private ItemTag itemTagAdapter;
+    private GuiManager guiManager;
+    // Config fields
+    private boolean debug = false;
 
-	public boolean disable_author_info = false;
-	public boolean web_unavailable_disable = false;
-	public boolean reduce_convert = false;
-	private final ConvertManager convert_manager = new ConvertManager();
-	private CommandsManager commands_manager;
-	private static String NMS_VERSION;
-	public GuiManager gui_manager;
+    public static boolean isPremium() {
+        return VERSION.isPremium();
+    }
 
-	public static String getNMSVersion() { return NMS_VERSION; }
-	
-	
-	// Last update date & Build number
-	private static final String last_update = "13/05/2022";
-	private static final int build = 95;
-	// Last update date & Build number
-	
-	
-	private static final boolean premium = false;
-	public static boolean isPremium() { return premium; }
-	
-	public static LBMain getInstance() { return instance; }
-	public static File getFolder() { return folder; }
-	public static String getVersion() { return version; }
-	public static String getLastUpdate() { return last_update; }
-	public static int getBuild() { return build; }
-	public static File getSchematicsFolder() { return schematics_folder; }
-	public static boolean getIsSk89q() { return schematics; }
-	public static boolean isReduced() { return reduce; }
-	public static boolean h() { return h; }
-	public static boolean fui() { return fui; }
-	public static EconomyBridge getEconomy() { return instance.economy_bridge; }
-	public static boolean isBreakPermissions() { return brperm; }
-	@Deprecated
-	public static boolean isVerifyName() { return false; }
-	@Deprecated
-	public static boolean isVerifyUUID() { return getConvertManager().isVerifyUUID(); }
-	@Deprecated
-	public static boolean isVerifyTAG() { return getConvertManager().isVerifyTAG(); }
-	public static boolean warning_luckyblock_changed() { return warning_luckyblock_changed; }
-	public static CommandsManager getCommandsManager() { return instance.commands_manager; }
-	public static ConvertManager getConvertManager() { return instance.convert_manager; }
+    public static PluginVersion getVersionType() {
+        return VERSION;
+    }
 
-	private static ItemTag item_tag_adapter;
-	public static ItemTag getItemTagAdapter() {
-		return item_tag_adapter;
-	}
+    public static String getLastUpdate() {
+        return LAST_UPDATE;
+    }
 
-	public static boolean isDebug() { return debug; }
-	@Deprecated
-	public static boolean getDebug() { return debug; }
+    public static int getBuild() {
+        return BUILD;
+    }
 
-	@Deprecated
-	public static Class<?> getClass(String path) {
-		try {
-			return Class.forName(path);
-		} catch(Throwable th) { return null; }
-	}
-	
-	public static UUID getUUID(ItemStack item) {
-		
-		if(item == null) return null;
-		
-		ItemMeta meta = item.getItemMeta();
-		
-		if(!(meta instanceof SkullMeta)) return null;
-		
-		SkullMeta smeta = (SkullMeta) meta;
-		
-		if(debug) debug("Getting GameProfile");
+    public static String getNMSVersion() {
+        return NMS_VERSION;
+    }
+
+    public static LBMain getInstance() {
+        return instance;
+    }
+
+    // LuckyBlocks folder
+    public static File getFolder() {
+        return instance.folder;
+    }
+
+    // Schematics folder or null if WorldEdit was not hooked
+    public static File getSchematicsFolder() {
+        return instance.schematicsFolder;
+    }
+
+    public static boolean isDebug() {
+        return instance.debug;
+    }
+
+    public static void log(Level level, String message) {
+        MvLogger.log(level, message);
+    }
+
+    public static void debug(String message) {
+        if (isDebug()) log(Level.INFO, "[DEBUG] " + message);
+    }
+
+    public static String getDiscordURL() {
+        return "https://discord.gg/vbYW3sperj";
+    }
+
+    public String getVersion() {
+        return this.getDescription().getVersion();
+    }
+
+    public SpigotUpdater getUpdater() {
+        return updater;
+    }
+
+    public EconomyBridge getEconomyBridge() {
+        return economy;
+    }
+
+    public CommandsManager getCommandsManager() {
+        return commandsManager;
+    }
+
+    public ConvertManager getConvertManager() {
+        return convertManager;
+    }
+
+    public ItemTag getItemTagAdapter() {
+        return itemTagAdapter;
+    }
+
+    public GuiManager getGuiManager() {
+        return guiManager;
+    }
+
+    @Override
+    public void onDisable() {
+        if (this.guiManager != null)
+            this.guiManager.close();
+    }
+
+    @Override
+    public void onLoad() {
+        LBWorldGuard.register();
+    }
+
+    @Override
+    public void onEnable() {
+
+        // data for onEnable
+        long ms = System.currentTimeMillis();
+
+        NMS_VERSION = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+
+        // Init logger
+        MvLogger.setInstance(instance = this);
+
+        updater = new SpigotUpdater(instance, 92026, "LuckyBlock");
+        folder = new File(instance.getDataFolder() + File.separator + "luckyblocks");
+        folder.mkdirs();
+
+        // Metrics
+        Metrics metrics = new Metrics(this, 11218);
+        metrics.addCustomChart(new Metrics.SimplePie("enabled_luckyblocks", () -> String.valueOf(LuckyBlockType.map().size())));
+        metrics.addCustomChart(new Metrics.SimplePie("luckydrop_types", () -> {
+            int a = 0, b = 0;
+            for (LuckyBlock z : LuckyBlockType.map().values()) {
+                a += z.items$mapped();
+                b += z.items$mappedTwice();
+            }
+            return a + "/" + b;
+
+        }));
+        metrics.addCustomChart(new Metrics.SimplePie("version_type", VERSION::getSimpleName));
+        metrics.addCustomChart(new Metrics.SimplePie("language", () -> {
+            final String language = MessagesManager.getLanguage();
+            return language == null ? "undefined" : language;
+        }));
+
+        // Plugin title
+        log(Level.INFO, ChatColor.WHITE + "Starting LuckyBlock (ntdLuckyBlock) v" + getVersion()
+                + ", build" + getBuild() + "(" + LAST_UPDATE + "), " + VERSION.getSimpleName());
+        log(Level.INFO, ChatColor.YELLOW + "  ╭╮╱╱╭╮╱╭┳━━━┳╮╭━┳╮╱╱╭┳━━╮╭╮╱╱╭━━━┳━━━┳╮╭━╮");
+        log(Level.INFO, ChatColor.YELLOW + "  ┃┃╱╱┃┃╱┃┃╭━╮┃┃┃╭┫╰╮╭╯┃╭╮┃┃┃╱╱┃╭━╮┃╭━╮┃┃┃╭╯");
+        log(Level.INFO, ChatColor.YELLOW + "  ┃┃╱╱┃┃╱┃┃┃╱╰┫╰╯╯╰╮╰╯╭┫╰╯╰┫┃╱╱┃┃╱┃┃┃╱╰┫╰╯╯");
+        log(Level.INFO, ChatColor.YELLOW + "  ┃┃╱╭┫┃╱┃┃┃╱╭┫╭╮┃╱╰╮╭╯┃╭━╮┃┃╱╭┫┃╱┃┃┃╱╭┫╭╮┃");
+        log(Level.INFO, ChatColor.YELLOW + "  ┃╰━╯┃╰━╯┃╰━╯┃┃┃╰╮╱┃┃╱┃╰━╯┃╰━╯┃╰━╯┃╰━╯┃┃┃╰╮");
+        log(Level.INFO, ChatColor.YELLOW + "  ╰━━━┻━━━┻━━━┻╯╰━╯╱╰╯╱╰━━━┻━━━┻━━━┻━━━┻╯╰━╯ NTD");
+        log(Level.INFO, ChatColor.WHITE + "          Made with " + ChatColor.RED + "love " + ChatColor.WHITE + "by " + ChatColor.GREEN + "DenBeKKer");
+        log(Level.INFO, ChatColor.WHITE + "");
+        log(Level.INFO, ChatColor.WHITE + "=-= " + ChatColor.GOLD + "SUPPORT & BUG REPORTING & FEATURE REQUESTING " + ChatColor.WHITE + "=-=");
+        log(Level.INFO, ChatColor.DARK_GRAY + " > " + ChatColor.AQUA + "Discord " + ChatColor.WHITE + "- " + getDiscordURL());
+        log(Level.INFO, ChatColor.DARK_GRAY + " > " + ChatColor.BLUE + "Vkontakte "
+                + ChatColor.WHITE + "- https://vk.com/danirodplay " + ChatColor.GRAY + "(Rus)");
+        log(Level.INFO, ChatColor.WHITE + "=-= " + ChatColor.GOLD + "SUPPORT & BUG REPORTING & FEATURE REQUESTING " + ChatColor.WHITE + "=-=");
+
+        // Material
+        factory = Misc.getEnum(Material.class, "PLAYER_HEAD") == null ? new Mat1_12() : new Mat1_13();
+        log(Level.INFO, "Loaded " + factory.build() + " material version");
+
+        Material tinted = Misc.getEnum(Material.class, "TINTED_GLASS");
+        this.tinted = tinted == null || !VERSION.isPremium() ? null : tinted;
+
+        // NMS
+        log(Level.INFO, "Loading NMS for your platform (" + Bukkit.getVersion() + ", " + NMS_VERSION + ")...");
+        if (!loadNMS()) return;
+
+        // Before config
+        convertManager = new ConvertManager();
+
+        // Loading config
+        reloadConfig();
+        if (config.get().getBoolean("scheduled-update-check")) {
+            debug("Loading Bukkit scheduler thread for delayed update check");
+            Bukkit.getScheduler().runTaskTimerAsynchronously(instance,
+                    () -> checkForUpdates(informAboutUpdates), 100L, 72000L);
+        } else {
+            Bukkit.getScheduler().runTaskLaterAsynchronously(instance,
+                    () -> checkForUpdates(informAboutUpdates), 100L);
+        }
+
+        if (disableWebIssuePrint)
+            log(Level.INFO, "\"Web-Server is unavailable\" message is disabled. Plugin page - " + updater.getResourceURL());
+
+        PlayerHead.loadAll();
+        Hook.loadAll();
+
+        // Economy
+        if (Hook.TokenManager.isEnabled()) {
+
+            Config token = new Config(instance, "configuration.other", null, "token_manager")
+                    .copyMissedFields();
+
+            if (token.get().getBoolean("override-vault")) {
+                this.economy = new TokenManagerEconomy(token.get().getString("display"));
+                log(Level.WARNING, "TokenManager is kinda beta feature. Report all bugs");
+            } else Hook.TokenManager.disable("disabled via config");
+
+        }
+
+        if (this.economy != null && Hook.Vault.isEnabled()) {
+            this.economy = new VaultEconomy();
+        }
+
+        // Schematics
+        if (Hook.WorldEdit.isEnabled()) {
+            schematicsFolder = new File(getDataFolder(), "schematics");
+            debug("Loading WorldEdit provider...");
+
+            if (!LBWorldEdit.isPlatformAvailable()) {
+                Hook.WorldEdit.disable("unsupported version");
+                schematicsFolder = null;
+            } else {
+
+                boolean legacy = factory.build().equalsIgnoreCase("old");
+                if (!schematicsFolder.exists()) {
+                    schematicsFolder.mkdirs();
+                    new Config(instance, "configuration.schematics." + factory.build(), schematicsFolder,
+                            "cage_lava.schem" + (legacy ? "atic" : "")).copy(false);
+                    new Config(instance, "configuration.schematics.main", schematicsFolder,
+                            "bedrock_problem.schematic").copy(false);
+                    if (!legacy) new Config(instance, "configuration.schematics.main", schematicsFolder,
+                            "small_temple.schematic").copy(false);
+                }
+                debug("Hooked into " + (LBWorldEdit.isFAWE() ? "FastAsync" : "") + "WorldEdit");
+
+            }
+
+            if (Hook.WorldGuard.isEnabled()) {
+                debug("Loading WorldGuard provider...");
+                if (!LBWorldGuard.isAvailable())
+                    Hook.WorldGuard.disable("unsupported version");
+            }
+
+        }
+
+        Hook.print();
+        reloadSystem();
+
+        // After system reload
+        guiManager = new GuiManager();
+
+        debug("Loading event managers...");
+        if (Hook.SlimeFun.isEnabled()) Bukkit.getPluginManager().registerEvents(new SlimeFunListener(), this);
+        Bukkit.getPluginManager().registerEvents(new LBHandler(), this);
+        Bukkit.getPluginManager().registerEvents(new CraftListener(), this);
+        Bukkit.getPluginManager().registerEvents(guiManager, this);
+        Bukkit.getPluginManager().registerEvents(convertManager, this);
+
+        log(Level.INFO, "If you love my plugin, support me with 5 stars review" +
+                "(https://www.spigotmc.org/resources/92026/) or consider to purchase " +
+                "premium plugin version (https://www.spigotmc.org/resources/94872/)");
+
+        debug("Loading commands manager...");
+        commandsManager = new CommandsManager();
+        PluginCommand command = Bukkit.getPluginCommand("ntdluckyblock");
+        if (command == null) throw new UnsupportedOperationException("Command not found");
+        command.setExecutor(commandsManager);
+        command.setTabCompleter(commandsManager);
+
+        ms = (System.currentTimeMillis() - ms);
+        log(Level.INFO, "\u00a76Enabled " + Misc.getColorLevel(ms, 1000, 3000)
+                + "(took " + ms + " ms)\u00a76... ");
+
+    }
+
+    private boolean loadNMS() {
+
+        if (NMS_VERSION == null) return false;
+        switch (NMS_VERSION) {
+
+            case "v1_18_R2": {
+                itemTagAdapter = new ItemTag1_18_R2();
+                return true;
+            }
+
+            case "v1_18_R1": {
+                itemTagAdapter = new ItemTag1_18_R1();
+                return true;
+            }
+
+            default: {
+
+                try {
+                    itemTagAdapter = new ItemTagLegacy();
+                    return true;
+                } catch (UnsupportedOperationException ex) {
+                    log(Level.WARNING, "You platform is not supported. Supported versions 1.8 - 1.18");
+                    Bukkit.getPluginManager().disablePlugin(this);
+                    return false;
+                }
+
+            }
+
+        }
+
+    }
+
+    @Override
+    public void reloadConfig() {
+
+        config = new Config(instance, getDataFolder(), "config.yml").copy(true).copyMissedFields();
+
+        forceUpdateInventory = config.getBoolean("force-update-inventory");
+        disableConvertCheck = config.getBoolean("disable-json-convert-checking");
+        informAboutUpdates = config.getBoolean("inform-about-update");
+        breakPermissions = config.getBoolean("break-permissions");
+        reduceAuthorInfo = config.getBoolean("reduce-command-author-info");
+        preventHatLB = config.getBoolean("prevent-hat-luckyblocks");
+
+        if (config.isSet("place.verify-name")) {
+
+            config.set("place.verify-name", null);
+            config.set("place.convert-factory", true);
+            config.save();
+            log(Level.WARNING, "Old storage scheme found!");
+            log(Level.WARNING, "  > disabling name checking");
+            log(Level.WARNING, "  > enabling tag factory converter");
+            log(Level.WARNING, "THIS MAY CAUSE BAD PERFORMANCE IMPACT!");
+
+        }
+
+        convertManager.setup(config.getBoolean("place.verify-UUID"), config.getBoolean("place.verify-TAG"));
+        convertManager.setFactoryEnabled(config.getBoolean("place.convert-factory"));
+
+        if (!convertManager.isVerifyTAG() && !convertManager.isVerifyUUID())
+            log(Level.WARNING, "You must enable place.verify-TAG or place.verify-UUID option for plugin work");
+
+        MessagesManager.reload(config.getString("language"));
+
+        debug = config.getBoolean("debug");
+        if (debug) getLogger().log(Level.WARNING, "Debug mode enabled! Note that this mode only for developer!");
+
+        disableAuthorInfo = config.getBoolean("disable-author-info-gui-get")
+                || config.getBoolean("disable-author-info");
+        if (disableAuthorInfo && VERSION.isFree()) {
+            disableAuthorInfo = false;
+
+            log(Level.WARNING, "Sorry, but you cant disable author info in free plugin version.");
+            log(Level.WARNING, "Check out premium plugin version - https://www.spigotmc.org/resources/94872");
+
+        }
+
+        disableWebIssuePrint = config.getBoolean("web-unavailable-disable");
+
+        Config worlds = new Config(this, "configuration.other", null, "worlds").copyMissedFields();
+        worldsFilter = new StringMatcher<>(new WorldListDataHandler(worlds.getBoolean("break-no-drop"),
+                worlds.getBoolean("place-admins")), worlds.getString("mode"), worlds.getStringList("list"));
+
+    }
+
+    public void reloadSystem() {
+
+        long ms = System.currentTimeMillis();
+        log(Level.INFO, "Loading system...");
+        map.clear();
+
+        // first time it will be null (On startup)
+        if (commandsManager != null)
+            commandsManager.gc(null);
+        // first time it will be null (On startup)
+        if (guiManager != null)
+            guiManager.reload();
+
+        for (String str : config.get().getStringList("enabled")) {
+            try {
+                LuckyBlockType lb = LuckyBlockType.parse(str);
+                if (lb == null) {
+                    log(Level.SEVERE, Message.LB_NOT_FOUND.getAsString().replace("%lb%", str.toUpperCase()));
+                    continue;
+                }
+                String e = lb.load();
+                if (e != null)
+                    log(Level.SEVERE, Message.LB_LOADING_EXCEPTION.getAsString().replace("%lb%", str.toUpperCase()).replace("%exception%", e));
+            } catch (Exception ex) {
+                log(Level.SEVERE, Message.LB_UNKNOWN_EXCEPTION.getAsString().replace("%lb%", str.toUpperCase()));
+                ex.printStackTrace();
+            }
+        }
+
+        if (map.size() == 0) {
+            log(Level.WARNING, Message.LB_LOADED_ZERO.getAsString());
+        } else {
+            log(Level.INFO, Message.LB_LOADED_NOT_ZERO.getAsString().replace("%amount%", String.valueOf(map.size())));
+        }
+
         try {
-        	
-        	Field profileField = smeta.getClass().getDeclaredField("profile");
-			
-	        profileField.setAccessible(true);
-	        
-	        GameProfile profile = (GameProfile)profileField.get(smeta);
-	        return profile == null ? null : profile.getId();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-	        return null;
-		}
-        
-	}
-	
-	public static void log(Level level, String message) { MvLogger.log(level, message); }
-
-	@Override
-	public void onDisable() {
-		if(this.gui_manager != null)
-			this.gui_manager.close();
-	}
-
-	@Override
-	public void onLoad() { LBWorldGuard.register(); }
-
-	@Override
-	public void onEnable() {
-
-		// data for onEnable
-		long ms = System.currentTimeMillis();
-		
-		NMS_VERSION = Bukkit.getServer().getClass().getPackage().getName();
-		NMS_VERSION = NMS_VERSION.substring(NMS_VERSION.lastIndexOf('.') + 1);
-
-		// Init logger
-		MvLogger.setInstance(instance = this);
-
-		updater = new SpigotUpdater(instance, 92026, "LuckyBlock");
-		folder = new File(instance.getDataFolder() + File.separator + "luckyblocks");
-		folder.mkdirs();
-		version = getDescription().getVersion();
-
-		// Metrics
-		Metrics metrics = new Metrics(this, 11218);
-		metrics.addCustomChart(new Metrics.SimplePie("enabled_luckyblocks", () -> String.valueOf(LuckyBlockType.map().size())));
-		metrics.addCustomChart(new Metrics.SimplePie("luckydrop_types", () -> {
-			int a = 0, b = 0;
-			for(LuckyBlock z : LuckyBlockType.map().values()) {
-				a += z.items$mapped();
-				b += z.items$mappedTwice();
-			}
-			return a + "/" + b;
-			
-		}));
-		metrics.addCustomChart(new Metrics.SimplePie("version_type", () -> premium ? "premium" : "free"));
-		metrics.addCustomChart(new Metrics.SimplePie("language", () -> {
-			final String language = MessagesManager.getLanguage();
-			return language == null ? "undefined" : language;
-		}));
-
-		// Plugin title
-		log(Level.INFO, ChatColor.WHITE + "Starting LuckyBlock (ntdLuckyBlock) v" + version + ", build" + getBuild()
-			+ ", " + (premium ? "premium" : "free") + " version");
-		log(Level.INFO, ChatColor.YELLOW + "  ╭╮╱╱╭╮╱╭┳━━━┳╮╭━┳╮╱╱╭┳━━╮╭╮╱╱╭━━━┳━━━┳╮╭━╮");
-		log(Level.INFO, ChatColor.YELLOW + "  ┃┃╱╱┃┃╱┃┃╭━╮┃┃┃╭┫╰╮╭╯┃╭╮┃┃┃╱╱┃╭━╮┃╭━╮┃┃┃╭╯");
-		log(Level.INFO, ChatColor.YELLOW + "  ┃┃╱╱┃┃╱┃┃┃╱╰┫╰╯╯╰╮╰╯╭┫╰╯╰┫┃╱╱┃┃╱┃┃┃╱╰┫╰╯╯");
-		log(Level.INFO, ChatColor.YELLOW + "  ┃┃╱╭┫┃╱┃┃┃╱╭┫╭╮┃╱╰╮╭╯┃╭━╮┃┃╱╭┫┃╱┃┃┃╱╭┫╭╮┃");
-		log(Level.INFO, ChatColor.YELLOW + "  ┃╰━╯┃╰━╯┃╰━╯┃┃┃╰╮╱┃┃╱┃╰━╯┃╰━╯┃╰━╯┃╰━╯┃┃┃╰╮");
-		log(Level.INFO, ChatColor.YELLOW + "  ╰━━━┻━━━┻━━━┻╯╰━╯╱╰╯╱╰━━━┻━━━┻━━━┻━━━┻╯╰━╯ NTD");
-		log(Level.INFO, ChatColor.WHITE + "          Made with " + ChatColor.RED + "love " + ChatColor.WHITE + "by " + ChatColor.GREEN + "DenBeKKer");
-		log(Level.INFO, ChatColor.WHITE + "");
-		log(Level.INFO, ChatColor.WHITE + "=-= " + ChatColor.GOLD + "SUPPORT & BUG REPORTING & FEATURE REQUESTING " + ChatColor.WHITE + "=-=");
-		log(Level.INFO, ChatColor.DARK_GRAY + " > " + ChatColor.AQUA + "Discord " + ChatColor.WHITE + "- " + getDiscordURL());
-		log(Level.INFO, ChatColor.DARK_GRAY + " > " + ChatColor.BLUE + "Vkontakte "
-				+ ChatColor.WHITE + "- https://vk.com/danirodplay " + ChatColor.GRAY + "(Rus)");
-		log(Level.INFO, ChatColor.WHITE + "=-= " + ChatColor.GOLD + "SUPPORT & BUG REPORTING & FEATURE REQUESTING " + ChatColor.WHITE + "=-=");
-
-		// Material
-		boolean old = false;
-		try {
-			Material mat = Material.valueOf("PLAYER_HEAD");
-			if(mat == null) old = true;
-		} catch(Exception ex) {
-			old = true;
-		}
-		factory = old ? new Mat1_12() : new Mat1_13();
-		log(Level.INFO, "Loaded " + factory.build() + " material version");
-
-		tinted = new TintedMaterial();
-
-		// NMS
-		if(!loadNMS()) return;
-		log(Level.INFO, "Loaded \"" + item_tag_adapter.getClass().getSimpleName() + "\" tag adapter.");
-
-		// Loading config
-		loadConfig();
-		if(config.get().getBoolean("scheduled-update-check")) {
-			debug("Loading Bukkit scheduler thread for delayed update check");
-			Bukkit.getScheduler().runTaskTimerAsynchronously(instance, this::checkForUpdates, 100L, 72000L);
-		} else Bukkit.getScheduler().runTaskLaterAsynchronously(instance, this::checkForUpdates, 100L);
-		
-		if(web_unavailable_disable)
-			log(Level.INFO, "\"Web-Server is unavailable\" message is disabled. Plugin page - " + updater.getResourceURL());
-
-		for(PlayerHead h : PlayerHead.values())
-			h.loadHead();
-		Hooks.loadAll();
-
-		// Economy
-		if(Hooks.TokenManager.isEnabled()) {
-			
-			Config token = new Config(instance, "configuration.other", null, "token_manager").copyMissedFields();
-			
-			if(token.get().getBoolean("override-vault")) {
-				this.economy_bridge = new TokenManagerEconomy(token.get().getString("display"));
-			} else Hooks.TokenManager.disable("disabled in config");
-			
-		}
-		
-		if(!Hooks.TokenManager.isEnabled() && Hooks.Vault.isEnabled()) {
-			this.economy_bridge = new VaultEconomy();
-		}
-
-		// Schematics
-		schematics_folder = new File(getDataFolder(), "schematics");
-		if(Hooks.WorldEdit.isEnabled()) {
-			debug("Loading WorldEdit provider...");
-			
-			if(!LBWorldEdit.isPlatformAvailable()) {
-				
-				Hooks.WorldEdit.disable("unsupported version");
-				
-			} else {
-				
-				if(!schematics_folder.exists()) {
-					schematics_folder.mkdirs();
-					new Config(instance, "configuration.schematics." + factory.build(), schematics_folder, "cage_lava.schem" +
-							(factory.build().equalsIgnoreCase("old") ? "atic" : "")).copy(false);
-					new Config(instance, "configuration.schematics.main", schematics_folder, "bedrock_problem.schematic").copy(false);
-					if(!old) new Config(instance, "configuration.schematics.main", schematics_folder, "small_temple.schematic").copy(false);
-				}
-				
-				schematics = true;
-				debug("Hooked into " + (LBWorldEdit.isFAWE() ? "FastAsync" : "") + "WorldEdit");
-				
-			}
-			
-			if(Hooks.WorldGuard.isEnabled() && !LBWorldGuard.isAvailable())
-				Hooks.WorldGuard.disable("unsupported version");
-			
-		}
-		
-		Hooks.print();
-		reloadSystem();
-		
-		gui_manager = new GuiManager();
-		
-		debug("Loading event managers...");
-		if(Hooks.SlimeFun.isEnabled()) Bukkit.getPluginManager().registerEvents(new SlimeFunListener(), this);
-		Bukkit.getPluginManager().registerEvents(new LBHandler(), this);
-		Bukkit.getPluginManager().registerEvents(gui_manager, this);
-		Bukkit.getPluginManager().registerEvents(new CraftListener(), this);
-		Bukkit.getPluginManager().registerEvents(convert_manager, this);
-
-		// TODO remove back when payments will be available
-//		Bukkit.getScheduler().runTaskLater(instance, () -> {
-			
-			log(Level.INFO, "If you are love my plugin, support me with 5 stars review (https://www.spigotmc.org/resources/92026/) or consider " +
-					"to purchase premium plugin version (https://www.spigotmc.org/resources/94872/)");
-			Bukkit.getOnlinePlayers().stream().filter(n -> n.hasPermission("luckyblock.supportme")).forEach(n -> {
-				n.sendMessage("\u00a77[\u00a7eLuckyBlock\u00a77] \u00a7eIf you are love my plugin, support me with \u00a765 stars review"
-						+ " \u00a7e(\u00a7b https://www.spigotmc.org/resources/92026/ \u00a7e) or consider to purchase premium plugin" +
-						" version \u00a7e( \u00a7bhttps://www.spigotmc.org/resources/94872/ \u00a7e)");
-			});
-			
-//		}, 120);
-		
-		debug("Loading commands manager...");
-		commands_manager = new CommandsManager();
-		PluginCommand command = Bukkit.getPluginCommand("ntdluckyblock");
-		if(command == null) throw new UnsupportedOperationException("Command not found");
-		command.setExecutor(commands_manager);
-		command.setTabCompleter(commands_manager);
-		
-		ms = (System.currentTimeMillis() - ms);
-		log(Level.INFO, ChatColor.GREEN + "Enabled " + msIndicator(ms, 1000, 3000) + "(took " + ms + " ms)" + ChatColor.GREEN + "... ");
-		if(ms > 5000) log(Level.INFO, "\u00a7c\u00a7l[!] \u00a7ePlugin initialization took over 5 second (" + ms + " ms)");
-		
-	}
-
-	private boolean loadNMS() {
-
-		switch (NMS_VERSION) {
-
-			case "v1_18_R2": {
-				item_tag_adapter = new ItemTag1_18_R2();
-				return true;
-			}
-
-			case "v1_18_R1": {
-				item_tag_adapter = new ItemTag1_18_R1();
-				return true;
-			}
-
-			default: {
-
-				try {
-					item_tag_adapter = new ItemTagLegacy();
-					return true;
-				} catch(UnsupportedOperationException ex) {
-					log(Level.WARNING, "You platform is not supported. Supported versions 1.8 - 1.18");
-					Bukkit.getPluginManager().disablePlugin(this);
-					return false;
-				}
-
-			}
-
-		}
-
-	}
-
-	private ChatColor msIndicator(long ms, int yellow, int red) {
-		if(ms > red) return ChatColor.RED;
-		if(ms > yellow) return ChatColor.YELLOW;
-		return ChatColor.GREEN;
-	}
-	
-	public void loadConfig() {
-
-		config = new Config(instance, getDataFolder(), "config.yml").copy(true).copyMissedFields();
-		
-		brperm = config.get().getBoolean("break-permissions");
-		reduce = config.get().getBoolean("reduce-command-author-info");
-		reduce_convert = config.get().getBoolean("disable-json-convert-checking");
-		h = config.get().getBoolean("skip-factory-broken");
-		p$s = config.get().getBoolean("prevent-hat-luckyblocks");
-		fui = config.getBoolean("force-update-inventory");
-		
-		if(config.get().isSet("place.verify-name")) {
-			
-			config.get().set("place.verify-name", null);
-			config.save();
-			log(Level.WARNING, "Old storage scheme found!");
-			log(Level.WARNING, "  > disabling name checking");
-			log(Level.WARNING, "  > enabling tag factory converter");
-			log(Level.WARNING, "THIS MAY CAUSE BAD PERFORMANCE IMPACT!");
-			
-		}
-		
-		convert_manager.options(config.get().getBoolean("place.verify-UUID"), config.get().getBoolean("place.verify-TAG"));
-		convert_manager.toggleFactory(config.get().getBoolean("place.convert-factory"));
-		
-		if(!convert_manager.isVerifyTAG() && !convert_manager.isVerifyUUID())
-			log(Level.WARNING, "You must enable place.verify-TAG or place.verify-UUID option for plugin work");
-		
-		MessagesManager.reload(config.get().getString("language"));
-
-		debug = config.get().getBoolean("debug");
-		if(debug) getLogger().log(Level.WARNING, "Debug mode enabled! Note that this mode only for developer!");
-
-		inform = config.get().getBoolean("inform-about-update");
-		
-		disable_author_info = config.get().getBoolean("disable-author-info-gui-get") || config.get().getBoolean("disable-author-info");
-		if(disable_author_info && !premium) {
-			disable_author_info = false;
-			
-			log(Level.WARNING, "Sorry, but you cant disable author info in free plugin version.");
-			log(Level.WARNING, "Check out premium plugin version - https://www.spigotmc.org/resources/94872");
-			
-		}
-		
-		web_unavailable_disable = config.get().getBoolean("web-unavailable-disable");
-		
-		Config worlds = new Config(this, "configuration.other", null, "worlds").copy(true);
-		w = new StringMatcher<>(worlds.get().getString("mode"), worlds.get().getStringList("list"));
-		w.connectDataHandler(new WorldListDataHandler(worlds.get().getBoolean("break-no-drop"), worlds.get().getBoolean("place-admins")));
-		
-	}
-	
-	public static void debug(String string) { if(debug) log(Level.INFO, "[DEBUG] " + string); }
-
-	@Deprecated
-	public void system_load() {
-		reloadSystem();
-	}
-
-	public void reloadSystem() {
-		
-		long ms = System.currentTimeMillis();
-		debug("Loading system...");
-		map.clear();
-		
-		if(commands_manager != null)
-			commands_manager.fix_ram(null);
-		
-		for(String str : config.get().getStringList("enabled")) {
-			try {
-				LuckyBlockType lb = LuckyBlockType.parse(str);
-				if(lb == null) {
-					log(Level.SEVERE, Message.LB_NOT_FOUND.getAsString().replace("%lb%", str.toUpperCase()));
-					continue;
-				}
-				String e = lb.load();
-				if(e != null)
-					log(Level.SEVERE, Message.LB_LOADING_EXCEPTION.getAsString().replace("%lb%", str.toUpperCase()).replace("%exception%", e));
-			} catch(Exception ex) {
-				log(Level.SEVERE, Message.LB_UNKNOWN_EXCEPTION.getAsString().replace("%lb%", str.toUpperCase()));
-				ex.printStackTrace();
-			}
-		}
-		
-		if(map.size() == 0) {
-			log(Level.WARNING, Message.LB_LOADED_ZERO.getAsString());
-		} else {
-			log(Level.INFO, Message.LB_LOADED_NOT_ZERO.getAsString().replace("%amount%", String.valueOf(map.size())));
-		}
-
-		try {
-			CustomItemFactory.loadSystem();
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
-		
-		log(Level.INFO, "System loaded (took " + (System.currentTimeMillis() - ms) + " ms)...");
-		
-	}
-	
-	@Deprecated
-	public void checkForUpdates() { checkForUpdates(false); }
-	
-	public static void checkForUpdates(boolean inform) { getUpdater().check$announce(!instance.web_unavailable_disable || debug, LBMain.inform || inform); }
-	
-	private static final HashMap<LuckyBlockType, LuckyBlock> map = new HashMap<>();
-	
-	public enum Hooks {
-		
-		Vault,
-		TokenManager,
-		WorldEdit,
-		WorldGuard,
-		SlimeFun;
-		
-		private String error = "not found";
-		
-		public static void loadAll() { Arrays.asList(Hooks.values()).forEach(Hooks::load); }
-		
-		public static void print() {
-			
-			Collection<Hooks> collection = new ArrayList<>();
-			for(Hooks hook : Hooks.values())
-				if(hook.isEnabled())
-					log(Level.INFO, ChatColor.GREEN + hook.name() + " connected");
-				else collection.add(hook);
-			
-			for(Hooks hook : collection)
-				log(Level.INFO, ChatColor.RED + hook.name() + " " + hook.error);
-			
-			log(Level.INFO,
-					ChatColor.GOLD + "Found " + (Hooks.values().length - collection.size()) + "/" + Hooks.values().length + " compatible plugins");
-			
-		}
-		
-		public void disable(String reason) { this.error = reason; }
-		
-		public boolean isEnabled() { return error == null; }
-		
-		public void load() {
-
-			if(Bukkit.getPluginManager().isPluginEnabled(this.name())) error = null;
-			
-		}
-		
-		public static Hooks parse(String name) {
-			for(Hooks hook : values())
-				if(hook.name().equalsIgnoreCase(name)) return hook;
-			return null;
-		}
-		
-	}
-	
-	public enum LuckyBlockType {
-		
-		TINTED("a57a8c5ef6cafefa50eb308b97a6375b132def6fb6c50b107fbb39a28fa6c227"),
-		ICED("2fbe5d2c82ef397513cd757f7735e653238fb62de672907e6b4762a1767afa7d"),
-		
-		BLACK("c7b187e38b407feabaf190879d98a67f4c7052f3201f72e44571f537ea89d4c7"),
-		BLUE("8534b17d2d3b5a64c57f5f080dd777945761d9f71d82e8f599f242976e4d0c05"),
-		BROWN("c133414759f9e5315156017023a8b1b31cfbf177dcafb0603b8e9d94036a23f1"),
-		CYAN("300c817432585fadcbd9ca8cfedfeedbce5851b7c07d1b073fb52fa8283e8f23"),
-		GRAY("f171a0c0572824da80366d71c5413a7e3355abec79b8f529f1dc9dad2632f485"),
-		GREEN("6ab180e820f71629f01f25b62bdeb9c324d50a38af74e6a9321439471046dc41"),
-		LIGHT_BLUE("65fed46b39c6c34d491143b72ce728797d16f9b5aa40bbdec61667f5ff9d3d45"),
-		LIGHT_GRAY("d019fe633a45fc3d353f9a2f09fd88e721de31c2bc969ae0aeeadf57c1be0bcc"),
-		LIME("b03f5a9bc719cd1127be0954c73cd5714ecd478dad880ef2b9979c481097e6be"),
-		MAGENTA("1f23685c697ba55edda425ecf1fec72feeb7bb985c6506b2cef070515e4e5492"),
-		ORANGE("bd3a1436e0fd5f3e4d113a092c1d07a12e22d426c50183ccd62877d9cd885fbd"),
-		PINK("11a367164bc6852c8f078811de7baacaefd6964960ebff1fa504c7b4b1298a52"),
-		PURPLE("6cfb4ebc3ba4fec04d8978a1660bb7c98e96342ff2a238ada9df2f74bf032b40"),
-		RED("29942dd1338abeae8b8274a41ae1dcdf2b7be449f28d6b650ec06e491e70f570"),
-		WHITE("c8e16e7ff13d3e30a3a2b835a86fd05ecbc08909f6056de1646fe25b3def9584"),
-		YELLOW("17bc1b64cba3dc4cefe4e121c3cdbbb0fa99aba0e113b5c916815fc9b304e636");
-		
-		private final String texture;
-		
-		LuckyBlockType(String texture) {
-			this.texture = texture;
-		}
-		
-		@Deprecated
-		public DyeColor asDye() {
-			
-			if(this == LuckyBlockType.LIGHT_GRAY && instance.factory instanceof Mat1_12)
-				return DyeColor.valueOf("SILVER");
-			if(this == LuckyBlockType.TINTED) return DyeColor.BLACK;
-			if(this == LuckyBlockType.ICED) return DyeColor.LIGHT_BLUE;
-			
-			return DyeColor.valueOf(this.name());
-			
-		}
-		
-		public ColorData asColor() {
-			
-			if(this == LuckyBlockType.TINTED) return ColorData.BLACK;
-			if(this == LuckyBlockType.ICED) return ColorData.LIGHT_BLUE;
-			return ColorData.valueOf(name());
-			
-		}
-		
-		public static LuckyBlockType parse(ColorData data) {
-			return LuckyBlockType.valueOf(data.name());
-		}
-		
-		public static LuckyBlockType parse(String name) {
-			for(LuckyBlockType type : values())
-				if(type.name().equalsIgnoreCase(name)) return type;
-			return null;
-		}
-		
-		public static LuckyBlockType parse(UUID uuid) {
-			for(LuckyBlockType type : values())
-				if(type.getUUID().equals(uuid)) return type;
-			return null;
-		}
-		
-		public boolean isAvailable() {
-			
-			if(this == LuckyBlockType.TINTED) return instance.tinted.isAvailable();
-			if(this == LuckyBlockType.ICED) return isPremium();
-			
-			return true;
-			
-		}
-		
-		public String load() {
-			
-			if(!isAvailable()) return "LuckyBlock \"" + name() + "\" is not available";
-			
-			Config config = new Config(instance, "configuration.luckyblocks." + instance.factory.build(), folder, this.name().toLowerCase() + ".yml");
-			
-			if(!config.hasResource()) {
-				
-				config.write();
-				config.reload();
-				FileConfiguration file = config.get();
-				
-				LBFactory.latest().generate(file, this);
-				
-				config.save();
-//				instance.getLogger().log(Level.INFO, "Build-in config not found for " + this.name() + ". Setup " + config.getName() + " ^_^");
-				
-			}
-			
-			config.copy(true);
-			LuckyBlock block = new LuckyBlock(this, config);
-			if(block.getException() != null) return block.getException();
-			map.put(this, block);
-			block.loadRecipes();
-			return null;
-			
-		}
-		
-		public Material getMaterial() {
-			if(this == LuckyBlockType.TINTED) return instance.tinted.getMaterial();
-			if(this == LuckyBlockType.ICED) return Material.ICE;
-			return instance.factory.getGlass(asColor(), 1).getType();
-		}
-		
-		@Deprecated
-		public ItemStack getItem() {
-			return instance.factory.getGlass(asColor(), 1);
-		}
-		
-		public boolean isLoaded() { return map.get(this) != null; }
-		
-		public LuckyBlock get() throws LuckyBlockNotLoadedException {
-			LuckyBlock lb = map.get(this);
-			if(lb == null) throw new LuckyBlockNotLoadedException(this);
-			return lb;
-		}
-		
-		public static Set<LuckyBlockType> enabled() { return map.keySet(); }
-		@Deprecated
-		public static Set<LuckyBlockType> list() { return enabled(); }
-		
-		public static HashMap<LuckyBlockType, LuckyBlock> map() { return map; }
-		
-		@Deprecated
-		public String fixName(String name) {
-			
-			try {
-				while(name.length() >= 2 && (name.charAt(name.length() - 2) == '&' || name.charAt(name.length() - 2) == '\u00a7')) {
-					name = name.substring(0, name.length() - 2);
-				}
-			} catch(Exception ex) {
-				ex.printStackTrace();
-			}
-			
-			String name0 = name + "\u00a7" + toColorSymbol();
-			debug(("Remmaped " + name + " to " + name0 + " to avoid same names").replace("\u00a7", "&"));
-			return name0;
-			
-		}
-		
-		public String getCustomName(boolean colored) {
-			return (colored ? "\u00a7" + toColorSymbol() : "") + (map.containsKey(this) ? map.get(this).getCustomName() : this.name());
-		}
-		
-		@Deprecated
-		public String getCustomName() { return getCustomName(false); }
-		
-		public String getTexture() { return this.texture; }
-		
-		public UUID getUUID() {
-			if(this == LuckyBlockType.TINTED) return UUID.fromString("12345678-1234-1234-1234-000000000010");
-			if(this == LuckyBlockType.ICED) return UUID.fromString("12345678-1234-1234-1234-000000000011");
-			return UUID.fromString("12345678-1234-1234-1234-00000000000" + Integer.toHexString(asColor().getData()));
-		}
-		
-		public String toColorSymbol() { return toColor(asColor().getData()); }
-		
-		public static LuckyBlockType random(boolean loaded) {
-			
-			LuckyBlockType[] types = loaded ?
-					LuckyBlockType.map().keySet().toArray(new LuckyBlockType[LuckyBlockType.map().size()]) : LuckyBlockType.values();
-			
-			if(types.length == 0)
-				types = LuckyBlockType.values();
-			
-			return types[ThreadLocalRandom.current().nextInt(types.length)];
-			
-		}
-		
-		public Collection<LuckyRecipe> getRecipes() throws LuckyBlockNotLoadedException {
-			
-			return get().getRecipes();
-			
-		}
-		
-		public boolean isColoredGlass() {
-			return this != TINTED && this != ICED;
-		}
-		
-	}
-	
-	public static String toColor(byte data) {
-		
-		switch(data) {
-		
-		case 0: return "f";
-		case 1: return "6";
-		case 2: case 6: return "d";
-		case 3: return "b";
-		case 4: return "e";
-		case 5: return "a";
-		case 7: return "8";
-		case 8: return "7";
-		case 9: return "3";
-		case 10: return "5";
-		case 11: return "1";
-		case 13: return "2";
-		case 14: return "4";
-		case 15: return "0";
-		
-		}
-		return "c";
-		
-	}
-	
-	private static final HashMap<PlayerHead, ItemStack> heads = new HashMap<>();
-	private static boolean p$s;
-	
-	public static ItemStack getHead0(String url, String name, List<String> lore) { return getHead0(url, name, lore, UUID.randomUUID()); }
-	
-	public static ItemStack getHead0(String url, String name, List<String> lore, UUID uuid) {
-		if(url == null || url.isEmpty())
-			throw new UnsupportedOperationException("URL cannout be null");
-		ItemStack head = instance.factory.getItem(Mat.PLAYER_SKULL, 1);
-        SkullMeta headMeta = (SkullMeta) head.getItemMeta();
-        GameProfile profile = new GameProfile(uuid, null);
-        profile.getProperties().put("textures", new Property("textures",
-        		new String(Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}", url).getBytes()))));
-        try {
-        	Field profileField = headMeta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(headMeta, profile);
-        } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+            CustomItemFactory.loadSystem();
+        } catch (Throwable e) {
             e.printStackTrace();
         }
-        if(name != null) headMeta.setDisplayName(name);
-        if(lore != null) headMeta.setLore(lore);
-        head.setItemMeta(headMeta);
-        return head;
-	}
-	
-	public enum PlayerHead {
-		
-		PLUS_WOOD("http://textures.minecraft.net/texture/3edd20be93520949e6ce789dc4f43efaeb28c717ee6bfcbbe02780142f716"),
-		PLUS_STONE("http://textures.minecraft.net/texture/0a21eb4c57750729a48b88e9bbdb987eb6250a5bc2157b59316f5f1887db5"),
-		MINUS_WOOD("http://textures.minecraft.net/texture/bd8a99db2c37ec71d7199cd52639981a7513ce9cca9626a3936f965b131193"),
-		MINUS_STONE("http://textures.minecraft.net/texture/a8c67fed7a2472b7e9afd8d772c13db7b82c32ceeff8db977474c11e4611"),
-		
-		NEXT_WOOD("http://textures.minecraft.net/texture/19bf3292e126a105b54eba713aa1b152d541a1d8938829c56364d178ed22bf"),
-		PREVIOUS_WOOD("http://textures.minecraft.net/texture/b6e14f2b7d1f5cb6f56ab3e6881fc8490eda6ff2d1d48a3241d147223cb3"),
-		CLOSE_WOOD("https://textures.minecraft.net/texture/5b30507783c37db3a3092cad043e57951aa8b4c6ea9acc47d604b7eb5aea028");
-		
-		PlayerHead(String url) { this.url = url; }
-		
-		public void loadHead() { heads.put(this, getHead0(url, "name", new ArrayList<>())); }
 
-		public String getURL() { return url; }
+        log(Level.INFO, "System loaded (took " + (System.currentTimeMillis() - ms) + " ms)...");
 
-		public ItemStack getHead(String name, List<String> lore) {
-			
-			if(heads.get(this) == null) loadHead();
-			ItemStack item = heads.get(this).clone();
-			
-			ItemMeta meta = item.getItemMeta();
-			meta.setDisplayName(name.replace("&", "\u00a7"));
-			if(lore != null)
-				meta.setLore(lore.stream().map(n -> n.replace("&", "\u00a7")).collect(Collectors.toList()));
-			item.setItemMeta(meta);
-			
-			return item;
-			
-		}
-		
-		public ItemStack getHead() {
-			
-			ItemStack item = heads.get(this);
-			if(item == null) {
-				loadHead();
-				item = heads.get(this);
-			}
-			
-			return item.clone();
-			
-		}
-		
-		private final String url;
-		
-	}
-	
-	@Deprecated
-	public static boolean inform() { return inform; }
-	public static boolean isInformAboutUpdates() { return inform; }
-	
-	@Deprecated
-	public static String updateLink() { return instance.updater.getResourceURL(); }
-	
-	public static boolean isPreventSkulls() { return p$s; }
-	public static SpigotUpdater getUpdater() { return instance.updater; }
-	
-	public static String getDiscordURL() { return "https://discord.gg/vbYW3sperj"; }
-	
+    }
+
+    public void checkForUpdates(boolean inform) {
+        getUpdater().check$announce(debug || !disableWebIssuePrint, inform || informAboutUpdates);
+    }
+
+    public enum LuckyBlockType {
+
+        TINTED("a57a8c5ef6cafefa50eb308b97a6375b132def6fb6c50b107fbb39a28fa6c227"),
+        ICED("2fbe5d2c82ef397513cd757f7735e653238fb62de672907e6b4762a1767afa7d"),
+
+        BLACK("c7b187e38b407feabaf190879d98a67f4c7052f3201f72e44571f537ea89d4c7"),
+        BLUE("8534b17d2d3b5a64c57f5f080dd777945761d9f71d82e8f599f242976e4d0c05"),
+        BROWN("c133414759f9e5315156017023a8b1b31cfbf177dcafb0603b8e9d94036a23f1"),
+        CYAN("300c817432585fadcbd9ca8cfedfeedbce5851b7c07d1b073fb52fa8283e8f23"),
+        GRAY("f171a0c0572824da80366d71c5413a7e3355abec79b8f529f1dc9dad2632f485"),
+        GREEN("6ab180e820f71629f01f25b62bdeb9c324d50a38af74e6a9321439471046dc41"),
+        LIGHT_BLUE("65fed46b39c6c34d491143b72ce728797d16f9b5aa40bbdec61667f5ff9d3d45"),
+        LIGHT_GRAY("d019fe633a45fc3d353f9a2f09fd88e721de31c2bc969ae0aeeadf57c1be0bcc"),
+        LIME("b03f5a9bc719cd1127be0954c73cd5714ecd478dad880ef2b9979c481097e6be"),
+        MAGENTA("1f23685c697ba55edda425ecf1fec72feeb7bb985c6506b2cef070515e4e5492"),
+        ORANGE("bd3a1436e0fd5f3e4d113a092c1d07a12e22d426c50183ccd62877d9cd885fbd"),
+        PINK("11a367164bc6852c8f078811de7baacaefd6964960ebff1fa504c7b4b1298a52"),
+        PURPLE("6cfb4ebc3ba4fec04d8978a1660bb7c98e96342ff2a238ada9df2f74bf032b40"),
+        RED("29942dd1338abeae8b8274a41ae1dcdf2b7be449f28d6b650ec06e491e70f570"),
+        WHITE("c8e16e7ff13d3e30a3a2b835a86fd05ecbc08909f6056de1646fe25b3def9584"),
+        YELLOW("17bc1b64cba3dc4cefe4e121c3cdbbb0fa99aba0e113b5c916815fc9b304e636");
+
+        private final String texture;
+
+        LuckyBlockType(String texture) {
+            this.texture = texture;
+        }
+
+        public static LuckyBlockType parse(ColorData data) {
+            return LuckyBlockType.valueOf(data.name());
+        }
+
+        public static LuckyBlockType parse(String name) {
+            for (LuckyBlockType type : values())
+                if (type.name().equalsIgnoreCase(name)) return type;
+            return null;
+        }
+
+        public static LuckyBlockType parse(UUID uuid) {
+            for (LuckyBlockType type : values())
+                if (type.getUUID().equals(uuid)) return type;
+            return null;
+        }
+
+        public static Set<LuckyBlockType> enabled() {
+            return map.keySet();
+        }
+
+        @Deprecated
+        public static Set<LuckyBlockType> list() {
+            return enabled();
+        }
+
+        public static Map<LuckyBlockType, LuckyBlock> map() {
+            return map;
+        }
+
+        public static LuckyBlockType random(boolean loaded) {
+
+            LuckyBlockType[] types = loaded && map.size() > 0 ? map.keySet().toArray(new LuckyBlockType[0])
+                    : LuckyBlockType.values();
+            return types[ThreadLocalRandom.current().nextInt(types.length)];
+
+        }
+
+        @Deprecated
+        public DyeColor asDye() {
+
+            if (this == LuckyBlockType.LIGHT_GRAY && instance.factory instanceof Mat1_12)
+                return DyeColor.valueOf("SILVER");
+            if (this == LuckyBlockType.TINTED) return DyeColor.BLACK;
+            if (this == LuckyBlockType.ICED) return DyeColor.LIGHT_BLUE;
+
+            return DyeColor.valueOf(this.name());
+
+        }
+
+        public ColorData asColor() {
+
+            if (this == LuckyBlockType.TINTED) return ColorData.BLACK;
+            if (this == LuckyBlockType.ICED) return ColorData.LIGHT_BLUE;
+            return ColorData.valueOf(name());
+
+        }
+
+        public boolean isAvailable() {
+
+            if (this == LuckyBlockType.TINTED) return instance.tinted != null;
+            if (this == LuckyBlockType.ICED) return isPremium();
+
+            return true;
+
+        }
+
+        public String load() {
+
+            if (!isAvailable()) return "LuckyBlock \"" + name() + "\" is not available";
+
+            Config config = new Config(instance, "configuration.luckyblocks." + instance.factory.build(),
+                    instance.folder, this.name().toLowerCase() + ".yml");
+
+            if (!config.hasResource()) {
+
+                config.write();
+                config.reload();
+                FileConfiguration file = config.get();
+
+                LBFactory.latest().generate(file, this);
+
+                config.save();
+
+            }
+
+            config.copy(true);
+            LuckyBlock block = new LuckyBlock(this, config);
+            if (block.getException() != null) return block.getException();
+            map.put(this, block);
+            block.loadRecipes();
+            return null;
+
+        }
+
+        public Material getMaterial() {
+            if (this == LuckyBlockType.TINTED) return instance.tinted;
+            if (this == LuckyBlockType.ICED) return Material.ICE;
+            return instance.factory.getGlass(asColor(), 1).getType();
+        }
+
+        @Deprecated
+        public ItemStack getItem() {
+            return instance.factory.getGlass(asColor(), 1);
+        }
+
+        public boolean isLoaded() {
+            return map.get(this) != null;
+        }
+
+        public LuckyBlock get() throws LuckyBlockNotLoadedException {
+            LuckyBlock lb = map.get(this);
+            if (lb == null) throw new LuckyBlockNotLoadedException(this);
+            return lb;
+        }
+
+        @Deprecated
+        public String fixName(String name) {
+
+            try {
+                while (name.length() >= 2 && (name.charAt(name.length() - 2) == '&' || name.charAt(name.length() - 2) == '\u00a7')) {
+                    name = name.substring(0, name.length() - 2);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+            String name0 = name + "\u00a7" + toColorSymbol();
+            debug(("Remapped " + name + " to " + name0 + " to avoid same names").replace("\u00a7", "&"));
+            return name0;
+
+        }
+
+        public String getCustomName(boolean colored) {
+            return (colored ? "\u00a7" + toColorSymbol() : "") + (map.containsKey(this) ? map.get(this).getCustomName() : this.name());
+        }
+
+        @Deprecated
+        public String getCustomName() {
+            return getCustomName(false);
+        }
+
+        public String getTexture() {
+            return this.texture;
+        }
+
+        public UUID getUUID() {
+            if (this == LuckyBlockType.TINTED) return UUID.fromString("12345678-1234-1234-1234-000000000010");
+            if (this == LuckyBlockType.ICED) return UUID.fromString("12345678-1234-1234-1234-000000000011");
+            return UUID.fromString("12345678-1234-1234-1234-00000000000" + Integer.toHexString(asColor().getData()));
+        }
+
+        public String toColorSymbol() {
+            return this.asColor().asColorCode();
+        }
+
+        public Collection<LuckyRecipe> getRecipes() throws LuckyBlockNotLoadedException {
+
+            return get().getRecipes();
+
+        }
+
+        public boolean isColoredGlass() {
+            return this != TINTED && this != ICED;
+        }
+
+    }
+
 }

@@ -9,22 +9,24 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 public class ExperienceExplosionSpecial extends ExplosionableItems implements LuckyDrop {
-	
-	@SerializedName(value = "amount")
-	private final int a;
-	
-	public ExperienceExplosionSpecial(int a) {
-		this.a = a;
-	}
 
-	public int getAmount() { return a; }
+    @SerializedName(value = "amount")
+    private final int a;
 
-	@Override
-	public void execute(LBMain.LuckyBlockType related, Block block, Player player) {
+    public ExperienceExplosionSpecial(int a) {
+        this.a = a;
+    }
 
-		throwExplosion(EntityType.THROWN_EXP_BOTTLE,
-				player == null ? block.getLocation().add(.5, .5, .5) : player.getLocation().clone().add(.0, .5, .0), a);
+    public int getAmount() {
+        return a;
+    }
 
-	}
+    @Override
+    public void execute(LBMain.LuckyBlockType related, Block block, Player player) {
+
+        throwExplosion(EntityType.THROWN_EXP_BOTTLE,
+                player == null ? block.getLocation().add(.5, .5, .5) : player.getLocation().clone().add(.0, .5, .0), a);
+
+    }
 
 }

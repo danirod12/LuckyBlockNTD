@@ -16,52 +16,54 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class PigSpecial implements LuckyDrop {
-	
-	@SerializedName(value = "amount")
-	private final int a;
-	
-	public PigSpecial(int a) {
-		this.a = a;
-	}
 
-	public int getAmount() { return a; }
+    @SerializedName(value = "amount")
+    private final int a;
 
-	@Override
-	public void execute(Block b, Player target) {
-		Pig current = null;
-		for(int i = 0; i < a; i++) {
-			Pig pig = (Pig) b.getWorld().spawnEntity(target.getLocation(), EntityType.PIG);
-			pig.setCanPickupItems(false);
-			pig.setRemoveWhenFarAway(true);
-			if(current != null) 
-				current.setPassenger(pig);
-			current = pig;
-		}
-		current.setPassenger(target);
-	}
+    public PigSpecial(int a) {
+        this.a = a;
+    }
 
-	@Override
-	public void execute(LBMain.LuckyBlockType type, Block b, Player target) {
+    public int getAmount() {
+        return a;
+    }
 
-		Location location = target == null ? b.getLocation().add(0.5, 0.4, 0.5) : target.getLocation();
+    @Override
+    public void execute(Block b, Player target) {
+        Pig current = null;
+        for (int i = 0; i < a; i++) {
+            Pig pig = (Pig) b.getWorld().spawnEntity(target.getLocation(), EntityType.PIG);
+            pig.setCanPickupItems(false);
+            pig.setRemoveWhenFarAway(true);
+            if (current != null)
+                current.setPassenger(pig);
+            current = pig;
+        }
+        current.setPassenger(target);
+    }
 
-		Collection<Entity> collection = new ArrayList<>();
-		Pig current = null;
-		for(int i = 0; i < a; i++) {
-			Pig pig = (Pig) b.getWorld().spawnEntity(location, EntityType.PIG);
-			collection.add(pig);
-			pig.setCanPickupItems(false);
-			pig.setRemoveWhenFarAway(true);
-			if(current != null) 
-				current.setPassenger(pig);
-			current = pig;
-		}
+    @Override
+    public void execute(LBMain.LuckyBlockType type, Block b, Player target) {
 
-		if(target != null)
-			current.setPassenger(target);
+        Location location = target == null ? b.getLocation().add(0.5, 0.4, 0.5) : target.getLocation();
 
-		Bukkit.getPluginManager().callEvent(new EntitySpawnEvent(type, collection, target));
+        Collection<Entity> collection = new ArrayList<>();
+        Pig current = null;
+        for (int i = 0; i < a; i++) {
+            Pig pig = (Pig) b.getWorld().spawnEntity(location, EntityType.PIG);
+            collection.add(pig);
+            pig.setCanPickupItems(false);
+            pig.setRemoveWhenFarAway(true);
+            if (current != null)
+                current.setPassenger(pig);
+            current = pig;
+        }
 
-	}
-	
+        if (target != null)
+            current.setPassenger(target);
+
+        Bukkit.getPluginManager().callEvent(new EntitySpawnEvent(type, collection, target));
+
+    }
+
 }

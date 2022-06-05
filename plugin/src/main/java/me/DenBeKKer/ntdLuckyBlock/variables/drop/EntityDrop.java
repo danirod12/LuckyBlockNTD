@@ -14,34 +14,36 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class EntityDrop implements LuckyDrop {
-	
-	@SerializedName(value = "entity")
-	private final EntityType entity;
-	@SerializedName(value = "amount")
-	private final int amount;
-	
-	/**
-	 * @param entity - EntityType of entity that will be spawned
-	 * @param amount - Entity amount that will be spawned
-	 */
-	public EntityDrop(EntityType entity, int amount) {
-		this.entity = entity;
-		this.amount = amount;
-	}
 
-	@Override
-	public void execute(LBMain.LuckyBlockType related, Block b, Player target) {
-		Collection<Entity> collection = new ArrayList<>();
-		for(int i = 0; i < amount; i++) {
-			collection.add(b.getWorld().spawnEntity(b.getLocation().add(0.5, 1, 0.5), entity));
-		}
-		Bukkit.getPluginManager().callEvent(new EntitySpawnEvent(related, collection, target));
-	}
+    @SerializedName(value = "entity")
+    private final EntityType entity;
+    @SerializedName(value = "amount")
+    private final int amount;
 
-	public EntityType getEntityType() {
-		return entity;
-	}
+    /**
+     * @param entity - EntityType of entity that will be spawned
+     * @param amount - Entity amount that will be spawned
+     */
+    public EntityDrop(EntityType entity, int amount) {
+        this.entity = entity;
+        this.amount = amount;
+    }
 
-	public int getAmount() { return amount; }
+    @Override
+    public void execute(LBMain.LuckyBlockType related, Block b, Player target) {
+        Collection<Entity> collection = new ArrayList<>();
+        for (int i = 0; i < amount; i++) {
+            collection.add(b.getWorld().spawnEntity(b.getLocation().add(0.5, 1, 0.5), entity));
+        }
+        Bukkit.getPluginManager().callEvent(new EntitySpawnEvent(related, collection, target));
+    }
+
+    public EntityType getEntityType() {
+        return entity;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
 
 }

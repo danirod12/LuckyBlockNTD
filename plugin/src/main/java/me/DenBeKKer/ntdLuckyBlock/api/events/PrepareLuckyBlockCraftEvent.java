@@ -9,17 +9,24 @@ import org.bukkit.inventory.ItemStack;
 
 public class PrepareLuckyBlockCraftEvent extends Event implements Cancellable {
 
-    private static HandlerList handlers = new HandlerList();
+    private static final HandlerList handlers = new HandlerList();
     private final Player player;
     private final ItemStack[] matrix;
     private final LuckyRecipe recipe;
+    private boolean c = false;
 
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
+    public PrepareLuckyBlockCraftEvent(Player player, ItemStack[] matrix, LuckyRecipe recipe) {
+        this.player = player;
+        this.matrix = matrix;
+        this.recipe = recipe;
     }
 
     public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    @Override
+    public HandlerList getHandlers() {
         return handlers;
     }
 
@@ -28,21 +35,21 @@ public class PrepareLuckyBlockCraftEvent extends Event implements Cancellable {
         return c;
     }
 
-    private boolean c = false;
-
     @Override
     public void setCancelled(boolean cancel) {
         c = cancel;
     }
 
-    public PrepareLuckyBlockCraftEvent(Player player, ItemStack[] matrix, LuckyRecipe recipe) {
-        this.player = player;
-        this.matrix = matrix;
-        this.recipe = recipe;
+    public Player getPlayer() {
+        return player;
     }
 
-    public Player getPlayer() { return player; }
-    public ItemStack[] getMatrix() { return matrix; }
-    public LuckyRecipe getLuckyRecipe() { return recipe; }
+    public ItemStack[] getMatrix() {
+        return matrix;
+    }
+
+    public LuckyRecipe getLuckyRecipe() {
+        return recipe;
+    }
 
 }

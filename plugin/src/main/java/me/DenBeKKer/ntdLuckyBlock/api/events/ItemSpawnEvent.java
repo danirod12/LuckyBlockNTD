@@ -8,19 +8,10 @@ import org.bukkit.event.HandlerList;
 
 public class ItemSpawnEvent extends Event {
 
-    private static HandlerList handlers = new HandlerList();
+    private static final HandlerList handlers = new HandlerList();
     private final LBMain.LuckyBlockType r;
     private final Item i;
     private final Player p;
-
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
 
     public ItemSpawnEvent(LBMain.LuckyBlockType related, Item item, Player player) {
 
@@ -30,7 +21,18 @@ public class ItemSpawnEvent extends Event {
 
     }
 
-    public Player getPlayer() { return p; }
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+
+    public Player getPlayer() {
+        return p;
+    }
 
     public LBMain.LuckyBlockType getSource() {
         return r;

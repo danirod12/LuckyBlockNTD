@@ -8,43 +8,45 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class LightningSpecial implements LuckyDrop {
-	
-	@SerializedName(value = "amount")
-	private final int a;
-	
-	public LightningSpecial(int a) {
-		this.a = a;
-	}
 
-	public int getAmount() { return a; }
+    @SerializedName(value = "amount")
+    private final int a;
 
-	@Override
-	public void execute(LBMain.LuckyBlockType related, Block b, Player target) {
+    public LightningSpecial(int a) {
+        this.a = a;
+    }
 
-		if(target == null) {
-			b.getWorld().strikeLightning(b.getLocation().add(0.5, 0.5, 0.5));
-		} else {
+    public int getAmount() {
+        return a;
+    }
 
-			new BukkitRunnable() {
+    @Override
+    public void execute(LBMain.LuckyBlockType related, Block b, Player target) {
 
-				int i = 0;
+        if (target == null) {
+            b.getWorld().strikeLightning(b.getLocation().add(0.5, 0.5, 0.5));
+        } else {
 
-				@Override
-				public void run() {
+            new BukkitRunnable() {
 
-					if(i >= a || !target.isOnline() || target.isDead()) {
-						cancel();
-						return;
-					}
-					b.getWorld().strikeLightning(target.getLocation());
-					i++;
+                int i = 0;
 
-				}
+                @Override
+                public void run() {
 
-			}.runTaskTimer(LBMain.getInstance(), 15, 15);
+                    if (i >= a || !target.isOnline() || target.isDead()) {
+                        cancel();
+                        return;
+                    }
+                    b.getWorld().strikeLightning(target.getLocation());
+                    i++;
 
-		}
+                }
 
-	}
-	
+            }.runTaskTimer(LBMain.getInstance(), 15, 15);
+
+        }
+
+    }
+
 }

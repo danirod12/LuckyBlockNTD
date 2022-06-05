@@ -1,11 +1,11 @@
 package me.DenBeKKer.ntdLuckyBlock.util;
 
-import java.io.File;
-
 import org.bukkit.block.Block;
 
+import java.io.File;
+
 public interface IWorldEdit {
-	
-	void paste(File file, Block obj, boolean activate);
+
+    void paste(File file, Block obj, boolean activate);
 
 }

@@ -13,58 +13,57 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.CraftingInventory;
 
 public class CraftListener implements Listener {
-	
-	@EventHandler
-	public void craft(PrepareItemCraftEvent e) throws LuckyBlockNotLoadedException {
-		
-		CraftingInventory inventory = e.getInventory();
-		Player player = null;
-		try {
-			player = (Player) e.getViewers().get(0);
-		} catch(Exception ex) {
-			if(LBMain.isDebug())
-				ex.printStackTrace();
-			return;
-		}
-		
-		LBMain.debug("PrepareItemCraftEvent, player - " + (player == null ? "null" : player.getName()));
-		if(player == null) return;
-		
-		for(LuckyBlockType type : LuckyBlockType.map().keySet()) {
-			
-			for(LuckyRecipe recipe : type.getRecipes()) {
-				
-				if(recipe == null || !recipe.hasAccess(player)) {
-					LBMain.debug("No permission for craft");
-					continue;
-				}
-				
-				if(recipe.verify(inventory.getMatrix())) {
-					
-					for(int i = 0; i < inventory.getMatrix().length; i++) {
-						if(inventory.getMatrix()[i] != null
-								&& inventory.getMatrix()[i].getAmount() > 1) {
-							if(LBMain.isDebug())
-								LBMain.debug("Matrix checking. Проверка, один предмет в каждом слоте или нет");
-							player.sendMessage(Message.CRAFT_ALLOWED_ONE_LAYER.getAsString());
-							player.closeInventory();
-							return;
-						}
-					}
 
-					PrepareLuckyBlockCraftEvent event = new PrepareLuckyBlockCraftEvent(player, inventory.getMatrix(), recipe);
-					Bukkit.getPluginManager().callEvent(event);
-					if(event.isCancelled()) return;
+    @EventHandler
+    public void craft(PrepareItemCraftEvent e) throws LuckyBlockNotLoadedException {
 
-					LBMain.debug("Inserting new craft result");
-					inventory.setResult(recipe.getResult());
-					return;
-				}
-				
-			}
-			
-		}
-		
-	}
-	
+        CraftingInventory inventory = e.getInventory();
+        Player player;
+        try {
+            player = (Player) e.getViewers().get(0);
+        } catch (Exception ex) {
+            if (LBMain.isDebug())
+                ex.printStackTrace();
+            return;
+        }
+
+        LBMain.debug("PrepareItemCraftEvent, player - " + (player == null ? "null" : player.getName()));
+        if (player == null) return;
+
+        for (LuckyBlockType type : LuckyBlockType.map().keySet()) {
+
+            for (LuckyRecipe recipe : type.getRecipes()) {
+
+                if (recipe == null || !recipe.hasAccess(player)) {
+                    LBMain.debug("No permission for craft");
+                    continue;
+                }
+
+                if (recipe.verify(inventory.getMatrix())) {
+
+                    for (int i = 0; i < inventory.getMatrix().length; i++) {
+                        if (inventory.getMatrix()[i] != null
+                                && inventory.getMatrix()[i].getAmount() > 1) {
+                            LBMain.debug("Matrix checking. Проверка, один предмет в каждом слоте или нет");
+                            player.sendMessage(Message.CRAFT_ALLOWED_ONE_LAYER.getAsString());
+                            player.closeInventory();
+                            return;
+                        }
+                    }
+
+                    PrepareLuckyBlockCraftEvent event = new PrepareLuckyBlockCraftEvent(player, inventory.getMatrix(), recipe);
+                    Bukkit.getPluginManager().callEvent(event);
+                    if (event.isCancelled()) return;
+
+                    LBMain.debug("Inserting new craft result");
+                    inventory.setResult(recipe.getResult());
+                    return;
+                }
+
+            }
+
+        }
+
+    }
+
 }

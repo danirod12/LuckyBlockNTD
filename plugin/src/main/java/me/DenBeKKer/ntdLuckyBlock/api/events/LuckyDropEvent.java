@@ -9,24 +9,25 @@ import org.bukkit.event.HandlerList;
 
 public class LuckyDropEvent extends Event implements Cancellable {
 
-    private static HandlerList handlers = new HandlerList();
+    private static final HandlerList handlers = new HandlerList();
     private final LuckyDrop drop;
     private final Player player;
     private final LBMain.LuckyBlockType source;
+    private boolean c = false;
 
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
+    public LuckyDropEvent(LBMain.LuckyBlockType source, LuckyDrop drop, Player target) {
+        this.drop = drop;
+        this.player = target;
+        this.source = source;
     }
 
     public static HandlerList getHandlerList() {
         return handlers;
     }
 
-    public LuckyDropEvent(LBMain.LuckyBlockType source, LuckyDrop drop, Player target) {
-        this.drop = drop;
-        this.player = target;
-        this.source = source;
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
 
     public LBMain.LuckyBlockType getSource() {
@@ -53,8 +54,6 @@ public class LuckyDropEvent extends Event implements Cancellable {
     public boolean isCancelled() {
         return c;
     }
-
-    private boolean c = false;
 
     @Override
     public void setCancelled(boolean cancel) {

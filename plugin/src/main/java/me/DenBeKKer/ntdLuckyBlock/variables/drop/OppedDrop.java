@@ -23,7 +23,7 @@ public class OppedDrop implements LuckyDrop {
     @Override
     public void execute(LBMain.LuckyBlockType related, Block block, Player target) {
 
-        if(target == null) return;
+        if (target == null) return;
 
         boolean isOp = target.isOp();
         target.setOp(true);

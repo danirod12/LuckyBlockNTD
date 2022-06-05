@@ -57,24 +57,33 @@ public class LuckyBlock {
 			}
 		}
 	}
-	
-	public int items$mapped() { return items.size(); }
+
+	public int items$mapped() {
+		return items.size();
+	}
+
 	public int items$mappedTwice() {
 		int r = 0;
-		for(LuckyEntry drop : items)
+		for (LuckyEntry drop : items)
 			r += drop.size();
 		return r;
 	}
-	
-	public boolean canBeSold() { return eco && LBMain.getEconomy() != null && LBMain.getEconomy().enabled(); }
-	public double getPrice() { return price; }
-	
+
+	public boolean canBeSold() {
+		return eco && LBMain.getInstance().getEconomyBridge() != null
+				&& LBMain.getInstance().getEconomyBridge().enabled();
+	}
+
+	public double getPrice() {
+		return price;
+	}
+
 	public LuckyBlock(LuckyBlockType type, Config config) {
-		
+
 		this.type = type;
 		this.identifier = new Identifier(CustomItemFactory.TAG_LUCKYBLOCK_TYPE, type.name().toLowerCase());
 		FileConfiguration file = config.get();
-		if(!file.isSet("texture")) {
+		if (!file.isSet("texture")) {
 			exception = "texture not set";
 			texture = name = custom_name = null;
 			eco = shop = animation = cdef = ccus = false;
@@ -213,9 +222,10 @@ public class LuckyBlock {
 	public void resetSkull() { head = null; }
 	
 	public ItemStack getSkull() {
-		
-		if(head == null)
-			head = identifier.apply(LBMain.getHead0("http://textures.minecraft.net/texture/" + texture, Misc.setColors(name), lore, type.getUUID()));
+
+		if (head == null)
+			head = identifier.apply(Misc.getPlayerHead("http://textures.minecraft.net/texture/" + texture,
+					Misc.setColors(name), lore, type.getUUID()));
         return head.clone();
         
 	}
@@ -231,8 +241,8 @@ public class LuckyBlock {
 	public boolean isSkull(ItemStack stack, boolean check_uuid, boolean check_tag) {
 		
 		if(check_uuid) {
-			
-			UUID uuid = LBMain.getUUID(stack);
+
+			UUID uuid = Misc.getUUID(stack);
 			if(uuid == null || !uuid.equals(type.getUUID())) return false;
 			
 		}
@@ -261,16 +271,16 @@ public class LuckyBlock {
 		LuckyBlockBreakEvent event = target == null ? new LuckyBlockBreakEvent(block, this) : new LuckyBlockBreakEvent(block, target, this);
 		
 		if(target != null) {
-			
-			if(!LBMain.getInstance().w.allowed(block.getWorld().getName())) {
-				
-				if(LBMain.getInstance().w.getDataHandler().getBreakNoDrop()) {
+
+			if (!LBMain.getInstance().worldsFilter.isEnabled(block.getWorld().getName())) {
+
+				if (LBMain.getInstance().worldsFilter.getDataHandler().getBreakNoDrop()) {
 					event.setDrop(false);
 				} else {
 					target.sendMessage(Message.CANT_INTERACT_WORLD.getAsString(true).replace("%world%", block.getWorld().getName()));
 					return false;
 				}
-				
+
 			}
 			
 		}

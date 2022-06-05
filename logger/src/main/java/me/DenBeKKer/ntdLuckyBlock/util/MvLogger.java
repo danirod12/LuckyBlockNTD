@@ -14,16 +14,20 @@ public class MvLogger {
         instance = plugin;
     }
 
-    public static void log(String message) { log(Level.INFO, message); }
+    public static void log(String message) {
+        log(Level.INFO, message);
+    }
 
     public static void log(Level level, String message) {
 
-        if(level == Level.INFO)
+        if (level == Level.INFO)
             Bukkit.getConsoleSender().sendMessage("[ntdLuckyBlock] " + message.replace("&", "\u00a7"));
         else instance.getLogger().log(level, message.replace("&", "\u00a7"));
 
     }
 
-    public static Plugin getInstance() { return instance; }
+    public static Plugin getInstance() {
+        return instance;
+    }
 
 }

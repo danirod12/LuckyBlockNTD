@@ -15,71 +15,76 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class GetCommand implements LBPlayerCommand {
-	
-	@Override
-	public boolean permission() { return true; }
-	
-	@Override
-	public final String[] commands() {
-		return new String[] { "get" };
-	}
-	
-	@Override
-	public CommandResponse execute(Player player, String label, String[] args) {
-		
-		if(args.length > 0) {
-			
-			boolean random = false;
-			LuckyBlockType type = null;
-			if(args[0].equalsIgnoreCase("random")) {
-				List<LuckyBlockType> types = Stream.of(LuckyBlockType.values()).filter(LuckyBlockType::isLoaded)
-						.filter(n -> !LBMain.getInstance().config.get().getBoolean("permission-for-each-give-get") ||
-								Misc.hasPermission(player, "luckyblock.command.get." + n.name())).collect(Collectors.toList());
-				if(types.size() == 0) {
-					player.sendMessage(Message.CMD_NO_PERM_TO_COLOR.getAsString().replace("%lb%", "RANDOM"));
-					return CommandResponse.SUCCESS;
-				}
-				type = types.get(ThreadLocalRandom.current().nextInt(types.size()));
-				random = true;
-			}
-			
-			if(type == null) try {
-				
-				type = LuckyBlockType.valueOf(args[0].toUpperCase());
-				
-			} catch(Exception ex) {
-				player.sendMessage(Message.CMD_LB_NOT_FOUND.getAsString().replace("%lb%", args[0]));
-				return CommandResponse.SUCCESS;
-			}
 
-			if(!type.isLoaded()) {
-				player.sendMessage(Message.CMD_LB_DISABLED.getAsString().replace("%lb%", args[0]));
-				return CommandResponse.SUCCESS;
-			}
-			if(!(random || Misc.hasPermission(player, "luckyblock.command.get." + type.name()))) {
-				player.sendMessage(Message.CMD_NO_PERM_TO_COLOR.getAsString().replace("%lb%", LuckyBlockType.map().get(type).getCustomName()));
-				return CommandResponse.SUCCESS;
-			}
-			
-			int amount = 1;
-			try {
-				amount = Integer.parseInt(args[1]);
-			} catch(Exception ignored) {}
-			if(amount < 1) amount = 1;
-			
-			ItemStack stack = LuckyBlockType.map().get(type).getSkull();
-			stack.setAmount(amount);
-			player.getInventory().addItem(stack);
-			player.sendMessage(Message.CMD_LB_RECEIVED.getAsString().replace("%lb%", type.getCustomName(true))
-					.replace("%amount%", String.valueOf(amount)));
-			return CommandResponse.SUCCESS;
-			
-		}
-		return CommandResponse.SEND_HELP;
-		
-	}
-	
-	@Override
-	public Message helpMessage() { return Message.CMD_GET; }
-	
+    @Override
+    public boolean permission() {
+        return true;
+    }
+
+    @Override
+    public final String[] commands() {
+        return new String[]{"get"};
+    }
+
+    @Override
+    public CommandResponse execute(Player player, String label, String[] args) {
+
+        if (args.length > 0) {
+
+            boolean random = false;
+            LuckyBlockType type = null;
+            if (args[0].equalsIgnoreCase("random")) {
+                List<LuckyBlockType> types = Stream.of(LuckyBlockType.values()).filter(LuckyBlockType::isLoaded)
+                        .filter(n -> !LBMain.getInstance().config.get().getBoolean("permission-for-each-give-get") ||
+                                Misc.hasPermission(player, "luckyblock.command.get." + n.name())).collect(Collectors.toList());
+                if (types.size() == 0) {
+                    player.sendMessage(Message.CMD_NO_PERM_TO_COLOR.getAsString().replace("%lb%", "RANDOM"));
+                    return CommandResponse.SUCCESS;
+                }
+                type = types.get(ThreadLocalRandom.current().nextInt(types.size()));
+                random = true;
+            }
+
+            if (type == null) try {
+
+                type = LuckyBlockType.valueOf(args[0].toUpperCase());
+
+            } catch (Exception ex) {
+                player.sendMessage(Message.CMD_LB_NOT_FOUND.getAsString().replace("%lb%", args[0]));
+                return CommandResponse.SUCCESS;
+            }
+
+            if (!type.isLoaded()) {
+                player.sendMessage(Message.CMD_LB_DISABLED.getAsString().replace("%lb%", args[0]));
+                return CommandResponse.SUCCESS;
+            }
+            if (!(random || Misc.hasPermission(player, "luckyblock.command.get." + type.name()))) {
+                player.sendMessage(Message.CMD_NO_PERM_TO_COLOR.getAsString().replace("%lb%", LuckyBlockType.map().get(type).getCustomName()));
+                return CommandResponse.SUCCESS;
+            }
+
+            int amount = 1;
+            try {
+                amount = Integer.parseInt(args[1]);
+            } catch (Exception ignored) {
+            }
+            if (amount < 1) amount = 1;
+
+            ItemStack stack = LuckyBlockType.map().get(type).getSkull();
+            stack.setAmount(amount);
+            player.getInventory().addItem(stack);
+            player.sendMessage(Message.CMD_LB_RECEIVED.getAsString().replace("%lb%", type.getCustomName(true))
+                    .replace("%amount%", String.valueOf(amount)));
+            return CommandResponse.SUCCESS;
+
+        }
+        return CommandResponse.SEND_HELP;
+
+    }
+
+    @Override
+    public Message helpMessage() {
+        return Message.CMD_GET;
+    }
+
 }
