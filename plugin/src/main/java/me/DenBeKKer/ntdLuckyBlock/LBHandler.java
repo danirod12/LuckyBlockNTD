@@ -310,8 +310,7 @@ public class LBHandler implements Listener {
                     ArmorStand stand = (ArmorStand) en;
                     if (stand.getCustomName() == null) continue;
                     if (stand.getCustomName().equalsIgnoreCase(type.name() + ";" + (int) stand.getLocation().getX()
-                            + ";" + (int) stand.getLocation().getY() + ";" + (int) stand.getLocation().getZ())
-                            && stand.getLocation().add(0, 1.2, 0).getBlock().equals(e.getBlock())) {
+                            + ";" + (int) stand.getLocation().getY() + ";" + (int) stand.getLocation().getZ())) {
 
                         if (Hook.WorldGuard.isEnabled() && !LBWorldGuard.canBreak(e.getBlock())) {
                             e.setCancelled(true);

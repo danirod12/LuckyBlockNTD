@@ -319,8 +319,7 @@ public class LuckyBlockAPI {
                     ArmorStand stand = (ArmorStand) en;
                     if (stand.getCustomName() == null) continue;
                     if (stand.getCustomName().equalsIgnoreCase(type.name() + ";" + (int) stand.getLocation().getX()
-                            + ";" + (int) stand.getLocation().getY() + ";" + (int) stand.getLocation().getZ())
-                            && stand.getLocation().add(0, 1.2, 0).getBlock().equals(b)) {
+                            + ";" + (int) stand.getLocation().getY() + ";" + (int) stand.getLocation().getZ())) {
 
                         return true;
 
@@ -399,8 +398,7 @@ public class LuckyBlockAPI {
                     ArmorStand stand = (ArmorStand) en;
                     if (stand.getCustomName() == null) continue;
                     if (stand.getCustomName().equalsIgnoreCase(type.name() + ";" + (int) stand.getLocation().getX()
-                            + ";" + (int) stand.getLocation().getY() + ";" + (int) stand.getLocation().getZ())
-                            && stand.getLocation().add(0, 1.2, 0).getBlock().equals(b)) {
+                            + ";" + (int) stand.getLocation().getY() + ";" + (int) stand.getLocation().getZ())) {
 
                         if (type.isLoaded()) {
                             if (LuckyBlockType.map().get(type).tryOpen(b, ignore)) {
@@ -459,8 +457,7 @@ public class LuckyBlockAPI {
                     ArmorStand stand = (ArmorStand) en;
                     if (stand.getCustomName() == null) continue;
                     if (stand.getCustomName().equalsIgnoreCase(type.name() + ";" + (int) stand.getLocation().getX()
-                            + ";" + (int) stand.getLocation().getY() + ";" + (int) stand.getLocation().getZ())
-                            && stand.getLocation().add(0, 1.2, 0).getBlock().equals(b)) {
+                            + ";" + (int) stand.getLocation().getY() + ";" + (int) stand.getLocation().getZ())) {
 
                         if (drop) {
                             if (type.isLoaded()) {
