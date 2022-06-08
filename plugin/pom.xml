@@ -179,6 +179,7 @@
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.api.DropChance { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.drop.** { &lt;methods&gt;; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.Lucky* { *; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.Templates { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.Metrics** { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.ColorData { &lt;fields&gt;; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.particle.ParticleManager { &lt;methods&gt;;
