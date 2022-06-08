@@ -12,10 +12,7 @@ import me.DenBeKKer.ntdLuckyBlock.hook.sk89q.LBWorldEdit;
 import me.DenBeKKer.ntdLuckyBlock.hook.sk89q.LBWorldGuard;
 import me.DenBeKKer.ntdLuckyBlock.hook.thebusybiscuit.SlimeFunListener;
 import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
-import me.DenBeKKer.ntdLuckyBlock.nms.ItemTag;
-import me.DenBeKKer.ntdLuckyBlock.nms.ItemTag1_18_R1;
-import me.DenBeKKer.ntdLuckyBlock.nms.ItemTag1_18_R2;
-import me.DenBeKKer.ntdLuckyBlock.nms.ItemTagLegacy;
+import me.DenBeKKer.ntdLuckyBlock.nms.*;
 import me.DenBeKKer.ntdLuckyBlock.recipe.CraftListener;
 import me.DenBeKKer.ntdLuckyBlock.recipe.LuckyRecipe;
 import me.DenBeKKer.ntdLuckyBlock.util.*;
@@ -329,6 +326,11 @@ public class LBMain extends JavaPlugin {
 
         if (NMS_VERSION == null) return false;
         switch (NMS_VERSION) {
+
+            case "v1_19_R1": {
+                itemTagAdapter = new ItemTag1_19_R1();
+                return true;
+            }
 
             case "v1_18_R2": {
                 itemTagAdapter = new ItemTag1_18_R2();

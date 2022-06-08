@@ -126,6 +126,12 @@
             <version>2.6.3</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>me.DenBeKKer.ntdLuckyBlock</groupId>
+            <artifactId>luckyblock-nms-v1_19_R1</artifactId>
+            <version>2.6.3</version>
+            <scope>compile</scope>
+        </dependency>
 
     </dependencies>
 
