@@ -9,6 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <version>2.5.0</version>
     <artifactId>logger</artifactId>
     <dependencies>
         <dependency>
