@@ -5,8 +5,9 @@
     <parent>
         <artifactId>luckyblock-parent</artifactId>
         <groupId>me.DenBeKKer.ntdLuckyBlock</groupId>
-        <version>2.6.5</version>
+        <version>2.7.3</version>
     </parent>
+    <version>2.5.0</version>
     <packaging>pom</packaging>
     <modules>
         <module>we6</module>
@@ -16,7 +17,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.18-R0.1-SNAPSHOT</version>
+            <version>1.19-R0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
