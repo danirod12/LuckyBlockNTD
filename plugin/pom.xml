@@ -66,7 +66,7 @@
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>
             <artifactId>worldedit-bukkit</artifactId>
-            <version>7.2.0-SNAPSHOT</version>
+            <version>7.2.10-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
@@ -74,7 +74,7 @@
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>
             <artifactId>worldedit-core</artifactId>
-            <version>7.2.0-SNAPSHOT</version>
+            <version>7.2.10-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
@@ -199,7 +199,7 @@
 
                     <libs>
                         <!-- Well, it is a temp solution (I hope) -->
-                        <lib>C:\Program Files\Java\jre1.8.0_331\lib\rt.jar</lib>
+                        <lib>C:\Program Files\Java\jre1.8.0_333\lib\rt.jar</lib>
                     </libs>
 
                     <outjar>ntdLuckyBlock-${project.parent.version}.jar</outjar>
