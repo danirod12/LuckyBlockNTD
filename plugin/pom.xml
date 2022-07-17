@@ -31,7 +31,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.18-R0.1-SNAPSHOT</version>
+            <version>1.19-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -43,9 +43,9 @@
         <dependency>
             <artifactId>..</artifactId>
             <groupId>..</groupId>
-            <version>3.2.5</version>
+            <version>..</version>
             <scope>system</scope>
-            <systemPath>C:/Users/Professional/Desktop/ядра/libs/TokenManager-3.2.5.jar</systemPath>
+            <systemPath>${project.basedir}/TokenManager-3.2.5.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.github.MilkBowl</groupId>
