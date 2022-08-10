@@ -31,6 +31,10 @@ public enum DropChance {
         this.chance = chance;
     }
 
+    public static DropChance random() {
+        return values()[ThreadLocalRandom.current().nextInt(values().length)];
+    }
+
     public static DropChance random(List<DropChance> chances) {
 
         if (chances.size() == 0)

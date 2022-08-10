@@ -147,6 +147,8 @@ public class MessagesManager {
         CMD_SUPPORT("system.cmd.support"),
         CMD_CHECKFORUPDATES("system.cmd.checkforupdates"),
         CMD_DESTROY("system.cmd.destroy"),
+        CMD_GENERATE("system.cmd.generate"),
+        CMD_GENERATE_DESCRIPTION("system.cmd.generateFull"),
         CMD_DESTROYED_LB("system.cmd_destroyed_lb");
 
         private String path;

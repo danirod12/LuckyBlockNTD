@@ -45,6 +45,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter {
         // Other
         register(new VersionCommand());
         register(new ConvertCommand());
+        register(new GenerateCommand());
 
         LBMain.debug("Loaded " + commands.size() + " subcommands");
 

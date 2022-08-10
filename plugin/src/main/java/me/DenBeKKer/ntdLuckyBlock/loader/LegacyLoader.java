@@ -22,6 +22,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Level;
 
@@ -176,5 +177,50 @@ public class LegacyLoader implements StringLoader {
 		return i < 1 ? special.defaultValue() : i;
 
 	}
-	
+
+	public String save(LuckyDrop drop) {
+		if (drop instanceof CommandDrop) {
+			return "COMMAND : " + ((CommandDrop) drop).getCommand();
+		} else if (drop instanceof ConsoleDrop) {
+			return "CONSOLE : " + ((ConsoleDrop) drop).getCommand();
+		} else if (drop instanceof EntityDrop) {
+			return "ENTITY : " + ((EntityDrop) drop).getEntityType() + " : " + ((EntityDrop) drop).getAmount();
+		} else if (drop instanceof ItemDrop) {
+			ItemStack stack = ((ItemDrop) drop).getItemCopy();
+			StringBuilder item = new StringBuilder("ITEM : " + stack.getType().name() + " : "
+					+ stack.getAmount() + " : " + stack.getDurability());
+			ItemMeta meta = stack.getItemMeta();
+			if (meta == null) return item.toString();
+			item.append(" : ").append(meta.getDisplayName());
+			for (Map.Entry<Enchantment, Integer> entry : meta.getEnchants().entrySet()) {
+				item.append(" : ").append(entry.getKey().getName()).append(" : ").append(entry.getValue());
+			}
+			return item.toString();
+		} else if (drop instanceof LuckyItemDrop) {
+			return "LUCKY_BLOCK_ITEM : " + ((LuckyItemDrop) drop).getType() + " : " + ((LuckyItemDrop) drop).getAmount();
+		} else if (drop instanceof MessageDrop) {
+			return "MESSAGE : " + ((MessageDrop) drop).getMessage();
+		} else if (drop instanceof OppedDrop) {
+			return "OPPED : " + ((OppedDrop) drop).getCommand();
+		} else if (drop instanceof  RandomLuckyItemDrop) {
+			return "LUCKY_BLOCK_ITEM : RANDOM : " + ((RandomLuckyItemDrop) drop).getAmount();
+		} else if (drop instanceof SchematicDrop) {
+			return "SCHEMATIC : " + ((SchematicDrop) drop).getFile().getName() + " : "
+					+ (((SchematicDrop) drop).atBlock() ? "BLOCK" : "PLAYER");
+		} else if (drop instanceof WaterBucketSpecial) {
+			return "SPECIAL : WATER_BUCKET : " + ((WaterBucketSpecial) drop).getHeight();
+		} else if (drop instanceof TntExplosionSpecial) {
+			return "SPECIAL : TNT_EXPLOSION : " + ((TntExplosionSpecial) drop).getAmount();
+		} else if (drop instanceof TntColumnSpecial) {
+			return "SPECIAL : TNT_COLUMN : " + ((TntColumnSpecial) drop).getAmount();
+		} else if (drop instanceof PigSpecial) {
+			return "SPECIAL : PIG " + ((PigSpecial) drop).getAmount();
+		} else if (drop instanceof LightningSpecial) {
+			return "SPECIAL : LIGHTNING : " + ((LightningSpecial) drop).getAmount();
+		} else if (drop instanceof ExperienceExplosionSpecial) {
+			return "SPECIAL : EXPERIENCE_EXPLOSION : " + ((ExperienceExplosionSpecial) drop).getAmount();
+		}
+		return null;
+	}
+
 }

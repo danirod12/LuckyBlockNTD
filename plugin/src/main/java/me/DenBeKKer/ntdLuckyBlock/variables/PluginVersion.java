@@ -25,4 +25,8 @@ public enum PluginVersion {
         return (this == FREE ? "\u00a7a" : "\u00a7d") + this.getSimpleName();
     }
 
+    public boolean hasJSONLoader() {
+        return this == PREMIUM;
+    }
+
 }

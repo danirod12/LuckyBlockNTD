@@ -57,6 +57,8 @@ system:
     support: "&8 > &e/%label% support &f- get author contacts"
     checkforupdates: "&8 > &e/%label% checkforupdates &f- check for updates"
     destroy: "&8 > &e/%label% destroy <radius/chunk> [-all] &f- destroy lb"
+    generate: "&8 > &e/%label% generate <type> <factory> <min> <max> &f- generate drops"
+    generateFull: "With this command you can generate LuckyDrops inside your LuckyBlock. <type> - LuckyBlockType to be generated. <factory> - LB factory (Use `latest`). <min> - min EntryDrops. <max> - max EntryDrops"
   
   cmd_player_not_found: "&cPlayer &e%player%&c not found :("
   cmd_no_perm_to_color: "&cNo permission for color %lb%"

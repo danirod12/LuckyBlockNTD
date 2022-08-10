@@ -5,7 +5,7 @@
     <parent>
         <artifactId>luckyblock-parent</artifactId>
         <groupId>me.DenBeKKer.ntdLuckyBlock</groupId>
-        <version>2.7.3</version>
+        <version>2.7.4</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -199,7 +199,7 @@
 
                     <libs>
                         <!-- Well, it is a temp solution (I hope) -->
-                        <lib>C:\Program Files\Java\jre1.8.0_333\lib\rt.jar</lib>
+                        <lib>C:\Program Files\Java\jre1.8.0_341\lib\rt.jar</lib>
                     </libs>
 
                     <outjar>ntdLuckyBlock-${project.parent.version}.jar</outjar>

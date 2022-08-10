@@ -25,6 +25,18 @@ public class Config {
 
     private FileConfiguration config;
 
+    public Config(FileConfiguration file) {
+        this(file, null, null);
+    }
+
+    public Config(FileConfiguration file, String name, File folder) {
+        this.folder = folder;
+        this.name = name;
+        this.resource = null;
+        this.plugin = null;
+        this.config = file;
+    }
+
     public Config(File folder, String name) {
         this(null, null, folder, name);
     }

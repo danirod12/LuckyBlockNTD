@@ -555,23 +555,21 @@ public class LBMain extends JavaPlugin {
 
         }
 
+        public Config getNewConfigInstance() {
+            return new Config(instance, "configuration.luckyblocks." + instance.factory.build(),
+                    instance.folder, this.name().toLowerCase() + ".yml");
+        }
+
         public String load() {
 
             if (!isAvailable()) return "LuckyBlock \"" + name() + "\" is not available";
 
-            Config config = new Config(instance, "configuration.luckyblocks." + instance.factory.build(),
-                    instance.folder, this.name().toLowerCase() + ".yml");
-
+            Config config = getNewConfigInstance();
             if (!config.hasResource()) {
-
                 config.write();
                 config.reload();
-                FileConfiguration file = config.get();
-
-                LBFactory.latest().generate(file, this);
-
+                LBFactory.latest().generate(config, this, 20, 50);
                 config.save();
-
             }
 
             config.copy(true);
