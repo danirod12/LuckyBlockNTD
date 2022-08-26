@@ -66,7 +66,9 @@ public class LBFactoryV2 implements LBFactory {
     public LuckyEntry generateLuckyEntry() {
         LuckyEntry entry = new LuckyEntry(DropChance.random());
         for (int i = 0; i < ThreadLocalRandom.current().nextInt(1, 5); i++) {
-            entry.add(generateLuckyDrop());
+            LuckyDrop drop = generateLuckyDrop();
+            if (drop == null) continue;
+            entry.add(drop);
         }
         return entry;
     }

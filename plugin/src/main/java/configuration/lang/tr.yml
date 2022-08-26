@@ -63,12 +63,13 @@ system:
     customitemslist: "&8 > &6/%label% customitemslist &f- Özelleştirilmiş eşyaları listeler."
     customitemget: "&8 > &6/%label% customitemget <id> &f- Özelleştirilmiş eşyaları almanı sağlar."
     iteminfo: "&8 > &6/%label% iteminfo &f- Elindeki öğe hakkında bilgi verir."
-    
-  
+    generate: "&8 > &e/%label% generate <tür> <factory> <min> <maks> &f- drops oluşturur"
+    generateFull: "Bu komutla LuckyBlock'un içinde LuckyDrops oluşturabilirsin. <tür> - LuckyBlockType oluşturur. <factory> - LB factory (Bunuson-sürüm kullanın). <min> - min EntryDrops. <maks> - maks EntryDrops"
+
   cmd_player_not_found: "&cOyuncu &e%player%&c bulunamadı :("
   cmd_no_perm_to_color: "&c%lb% renk için yetkin bulunmuyor."
   cmd_no_perm: "&cMalesef, alt komutları yürütmek için yetkin bulunmuyor."
-  
+
 gui:
   exit: "&7[ &6Menüden Çık &7]"
   get:

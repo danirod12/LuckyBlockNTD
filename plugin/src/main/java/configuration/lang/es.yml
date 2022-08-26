@@ -64,6 +64,8 @@ system:
     checkforupdates: "&8 > &e/%label% checkforupdates &f- Buscar actualizaciones"
     destroy: "&8 > &e/%label% destroy <radio/chunk> [-all] &f- Destruir lb"
     item_to_json: "&8 > &e/%label% itemtojson &f- Obtener datos json para el item"
+    generate: "&8 > &e/%label% generate <type> <factory> <min> <max> &f- generar drops"
+    generateFull: "Con este comando puedes generar Lucky Drops dentro de tu Lucky Block. <type> - LuckyBlockType a generar. <factory> - LB factory (Usa `más reciente`). <min> - min EntryDrops. <max> - max EntryDrops"
 
   cmd_required_item: "&cDebes tomar un item en la mano para realizar este comando."
   cmd_player_not_found: "&cJugador &e%player%&c no encontrado :("

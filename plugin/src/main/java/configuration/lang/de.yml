@@ -48,6 +48,8 @@ system:
     iteminfo: "&8 > &6/%label% iteminfo &f- Infos von dem Itemin deiner Hand"
     customitemget: "&8 > &6/%label% customitemget <id> &f- bekomme individuelles Item"
     customitemslist: "&8 > &6/%label% customitemslist &f- Liste der individuellen Items"
+    generate: "&8 > &e/%label% generate <type> <factory> <min> <max> &f- Generiere Drops"
+    generateFull: "Mit diesem Command kannst du LuckyDrops in deinem Luckyblock regenerieren. <type> - LuckyBlockType muss generiert sein. <factory> - LB factory (Nutz `Späteste`). <min> - min EntryDrops. <max> - max EntryDrops"
   cmd_player_not_found: '&cSpieler &e%player%&c nnicht gefunden :('
   cmd_no_perm_to_color: '&cDu hast keine Permission für Farbe %lb%'
 
