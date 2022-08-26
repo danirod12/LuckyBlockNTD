@@ -151,9 +151,12 @@ public class LBFactoryV2 implements LBFactory {
             }
             if (amount > material.getMaxStackSize())
                 amount = material.getMaxStackSize();
+            if (amount < 1)
+                amount = 1;
             return new ItemDrop(new ItemStack(material, amount));
         }
-        return new ItemDrop(new ItemStack(material, ThreadLocalRandom.current().nextInt(material.getMaxStackSize())));
+        return new ItemDrop(new ItemStack(material,
+                ThreadLocalRandom.current().nextInt(material.getMaxStackSize()) + 1));
     }
 
 }
