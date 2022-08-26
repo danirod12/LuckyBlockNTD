@@ -37,8 +37,10 @@ public interface LuckyDrop {
                 else execute(block, target);
             }
         } catch (Throwable th) {
-            if (this instanceof EntityDrop && th.getMessage().contains("Cannot spawn an entity")) return;
-            if (this instanceof ItemDrop && th.getMessage().toLowerCase().contains("air")) return;
+            if (th.getMessage() != null) {
+                if (this instanceof EntityDrop && th.getMessage().contains("Cannot spawn an entity")) return;
+                if (this instanceof ItemDrop && th.getMessage().toLowerCase().contains("air")) return;
+            }
             th.printStackTrace();
         }
 
