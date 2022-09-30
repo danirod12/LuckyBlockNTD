@@ -7,18 +7,16 @@ import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class MessagesManager {
 
-    private static final HashMap<Message, Object> map = new HashMap<>();
-    private final static Collection<String> build_in_languages = Arrays.asList("en", "ru", "zh_cn", "de", "pl", "pt_br", "tr", "es");
+    private static final Map<Message, Object> map = new HashMap<>();
+    private final static List<String> build_in_languages = Arrays.asList("en", "ru", "zh_cn", "de", "pl",
+            "pt_br", "tr", "es", "fr");
     public static File lang_folder = new File(LBMain.getInstance().getDataFolder() + File.separator + "lang");
     private static Config config = null;
 
