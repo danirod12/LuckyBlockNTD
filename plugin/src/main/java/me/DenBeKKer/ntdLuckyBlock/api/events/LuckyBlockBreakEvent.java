@@ -13,7 +13,7 @@ public class LuckyBlockBreakEvent extends Event implements Cancellable {
     private final Block block;
     private final Player player;
     private final LuckyBlock luckyblock;
-    private boolean targetable = true, ignore = false, c = false;
+    private boolean ignore = false, c = false;
     private boolean drop = true;
 
     public LuckyBlockBreakEvent(Block b, Player p, LuckyBlock lb) {
@@ -24,7 +24,6 @@ public class LuckyBlockBreakEvent extends Event implements Cancellable {
 
     public LuckyBlockBreakEvent(Block b, LuckyBlock lb) {
         this(b, null, lb);
-        targetable = false;
     }
 
     public static HandlerList getHandlerList() {
@@ -36,7 +35,7 @@ public class LuckyBlockBreakEvent extends Event implements Cancellable {
     }
 
     public boolean isTargetable() {
-        return targetable;
+        return player != null;
     }
 
     public Player getPlayer() {

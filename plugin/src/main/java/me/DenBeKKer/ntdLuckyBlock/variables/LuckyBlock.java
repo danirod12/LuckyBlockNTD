@@ -262,15 +262,15 @@ public class LuckyBlock {
 	}
 	
 	public boolean tryOpen(Block block, Player target, boolean ignore) {
-		
-		if(LBMain.isDebug())
+
+		if (LBMain.isDebug())
 			LBMain.debug("Try open LuckyBlock " + type.name()
-				+ " (" + (target == null ? "not presented" : target.getName())
-				+ ", x:" + block.getX() + ", y:" + block.getY() + ", z:" + block.getZ() + ", " + ignore + ")");
-		
-		LuckyBlockBreakEvent event = target == null ? new LuckyBlockBreakEvent(block, this) : new LuckyBlockBreakEvent(block, target, this);
-		
-		if(target != null) {
+					+ " (" + (target == null ? "not presented" : target.getName())
+					+ ", x:" + block.getX() + ", y:" + block.getY() + ", z:" + block.getZ() + ", " + ignore + ")");
+
+		LuckyBlockBreakEvent event = new LuckyBlockBreakEvent(block, target, this);
+
+		if (target != null) {
 
 			if (!LBMain.getInstance().worldsFilter.isEnabled(block.getWorld().getName())) {
 
