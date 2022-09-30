@@ -92,15 +92,15 @@ enabled:
   - gray
   - green
   - light_blue
-- light_gray
-- lime
-- magenta
-- orange
-- pink
-- purple
-- red
-- white
-- yellow
+  - light_gray
+  - lime
+  - magenta
+  - orange
+  - pink
+  - purple
+  - red
+  - white
+  - yellow
 
 # Do not change it
 config-level: "1.11"
