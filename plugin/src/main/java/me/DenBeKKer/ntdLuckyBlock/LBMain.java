@@ -1,5 +1,6 @@
 package me.DenBeKKer.ntdLuckyBlock;
 
+import me.DenBeKKer.ntdLuckyBlock.api.DropChance;
 import me.DenBeKKer.ntdLuckyBlock.api.exceptions.LuckyBlockNotLoadedException;
 import me.DenBeKKer.ntdLuckyBlock.command.CommandsManager;
 import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
@@ -31,7 +32,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -383,6 +384,13 @@ public class LBMain extends JavaPlugin {
 
         }
 
+        ConfigurationSection section = config.get().getConfigurationSection("chances");
+        assert section != null;
+        for (String key : section.getKeys(false)) {
+            DropChance chance = DropChance.parse(key);
+            if (chance == null) continue;
+            chance.setWeight(section.getInt(key));
+        }
         convertManager.setup(config.getBoolean("place.verify-UUID"), config.getBoolean("place.verify-TAG"));
         convertManager.setFactoryEnabled(config.getBoolean("place.convert-factory"));
 

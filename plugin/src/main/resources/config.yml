@@ -75,15 +75,23 @@ place:
 # Force update player inventory on luckyblock place
 force-update-inventory: false
 
+# DropChance weights (Actual only for premium version)
+chances:
+  lowest: 1
+  low: 3
+  medium: 6
+  high: 15
+  highest: 25
+
 # Enabled colors of luckyblocks
 enabled:
-- black
-- blue
-- brown
-- cyan
-- gray
-- green
-- light_blue
+  - black
+  - blue
+  - brown
+  - cyan
+  - gray
+  - green
+  - light_blue
 - light_gray
 - lime
 - magenta

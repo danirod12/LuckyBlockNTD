@@ -1,34 +1,25 @@
 package me.DenBeKKer.ntdLuckyBlock.api;
 
+import me.DenBeKKer.ntdLuckyBlock.util.Pair;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyEntry;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 public enum DropChance {
 
-    /**
-     * ~5.3%
-     */
     LOWEST(1),
-    /**
-     * ~15.8%
-     */
     LOW(3),
-    /**
-     * ~26.3%
-     */
-    MEDIUM(5),
-    /**
-     * ~52.6%
-     */
-    HIGH(10);
+    MEDIUM(6),
+    HIGH(15),
+    HIGHEST(25);
 
-    private final int chance;
+    private int weight;
 
-    DropChance(int chance) {
-        this.chance = chance;
+    DropChance(int weight) {
+        this.weight = weight;
     }
 
     public static DropChance random() {
@@ -43,21 +34,21 @@ public enum DropChance {
         if (chances.size() == 1)
             return chances.get(0);
 
-        int a = 0;
-        for (DropChance chance : chances)
-            a += chance.chance;
-        DropChance[] chance = new DropChance[a];
-        a = 0;
-        for (DropChance chance0 : chances) {
-            for (int j = 0; j < chance0.chance; j++) {
-                chance[a] = chance0;
-                a++;
-            }
+        List<Pair<Integer, DropChance>> list = new ArrayList<>();
+        for (int i = 0; i < chances.size(); i++) {
+            int boot = i == 0 ? 0 : list.get(i - 1).getA();
+            DropChance chance = chances.get(i);
+            list.add(new Pair<>(chance.weight + boot, chance));
         }
-        return chance[ThreadLocalRandom.current().nextInt(chance.length)];
-
+        int boot = ThreadLocalRandom.current().nextInt(list.get(list.size() - 1).getA()) + 1;
+        for (Pair<Integer, DropChance> pair : list) {
+            if (boot >= pair.getA())
+                return pair.getB();
+        }
+        throw new RuntimeException();
     }
 
+    @Deprecated
     public static int chance(List<DropChance> chances, DropChance chance) {
 
         if (chances.size() == 0)
@@ -68,13 +59,42 @@ public enum DropChance {
 
         int a = 0;
         for (DropChance c : chances)
-            a += chance.chance;
-        return chance.chance * 100 / a;
+            a += chance.weight;
+        return chance.weight * 100 / a;
 
     }
 
+    public static double getChanceOf(List<DropChance> chances, DropChance chance) {
+        if (!chances.contains(chance)) return 0.0D;
+        int boot = chances.stream().mapToInt(DropChance::getWeight).sum();
+        return chance.weight * 100D / boot;
+    }
+
+    public static double getChanceOf(List<LuckyEntry> drops, LuckyEntry entry) {
+        return getChanceOf(drops.stream().map(LuckyEntry::getDropChance)
+                .distinct().collect(Collectors.toList()), entry.getDropChance()) / drops.stream()
+                .filter(item -> item.getDropChance() == entry.getDropChance()).count();
+    }
+
+    public static DropChance parse(String key) {
+        for (DropChance value : values()) {
+            if (value.name().equalsIgnoreCase(key))
+                return value;
+        }
+        return null;
+    }
+
+    @Deprecated
     public int getChance() {
-        return chance;
+        return this.getWeight();
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
     }
 
     public LuckyEntry roll(List<LuckyEntry> items) {

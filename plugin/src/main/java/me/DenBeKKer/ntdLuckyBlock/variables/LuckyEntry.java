@@ -1,7 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.variables;
 
 import me.DenBeKKer.ntdLuckyBlock.api.DropChance;
-import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
+import me.DenBeKKer.ntdLuckyBlock.util.Templates;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,7 +44,7 @@ public class LuckyEntry extends ArrayList<LuckyDrop> {
     }
 
     public DropChance getDropChance() {
-        return LuckyBlockAPI.isPremium() ? chance : DropChance.MEDIUM;
+        return Templates.VERSION.isPremium() ? chance : DropChance.MEDIUM;
     }
 
 }
