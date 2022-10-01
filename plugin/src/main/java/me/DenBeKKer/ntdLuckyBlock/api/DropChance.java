@@ -42,10 +42,10 @@ public enum DropChance {
         }
         int boot = ThreadLocalRandom.current().nextInt(list.get(list.size() - 1).getA()) + 1;
         for (Pair<Integer, DropChance> pair : list) {
-            if (boot >= pair.getA())
+            if (boot <= pair.getA())
                 return pair.getB();
         }
-        throw new RuntimeException();
+        throw new RuntimeException(boot + " dropped out of " + list.get(list.size() - 1).getA());
     }
 
     @Deprecated
