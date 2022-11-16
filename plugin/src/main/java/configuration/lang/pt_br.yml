@@ -53,6 +53,8 @@ system:
     customitemget: "&8 > &6/%label% customitemget <id> &f- Pegue item customizado"
     customitemslist: "&8 > &6/%label% customitemslist &f- Lista de itens customizados"
     destroy: " &8> &e/%label% destroy <alcance/chunk> [-all] &f- destroi o lb"
+    generate: "&8 > &e/%label% generate <type> <factory> <min> <max> &f- gere drops"
+    generateFull: "Com este comando você pode erar LuckyDrops dentro de seu LuckyBlock. <type> - LuckyBlockType para ser gerado. <factory> - LB factory (Use `latest`). <min> - min EntryDrops. <max> - max EntryDrops"
   
   cmd_no_perm: "&cDesculpe, mas você não tem permissão para executar esse sub comando"
   cmd_player_not_found: "&cPlayer &e%player%&c não encontrado :("
