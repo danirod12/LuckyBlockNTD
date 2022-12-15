@@ -179,17 +179,17 @@ public class LBMain extends JavaPlugin {
         folder.mkdirs();
 
         // Metrics
-        Metrics metrics = new Metrics(this, 11218);
+        Metrics metrics = new Metrics(this, 17081);
         metrics.addCustomChart(new Metrics.SimplePie("enabled_luckyblocks", () -> String.valueOf(LuckyBlockType.map().size())));
-        metrics.addCustomChart(new Metrics.SimplePie("luckydrop_types", () -> {
-            int a = 0, b = 0;
-            for (LuckyBlock z : LuckyBlockType.map().values()) {
-                a += z.items$mapped();
-                b += z.items$mappedTwice();
-            }
-            return a + "/" + b;
-
-        }));
+//        metrics.addCustomChart(new Metrics.SimplePie("luckydrop_types", () -> {
+//            int a = 0, b = 0;
+//            for (LuckyBlock z : LuckyBlockType.map().values()) {
+//                a += z.items$mapped();
+//                b += z.items$mappedTwice();
+//            }
+//            return a + "/" + b;
+//
+//        }));
         metrics.addCustomChart(new Metrics.SimplePie("version_type", Templates.VERSION::getSimpleName));
         metrics.addCustomChart(new Metrics.SimplePie("language", () -> {
             final String language = MessagesManager.getLanguage();
