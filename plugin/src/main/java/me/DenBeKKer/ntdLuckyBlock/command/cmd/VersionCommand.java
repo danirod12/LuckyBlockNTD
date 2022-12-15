@@ -45,7 +45,7 @@ public class VersionCommand implements LBCommand {
         }
 
         sender.sendMessage("\u00a78 • \u00a7fSpigotMC url - \u00a7b" + LBMain.getInstance().getUpdater().getResourceURL());
-        sender.sendMessage("\u00a78 • \u00a7fbStats metrics - \u00a7bhttps://clck.ru/X9Z6e");
+//        sender.sendMessage("\u00a78 • \u00a7fbStats metrics - \u00a7bhttps://clck.ru/X9Z6e");
         return CommandResponse.SUCCESS;
 
     }
