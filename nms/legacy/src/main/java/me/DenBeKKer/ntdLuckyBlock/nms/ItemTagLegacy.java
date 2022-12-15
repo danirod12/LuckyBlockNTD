@@ -1,6 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.nms;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.InvocationTargetException;
@@ -35,6 +36,13 @@ public class ItemTagLegacy implements ItemTag {
             }
         }
         this.NBTTagCompound = clazz;
+
+        // version verification
+        try {
+            this.asNMSCopy(new ItemStack(Material.STONE)).getClass().getMethod("getTag");
+        } catch (NoSuchMethodException exception) {
+            throw new UnsupportedOperationException();
+        }
 
     }
 
