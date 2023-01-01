@@ -15,6 +15,7 @@ import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import me.DenBeKKer.ntdLuckyBlock.util.material.IMat;
 import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_12;
+import me.DenBeKKer.ntdLuckyBlock.variables.drop.ItemDrop;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Material;
@@ -30,6 +31,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class LuckyBlock {
 	
@@ -282,24 +284,28 @@ public class LuckyBlock {
 				}
 
 			}
-			
+
 		}
-		
-		if(ignore) event.setIgnoreCancelled();
+
+		if (ignore) event.setIgnoreCancelled();
 		Bukkit.getPluginManager().callEvent(event);
-		if(event.isCancelled()) return false;
-		if(!event.isDrop()) return true;
-		
-		if(animation)
+		if (event.isCancelled()) return false;
+		if (!event.isDrop()) return true;
+
+		if (animation)
 			block.getWorld().playEffect(block.getLocation().add(0.5, 0.5, 0.5), effect, 10);
-		
+
+		if (items.size() == 0) {
+			LBMain.debug("No items to drop");
+			return true;
+		}
 		LuckyEntry collection = DropChance.random(chances).roll(items);
 		LBMain.debug("Mathed " + collection.size() + " random lucky drops");
-		for(LuckyDrop item : collection) {
-			if(LBMain.isDebug()) {
+		for (LuckyDrop item : new ArrayList<>(collection)) {
+			if (LBMain.isDebug()) {
 				try {
 					LBMain.debug("Performing item... " + new Gson().toJson(item));
-				} catch(Throwable th) {
+				} catch (Throwable th) {
 					LBMain.debug("Performing item... [Gson throwable] - " + th.getLocalizedMessage());
 				}
 			}
@@ -321,22 +327,48 @@ public class LuckyBlock {
 	}
 	
 	public boolean tryOpen(Block block, boolean ignore) { return tryOpen(block, null, ignore); }
-	
-	public String getCustomName() { return custom_name; }
-	public boolean canBeShoped() { return shop; }
-	
+
+	public String getCustomName() {
+		return custom_name;
+	}
+
+	public boolean canBeShoped() {
+		return shop;
+	}
+
 	public void addIntent(LuckyEntry drop) {
-		if(drop == null) return;
+		if (drop == null) return;
 		items.add(drop);
-		if(!chances.contains(drop.getDropChance()))
+		if (!chances.contains(drop.getDropChance()))
 			chances.add(drop.getDropChance());
 	}
-	
-	public LuckyBlockType getType() { return type; }
-	public Identifier getIdentifier() { return identifier; }
-	
-	public Collection<LuckyRecipe> getRecipes() { return recipes; }
-	
+
+	public void remove(ItemDrop drop) {
+		for (LuckyEntry item : new ArrayList<>(items)) {
+			if (item.remove(drop)) {
+				if (item.size() == 0) {
+					items.remove(item);
+					chances.clear();
+					chances.addAll(items.stream().map(LuckyEntry::getDropChance)
+							.distinct().collect(Collectors.toList()));
+				}
+				break;
+			}
+		}
+	}
+
+	public LuckyBlockType getType() {
+		return type;
+	}
+
+	public Identifier getIdentifier() {
+		return identifier;
+	}
+
+	public Collection<LuckyRecipe> getRecipes() {
+		return recipes;
+	}
+
 	@SuppressWarnings("deprecation")
 	public String getOldName() {
 		return type.fixName(name);

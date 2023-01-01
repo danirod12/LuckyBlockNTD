@@ -55,12 +55,14 @@ public class LegacyLoader implements StringLoader {
 					ItemMeta meta = item.getItemMeta();
 					assert meta != null;
 
-					if(sp.length >= 5) meta.setDisplayName(Misc.setColors(sp[4]));
-					for(int index = 5; index < sp.length - 1; index += 2) {
+					if (sp.length >= 5) {
+						meta.setDisplayName(sp[4].equalsIgnoreCase("null") ? null : Misc.setColors(sp[4]));
+					}
+					for (int index = 5; index < sp.length - 1; index += 2) {
 						try {
 							meta.addEnchant(Objects.requireNonNull(Enchantment.getByName(sp[index].toUpperCase())),
 									Integer.parseInt(sp[index + 1]), true);
-						} catch(Exception ex) {
+						} catch (Exception ex) {
 							ex.printStackTrace();
 							LBMain.log(Level.WARNING, "Enchantment " + sp[index].toUpperCase() + " (level: " + sp[index + 1]
 									+ " cannot be added to " + item.getType().name());
@@ -191,7 +193,8 @@ public class LegacyLoader implements StringLoader {
 					+ stack.getAmount() + " : " + stack.getDurability());
 			ItemMeta meta = stack.getItemMeta();
 			if (meta == null) return item.toString();
-			item.append(" : ").append(meta.getDisplayName());
+			if (meta.hasDisplayName() || meta.getEnchants().size() > 0)
+				item.append(" : ").append(meta.getDisplayName());
 			for (Map.Entry<Enchantment, Integer> entry : meta.getEnchants().entrySet()) {
 				item.append(" : ").append(entry.getKey().getName()).append(" : ").append(entry.getValue());
 			}
@@ -214,7 +217,7 @@ public class LegacyLoader implements StringLoader {
 		} else if (drop instanceof TntColumnSpecial) {
 			return "SPECIAL : TNT_COLUMN : " + ((TntColumnSpecial) drop).getAmount();
 		} else if (drop instanceof PigSpecial) {
-			return "SPECIAL : PIG " + ((PigSpecial) drop).getAmount();
+			return "SPECIAL : PIG : " + ((PigSpecial) drop).getAmount();
 		} else if (drop instanceof LightningSpecial) {
 			return "SPECIAL : LIGHTNING : " + ((LightningSpecial) drop).getAmount();
 		} else if (drop instanceof ExperienceExplosionSpecial) {
