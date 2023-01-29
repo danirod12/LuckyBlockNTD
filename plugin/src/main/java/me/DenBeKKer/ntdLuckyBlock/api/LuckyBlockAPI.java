@@ -11,6 +11,7 @@ import me.DenBeKKer.ntdLuckyBlock.loader.JSONLoader;
 import me.DenBeKKer.ntdLuckyBlock.loader.LegacyLoader;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
+import me.DenBeKKer.ntdLuckyBlock.util.Pair;
 import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_13;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
@@ -305,35 +306,7 @@ public class LuckyBlockAPI {
      * @return Check if block is LuckyBlock
      */
     public static boolean isLuckyBlock(Block b) {
-
-        if (b.getType().name().toUpperCase().contains("STAINED_GLASS") ||
-                b.getType().name().equalsIgnoreCase("TINTED_GLASS") || b.getType() == Material.ICE) {
-
-            for (LuckyBlockType type : LuckyBlockType.values()) {
-
-                //if(e.getBlock().getType() == type.getMaterial()) {
-
-                for (Entity en : b.getWorld().getNearbyEntities(b.getLocation().add(0.5, -1.2, 0.5), 0.1, 0.1, 0.1)) {
-
-                    if (en.getType() != EntityType.ARMOR_STAND) continue;
-                    ArmorStand stand = (ArmorStand) en;
-                    if (stand.getCustomName() == null) continue;
-                    if (stand.getCustomName().equalsIgnoreCase(type.name() + ";" + (int) stand.getLocation().getX()
-                            + ";" + (int) stand.getLocation().getY() + ";" + (int) stand.getLocation().getZ())) {
-
-                        return true;
-
-                    }
-
-                }
-
-                //}
-
-            }
-
-        }
-        return false;
-
+        return searchByBlock(b) != null;
     }
 
     @Deprecated
@@ -386,40 +359,7 @@ public class LuckyBlockAPI {
      * @param ignore Ignore cancellable
      */
     public static void breakLuckyBlock0(Block b, boolean ignore) {
-
-        if (b.getType().name().toUpperCase().contains("STAINED_GLASS") ||
-                b.getType().name().equalsIgnoreCase("TINTED_GLASS") || b.getType() == Material.ICE) {
-
-            for (LuckyBlockType type : LuckyBlockType.values()) {
-
-                for (Entity en : b.getWorld().getNearbyEntities(b.getLocation().add(0.5, -1.2, 0.5), 0.1, 0.1, 0.1)) {
-
-                    if (en.getType() != EntityType.ARMOR_STAND) continue;
-                    ArmorStand stand = (ArmorStand) en;
-                    if (stand.getCustomName() == null) continue;
-                    if (stand.getCustomName().equalsIgnoreCase(type.name() + ";" + (int) stand.getLocation().getX()
-                            + ";" + (int) stand.getLocation().getY() + ";" + (int) stand.getLocation().getZ())) {
-
-                        if (type.isLoaded()) {
-                            if (LuckyBlockType.map().get(type).tryOpen(b, ignore)) {
-                                stand.remove();
-                                b.setType(Material.AIR);
-                            }
-                        } else {
-                            stand.remove();
-                            b.setType(Material.AIR);
-                        }
-
-                        return;
-
-                    }
-
-                }
-
-            }
-
-        }
-
+        breakLuckyBlock(b, null, true, ignore);
     }
 
     /**
@@ -445,49 +385,60 @@ public class LuckyBlockAPI {
      * @param ignore Ignore cancellable
      */
     public static void breakLuckyBlock(Block b, Player p, boolean drop, boolean ignore) {
-
         if (b.getType().name().toUpperCase().contains("STAINED_GLASS") ||
                 b.getType().name().equalsIgnoreCase("TINTED_GLASS") || b.getType() == Material.ICE) {
-
-            for (LuckyBlockType type : LuckyBlockType.values()) {
-
-                for (Entity en : b.getWorld().getNearbyEntities(b.getLocation().add(0.5, -1.2, 0.5), 0.1, 0.1, 0.1)) {
-
-                    if (en.getType() != EntityType.ARMOR_STAND) continue;
-                    ArmorStand stand = (ArmorStand) en;
-                    if (stand.getCustomName() == null) continue;
-                    if (stand.getCustomName().equalsIgnoreCase(type.name() + ";" + (int) stand.getLocation().getX()
-                            + ";" + (int) stand.getLocation().getY() + ";" + (int) stand.getLocation().getZ())) {
-
-                        if (drop) {
-                            if (type.isLoaded()) {
-                                if (p == null) {
-                                    throw new NullPointerException(
-                                            "You must provide player for breakLuckyBlock(Block, Player, boolean) or use breakLuckyBlock0(Block)");
-                                }
-                                if (LuckyBlockType.map().get(type).tryOpen(b, p, ignore)) {
-                                    stand.remove();
-                                    b.setType(Material.AIR);
-                                }
-                            } else {
-                                stand.remove();
-                                b.setType(Material.AIR);
-                            }
-                        } else {
-                            stand.remove();
-                            b.setType(Material.AIR);
-                        }
-
-                        return;
-
-                    }
-
+            Pair<LuckyBlockType, Entity> pair = searchByBlock(b);
+            if (pair == null) return;
+            if (drop && pair.getKey().isLoaded()) {
+                LuckyBlock luckyBlock = LuckyBlockType.map().get(pair.getKey());
+                if (!luckyBlock.tryOpen(b, p, ignore)) {
+                    return;
                 }
-
             }
-
+            pair.getValue().remove();
+            b.setType(Material.AIR);
         }
+    }
 
+    public static Pair<LuckyBlockType, Entity> searchByBlock(Block block) {
+        Collection<Entity> entities = block.getWorld().getNearbyEntities(block.getLocation()
+                .add(0.5, -1.2, 0.5), 0.1, 0.1, 0.1);
+        for (Entity entity : entities) {
+            LuckyBlockType type = searchByEntity(entity);
+            if (type != null) {
+                return new Pair<>(type, entity);
+            }
+        }
+        return null;
+    }
+
+    public static LuckyBlockType searchByEntity(Entity entity) {
+        if (entity.getType() != EntityType.ARMOR_STAND)
+            return null;
+        ArmorStand stand = (ArmorStand) entity;
+        if (stand.getCustomName() == null)
+            return null;
+        String[] data = stand.getCustomName().split(";");
+        if (data.length != 4)
+            return null;
+        LuckyBlockType type = LuckyBlockType.parse(data[0]);
+        if (type == null)
+            return null;
+        // legacy offsets check
+        if (!stand.getCustomName().equalsIgnoreCase(type.getLocatedName(stand.getLocation())))
+            return null;
+        return type;
+    }
+
+    public static List<Pair<LuckyBlockType, Entity>> searchByEntities(Collection<Entity> entities) {
+        List<Pair<LuckyBlockType, Entity>> list = new ArrayList<>();
+        for (Entity entity : entities) {
+            LuckyBlockType type = searchByEntity(entity);
+            if (type != null) {
+                list.add(new Pair<>(type, entity));
+            }
+        }
+        return list;
     }
 
     public static int destroyEntity(Entity[] array, boolean destroyAll) {

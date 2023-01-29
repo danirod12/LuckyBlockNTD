@@ -203,8 +203,8 @@ public class LuckyBlock {
 		stand.setGravity(false);
 		stand.setVisible(false);
 		stand.setMarker(true);
-		stand.setCustomName(type.name() + ";" + (int)stand.getLocation().getX() + ";" + (int)stand.getLocation().getY() + ";" + (int)stand.getLocation().getZ());
-		
+		stand.setCustomName(type.getLocatedName(stand.getLocation()));
+
 		stand.getEquipment().setHelmet(getSkull());
 		
 		block.setType(type.getMaterial());

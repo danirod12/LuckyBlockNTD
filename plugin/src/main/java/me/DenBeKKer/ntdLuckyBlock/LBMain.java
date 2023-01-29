@@ -12,6 +12,8 @@ import me.DenBeKKer.ntdLuckyBlock.hook.Hook;
 import me.DenBeKKer.ntdLuckyBlock.hook.sk89q.LBWorldEdit;
 import me.DenBeKKer.ntdLuckyBlock.hook.sk89q.LBWorldGuard;
 import me.DenBeKKer.ntdLuckyBlock.hook.thebusybiscuit.SlimeFunListener;
+import me.DenBeKKer.ntdLuckyBlock.listener.CoreListener;
+import me.DenBeKKer.ntdLuckyBlock.listener.CustomItemListener;
 import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
 import me.DenBeKKer.ntdLuckyBlock.nms.*;
 import me.DenBeKKer.ntdLuckyBlock.recipe.CraftListener;
@@ -27,10 +29,7 @@ import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
 import me.DenBeKKer.ntdLuckyBlock.variables.PlayerHead;
 import me.DenBeKKer.ntdLuckyBlock.variables.PluginVersion;
 import me.DenBeKKer.ntdLuckyBlock.variables.WorldListDataHandler;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -301,7 +300,8 @@ public class LBMain extends JavaPlugin {
 
         debug("Loading event managers...");
         if (Hook.SlimeFun.isEnabled()) Bukkit.getPluginManager().registerEvents(new SlimeFunListener(), this);
-        Bukkit.getPluginManager().registerEvents(new LBHandler(), this);
+        Bukkit.getPluginManager().registerEvents(new CoreListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new CustomItemListener(), this);
         Bukkit.getPluginManager().registerEvents(new CraftListener(), this);
         Bukkit.getPluginManager().registerEvents(guiManager, this);
         Bukkit.getPluginManager().registerEvents(convertManager, this);
@@ -549,6 +549,11 @@ public class LBMain extends JavaPlugin {
 
             return DyeColor.valueOf(this.name());
 
+        }
+
+        public String getLocatedName(Location location) {
+            return this.name() + ";" + (int) location.getX() + ";"
+                    + (int) location.getY() + ";" + (int) location.getZ();
         }
 
         public ColorData asColor() {
