@@ -34,24 +34,24 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class LuckyBlock {
-	
+
 	private final LuckyBlockType type;
 	private final Identifier identifier;
-	
+
 	private final String exception, texture, name, custom_name;
 	private List<String> lore = new ArrayList<>();
 	private List<LuckyEntry> items = new ArrayList<>();
 	private final boolean eco, shop, animation, cdef, ccus;
 	private double price;
-	
+
 	public void setPrice(double price, boolean update) {
 		this.price = price;
-		if(update) {
+		if (update) {
 			Config config = new Config(LBMain.getInstance(), LBMain.getFolder(), type.name().toLowerCase() + ".yml");
-			if(config.getFile().exists()) {
+			if (config.getFile().exists()) {
 				config.reload();
 				FileConfiguration file = config.get();
-				if(file != null) {
+				if (file != null) {
 					file.set("price", price);
 					config.save();
 					LBMain.log(Level.INFO, "Force updated LuckyBlock price");
@@ -92,40 +92,48 @@ public class LuckyBlock {
 			return;
 		}
 		boolean b = false;
-		if(!file.isSet("texture")) { b = true;
+		if (!file.isSet("texture")) {
+			b = true;
 			LBMain.getInstance().getLogger().log(Level.WARNING, "[" + type.name() + "] Option for path <texture> not found. Creating...");
 			file.set("texture", type.getTexture());
 		}
-		if(!file.isSet("eco")) { b = true;
+		if (!file.isSet("eco")) {
+			b = true;
 			LBMain.getInstance().getLogger().log(Level.WARNING, "[" + type.name() + "] Option for path <eco> not found. Creating...");
 			file.set("eco", true);
 		}
-		if(!file.isSet("animation")) { b = true;
+		if (!file.isSet("animation")) {
+			b = true;
 			LBMain.getInstance().getLogger().log(Level.WARNING, "[" + type.name() + "] Option for path <animation> not found. Creating...");
 			file.set("animation", true);
 		}
-		if(!file.isSet("animation_type")) { b = true;
+		if (!file.isSet("animation_type")) {
+			b = true;
 			LBMain.getInstance().getLogger().log(Level.WARNING, "[" + type.name() + "] Option for path <animation_type> not found. Creating...");
 			file.set("animation_type", "MOBSPAWNER_FLAMES");
 		}
-		if(!file.isSet("shop")) { b = true;
+		if (!file.isSet("shop")) {
+			b = true;
 			LBMain.getInstance().getLogger().log(Level.WARNING, "[" + type.name() + "] Option for path <shop> not found. Creating...");
 			file.set("shop", true);
 		}
-		if(!file.isSet("price")) { b = true;
+		if (!file.isSet("price")) {
+			b = true;
 			LBMain.getInstance().getLogger().log(Level.WARNING, "[" + type.name() + "] Option for path <price> not found. Creating...");
 			file.set("price", 250);
 		}
-		if(!file.isSet("craft.default")) { b = true;
+		if (!file.isSet("craft.default")) {
+			b = true;
 			LBMain.getInstance().getLogger().log(Level.WARNING, "[" + type.name() + "] Option for path <craft.default> not found. Creating...");
 			file.set("craft.default", true);
 		}
-		if(!file.isSet("craft.custom")) { b = true;
+		if (!file.isSet("craft.custom")) {
+			b = true;
 			LBMain.getInstance().getLogger().log(Level.WARNING, "[" + type.name() + "] Option for path <craft.custom> not found. Creating...");
 			file.set("craft.custom", LBMain.isPremium());
 		}
-		if(b) config.save();
-		
+		if (b) config.save();
+
 		texture = file.getString("texture");
 		eco = file.getBoolean("eco");
 		animation = file.getBoolean("animation");
@@ -133,69 +141,72 @@ public class LuckyBlock {
 		price = file.getDouble("price");
 		try {
 			effect = Effect.valueOf(file.getString("animation_type").toUpperCase());
-		} catch(Exception ex) {
+		} catch (Exception ex) {
 			LBMain.getInstance().getLogger().log(Level.WARNING, "[" + type.name() + "] Animation " + file.getString("animation_type") + " was not found, check " +
 					"https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Effect.html for full animations list");
 			effect = Effect.MOBSPAWNER_FLAMES;
 		}
 		name = file.isSet("name") ? file.getString("name") : type.name();
 		custom_name = file.isSet("custom_name") ? file.getString("custom_name") : type.name();
-		
-		if(file.isSet("lore"))
-			for(String str : file.getStringList("lore")) {
-				
+
+		if (file.isSet("lore"))
+			for (String str : file.getStringList("lore")) {
+
 				lore.add(Misc.setColors(str));
-				
-		}
-		
+
+			}
+
 		cdef = file.getBoolean("craft.default");
 		ccus = file.getBoolean("craft.custom");
-		
-		for(String str : file.getConfigurationSection("drop").getKeys(false))
+
+		for (String str : file.getConfigurationSection("drop").getKeys(false))
 			addIntent(LuckyBlockAPI.loadDropEntry(config, "drop." + str));
 		exception = null;
-		
+
 	}
-	
+
 	public void loadRecipes() {
-		
+
 		recipes = new ArrayList<>();
-		
-		if(cdef) {
+
+		if (cdef) {
 			recipes.addAll(CraftTheory.getDefault(type));
 		}
-		
-		if(ccus) {
-			
-			if(LBMain.isPremium()) {
+
+		if (ccus) {
+
+			if (LBMain.isPremium()) {
 				recipes.addAll(CraftTheory.getFromConfig(type));
 			} else {
 				LBMain.log(Level.WARNING, "Custom crafts feature available only for premium version");
 				LBMain.log(Level.WARNING, "Check out premium plugin version - https://www.spigotmc.org/resources/94872");
 			}
-			
+
 		}
-		
+
 	}
-	
-	public String getException() { return exception; }
-	
-	public void giveItem(Player p) { p.getInventory().addItem(getSkull()); }
-	
+
+	public String getException() {
+		return exception;
+	}
+
+	public void giveItem(Player p) {
+		p.getInventory().addItem(getSkull());
+	}
+
 	@Deprecated
 	public void placeBlock(Block block) {
 		placeBlock(block, false);
 	}
-	
+
 	public void placeBlock(Block block, boolean check) {
-		
-		if(check && !LBMain.getInstance().factory.isSkull(block.getType())) {
-			if(LBMain.isDebug())
+		if (check && !LBMain.getInstance().factory.isSkull(block.getType())) {
+			if (LBMain.isDebug())
 				LBMain.debug("Operation LuckyBlock.placeBlock(block, true) canceled because " + block.getType() + " not a skull");
 			return;
 		}
 		block.setType(Material.AIR);
-		
+
 		ArmorStand stand = (ArmorStand) block.getWorld().spawnEntity(block.getLocation().add(0.5, -1.2, 0.5), EntityType.ARMOR_STAND);
 		stand.setArms(false);
 		stand.setCanPickupItems(false);
@@ -206,63 +217,62 @@ public class LuckyBlock {
 		stand.setCustomName(type.getLocatedName(stand.getLocation()));
 
 		stand.getEquipment().setHelmet(getSkull());
-		
+
 		block.setType(type.getMaterial());
-		if(LBMain.getInstance().factory instanceof Mat1_12 && type.isColoredGlass())
+		if (LBMain.getInstance().factory instanceof Mat1_12 && type.isColoredGlass())
 			IMat.setData(block, (byte) type.asColor().getData());
-		
 	}
-	
+
 	private ItemStack head = null;
 
 	private Effect effect;
-	
-	private Collection<LuckyRecipe> recipes = new ArrayList<>();
-	
-	private List<DropChance> chances = new ArrayList<>();
-	
-	public void resetSkull() { head = null; }
-	
-	public ItemStack getSkull() {
 
+	private Collection<LuckyRecipe> recipes = new ArrayList<>();
+
+	private List<DropChance> chances = new ArrayList<>();
+
+	public void resetSkull() {
+		head = null;
+	}
+
+	public ItemStack getSkull() {
 		if (head == null)
 			head = identifier.apply(Misc.getPlayerHead("http://textures.minecraft.net/texture/" + texture,
 					Misc.setColors(name), lore, type.getUUID()));
-        return head.clone();
-        
+		return head.clone();
 	}
-	
+
 	public boolean isSkull(ItemStack stack) {
 		return isSkull(stack, true);
 	}
-	
+
 	public boolean isSkull(ItemStack stack, boolean check_tag) {
 		return isSkull(stack, true, check_tag);
 	}
-	
-	public boolean isSkull(ItemStack stack, boolean check_uuid, boolean check_tag) {
-		
-		if(check_uuid) {
 
+	public boolean isSkull(ItemStack stack, boolean check_uuid, boolean check_tag) {
+		if (check_uuid) {
 			UUID uuid = Misc.getUUID(stack);
-			if(uuid == null || !uuid.equals(type.getUUID())) return false;
-			
+			if (uuid == null || !uuid.equals(type.getUUID())) {
+				return false;
+			}
 		}
 		return !check_tag || identifier.compare(stack);
-		
 	}
-	
+
 	@Deprecated
-	public void open(Block block, Player target) { open(block, target, false); }
-	
+	public void open(Block block, Player target) {
+		open(block, target, false);
+	}
+
 	@Deprecated
 	public void open(Block block, Player target, boolean ignore) {
-		if(!tryOpen(block, target, ignore))
+		if (!tryOpen(block, target, ignore))
 			LBMain.log(Level.WARNING, "[!] DO NOT REPORT IT TO LUCKYBLOCK NTD AUTHOR. IT IS NOT A BUG FROM MY PLUGIN. LUCKYBLOCK"
 					+ " {w:" + block.getWorld().getName() + ", x:" + block.getX() + ", y:" + block.getY() + ", z:" + block.getZ() + "} "
-							+ "RECEIVED INCORRECT BREAK API METHOD AND BECOME CORRUPTED [!]");
+					+ "RECEIVED INCORRECT BREAK API METHOD AND BECOME CORRUPTED [!]");
 	}
-	
+
 	public boolean tryOpen(Block block, Player target, boolean ignore) {
 
 		if (LBMain.isDebug())
@@ -312,21 +322,25 @@ public class LuckyBlock {
 			item.executeProtected(type, block, target);
 		}
 		return true;
-		
+
 	}
-	
+
 	@Deprecated
-	public void open(Block block) { open(block, false); }
-	
+	public void open(Block block) {
+		open(block, false);
+	}
+
 	@Deprecated
 	public void open(Block block, boolean ignore) {
-		if(!tryOpen(block, ignore))
+		if (!tryOpen(block, ignore))
 			LBMain.log(Level.WARNING, "[!] DO NOT REPORT IT TO LUCKYBLOCK NTD AUTHOR. IT IS NOT A BUG FROM MY PLUGIN. LUCKYBLOCK"
 					+ " {w:" + block.getWorld().getName() + ", x:" + block.getX() + ", y:" + block.getY() + ", z:" + block.getZ() + "} "
-							+ "RECEIVED INCORRECT BREAK API METHOD AND BECOME CORRUPTED [!]");
+					+ "RECEIVED INCORRECT BREAK API METHOD AND BECOME CORRUPTED [!]");
 	}
-	
-	public boolean tryOpen(Block block, boolean ignore) { return tryOpen(block, null, ignore); }
+
+	public boolean tryOpen(Block block, boolean ignore) {
+		return tryOpen(block, null, ignore);
+	}
 
 	public String getCustomName() {
 		return custom_name;
@@ -373,9 +387,9 @@ public class LuckyBlock {
 	public String getOldName() {
 		return type.fixName(name);
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 }
