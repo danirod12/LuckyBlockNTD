@@ -3,12 +3,12 @@ main: me.DenBeKKer.ntdLuckyBlock.LBMain
 version: ${project.parent.version}
 api-version: 1.13
 author: danirod12 # NTD STUDIOS
-softdepend: [SlimeFun, TokenManager, Vault, WorldEdit, FastAsyncWorldEdit, WorldGuard]
+softdepend: [ Slimefun, TokenManager, Vault, WorldEdit, FastAsyncWorldEdit, WorldGuard ]
 description: Cool revamped LuckyBlock & API. Say goodbye to the sponge and resourcepacks!
 website: https://discord.gg/vbYW3sperj
 
 commands:
-   ntdluckyblock:
-      description: Main plugin command
-      usage: /<command> [args]
-      aliases: [lb, luckyblock]
+  ntdluckyblock:
+    description: Main plugin command
+    usage: /<command> [args]
+    aliases: [ lb, luckyblock ]
