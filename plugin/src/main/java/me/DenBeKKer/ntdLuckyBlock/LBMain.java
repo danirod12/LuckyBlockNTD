@@ -14,6 +14,7 @@ import me.DenBeKKer.ntdLuckyBlock.hook.sk89q.LBWorldGuard;
 import me.DenBeKKer.ntdLuckyBlock.hook.thebusybiscuit.SlimeFunListener;
 import me.DenBeKKer.ntdLuckyBlock.listener.CoreListener;
 import me.DenBeKKer.ntdLuckyBlock.listener.CustomItemListener;
+import me.DenBeKKer.ntdLuckyBlock.listener.LightSourceListener;
 import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
 import me.DenBeKKer.ntdLuckyBlock.nms.*;
 import me.DenBeKKer.ntdLuckyBlock.recipe.CraftListener;
@@ -72,6 +73,7 @@ public class LBMain extends JavaPlugin {
     public boolean disableConvertCheck = false;
     public boolean disableWebIssuePrint = false;
     public boolean forceUpdateInventory = false;
+    private boolean lightSource = false;
 
     public static boolean isPremium() {
         return Templates.VERSION.isPremium();
@@ -149,6 +151,10 @@ public class LBMain extends JavaPlugin {
 
     public GuiManager getGuiManager() {
         return guiManager;
+    }
+
+    public boolean isLightSource() {
+        return this.lightSource;
     }
 
     @Override
@@ -367,6 +373,7 @@ public class LBMain extends JavaPlugin {
 
     @Override
     public void reloadConfig() {
+        boolean startup = config == null;
 
         config = new Config(instance, getDataFolder(), "config.yml").copy(true).copyMissedFields();
 
@@ -376,6 +383,23 @@ public class LBMain extends JavaPlugin {
         breakPermissions = config.getBoolean("break-permissions");
         reduceAuthorInfo = config.getBoolean("reduce-command-author-info");
         preventHatLB = config.getBoolean("prevent-hat-luckyblocks");
+
+        boolean lightSource = config.getBoolean("light-source");
+        if (this.factory instanceof Mat1_12 && !lightSource) {
+            this.getLogger().log(Level.WARNING, "Light source cannot be disabled on 1.8 - 1.12 " +
+                    "due vanilla texture glitch (Texture is blacked out)");
+            lightSource = true;
+        }
+        if (startup) {
+            if (lightSource) {
+                this.getLogger().log(Level.INFO, "[BETA FEATURE] Light source mode is set to true, injecting...");
+                Bukkit.getPluginManager().registerEvents(new LightSourceListener(this), this);
+                this.lightSource = true;
+            }
+        } else if (this.lightSource != lightSource) {
+            this.getLogger().log(Level.SEVERE, "YOU CANNOT CHANGE LIGHT-SOURCE MODE WITHOUT RESTART");
+            this.getLogger().log(Level.SEVERE, "RESTART IS REQUIRED TO APPLY CONFIG CHANGES");
+        }
 
         if (config.isSet("place.verify-name")) {
 

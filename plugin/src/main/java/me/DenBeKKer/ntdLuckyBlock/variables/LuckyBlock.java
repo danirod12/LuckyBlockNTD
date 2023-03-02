@@ -218,6 +218,15 @@ public class LuckyBlock {
 
 		stand.getEquipment().setHelmet(getSkull());
 
+		if (LBMain.getInstance().isLightSource()) {
+			if (LBMain.getInstance().factory instanceof Mat1_12) {
+				Bukkit.getScheduler().runTaskLater(LBMain.getInstance(),
+						() -> stand.setFireTicks(Integer.MAX_VALUE), 2L);
+			} else {
+				stand.setFireTicks(Integer.MAX_VALUE);
+			}
+		}
+
 		block.setType(type.getMaterial());
 		if (LBMain.getInstance().factory instanceof Mat1_12 && type.isColoredGlass())
 			IMat.setData(block, (byte) type.asColor().getData());
