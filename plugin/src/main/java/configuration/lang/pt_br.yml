@@ -3,7 +3,7 @@
 author: PedroJs
 
 special:
-  water_bucket: "&c&lDONO &cDanirod_Gaming &7-> Olhe o seu inventário.. Você tem um &9balde de água&f!"
+  water_bucket: "&eOlhe o seu inventário.. Você tem um &9balde de água&f!"
 
 custom_items:
   item_not_found: "&cItem com o identificador %identifier% não encontrado"

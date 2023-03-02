@@ -3,7 +3,7 @@
 author: DenBeKKer
 
 special:
-  water_bucket: "&c&lOWNER &cDanirod_Gaming &7-> Check your inventory.. You have a &9water bucket&f!"
+  water_bucket: "&eCheck your inventory.. You have a &9water bucket&f!"
 
 custom_items:
   item_not_found: "&cItem for identifier %identifier% not found"

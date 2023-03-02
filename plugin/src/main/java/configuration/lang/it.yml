@@ -2,7 +2,7 @@
 author: LotusIsHere
 
 special:
-  water_bucket: "&c&lOWNER &cDanirod_Gaming &7-> Controlla il tuo inventario.. Tu hai un &9secchio d'acqua!&f!"
+  water_bucket: "&eControlla il tuo inventario.. Tu hai un &9secchio d'acqua!&f!"
 
 custom_items:
   item_not_found: "&cOggetto%identifier% non trovato"

@@ -2,7 +2,7 @@
 author: RuKinPGMSaneVR
 
 special:
-  water_bucket: "&c&lCRÉATEUR &cDanirod_Gaming &7-> Vous avez un &9seau d'eau&7 dans votre inventeur&f!"
+  water_bucket: "&eVous avez un &9seau d'eau&7 dans votre inventeur&f!"
   witch: "&5&lVieille Sorcière"
 
 custom_items:

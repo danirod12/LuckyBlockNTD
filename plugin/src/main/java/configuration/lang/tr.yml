@@ -5,7 +5,7 @@ author: Testim
 special:
   #Bu şans bloklarından çıkan bir mini oyundur. Şans bloğunu kırdığınızda sizi yukarı ışınlar ve bir kova su verir. 
   #Bu mesaj yukardaki durumun habercisidir.
-  water_bucket: "&c&lSAHIP &cDanirod_Gaming &7-> Envanterini kontrol et.. Bir &9su kovasına &fsahipsin!"
+  water_bucket: "&eEnvanterini kontrol et.. Bir &9su kovasına &fsahipsin!"
 
 custom_items:
   item_not_found: "&cTanımladığınız %identifier% adlı öğe bulunamadı."

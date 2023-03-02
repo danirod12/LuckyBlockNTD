@@ -3,7 +3,7 @@
 author: SnowCutieOwO
 
 special:
-  water_bucket: "&c&lOWNER &cDanirod_Gaming &7-> 检查你的背包.. 你获得了 &9水桶&f!"
+  water_bucket: "&e检查你的背包.. 你获得了 &9水桶&f!"
 
 craft:
   item_not_found: "&c包含关键词 %identifier% 的物品不存在"

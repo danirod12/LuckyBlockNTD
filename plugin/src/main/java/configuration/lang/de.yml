@@ -3,7 +3,7 @@
 author: Luke
 
 special:
-  water_bucket: '&c&lOWNER &cDanirod_Gaming &7-> Prüfe dein Inventar.. Du hast einen &9Wassereimer'
+  water_bucket: '&ePrüfe dein Inventar.. Du hast einen &9Wassereimer'
 
 custom_items:
   item_not_found: "&cGegenstand zum identifizieren %identifier% nicht gefunden"
