@@ -83,8 +83,8 @@ chances:
   high: 15
   highest: 25
 
-# Option only for 1.13+. On 1.8-1.12 LuckyBlock should be a light source to fix blacked out glitch
-light-source: false
+# This setting is only for 1.13+. On 1.8-1.12 LuckyBlock should be a light source to fix a blacked out glitch.
+light-source: true
 
 # Enabled colors of luckyblocks
 enabled:

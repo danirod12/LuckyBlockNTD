@@ -14,7 +14,7 @@ import me.DenBeKKer.ntdLuckyBlock.hook.sk89q.LBWorldGuard;
 import me.DenBeKKer.ntdLuckyBlock.hook.thebusybiscuit.SlimeFunListener;
 import me.DenBeKKer.ntdLuckyBlock.listener.CoreListener;
 import me.DenBeKKer.ntdLuckyBlock.listener.CustomItemListener;
-import me.DenBeKKer.ntdLuckyBlock.listener.LightSourceListener;
+import me.DenBeKKer.ntdLuckyBlock.listener.EntityLoadListener;
 import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
 import me.DenBeKKer.ntdLuckyBlock.nms.*;
 import me.DenBeKKer.ntdLuckyBlock.recipe.CraftListener;
@@ -62,6 +62,7 @@ public class LBMain extends JavaPlugin {
     private ItemTag itemTagAdapter;
     private ConvertManager convertManager;
     private CommandsManager commandsManager;
+    private EntityLoadListener entityLoadListener;
 
     // Config fields
     private boolean debug = false;
@@ -73,7 +74,7 @@ public class LBMain extends JavaPlugin {
     public boolean disableConvertCheck = false;
     public boolean disableWebIssuePrint = false;
     public boolean forceUpdateInventory = false;
-    private boolean lightSource = false;
+    public boolean lightSource = false;
 
     public static boolean isPremium() {
         return Templates.VERSION.isPremium();
@@ -151,6 +152,10 @@ public class LBMain extends JavaPlugin {
 
     public GuiManager getGuiManager() {
         return guiManager;
+    }
+
+    public EntityLoadListener getEntityLoadListener() {
+        return entityLoadListener;
     }
 
     public boolean isLightSource() {
@@ -231,6 +236,7 @@ public class LBMain extends JavaPlugin {
 
         // Before config
         convertManager = new ConvertManager();
+        entityLoadListener = new EntityLoadListener(this);
 
         // Loading config
         reloadConfig();
@@ -307,6 +313,7 @@ public class LBMain extends JavaPlugin {
         debug("Loading event managers...");
         if (Hook.SlimeFun.isEnabled()) Bukkit.getPluginManager().registerEvents(new SlimeFunListener(), this);
         Bukkit.getPluginManager().registerEvents(new CoreListener(this), this);
+        Bukkit.getPluginManager().registerEvents(entityLoadListener, this);
         Bukkit.getPluginManager().registerEvents(new CustomItemListener(), this);
         Bukkit.getPluginManager().registerEvents(new CraftListener(), this);
         Bukkit.getPluginManager().registerEvents(guiManager, this);
@@ -390,15 +397,13 @@ public class LBMain extends JavaPlugin {
                     "due vanilla texture glitch (Texture is blacked out)");
             lightSource = true;
         }
-        if (startup) {
-            if (lightSource) {
-                this.getLogger().log(Level.INFO, "[BETA FEATURE] Light source mode is set to true, injecting...");
-                Bukkit.getPluginManager().registerEvents(new LightSourceListener(this), this);
-                this.lightSource = true;
+        if (this.lightSource != lightSource) {
+            this.lightSource = lightSource;
+            if (startup) {
+                Bukkit.getScheduler().runTaskLater(this, this.entityLoadListener::updateAllLoaded, 111L);
+            } else {
+                this.entityLoadListener.updateAllLoaded();
             }
-        } else if (this.lightSource != lightSource) {
-            this.getLogger().log(Level.SEVERE, "YOU CANNOT CHANGE LIGHT-SOURCE MODE WITHOUT RESTART");
-            this.getLogger().log(Level.SEVERE, "RESTART IS REQUIRED TO APPLY CONFIG CHANGES");
         }
 
         if (config.isSet("place.verify-name")) {

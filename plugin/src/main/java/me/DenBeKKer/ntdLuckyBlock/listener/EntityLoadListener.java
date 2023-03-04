@@ -5,22 +5,18 @@ import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 
-public class LightSourceListener implements Listener {
+public class EntityLoadListener implements Listener {
 
     private final LBMain instance;
 
-    public LightSourceListener(LBMain instance) {
+    public EntityLoadListener(LBMain instance) {
         this.instance = instance;
-        Bukkit.getScheduler().runTaskLater(instance, () -> {
-            for (World world : Bukkit.getWorlds()) {
-                updateChunks(world.getLoadedChunks());
-            }
-        }, Bukkit.getPluginManager().getPlugins().length * 2L + 100L);
     }
 
     @EventHandler
@@ -30,12 +26,27 @@ public class LightSourceListener implements Listener {
         }, 20L);
     }
 
-    private void updateChunks(Chunk... chunks) {
+    public void updateAllLoaded() {
+        for (World world : Bukkit.getWorlds()) {
+            updateChunks(world.getLoadedChunks());
+        }
+    }
+
+    public void updateChunks(Chunk... chunks) {
         for (Chunk chunk : chunks) {
             Chunk clone = chunk.getWorld().getChunkAt(chunk.getX(), chunk.getZ());
             for (Entity entity : clone.getEntities()) {
                 if (LuckyBlockAPI.searchByEntity(entity) != null) {
-                    entity.setFireTicks(Integer.MAX_VALUE);
+                    if (instance.isLightSource()) {
+                        entity.setFireTicks(Integer.MAX_VALUE);
+                    } else {
+                        entity.setFireTicks(0);
+                    }
+                    // migration for pre-v2.4
+                    ArmorStand stand = ((ArmorStand) entity);
+                    if (!stand.isMarker()) {
+                        stand.setMarker(true);
+                    }
                 }
             }
         }
