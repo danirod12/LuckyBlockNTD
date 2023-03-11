@@ -268,7 +268,7 @@ public class LBMain extends JavaPlugin {
 
         }
 
-        if (this.economy != null && Hook.Vault.isEnabled()) {
+        if (this.economy == null && Hook.Vault.isEnabled()) {
             this.economy = new VaultEconomy();
         }
 
