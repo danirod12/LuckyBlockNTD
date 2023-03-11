@@ -25,7 +25,7 @@ public class EntityLoadListener implements Listener {
             return;
         Bukkit.getScheduler().runTaskLater(instance, () -> {
             updateChunks(event.getChunk());
-        }, 20L);
+        }, 10L);
     }
 
     public void updateAllLoaded() {
@@ -36,6 +36,9 @@ public class EntityLoadListener implements Listener {
 
     public void updateChunks(Chunk... chunks) {
         for (Chunk chunk : chunks) {
+            if (!chunk.isLoaded()) {
+                continue;
+            }
             for (Entity entity : chunk.getEntities()) {
                 if (LuckyBlockAPI.searchByEntity(entity) != null) {
                     if (instance.isLightSource()) {
