@@ -1,5 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.listener;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
@@ -8,6 +10,7 @@ import me.DenBeKKer.ntdLuckyBlock.hook.Hook;
 import me.DenBeKKer.ntdLuckyBlock.hook.sk89q.LBWorldGuard;
 import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
+import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
 import me.DenBeKKer.ntdLuckyBlock.util.Pair;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager;
 import org.bukkit.Bukkit;
@@ -25,34 +28,85 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 @SuppressWarnings({"unused"})
 public class CoreListener implements Listener {
 
     private final LBMain instance;
+    private final Cache<Player, ItemStack> cache;
 
     public CoreListener(LBMain instance) {
         this.instance = instance;
+        switch (LBMain.getNMSVersion()) {
+            case "v1_19_R1":
+            case "v1_19_R2":
+                this.cache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build();
+                MvLogger.log(Level.WARNING, "You are using bugged Spigot version 1.19.0-1.19.3!"
+                        + " These versions contains critical issue that breaks plugins that uses PLAYER_HEADs."
+                        + " Enabled beta fix for 1.19.0-1.19.3 using caches.");
+                MvLogger.log(Level.WARNING, "It is recommended to update to 1.19.4!");
+                MvLogger.log(Level.WARNING, "CONVERT FACTORY IS STILL UNSUPPORTED ON 1.19.0-1.19.3");
+                break;
+            default:
+                this.cache = null;
+        }
+    }
+
+    // 1.19.0-1.19.3 fix
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        if (this.cache == null)
+            return;
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK || event.getItem() == null
+                || event.getItem().getType() != Material.PLAYER_HEAD)
+            return;
+        ItemStack helmet = event.getPlayer().getInventory().getItem(EquipmentSlot.HEAD);
+        if (helmet != null && helmet.getType() != Material.AIR) {
+            this.cache.put(event.getPlayer(), event.getItem());
+            if (LBMain.isDebug()) {
+                String message = "Created cache for " + event.getPlayer().getName()
+                        + " with item " + event.getItem().getType();
+                event.getPlayer().sendMessage(message);
+                LBMain.debug(message);
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockPlace(BlockPlaceEvent event) {
+        ItemStack stack = event.getItemInHand();
+        if (this.cache != null && stack.getType() == Material.AIR
+                && event.getBlockPlaced().getType() == Material.PLAYER_HEAD) {
+            stack = this.cache.getIfPresent(event.getPlayer());
+            if (LBMain.isDebug()) {
+                String message = "Retrieved cache for " + event.getPlayer().getName()
+                        + " with item " + (stack == null ? "null" : stack.getType().name());
+                event.getPlayer().sendMessage(message);
+                LBMain.debug(message);
+            }
+        }
+
         LuckyBlockType temp = null;
-        if (instance.getConvertManager().isFactoryEnabled() && instance.getConvertManager().isVerifyTAG()) {
-            temp = LuckyBlockAPI.parseOldLuckyBlock(event.getItemInHand());
+        if (this.cache == null && instance.getConvertManager()
+                .isFactoryEnabled() && instance.getConvertManager().isVerifyTAG()) {
+            temp = LuckyBlockAPI.parseOldLuckyBlock(stack);
             if (temp != null) {
                 Bukkit.getScheduler().runTaskLater(instance,
                         () -> ConvertManager.convert(event.getPlayer()), 1L);
             }
         }
 
-        LuckyBlockType type = temp != null ? temp : LuckyBlockAPI.parseLuckyBlock(event.getItemInHand(),
+        LuckyBlockType type = temp != null ? temp : LuckyBlockAPI.parseLuckyBlock(stack,
                 instance.getConvertManager().isVerifyUUID(),
                 instance.getConvertManager().isVerifyTAG());
         if (type != null && type.isLoaded()) {
