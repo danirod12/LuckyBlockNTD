@@ -237,6 +237,7 @@ public class LBMain extends JavaPlugin {
         // Before config
         convertManager = new ConvertManager();
         entityLoadListener = new EntityLoadListener(this);
+        guiManager = new GuiManager(this);
 
         // Loading config
         reloadConfig();
@@ -306,9 +307,6 @@ public class LBMain extends JavaPlugin {
 
         Hook.print();
         reloadSystem();
-
-        // After system reload
-        guiManager = new GuiManager();
 
         debug("Loading event managers...");
         if (Hook.SlimeFun.isEnabled()) Bukkit.getPluginManager().registerEvents(new SlimeFunListener(), this);
@@ -468,9 +466,6 @@ public class LBMain extends JavaPlugin {
         // first time it will be null (On startup)
         if (commandsManager != null)
             commandsManager.gc(null);
-        // first time it will be null (On startup)
-        if (guiManager != null)
-            guiManager.reload();
 
         for (String str : config.get().getStringList("enabled")) {
             try {
@@ -500,6 +495,8 @@ public class LBMain extends JavaPlugin {
             e.printStackTrace();
         }
 
+        // Refresh gui manager
+        this.guiManager.reload();
         log(Level.INFO, "System loaded (took " + (System.currentTimeMillis() - ms) + " ms)...");
 
     }
@@ -566,23 +563,19 @@ public class LBMain extends JavaPlugin {
         }
 
         public static LuckyBlockType random(boolean loaded) {
-
             LuckyBlockType[] types = loaded && map.size() > 0 ? map.keySet().toArray(new LuckyBlockType[0])
                     : LuckyBlockType.values();
             return types[ThreadLocalRandom.current().nextInt(types.length)];
-
         }
 
         @Deprecated
         public DyeColor asDye() {
-
             if (this == LuckyBlockType.LIGHT_GRAY && instance.factory instanceof Mat1_12)
                 return DyeColor.valueOf("SILVER");
             if (this == LuckyBlockType.TINTED) return DyeColor.BLACK;
             if (this == LuckyBlockType.ICED) return DyeColor.LIGHT_BLUE;
 
             return DyeColor.valueOf(this.name());
-
         }
 
         public String getLocatedName(Location location) {
@@ -591,20 +584,15 @@ public class LBMain extends JavaPlugin {
         }
 
         public ColorData asColor() {
-
             if (this == LuckyBlockType.TINTED) return ColorData.BLACK;
             if (this == LuckyBlockType.ICED) return ColorData.LIGHT_BLUE;
             return ColorData.valueOf(name());
-
         }
 
         public boolean isAvailable() {
-
             if (this == LuckyBlockType.TINTED) return instance.tinted != null;
             if (this == LuckyBlockType.ICED) return isPremium();
-
             return true;
-
         }
 
         public Config getNewConfigInstance() {
@@ -613,7 +601,6 @@ public class LBMain extends JavaPlugin {
         }
 
         public String load() {
-
             if (!isAvailable()) return "LuckyBlock \"" + name() + "\" is not available";
 
             Config config = getNewConfigInstance();
@@ -630,7 +617,6 @@ public class LBMain extends JavaPlugin {
             map.put(this, block);
             block.loadRecipes();
             return null;
-
         }
 
         public Material getMaterial() {
@@ -656,7 +642,6 @@ public class LBMain extends JavaPlugin {
 
         @Deprecated
         public String fixName(String name) {
-
             try {
                 while (name.length() >= 2 && (name.charAt(name.length() - 2) == '&' || name.charAt(name.length() - 2) == '\u00a7')) {
                     name = name.substring(0, name.length() - 2);
@@ -668,7 +653,6 @@ public class LBMain extends JavaPlugin {
             String name0 = name + "\u00a7" + toColorSymbol();
             debug(("Remapped " + name + " to " + name0 + " to avoid same names").replace("\u00a7", "&"));
             return name0;
-
         }
 
         public String getCustomName(boolean colored) {
@@ -695,13 +679,15 @@ public class LBMain extends JavaPlugin {
         }
 
         public Collection<LuckyRecipe> getRecipes() throws LuckyBlockNotLoadedException {
-
             return get().getRecipes();
-
         }
 
         public boolean isColoredGlass() {
             return this != TINTED && this != ICED;
+        }
+
+        public LuckyBlock forceGet() {
+            return map().get(this);
         }
 
     }

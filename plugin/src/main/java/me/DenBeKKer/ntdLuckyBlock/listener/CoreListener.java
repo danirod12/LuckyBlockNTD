@@ -259,7 +259,6 @@ public class CoreListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        instance.getGuiManager().gc(event.getPlayer());
         instance.getCommandsManager().gc(event.getPlayer());
     }
 
