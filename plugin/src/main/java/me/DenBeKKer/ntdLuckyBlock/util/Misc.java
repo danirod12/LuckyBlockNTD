@@ -25,24 +25,22 @@ public class Misc {
      * @throws UnsupportedOperationException Permission node or player is null
      */
     public static boolean hasPermission(final Player target, String node) throws UnsupportedOperationException {
-
-        if (node == null || target == null) throw new UnsupportedOperationException();
+        if (node == null || target == null) {
+            throw new UnsupportedOperationException();
+        }
 
         node = node.toLowerCase();
-        if (target.hasPermission(node) ||
-                target.hasPermission(node + ".*")) return true;
-        if (!node.contains(".")) return false;
+        if (target.hasPermission(node))
+            return true;
 
         String permission = null;
-        final String nodes[] = node.split("\\.");
+        String[] nodes = node.split("\\.");
         for (int i = 0; i < nodes.length - 1; ++i) {
-
             permission = permission == null ? nodes[i] : permission + "." + nodes[i];
-            if (target.hasPermission(permission + ".*")) return true;
-
+            if (target.hasPermission(permission + ".*"))
+                return true;
         }
         return false;
-
     }
 
     /**

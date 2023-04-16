@@ -29,7 +29,6 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -166,24 +165,13 @@ public class LuckyBlock {
 	}
 
 	public void loadRecipes() {
-
 		recipes = new ArrayList<>();
-
 		if (cdef) {
 			recipes.addAll(CraftTheory.getDefault(type));
 		}
-
 		if (ccus) {
-
-			if (LBMain.isPremium()) {
-				recipes.addAll(CraftTheory.getFromConfig(type));
-			} else {
-				LBMain.log(Level.WARNING, "Custom crafts feature available only for premium version");
-				LBMain.log(Level.WARNING, "Check out premium plugin version - https://www.spigotmc.org/resources/94872");
-			}
-
+			recipes.addAll(CraftTheory.getFromConfig(type));
 		}
-
 	}
 
 	public String getException() {
@@ -260,26 +248,7 @@ public class LuckyBlock {
 	}
 
 	public boolean isSkull(ItemStack stack, boolean check_uuid, boolean check_tag) {
-		if (check_uuid) {
-			UUID uuid = Misc.getUUID(stack);
-			if (uuid == null || !uuid.equals(type.getUUID())) {
-				return false;
-			}
-		}
-		return !check_tag || identifier.compare(stack);
-	}
-
-	@Deprecated
-	public void open(Block block, Player target) {
-		open(block, target, false);
-	}
-
-	@Deprecated
-	public void open(Block block, Player target, boolean ignore) {
-		if (!tryOpen(block, target, ignore))
-			LBMain.log(Level.WARNING, "[!] DO NOT REPORT IT TO LUCKYBLOCK NTD AUTHOR. IT IS NOT A BUG FROM MY PLUGIN. LUCKYBLOCK"
-					+ " {w:" + block.getWorld().getName() + ", x:" + block.getX() + ", y:" + block.getY() + ", z:" + block.getZ() + "} "
-					+ "RECEIVED INCORRECT BREAK API METHOD AND BECOME CORRUPTED [!]");
+		return LuckyBlockAPI.parseLuckyBlock(stack, check_uuid, check_tag) == this.type;
 	}
 
 	public boolean tryOpen(Block block, Player target, boolean ignore) {

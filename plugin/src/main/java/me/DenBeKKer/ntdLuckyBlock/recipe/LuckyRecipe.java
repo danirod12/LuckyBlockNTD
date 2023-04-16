@@ -3,6 +3,7 @@ package me.DenBeKKer.ntdLuckyBlock.recipe;
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.exceptions.LuckyBlockNotLoadedException;
+import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -85,7 +86,7 @@ public class LuckyRecipe {
 
     public boolean hasAccess(Player player) {
         if (permission == null || player == null) return true;
-        return player.hasPermission(permission);
+        return Misc.hasPermission(player, permission);
     }
 
 }

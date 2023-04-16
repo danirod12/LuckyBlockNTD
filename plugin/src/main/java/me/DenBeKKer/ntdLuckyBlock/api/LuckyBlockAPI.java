@@ -234,21 +234,19 @@ public class LuckyBlockAPI {
      * @return LuckyBlockType from item if item is LuckyBlock and null if not
      */
     public static LuckyBlockType parseLuckyBlock(ItemStack stack, boolean check_uuid, boolean check_tag) {
-
         UUID uuid = null;
         if (check_uuid) {
             uuid = Misc.getUUID(stack);
-            if (uuid == null) return null;
+            if (uuid == null)
+                return null;
         }
-
         if (check_tag) {
-
             final String type = CustomItemFactory.parseValue(stack, CustomItemFactory.TAG_LUCKYBLOCK_TYPE);
             final LuckyBlockType parsed = LuckyBlockType.parse(type);
             return parsed == null || uuid == null || parsed.getUUID().equals(uuid) ? parsed : null;
-
-        } else return LuckyBlockType.parse(uuid);
-
+        } else {
+            return LuckyBlockType.parse(uuid);
+        }
     }
 
     /**
