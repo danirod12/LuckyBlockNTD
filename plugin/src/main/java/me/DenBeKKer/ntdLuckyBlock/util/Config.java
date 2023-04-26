@@ -22,6 +22,7 @@ public class Config {
     private final File folder;
     private final String name, resource;
     private final Plugin plugin;
+    private boolean hasChanges = false;
 
     private FileConfiguration config;
 
@@ -46,7 +47,6 @@ public class Config {
     }
 
     public Config(Plugin plugin, String resource, File folder, String name) {
-
         if (name == null) throw new IllegalArgumentException("You need to provide a config name");
         if ((folder == null || resource != null) && plugin == null)
             throw new IllegalArgumentException("You need to provide a plugin instance for this action");
@@ -60,7 +60,6 @@ public class Config {
         }
         this.resource = resource;
         this.plugin = plugin;
-
     }
 
     @Override
@@ -151,6 +150,7 @@ public class Config {
             if (!folder.exists()) folder.mkdirs();
             if (!target.exists()) write(target);
             config.save(target);
+            this.hasChanges = false;
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -191,6 +191,10 @@ public class Config {
 
     }
 
+    public boolean hasChanges() {
+        return this.hasChanges;
+    }
+
     // Configuration copy to load new language entries, etc
     private FileConfiguration def;
 
@@ -222,6 +226,7 @@ public class Config {
 
     // Some methods from FileConfiguration
     public void set(String path, Object object) {
+        this.hasChanges = true;
         config.set(path, object);
     }
 
@@ -278,6 +283,7 @@ public class Config {
                 config.set(path + "." + field + "." + entry.getKey(), entry.getValue());
             }
         }
+        this.hasChanges = true;
     }
 
     public Config copyMissedFields() {
@@ -293,26 +299,25 @@ public class Config {
     }
 
     public Config copyMissedFields(Collection<String> skip, Consumer<String> callback) {
-
         if (this.config == null) this.copy(true);
 
         skip = skip.stream().map(String::toLowerCase).collect(Collectors.toList());
 
-        boolean need_save = false;
         final YamlConfiguration yml_default = ((YamlConfiguration) getDefault());
         keys:
         for (String key : yml_default.getKeys(true)) {
-            for (String string : skip)
-                if (key.toLowerCase().startsWith(string)) continue keys;
-            if (!this.config.isSet(key)) {
-                this.config.set(key, yml_default.get(key));
-                if (callback != null) callback.accept(key);
-                need_save = true;
+            for (String string : skip) {
+                if (key.toLowerCase().startsWith(string))
+                    continue keys;
+            }
+            if (!this.isSet(key)) {
+                this.set(key, yml_default.get(key));
+                if (callback != null)
+                    callback.accept(key);
             }
         }
-        if (need_save) this.save();
+        if (this.hasChanges())
+            this.save();
         return this;
-
     }
-
 }
