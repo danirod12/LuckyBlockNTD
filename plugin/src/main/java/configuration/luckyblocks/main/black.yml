@@ -4,7 +4,6 @@ name: "&0Black LuckyBlock"
 lore:
 - "&7Place me :D"
 
-eco: true
 shop: true
 price: 250
 

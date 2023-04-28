@@ -10,7 +10,6 @@ custom_name: "YELLOW"
 lore:
 - "&7Place me :D"
 
-eco: true
 shop: true
 price: 250
 
