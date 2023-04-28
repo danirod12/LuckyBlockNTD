@@ -130,6 +130,9 @@ public class Misc {
 
         if (url == null || url.isEmpty())
             throw new UnsupportedOperationException("URL cannot be null");
+        if (!url.contains("textures.minecraft.net/texture")) {
+            url = "http://textures.minecraft.net/texture/" + url;
+        }
 
         ItemStack head = LBMain.getInstance().factory.getItem(IMat.Mat.PLAYER_SKULL, 1);
         SkullMeta headMeta = (SkullMeta) head.getItemMeta();
