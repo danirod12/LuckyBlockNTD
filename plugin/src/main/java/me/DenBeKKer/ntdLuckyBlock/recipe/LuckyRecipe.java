@@ -14,30 +14,26 @@ public class LuckyRecipe {
 
     private final LuckyRecipeItem[] items;
     private final LuckyBlockType type;
-    private final boolean any_matrix;
+    private final boolean anyMatrix;
     private final String permission;
 
-    public LuckyRecipe(LuckyBlockType type, LuckyRecipeItem[] items, String permission, boolean anymatrix) {
-
-        if (!anymatrix && items.length != 9)
+    public LuckyRecipe(LuckyBlockType type, LuckyRecipeItem[] items, String permission, boolean anyMatrix) {
+        if (!anyMatrix && items.length != 9)
             throw new IllegalArgumentException("You should provide 9 LuckyRecipeItems");
-
-        if (!type.isLoaded()) throw new UnsupportedOperationException("LuckyBlockType " + type.name() + " is unloaded");
-
         this.items = items;
         this.type = type;
-        this.any_matrix = anymatrix;
+        this.anyMatrix = anyMatrix;
         this.permission = permission;
-
     }
 
     public boolean verify(ItemStack[] origin) {
-
         if (origin.length != 9) {
             return false;
         }
 
-        if (any_matrix) return verifyAny(origin);
+        if (anyMatrix) {
+            return verifyAny(origin);
+        }
 
         for (int i = 0; i < origin.length; i++) {
             if (items[i] == null) {
@@ -50,34 +46,27 @@ public class LuckyRecipe {
                 return false;
             }
         }
-
         return true;
-
     }
 
     public boolean verifyAny(ItemStack[] origin) {
-
-        if (origin.length != 9) return false;
+        if (origin.length != 9)
+            return false;
 
         ItemStack[] array = origin.clone();
-
         items:
         for (LuckyRecipeItem item : items) {
-
-            if (item == null) continue;
+            if (item == null)
+                continue;
             for (int i = 0; i < array.length; i++) {
-
                 if (item.isMatch(array[i])) {
                     array[i] = null;
                     continue items;
                 }
-
             }
             return false;
-
         }
         return Stream.of(array).noneMatch(Objects::nonNull);
-
     }
 
     public ItemStack getResult() throws LuckyBlockNotLoadedException {
@@ -88,5 +77,4 @@ public class LuckyRecipe {
         if (permission == null || player == null) return true;
         return Misc.hasPermission(player, permission);
     }
-
 }
