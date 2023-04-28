@@ -1,6 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.util;
 
 import com.google.common.collect.Maps;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -253,6 +254,10 @@ public class Config {
 
     public boolean getBoolean(String path) {
         return config.getBoolean(path);
+    }
+
+    public ConfigurationSection getConfigurationSection(String path) {
+        return config.getConfigurationSection(path);
     }
 
     public boolean isSet(String s) {
