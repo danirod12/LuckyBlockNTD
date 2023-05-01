@@ -143,6 +143,7 @@ public class GuiManager implements Listener {
         List<LuckyBlock> types = LuckyBlockType.enabled().stream()
                 .sorted(Comparator.comparingInt(n -> n.asColor().getData()))
                 .map(LuckyBlockType::forceGet)
+                .filter(LuckyBlock::canBeShoped)
                 .collect(Collectors.toList());
         LBMain.debug("[GUIMANAGER] Found " + types.size() + " types");
 
