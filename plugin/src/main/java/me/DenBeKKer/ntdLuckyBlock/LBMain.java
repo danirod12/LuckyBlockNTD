@@ -55,6 +55,7 @@ public class LBMain extends JavaPlugin {
     public Material tinted;
     public SpigotUpdater updater;
     public StringMatcher<WorldListDataHandler> worldsFilter;
+    public List<String> worldeditMask;
 
     // Managers
     private EconomyBridge economy;
@@ -393,6 +394,7 @@ public class LBMain extends JavaPlugin {
         breakPermissions = config.getBoolean("break-permissions");
         reduceAuthorInfo = config.getBoolean("reduce-command-author-info");
         preventHatLB = config.getBoolean("prevent-hat-luckyblocks");
+        worldeditMask = config.getStringList("worldedit-mask");
 
         boolean lightSource = config.getBoolean("light-source");
         if (this.factory instanceof Mat1_12 && !lightSource) {

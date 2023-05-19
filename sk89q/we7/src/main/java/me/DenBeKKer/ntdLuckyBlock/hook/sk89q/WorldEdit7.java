@@ -9,6 +9,8 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
+import com.sk89q.worldedit.function.mask.BlockTypeMask;
+import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.BlockVector2;
@@ -17,6 +19,8 @@ import com.sk89q.worldedit.math.Vector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.BlockTypes;
 import me.DenBeKKer.ntdLuckyBlock.util.IWorldEdit;
 import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
 import org.bukkit.Bukkit;
@@ -56,7 +60,7 @@ public class WorldEdit7 implements IWorldEdit {
 
     }
 
-    public void paste(File file, Block obj, boolean a) {
+    public void paste(File file, Block obj, boolean a, List<String> blacklist) {
 
         Clipboard clipboard = null;
 
@@ -74,6 +78,16 @@ public class WorldEdit7 implements IWorldEdit {
         }
 
         try (EditSession editSession = createEditSession(obj.getWorld())) {
+            if (blacklist.size() > 0) {
+                BlockTypeMask blockMask = new BlockTypeMask(editSession);
+                for (String block : blacklist) {
+                    BlockType type = BlockTypes.get(block.toLowerCase());
+                    if (type != null) {
+                        blockMask.add(type);
+                    }
+                }
+                editSession.setMask(Masks.negate(blockMask));
+            }
             ClipboardHolder holder = new ClipboardHolder(clipboard);
             Operation operation = holder
                     .createPaste(editSession)

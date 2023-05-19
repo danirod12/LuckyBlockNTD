@@ -1,9 +1,14 @@
 package me.DenBeKKer.ntdLuckyBlock.hook.sk89q;
 
 import com.sk89q.worldedit.CuboidClipboard;
+import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BlockType;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.sk89q.worldedit.function.mask.BlockMask;
+import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.schematic.MCEditSchematicFormat;
 import me.DenBeKKer.ntdLuckyBlock.util.IWorldEdit;
 import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
@@ -11,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 
 import java.io.File;
+import java.util.List;
 import java.util.logging.Level;
 
 @SuppressWarnings("deprecation")
@@ -19,12 +25,24 @@ public class WorldEdit6 implements IWorldEdit {
     private final WorldEditPlugin worldedit = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 
     @Override
-    public void paste(File file, Block obj, boolean a) {
+    public void paste(File file, Block obj, boolean a, List<String> blacklist) {
 
         try {
             CuboidClipboard clipboard = MCEditSchematicFormat.getFormat(file).load(file);
-            clipboard.paste(worldedit.getWorldEdit().getEditSessionFactory()
-                    .getEditSession(new BukkitWorld(obj.getWorld()), -1), new Vector(obj.getX(), obj.getY(), obj.getZ()), true);
+            EditSession session = worldedit.getWorldEdit().getEditSessionFactory()
+                    .getEditSession(new BukkitWorld(obj.getWorld()), -1);
+            if (blacklist.size() > 0) {
+                BlockMask blockMask = new BlockMask(session);
+                for (String block : blacklist) {
+                    try {
+                        BlockType type = BlockType.valueOf(block.toUpperCase());
+                        blockMask.add(new BaseBlock(type.getID()));
+                    } catch (Exception ignored) {
+                    }
+                }
+                session.setMask(Masks.negate(blockMask));
+            }
+            clipboard.paste(session, new Vector(obj.getX(), obj.getY(), obj.getZ()), true);
         } catch (Exception e) {
             e.printStackTrace();
             MvLogger.log(Level.SEVERE, "Something went wrong");

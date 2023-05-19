@@ -86,6 +86,11 @@ chances:
 # This setting is only for 1.13+. On 1.8-1.12 LuckyBlock should be a light source to fix a blacked out glitch.
 light-source: true
 
+# WorldEdit apply blocks to mask. These blocks will not be replaced with schematic
+worldedit-mask:
+  - BARRIER
+  - BEDROCK
+
 # Enabled colors of luckyblocks
 enabled:
   - black

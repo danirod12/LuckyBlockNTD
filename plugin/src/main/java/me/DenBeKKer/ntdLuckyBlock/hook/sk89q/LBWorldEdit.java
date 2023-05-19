@@ -7,6 +7,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 public class LBWorldEdit {
@@ -56,13 +58,11 @@ public class LBWorldEdit {
 
     public static void paste(File file, Block object) {
         if (worldedit == null) return;
-
-        if (fawe) {
-            Bukkit.getScheduler().runTaskLater(LBMain.getInstance(), () -> worldedit.paste(file, object, true), 1);
-            return;
-        }
-
-        worldedit.paste(file, object, false);
+        Bukkit.getScheduler().runTaskLater(LBMain.getInstance(), () -> forcePaste(file, object, fawe), 1);
     }
 
+    private static void forcePaste(File file, Block block, boolean activate) {
+        List<String> blacklist = LBMain.getInstance().worldeditMask;
+        worldedit.paste(file, block, activate, blacklist == null ? new ArrayList<>() : blacklist);
+    }
 }
