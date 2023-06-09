@@ -340,6 +340,11 @@ public class LBMain extends JavaPlugin {
         if (NMS_VERSION == null) return false;
         switch (NMS_VERSION) {
 
+            case "v1_20_R1": {
+                itemTagAdapter = new ItemTag1_20_R1();
+                return true;
+            }
+
             case "v1_19_R3": {
                 itemTagAdapter = new ItemTag1_19_R3();
                 return true;
