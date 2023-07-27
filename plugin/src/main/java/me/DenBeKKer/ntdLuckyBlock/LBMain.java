@@ -292,7 +292,7 @@ public class LBMain extends JavaPlugin {
                     new Config(instance, "configuration.schematics.main", schematicsFolder,
                             "bedrock_problem.schematic").copy(false);
                     if (!legacy) new Config(instance, "configuration.schematics.main", schematicsFolder,
-                            "small_temple.schematic").copy(false);
+                            "small_temple.schem").copy(false);
                 }
                 debug("Hooked into " + (LBWorldEdit.isFAWE() ? "FastAsync" : "") + "WorldEdit");
 

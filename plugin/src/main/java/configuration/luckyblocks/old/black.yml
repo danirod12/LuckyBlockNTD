@@ -15,7 +15,7 @@ drop:
   '0':
     - "SCHEMATIC : bedrock_problem : BLOCK"
   '1':
-    - "SCHEMATIC : cage_lava : PLAYER"
+    - "SCHEMATIC : cage_lava : PLAYER : true"
 
 craft:
   default: true

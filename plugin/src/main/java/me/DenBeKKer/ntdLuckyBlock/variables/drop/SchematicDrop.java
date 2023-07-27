@@ -16,18 +16,26 @@ public class SchematicDrop implements LuckyDrop, CustomSaver {
 
     @SerializedName(value = "block")
     private final boolean b;
+    @SerializedName(value = "air")
+    private final boolean i;
     @SerializedName(value = "file")
     private final File file;
+
+    public SchematicDrop(File file, boolean b) {
+        this(file, b, false);
+    }
 
     /**
      * @param file - Schematic file
      * @param b    - Place at block (true); Place at player (false)
      */
-    public SchematicDrop(File file, boolean b) {
+    public SchematicDrop(File file, boolean b, boolean i) {
         this.b = b;
+        this.i = i;
         this.file = file;
     }
 
+    @Deprecated
     public static LuckyDrop load(String description) {
 
         if (!Hook.WorldEdit.isEnabled()) {
@@ -68,7 +76,7 @@ public class SchematicDrop implements LuckyDrop, CustomSaver {
 
     @Override
     public void execute(LBMain.LuckyBlockType related, Block b, Player target) {
-        LBWorldEdit.paste(file, this.b || target == null ? b : target.getLocation().getBlock());
+        LBWorldEdit.paste(file, this.b || target == null ? b : target.getLocation().getBlock(), i);
     }
 
     @Override

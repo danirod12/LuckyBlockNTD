@@ -60,7 +60,7 @@ public class WorldEdit7 implements IWorldEdit {
 
     }
 
-    public void paste(File file, Block obj, boolean a, List<String> blacklist) {
+    public void paste(File file, Block obj, boolean a, boolean ignoreAir, List<String> blacklist) {
 
         Clipboard clipboard = null;
 
@@ -91,6 +91,7 @@ public class WorldEdit7 implements IWorldEdit {
             ClipboardHolder holder = new ClipboardHolder(clipboard);
             Operation operation = holder
                     .createPaste(editSession)
+                    .ignoreAirBlocks(ignoreAir)
                     .to(BukkitAdapter.asBlockVector(obj.getLocation()))
                     .build();
             Operations.complete(operation);

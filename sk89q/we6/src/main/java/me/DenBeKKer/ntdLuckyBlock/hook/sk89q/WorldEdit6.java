@@ -25,7 +25,7 @@ public class WorldEdit6 implements IWorldEdit {
     private final WorldEditPlugin worldedit = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 
     @Override
-    public void paste(File file, Block obj, boolean a, List<String> blacklist) {
+    public void paste(File file, Block obj, boolean a, boolean air, List<String> blacklist) {
 
         try {
             CuboidClipboard clipboard = MCEditSchematicFormat.getFormat(file).load(file);
@@ -42,7 +42,7 @@ public class WorldEdit6 implements IWorldEdit {
                 }
                 session.setMask(Masks.negate(blockMask));
             }
-            clipboard.paste(session, new Vector(obj.getX(), obj.getY(), obj.getZ()), true);
+            clipboard.paste(session, new Vector(obj.getX(), obj.getY(), obj.getZ()), !air);
         } catch (Exception e) {
             e.printStackTrace();
             MvLogger.log(Level.SEVERE, "Something went wrong");

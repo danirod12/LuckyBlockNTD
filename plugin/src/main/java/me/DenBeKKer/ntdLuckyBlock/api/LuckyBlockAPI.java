@@ -314,7 +314,7 @@ public class LuckyBlockAPI {
 
     public static void resolveSign(Block block, boolean update) {
 
-        if (LBMain.getInstance().factory.isOakSign(block.getType())) {
+        if (LBMain.getInstance().factory.isSign(block.getType())) {
             Sign sign = (Sign) block.getState();
             String[] lines = sign.getLines();
             if (lines[0].equalsIgnoreCase("[ntdluckyblock]")) {

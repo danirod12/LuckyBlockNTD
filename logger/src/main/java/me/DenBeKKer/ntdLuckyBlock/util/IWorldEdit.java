@@ -8,10 +8,10 @@ import java.util.List;
 
 public interface IWorldEdit {
 
-    default void paste(File file, Block obj, boolean activate) {
-        this.paste(file, obj, activate, new ArrayList<>());
+    default void paste(File file, Block obj, boolean activate, boolean ignoreAir) {
+        this.paste(file, obj, activate, ignoreAir, new ArrayList<>());
     }
 
-    void paste(File file, Block obj, boolean activate, List<String> blacklist);
+    void paste(File file, Block obj, boolean activate, boolean ignoreAir, List<String> blacklist);
 
 }

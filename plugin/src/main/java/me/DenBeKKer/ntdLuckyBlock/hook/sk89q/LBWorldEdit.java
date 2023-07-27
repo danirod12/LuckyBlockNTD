@@ -56,13 +56,13 @@ public class LBWorldEdit {
         return worldedit;
     }
 
-    public static void paste(File file, Block object) {
+    public static void paste(File file, Block object, boolean ignoreAir) {
         if (worldedit == null) return;
-        Bukkit.getScheduler().runTaskLater(LBMain.getInstance(), () -> forcePaste(file, object, fawe), 1);
+        Bukkit.getScheduler().runTaskLater(LBMain.getInstance(), () -> forcePaste(file, object, fawe, ignoreAir), 1);
     }
 
-    private static void forcePaste(File file, Block block, boolean activate) {
+    private static void forcePaste(File file, Block block, boolean activate, boolean ignoreAir) {
         List<String> blacklist = LBMain.getInstance().worldeditMask;
-        worldedit.paste(file, block, activate, blacklist == null ? new ArrayList<>() : blacklist);
+        worldedit.paste(file, block, activate, ignoreAir, blacklist == null ? new ArrayList<>() : blacklist);
     }
 }

@@ -122,7 +122,7 @@ public class LegacyLoader implements StringLoader {
 
 					}
 
-					return new SchematicDrop(file, b);
+					return new SchematicDrop(file, b, sp.length > 3 && sp[3].equalsIgnoreCase("true"));
 
 				}
 				case SPECIAL: {
