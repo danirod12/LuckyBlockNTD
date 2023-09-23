@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
@@ -153,4 +154,10 @@ public class Misc {
 
     }
 
+    public static void giveItemsOrDrop(Player target, ItemStack... itemStacks) {
+        PlayerInventory playerInventory = target.getInventory();
+        for (ItemStack value : playerInventory.addItem(itemStacks).values()) {
+            target.getWorld().dropItem(target.getLocation(), value);
+        }
+    }
 }

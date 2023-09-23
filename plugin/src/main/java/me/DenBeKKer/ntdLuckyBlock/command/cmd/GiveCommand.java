@@ -86,17 +86,17 @@ public class GiveCommand implements LBCommand {
             item.setAmount(amount);
             switch (data) {
                 case 0: {
-                    p.getInventory().addItem(item);
+                    Misc.giveItemsOrDrop(p, item);
                     break;
                 }
                 case 1: {
-                    Bukkit.getOnlinePlayers().forEach(n -> n.getInventory().addItem(item));
+                    Bukkit.getOnlinePlayers().forEach(player -> Misc.giveItemsOrDrop(player, item));
                     break;
                 }
                 case 2: {
 
                     if (sender instanceof Player) {
-                        ((Player) sender).getWorld().getPlayers().forEach(n -> n.getInventory().addItem(item));
+                        ((Player) sender).getWorld().getPlayers().forEach(player -> Misc.giveItemsOrDrop(player, item));
                     } else {
                         sender.sendMessage("Argument world only for players ;(");
                         return CommandResponse.SUCCESS;

@@ -179,7 +179,7 @@ public class LuckyBlock {
 	}
 
 	public void giveItem(Player p) {
-		p.getInventory().addItem(getSkull());
+		Misc.giveItemsOrDrop(p, getSkull());
 	}
 
 	@Deprecated

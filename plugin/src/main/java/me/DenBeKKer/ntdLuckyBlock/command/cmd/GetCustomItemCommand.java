@@ -4,6 +4,7 @@ import me.DenBeKKer.ntdLuckyBlock.command.CommandResponse;
 import me.DenBeKKer.ntdLuckyBlock.command.LBPlayerCommand;
 import me.DenBeKKer.ntdLuckyBlock.customitem.BekkerItemStack;
 import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
+import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import org.bukkit.entity.Player;
 
@@ -27,7 +28,7 @@ public class GetCustomItemCommand implements LBPlayerCommand {
                 sender.sendMessage(Message.CI_NOT_FOUND.getAsString(true).replace("%identifier%", args[0]));
                 return CommandResponse.SUCCESS;
             }
-            sender.getInventory().addItem(stack);
+            Misc.giveItemsOrDrop(sender, stack);
             sender.sendMessage(Message.CMD_CI_RECEIVED.getAsString(true).replace("%item%", stack.getIdentifier().getIdentifier()));
             return CommandResponse.SUCCESS;
 
