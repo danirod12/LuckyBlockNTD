@@ -19,6 +19,20 @@ import java.util.UUID;
 
 public class Misc {
 
+    private final static String PROFILE_NAME;
+
+    static {
+        String profileName;
+        try {
+            // Causes NullPointerException since 1.20.2
+            new GameProfile(UUID.randomUUID(), null);
+            profileName = null;
+        } catch (NullPointerException exception) {
+            profileName = "md_5";
+        }
+        PROFILE_NAME = profileName;
+    }
+
     /**
      * @param target Player to check permission
      * @param node   Permission node
@@ -136,7 +150,7 @@ public class Misc {
         SkullMeta headMeta = (SkullMeta) head.getItemMeta();
         assert headMeta != null;
 
-        GameProfile profile = new GameProfile(uuid == null ? UUID.randomUUID() : uuid, null);
+        GameProfile profile = new GameProfile(uuid == null ? UUID.randomUUID() : uuid, PROFILE_NAME);
         profile.getProperties().put("textures", new Property("textures",
                 new String(Base64.getEncoder().encode(("{textures:{SKIN:{url:\"" + url + "\"}}}").getBytes()))));
         try {

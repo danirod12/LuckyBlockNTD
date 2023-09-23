@@ -340,6 +340,11 @@ public class LBMain extends JavaPlugin {
         if (NMS_VERSION == null) return false;
         switch (NMS_VERSION) {
 
+            case "v1_20_R2": {
+                itemTagAdapter = new ItemTag1_20_R2();
+                return true;
+            }
+
             case "v1_20_R1": {
                 itemTagAdapter = new ItemTag1_20_R1();
                 return true;
@@ -376,7 +381,7 @@ public class LBMain extends JavaPlugin {
                     itemTagAdapter = new ItemTagLegacy();
                     return true;
                 } catch (UnsupportedOperationException ex) {
-                    log(Level.WARNING, "Your platform is not supported. Supported versions 1.8 - 1.19.4");
+                    log(Level.WARNING, "Your platform is not supported. Supported versions 1.8 - 1.20.2");
                     Bukkit.getPluginManager().disablePlugin(this);
                     return false;
                 }
@@ -474,6 +479,12 @@ public class LBMain extends JavaPlugin {
         if (commandsManager != null)
             commandsManager.gc(null);
 
+        try {
+            CustomItemFactory.loadSystem();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
         for (String str : config.get().getStringList("enabled")) {
             try {
                 LuckyBlockType lb = LuckyBlockType.parse(str);
@@ -496,16 +507,9 @@ public class LBMain extends JavaPlugin {
             log(Level.INFO, Message.LB_LOADED_NOT_ZERO.getAsString().replace("%amount%", String.valueOf(map.size())));
         }
 
-        try {
-            CustomItemFactory.loadSystem();
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-
         // Refresh gui manager
         this.guiManager.reload();
         log(Level.INFO, "System loaded (took " + (System.currentTimeMillis() - ms) + " ms)...");
-
     }
 
     public void checkForUpdates(boolean inform) {
