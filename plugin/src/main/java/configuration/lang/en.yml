@@ -24,7 +24,10 @@ craft:
 system:
   loading_config: "&fLoading configuration... "
   reloaded_config: "&aConfiguration has been reloaded, loaded %amount% luckyblock types..."
-  
+
+  world_not_found: "&cWorld %world% not found"
+  lb_placed: "&fLuckyBlock &e%type%&f was placed on &e%location%"
+
   lb_not_found: "&cLuckyBlock &e%lb%&c not found, skipping... "
   lb_loading_exception: "&cLuckyBlock &e%lb%&c cant be loaded... Exception: &e%exception%"
   lb_unknown_exception: "&cLuckyBlock &e%lb%&c is not found or an unknown exception happened, skipping... "
@@ -57,6 +60,7 @@ system:
     support: "&8 > &e/%label% support &f- get author contacts"
     checkforupdates: "&8 > &e/%label% checkforupdates &f- check for updates"
     destroy: "&8 > &e/%label% destroy <radius/chunk> [-all] &f- destroy lb"
+    place: "&8 > &e/%label% place [world] <x> <y> <z> <type> &f- place lb"
     generate: "&8 > &e/%label% generate <type> <factory> <min> <max> &f- generate drops"
     generateFull: "With this command you can generate LuckyDrops inside your LuckyBlock. <type> - LuckyBlockType to be generated. <factory> - LB factory (Use `latest`). <min> - min EntryDrops. <max> - max EntryDrops"
   

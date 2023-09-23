@@ -7,6 +7,7 @@ import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -28,6 +29,7 @@ public class CommandsManager implements CommandExecutor, TabCompleter {
         // Basic
         register(new GetCommand());
         register(new GiveCommand());
+        register(new PlaceCommand());
         register(new GuiCommand());
 
         // System
@@ -165,6 +167,24 @@ public class CommandsManager implements CommandExecutor, TabCompleter {
                         .filter(n -> Misc.hasPermission((Player) sender, "luckyblock.command.give." + n))
                         .filter(n -> n.startsWith(args[2].toUpperCase())).collect(Collectors.toList());
 
+            }
+            if (args[0].equalsIgnoreCase("place") || args[0].equalsIgnoreCase("setblock")) {
+                if (!sender.hasPermission("luckyblock.command.place"))
+                    return new ArrayList<>();
+
+                if (args.length == 2) {
+                    List<String> list = Bukkit.getWorlds().stream().map(World::getName)
+                            .filter(n -> n.toLowerCase().startsWith(args[1].toLowerCase()))
+                            .collect(Collectors.toList());
+                    list.add("~");
+                    return list;
+                } else if (args.length == 5 + (Bukkit.getWorld(args[1]) != null ? 1 : 0)) {
+                    return LuckyBlockType.enabled().stream().map(Enum::name)
+                            .filter(n -> n.startsWith(args[args.length - 1].toUpperCase()))
+                            .filter(n -> !(sender instanceof Player) || Misc.hasPermission((Player) sender,
+                                    "luckyblock.command.place." + n)).collect(Collectors.toList());
+                }
+                return new ArrayList<>();
             }
             if ((args[0].equalsIgnoreCase("customitemget") ||
                     args[0].equalsIgnoreCase("getcustomitem") ||
