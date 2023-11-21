@@ -173,7 +173,8 @@ public class CommandsManager implements CommandExecutor, TabCompleter {
                     return new ArrayList<>();
 
                 if (args.length == 2) {
-                    List<String> list = Bukkit.getWorlds().stream().map(World::getName)
+                    // java.lang.NoClassDefFoundError: org/bukkit/generator/WorldInfo on lambda (World::getName)
+                    List<String> list = Bukkit.getWorlds().stream().map(w -> w.getName())
                             .filter(n -> n.toLowerCase().startsWith(args[1].toLowerCase()))
                             .collect(Collectors.toList());
                     list.add("~");
