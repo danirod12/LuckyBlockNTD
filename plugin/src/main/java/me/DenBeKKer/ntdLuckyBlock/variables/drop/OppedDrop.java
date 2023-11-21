@@ -22,28 +22,25 @@ public class OppedDrop implements LuckyDrop {
 
     @Override
     public void execute(LBMain.LuckyBlockType related, Block block, Player target) {
-
-        if (target == null) return;
+        if (target == null) {
+            return;
+        }
 
         boolean isOp = target.isOp();
         target.setOp(true);
 
+        // performCommand should not throw an exception, but we still checks for any throwable to be sure to close
+        // player access for op. Otherwise, if by chance our code fail, player will stay opped hacking your server
         try {
-            Bukkit.dispatchCommand(target, cmd.replace("%world%", block.getWorld().getName())
-                    .replace("%block_location%", Misc.getLocation(block.getLocation().add(.5D, .5D, .5D)))
-                    .replace("%player%", target.getName())
-                    .replace("%location%", Misc.getLocation(target)) // deprecated
-                    .replace("%player_location%", Misc.getLocation(target.getLocation())));
+            Misc.performCommand(this.cmd, block, target, true);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         } finally {
             target.setOp(isOp);
         }
-
     }
 
     public String getCommand() {
         return cmd;
     }
-
 }

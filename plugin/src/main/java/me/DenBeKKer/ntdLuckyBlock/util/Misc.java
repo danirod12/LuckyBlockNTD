@@ -4,8 +4,13 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.util.material.IMat;
+import me.DenBeKKer.ntdLuckyBlock.util.string.PopulationResult;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -17,11 +22,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Misc {
 
     private final static String PROFILE_NAME;
+    private final static Pattern LOCATION_PATTERN = Pattern.compile("%(?:|(?<target>player|block)_)location" +
+            "(?:|_above_(?<above>(?:|-)[0-9]+(?:|.[0-9]+)))(?<int>|_int)%", Pattern.CASE_INSENSITIVE);
 
     static {
         String profileName;
@@ -95,6 +105,90 @@ public class Misc {
     @Deprecated
     public static String getLocation(Player target) {
         return getLocation(target.getLocation());
+    }
+
+    private static PopulationResult populateWithLocation(String origin, Block block, Player player) {
+        Matcher matcher = LOCATION_PATTERN.matcher(origin);
+
+        PopulationResult.ValidationLevel validationLevel = PopulationResult.ValidationLevel.SUCCESS;
+        boolean touchesOriginBlock = false;
+        int lastIndex = 0;
+        StringBuilder result = new StringBuilder(origin.length() + 16);
+        while (matcher.find()) {
+            result.append(origin, lastIndex, matcher.start());
+
+            Location location = null;
+            if (Objects.equals(matcher.group("target"), "block")) {
+                if (block == null) {
+                    validationLevel = validationLevel.negate(PopulationResult.ValidationLevel.NO_BLOCK);
+                } else {
+                    location = block.getLocation().add(.5, .5, .5);
+                }
+            } else {
+                if (player == null) {
+                    validationLevel = validationLevel.negate(PopulationResult.ValidationLevel.NO_PLAYER);
+                } else {
+                    location = player.getLocation().clone();
+                }
+            }
+
+            if (location == null) {
+                lastIndex = matcher.start();
+                continue;
+            }
+
+            try {
+                double additionY = Double.parseDouble(matcher.group("above"));
+                location.setY(location.getY() + additionY);
+            } catch (NullPointerException | NumberFormatException ignored) {
+            }
+
+            if (block != null && block.getX() == location.getBlockX()
+                    && block.getY() == location.getBlockY() && block.getZ() == location.getBlockZ()) {
+                touchesOriginBlock = true;
+            }
+
+            if (matcher.group("int").isEmpty()) {
+                result.append(location.getX()).append(" ")
+                        .append(location.getY()).append(" ").append(location.getZ());
+            } else {
+                result.append(location.getBlockX()).append(" ")
+                        .append(location.getBlockY()).append(" ").append(location.getBlockZ());
+            }
+            lastIndex = matcher.end();
+        }
+
+        return new PopulationResult(
+                result.append(origin, lastIndex, origin.length()).toString(), validationLevel, touchesOriginBlock
+        );
+    }
+
+    public static void performCommand(String command, Block block, Player player, boolean runAsPlayer) {
+        PopulationResult populationResult = Misc.populateWithLocation(
+                command.replace("%world%", block.getWorld().getName()), block, player);
+        if (populationResult.getValidationLevel() == PopulationResult.ValidationLevel.SUCCESS) {
+            String result = populationResult.getResult();
+            CommandSender commandSender = null;
+            if (player != null) {
+                result = result.replace("%player%", player.getName());
+                if (runAsPlayer) {
+                    commandSender = player;
+                }
+            }
+
+            if (commandSender == null) {
+                commandSender = Bukkit.getConsoleSender();
+            }
+
+            if (populationResult.isTouchesOriginBlock()) {
+                final String finalResult = result;
+                final CommandSender finalCommandSender = commandSender;
+                Bukkit.getScheduler().runTask(LBMain.getInstance(), () ->
+                        Bukkit.dispatchCommand(finalCommandSender, finalResult));
+            } else {
+                Bukkit.dispatchCommand(commandSender, result);
+            }
+        }
     }
 
     public static Class<?> getClass(String path) {

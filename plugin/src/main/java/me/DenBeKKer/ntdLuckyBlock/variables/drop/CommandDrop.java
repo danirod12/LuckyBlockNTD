@@ -3,6 +3,7 @@ package me.DenBeKKer.ntdLuckyBlock.variables.drop;
 import com.google.gson.annotations.SerializedName;
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
+import me.DenBeKKer.ntdLuckyBlock.util.string.PopulationResult;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
@@ -22,21 +23,10 @@ public class CommandDrop implements LuckyDrop {
 
     @Override
     public void execute(LBMain.LuckyBlockType type, Block b, Player player) {
-
-        String cmd = this.cmd.replace("%world%", b.getWorld().getName())
-                .replace("%block_location%", Misc.getLocation(b.getLocation().add(.5D, .5D, .5D)));
-        if (cmd.contains("%player%") || cmd.contains("%location%")) {
-            if (player == null) return;
-            cmd = cmd.replace("%player%", player.getName())
-                    .replace("%location%", Misc.getLocation(player)) // deprecated
-                    .replace("%player_location%", Misc.getLocation(player.getLocation()));
-        }
-        Bukkit.dispatchCommand(player == null ? Bukkit.getConsoleSender() : player, cmd);
-
+        Misc.performCommand(this.cmd, b, player, true);
     }
 
     public String getCommand() {
         return cmd;
     }
-
 }
