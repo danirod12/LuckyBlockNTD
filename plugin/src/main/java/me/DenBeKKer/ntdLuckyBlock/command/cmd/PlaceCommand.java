@@ -30,6 +30,15 @@ public class PlaceCommand implements LBCommand {
     // [world] <x> <y> <z> <type>
     @Override
     public CommandResponse execute(CommandSender sender, String label, String[] args) {
+        boolean notify = true;
+        if (args.length > 0 && args[args.length - 1].equalsIgnoreCase("-silent") ||
+                args[args.length - 1].equalsIgnoreCase("-s")) {
+            notify = false;
+            String[] argsCopy = args;
+            args = new String[argsCopy.length - 1];
+            System.arraycopy(argsCopy, 0, args, 0, args.length);
+        }
+
         if (args.length >= 4 && args.length <= 5) {
             World world;
             Player player = null;
@@ -77,10 +86,13 @@ public class PlaceCommand implements LBCommand {
             } catch (LuckyBlockNotLoadedException exception) {
                 throw new RuntimeException(exception);
             }
-            sender.sendMessage(MessagesManager.Message.LB_PLACED.getAsString()
-                    .replace("%type%", type.forceGet().getCustomName())
-                    .replace("%location%", "(x: " + location.getBlockX()
-                            + ", y: " + location.getBlockY() + ", z: " + location.getBlockZ() + ")"));
+
+            if (notify) {
+                sender.sendMessage(MessagesManager.Message.LB_PLACED.getAsString()
+                        .replace("%type%", type.forceGet().getCustomName())
+                        .replace("%location%", "(x: " + location.getBlockX()
+                                + ", y: " + location.getBlockY() + ", z: " + location.getBlockZ() + ")"));
+            }
             return CommandResponse.SUCCESS;
         }
         return CommandResponse.SEND_HELP;
