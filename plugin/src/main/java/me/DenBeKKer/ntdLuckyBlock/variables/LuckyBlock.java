@@ -329,7 +329,7 @@ public class LuckyBlock {
 	}
 
 	public void addIntent(LuckyEntry drop) {
-		if (drop == null) return;
+		if (drop == null || drop.isEmpty()) return;
 		items.add(drop);
 		if (!chances.contains(drop.getDropChance()))
 			chances.add(drop.getDropChance());
