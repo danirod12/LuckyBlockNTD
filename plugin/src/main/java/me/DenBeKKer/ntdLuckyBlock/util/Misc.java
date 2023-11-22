@@ -163,7 +163,7 @@ public class Misc {
         );
     }
 
-    public static void performCommand(String command, Block block, Player player, boolean runAsPlayer) {
+    public static void performCommand(String command, Block block, Player player, PerformCommandAs as) {
         PopulationResult populationResult = Misc.populateWithLocation(
                 command.replace("%world%", block.getWorld().getName()), block, player);
         if (populationResult.getValidationLevel() == PopulationResult.ValidationLevel.SUCCESS) {
@@ -171,7 +171,7 @@ public class Misc {
             CommandSender commandSender = null;
             if (player != null) {
                 result = result.replace("%player%", player.getName());
-                if (runAsPlayer) {
+                if (as != PerformCommandAs.CONSOLE) {
                     commandSender = player;
                 }
             }
@@ -184,11 +184,38 @@ public class Misc {
                 final String finalResult = result;
                 final CommandSender finalCommandSender = commandSender;
                 Bukkit.getScheduler().runTask(LBMain.getInstance(), () ->
-                        Bukkit.dispatchCommand(finalCommandSender, finalResult));
+                        dispatch(finalCommandSender, finalResult, as == PerformCommandAs.OPPED_PLAYER));
             } else {
-                Bukkit.dispatchCommand(commandSender, result);
+                dispatch(commandSender, result, as == PerformCommandAs.OPPED_PLAYER);
             }
         }
+    }
+
+    public static void dispatch(CommandSender sender, String command, boolean opped) {
+        boolean wasOpped = false;
+
+        if (opped) {
+            wasOpped = sender.isOp();
+            sender.setOp(true);
+        }
+
+        // performCommand should not throw an exception, but we still checks for any throwable to be sure to close
+        // player access for op. Otherwise, if by chance our code fail, player will stay opped hacking your server
+        try {
+            Bukkit.dispatchCommand(sender, command);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        } finally {
+            if (opped) {
+                sender.setOp(wasOpped);
+            }
+        }
+    }
+
+    public enum PerformCommandAs {
+        CONSOLE,
+        PLAYER,
+        OPPED_PLAYER
     }
 
     public static Class<?> getClass(String path) {

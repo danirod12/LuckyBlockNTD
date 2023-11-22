@@ -22,7 +22,7 @@ public class ConsoleDrop implements LuckyDrop {
 
     @Override
     public void execute(LBMain.LuckyBlockType related, Block b, Player player) {
-        Misc.performCommand(this.cmd, b, player, false);
+        Misc.performCommand(this.cmd, b, player, Misc.PerformCommandAs.CONSOLE);
     }
 
     public String getCommand() {

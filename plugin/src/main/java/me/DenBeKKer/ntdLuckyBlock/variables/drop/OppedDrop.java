@@ -25,19 +25,7 @@ public class OppedDrop implements LuckyDrop {
         if (target == null) {
             return;
         }
-
-        boolean isOp = target.isOp();
-        target.setOp(true);
-
-        // performCommand should not throw an exception, but we still checks for any throwable to be sure to close
-        // player access for op. Otherwise, if by chance our code fail, player will stay opped hacking your server
-        try {
-            Misc.performCommand(this.cmd, block, target, true);
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-        } finally {
-            target.setOp(isOp);
-        }
+        Misc.performCommand(this.cmd, block, target, Misc.PerformCommandAs.OPPED_PLAYER);
     }
 
     public String getCommand() {
