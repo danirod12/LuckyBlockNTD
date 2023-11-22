@@ -478,6 +478,7 @@ public class LBMain extends JavaPlugin {
         // first time it will be null (On startup)
         if (commandsManager != null)
             commandsManager.gc(null);
+        this.convertManager.resetIndexes();
 
         try {
             CustomItemFactory.loadSystem();

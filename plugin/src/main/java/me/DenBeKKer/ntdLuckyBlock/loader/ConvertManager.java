@@ -13,14 +13,11 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ConvertManager implements Listener {
 
-    private final Map<Config, List<String>> map = new HashMap<>();
+    private final Map<Config, Set<String>> map = new HashMap<>();
     private boolean verifyUUID, verifyTAG;
     private boolean factory;
 
@@ -47,15 +44,19 @@ public class ConvertManager implements Listener {
     }
 
     public void add(Config loaded, String path) {
-        map.computeIfAbsent(loaded, n -> new ArrayList<>()).add(path);
+        map.computeIfAbsent(loaded, n -> new HashSet<>()).add(path);
     }
 
     public int getRequests() {
-        return map.values().stream().mapToInt(List::size).sum();
+        return map.values().stream().mapToInt(Collection::size).sum();
     }
 
-    public Map<Config, List<String>> getRequestMap() {
+    public Map<Config, Collection<String>> getRequestMap() {
         return new HashMap<>(map);
+    }
+
+    public void resetIndexes() {
+        this.map.clear();
     }
 
     public boolean isVerifyUUID() {

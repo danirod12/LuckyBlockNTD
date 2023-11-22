@@ -34,6 +34,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -242,7 +243,7 @@ public class CoreListener implements Listener {
                             "entry drops to new JSON store format. §bPerform - §l/luckyblock convert");
                     player.sendMessage("§4[*] §cTo prevent loss of configuration in case of error, make " +
                             "backup of some files first");
-                    for (Map.Entry<Config, List<String>> entry : manager.getRequestMap().entrySet())
+                    for (Map.Entry<Config, Collection<String>> entry : manager.getRequestMap().entrySet())
                         player.sendMessage("§4 - §c" + entry.getKey().getName() + " §7(Have " +
                                 entry.getValue().size() + " unconverted items)");
                 } else {
