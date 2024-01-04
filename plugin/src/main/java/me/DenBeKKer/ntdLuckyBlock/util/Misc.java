@@ -9,7 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -24,14 +23,21 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Misc {
 
     private final static String PROFILE_NAME;
-    private final static Pattern LOCATION_PATTERN = Pattern.compile("%(?:|(?<target>player|block)_)location" +
-            "(?:|_above_(?<above>(?:|-)[0-9]+(?:|.[0-9]+)))(?<int>|_int)%", Pattern.CASE_INSENSITIVE);
+    private final static Pattern LOCATION_PATTERN = Pattern.compile(
+            "%(?:|(?<target>player|block)_)" +
+                    "(?<format>location|x|y|z)" +
+                    "(?:|_above_(?<above>(?:|-)[0-9]+(?:|.[0-9]+)))" +
+                    "(?:|_move_\\((?<move>[0-9\\-.,]*)\\))" +
+                    "(?<int>|_int)%",
+            Pattern.CASE_INSENSITIVE
+    );
 
     static {
         String profileName;
@@ -138,29 +144,73 @@ public class Misc {
             }
 
             try {
-                double additionY = Double.parseDouble(matcher.group("above"));
-                location.setY(location.getY() + additionY);
+                location.setY(location.getY() + Double.parseDouble(matcher.group("above")));
             } catch (NullPointerException | NumberFormatException ignored) {
+            }
+
+            String move = matcher.group("move");
+            try {
+                if (move != null) {
+                    String[] offset = move.split(",");
+                    location.add(
+                            Double.parseDouble(offset[0]),
+                            Double.parseDouble(offset[1]),
+                            Double.parseDouble(offset[2])
+                    );
+                }
+            } catch (NumberFormatException | IndexOutOfBoundsException exception) {
+                MvLogger.log(Level.WARNING, "An error occurred while parsing placeholder "
+                        + origin.substring(matcher.start(), matcher.end()) + " at -> move_" + move);
+                exception.printStackTrace();
             }
 
             if (block != null && block.getX() == location.getBlockX()
                     && block.getY() == location.getBlockY() && block.getZ() == location.getBlockZ()) {
                 touchesOriginBlock = true;
             }
-
-            if (matcher.group("int").isEmpty()) {
-                result.append(location.getX()).append(" ")
-                        .append(location.getY()).append(" ").append(location.getZ());
-            } else {
-                result.append(location.getBlockX()).append(" ")
-                        .append(location.getBlockY()).append(" ").append(location.getBlockZ());
-            }
+            appendLocation(result, location,
+                    LocationFormat.parse(matcher.group("format")), !matcher.group("int").isEmpty());
             lastIndex = matcher.end();
         }
 
         return new PopulationResult(
                 result.append(origin, lastIndex, origin.length()).toString(), validationLevel, touchesOriginBlock
         );
+    }
+
+    private static void appendLocation(StringBuilder target, Location location,
+                                       LocationFormat format, boolean asInteger) {
+        if (format.hasX()) {
+            if (asInteger) {
+                target.append(location.getBlockX());
+            } else {
+                target.append(cut(location.getX()));
+            }
+            if (format == LocationFormat.EVERYTHING) {
+                target.append(' ');
+            }
+        }
+        if (format.hasY()) {
+            if (asInteger) {
+                target.append(location.getBlockY());
+            } else {
+                target.append(cut(location.getY()));
+            }
+            if (format == LocationFormat.EVERYTHING) {
+                target.append(' ');
+            }
+        }
+        if (format.hasZ()) {
+            if (asInteger) {
+                target.append(location.getBlockZ());
+            } else {
+                target.append(cut(location.getZ()));
+            }
+        }
+    }
+
+    public static double cut(double origin) {
+        return ((long) (origin * 100)) / 100D;
     }
 
     public static void performCommand(String command, Block block, Player player, PerformCommandAs as) {
@@ -216,6 +266,35 @@ public class Misc {
         CONSOLE,
         PLAYER,
         OPPED_PLAYER
+    }
+
+    public enum LocationFormat {
+        X, Y, Z, EVERYTHING;
+
+        public static LocationFormat parse(String mode) {
+            switch (mode.toLowerCase()) {
+                case "x":
+                    return X;
+                case "y":
+                    return Y;
+                case "z":
+                    return Z;
+                default:
+                    return EVERYTHING;
+            }
+        }
+
+        public boolean hasX() {
+            return this == X || this == EVERYTHING;
+        }
+
+        public boolean hasY() {
+            return this == Y || this == EVERYTHING;
+        }
+
+        public boolean hasZ() {
+            return this == Z || this == EVERYTHING;
+        }
     }
 
     public static Class<?> getClass(String path) {
