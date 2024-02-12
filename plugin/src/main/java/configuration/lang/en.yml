@@ -59,7 +59,7 @@ system:
     reload: "&8 > &e/%label% reload &f- reload all configs"
     support: "&8 > &e/%label% support &f- get author contacts"
     checkforupdates: "&8 > &e/%label% checkforupdates &f- check for updates"
-    destroy: "&8 > &e/%label% destroy <radius/chunk> [-all] &f- destroy lb"
+    destroy: "&8 > &e/%label% destroy <radius/chunk/(<xyz> [xyz] [world])> [-all] &f- destroy lb"
     place: "&8 > &e/%label% place [world] <x> <y> <z> <type> &f- place lb"
     generate: "&8 > &e/%label% generate <type> <factory> <min> <max> &f- generate drops"
     generateFull: "With this command you can generate LuckyDrops inside your LuckyBlock. <type> - LuckyBlockType to be generated. <factory> - LB factory (Use `latest`). <min> - min EntryDrops. <max> - max EntryDrops"

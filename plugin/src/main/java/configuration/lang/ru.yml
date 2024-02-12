@@ -59,7 +59,7 @@ system:
     iteminfo: "&8 > &6/%label% iteminfo &f- Информация о предмете в руке"
     getcustomitem: "&8 > &6/%label% getcustomitem <id> &f- Получить предмет"
     customitemslist: "&8 > &6/%label% customitemslist &f- Список предметов"
-    destroy: "&8 > &6/%label% destroy <радиус/chunk> [-all] &f- Разрушить лб"
+    destroy: "&8 > &6/%label% destroy <radius/chunk/(<xyz> [xyz] [world])> [-all] &f- Разрушить лб"
     place: "&8 > &e/%label% place [мир] <x> <y> <z> <тип> &f- установить лаки-блок"
     generate: "&8 > &e/%label% generate <тип> <генератор> <мин> <макс> &f- генерация дропа"
     generateFull: "Этой командой можно сгенерировать дроп в вашем Лаки-Блоке. <тип> - LuckyBlockType, который будет сгенерирован. <генератор> - LB генератор (Используй `latest`). <мин> - минимальное кол-во коллекций дропа. <макс> - максимальное кол-во коллекций дропа"

@@ -30,7 +30,10 @@ craft:
 system:
   loading_config: "&fCargando configuración... "
   reloaded_config: "&aLa configuración ha sido recargada, cargado %amount% tipos de luckyblock..."
-  
+
+  world_not_found: "&cMundo %world% no encontrado"
+  lb_placed: "&fLuckyBlock &e%type%&f fue colocado en &e%location%"
+
   lb_not_found: "&cLuckyBlock &e%lb%&c no encontrado, omitiendo... "
   lb_loading_exception: "&cLuckyBlock &e%lb%&c no se puede cargar... Excepción: &e%exception%"
   lb_unknown_exception: "&cLuckyBlock &e%lb%&c no se encuentra o ha ocurrido una excepción desconocida, omitiendo... "
@@ -62,7 +65,8 @@ system:
     reload: "&8 > &e/%label% reload &f- reload all configs"
     support: "&8 > &e/%label% support &f- Obtener soporte"
     checkforupdates: "&8 > &e/%label% checkforupdates &f- Buscar actualizaciones"
-    destroy: "&8 > &e/%label% destroy <radio/chunk> [-all] &f- Destruir lb"
+    destroy: "&8 > &e/%label% destroy <radio/chunk/(<xyz> [xyz] [world])> [-all] &f- Destruir lb"
+    place: "&8 > &e/%label% place [world] <x> <y> <z> <type> &f- place lb"
     item_to_json: "&8 > &e/%label% itemtojson &f- Obtener datos json para el item"
     generate: "&8 > &e/%label% generate <type> <factory> <min> <max> &f- generar drops"
     generateFull: "Con este comando puedes generar Lucky Drops dentro de tu Lucky Block. <type> - LuckyBlockType a generar. <factory> - LB factory (Usa `más reciente`). <min> - min EntryDrops. <max> - max EntryDrops"

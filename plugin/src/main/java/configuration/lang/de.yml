@@ -35,6 +35,8 @@ system:
   cmd_lb_not_found: '&c Der LuckyBlock-Type &e%lb%&c wurde nicht gefunden :('
   cmd_lb_received: '&a Du hast %amount% Luckyblocks erhalten &7(%lb% &7Farbe)'
   cmd_lb_give: '&aDu hast %amount% Luckyblocks gegeben &7(%lb% &7Farbe)'
+  world_not_found: "&cWelt %world% nicht gefunden"
+  lb_placed: "&fLuckyBlock &e%type%&f wurde platziert bei &e%location%"
   
   cmd:
     help_title: '&eLuckyBlock''s &fHilfs-Commands:'
@@ -49,6 +51,7 @@ system:
     customitemget: "&8 > &6/%label% customitemget <id> &f- bekomme individuelles Item"
     customitemslist: "&8 > &6/%label% customitemslist &f- Liste der individuellen Items"
     generate: "&8 > &e/%label% generate <type> <factory> <min> <max> &f- Generiere Drops"
+    place: "&8 > &e/%label% place [world] <x> <y> <z> <type> &f- place lb"
     generateFull: "Mit diesem Command kannst du LuckyDrops in deinem Luckyblock regenerieren. <type> - LuckyBlockType muss generiert sein. <factory> - LB factory (Nutz `Späteste`). <min> - min EntryDrops. <max> - max EntryDrops"
   cmd_player_not_found: '&cSpieler &e%player%&c nnicht gefunden :('
   cmd_no_perm_to_color: '&cDu hast keine Permission für Farbe %lb%'

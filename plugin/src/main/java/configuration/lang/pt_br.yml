@@ -20,6 +20,9 @@ craft:
 system:
   loading_config: "&fCarregando configuração... "
   reloaded_config: "&aA configuração foi recarregada, carregado %amount% LuckyBlocks..."
+
+  world_not_found: "&cMundo %world% não encontrado"
+  lb_placed: "&fLuckyBlock &e%type%&f foi colocada em &e%location%"
   
   lb_not_found: "&cLuckyBlock &e%lb%&c não encontrada, pulando... "
   lb_loading_exception: "&cLuckyBlock &e%lb%&c não pode ser carregada... Exception: &e%exception%"
@@ -52,7 +55,8 @@ system:
     iteminfo: "&8 > &6/%label% iteminfo &f- Informação do item sua mão"
     customitemget: "&8 > &6/%label% customitemget <id> &f- Pegue item customizado"
     customitemslist: "&8 > &6/%label% customitemslist &f- Lista de itens customizados"
-    destroy: " &8> &e/%label% destroy <alcance/chunk> [-all] &f- destroi o lb"
+    destroy: " &8> &e/%label% destroy <alcance/chunk/(<xyz> [xyz] [world])> [-all] &f- destroi o lb"
+    place: "&8 > &e/%label% place [mundo] <x> <y> <z> <tipo> &f- place lb"
     generate: "&8 > &e/%label% generate <type> <factory> <min> <max> &f- gere drops"
     generateFull: "Com este comando você pode erar LuckyDrops dentro de seu LuckyBlock. <type> - LuckyBlockType para ser gerado. <factory> - LB factory (Use `latest`). <min> - min EntryDrops. <max> - max EntryDrops"
   
