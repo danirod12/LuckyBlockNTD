@@ -31,8 +31,8 @@ public class PlaceCommand implements LBCommand {
     @Override
     public CommandResponse execute(CommandSender sender, String label, String[] args) {
         boolean notify = true;
-        if (args.length > 0 && args[args.length - 1].equalsIgnoreCase("-silent") ||
-                args[args.length - 1].equalsIgnoreCase("-s")) {
+        if (args.length > 0 && (args[args.length - 1].equalsIgnoreCase("-silent") ||
+                args[args.length - 1].equalsIgnoreCase("-s"))) {
             notify = false;
             String[] argsCopy = args;
             args = new String[argsCopy.length - 1];
