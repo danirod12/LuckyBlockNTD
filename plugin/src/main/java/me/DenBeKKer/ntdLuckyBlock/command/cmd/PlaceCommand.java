@@ -10,6 +10,7 @@ import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -42,28 +43,40 @@ public class PlaceCommand implements LBCommand {
         if (args.length >= 4 && args.length <= 5) {
             World world;
             Player player = null;
+            Player target = null;
             if (args.length == 4) {
                 if (sender instanceof Player) {
                     player = ((Player) sender);
+                    target = player;
                     world = player.getWorld();
                 } else {
                     sender.sendMessage("You should provide <world> for console invocation");
                     return CommandResponse.SUCCESS;
                 }
             } else {
-                world = Bukkit.getWorld(args[0]);
-                if (world == null) {
-                    sender.sendMessage(MessagesManager.Message.WORLD_NOT_FOUND.getAsString()
-                            .replace("%world%", args[0]));
-                    return CommandResponse.SUCCESS;
+                if (args[0].startsWith("p:")) {
+                    target = Bukkit.getPlayerExact(args[0].substring(2));
+                    if (target == null) {
+                        sender.sendMessage(MessagesManager.Message.CMD_PLAYER_NOT_FOUND.getAsString()
+                                .replace("%player%", args[0].substring(2)));
+                        return CommandResponse.SUCCESS;
+                    }
+                    world = target.getWorld();
+                } else {
+                    world = Bukkit.getWorld(args[0]);
+                    if (world == null) {
+                        sender.sendMessage(MessagesManager.Message.WORLD_NOT_FOUND.getAsString()
+                                .replace("%world%", args[0]));
+                        return CommandResponse.SUCCESS;
+                    }
                 }
             }
 
             double x, y, z;
             try {
-                x = parseDouble(player, args[args.length - 4], Location::getX);
-                y = parseDouble(player, args[args.length - 3], Location::getY);
-                z = parseDouble(player, args[args.length - 2], Location::getZ);
+                x = parseDouble(target, args[args.length - 4], Location::getX);
+                y = parseDouble(target, args[args.length - 3], Location::getY);
+                z = parseDouble(target, args[args.length - 2], Location::getZ);
             } catch (NumberFormatException exception) {
                 return CommandResponse.SEND_HELP;
             }
@@ -92,8 +105,9 @@ public class PlaceCommand implements LBCommand {
             if (notify) {
                 sender.sendMessage(MessagesManager.Message.LB_PLACED.getAsString()
                         .replace("%type%", type.forceGet().getCustomName())
-                        .replace("%location%", "(x: " + location.getBlockX()
-                                + ", y: " + location.getBlockY() + ", z: " + location.getBlockZ() + ")"));
+                        .replace("%location%", "(" + world.getName()
+                                + ", x: " + location.getBlockX() + ", y: " + location.getBlockY()
+                                + ", z: " + location.getBlockZ() + ")"));
             }
             return CommandResponse.SUCCESS;
         }
@@ -102,6 +116,7 @@ public class PlaceCommand implements LBCommand {
 
     private double parseDouble(Player player, String value,
                                Function<Location, Double> mapper) throws NumberFormatException {
+        // therefore here we can get an out of bounds, but passed "value" is guaranteed non-empty
         if (value.toCharArray()[0] == '~') {
             if (player == null) {
                 throw new NumberFormatException();

@@ -7,15 +7,16 @@ import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.generator.WorldInfo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -174,16 +175,48 @@ public class CommandsManager implements CommandExecutor, TabCompleter {
 
                 if (args.length == 2) {
                     // java.lang.NoClassDefFoundError: org/bukkit/generator/WorldInfo on lambda (World::getName)
-                    List<String> list = Bukkit.getWorlds().stream().map(w -> w.getName())
+                    List<String> list = Bukkit.getWorlds().stream().map(WorldInfo::getName)
+                            .collect(Collectors.toCollection(ArrayList::new));
+                    list.addAll(Bukkit.getOnlinePlayers().stream().map(p -> "p:" + p.getName())
+                            .collect(Collectors.toList()));
+                    list = list.stream()
                             .filter(n -> n.toLowerCase().startsWith(args[1].toLowerCase()))
                             .collect(Collectors.toList());
-                    list.add("~");
+                    if (sender instanceof Player) {
+                        list.add("~");
+                    }
                     return list;
-                } else if (args.length == 5 + (Bukkit.getWorld(args[1]) != null ? 1 : 0)) {
-                    return LuckyBlockType.enabled().stream().map(Enum::name)
-                            .filter(n -> n.startsWith(args[args.length - 1].toUpperCase()))
-                            .filter(n -> !(sender instanceof Player) || Misc.hasPermission((Player) sender,
-                                    "luckyblock.command.place." + n)).collect(Collectors.toList());
+                } else {
+                    boolean suggestLuckyBlocks = false;
+                    if (!args[1].replaceAll("[~0-9]", "").isEmpty()) {
+                        if (args[1].length() > 1 && Bukkit.getPlayerExact(args[1].substring(2)) != null) {
+                            // player
+                            if (args.length < 6) {
+                                return Collections.singletonList("~");
+                            } else if (args.length == 6) {
+                                suggestLuckyBlocks = true;
+                            }
+                        } else {
+                            // world
+                            suggestLuckyBlocks = args.length == 6;
+                        }
+                    } else {
+                        // location
+                        if (args.length < 5) {
+                            return Collections.singletonList("~");
+                        } else if (args.length == 5) {
+                            suggestLuckyBlocks = true;
+                        }
+                    }
+                    if (suggestLuckyBlocks) {
+                        List<String> list = LuckyBlockType.enabled().stream().map(Enum::name)
+                                .filter(n -> n.startsWith(args[args.length - 1].toUpperCase()))
+                                .filter(n -> !(sender instanceof Player) || Misc.hasPermission((Player) sender,
+                                        "luckyblock.command.place." + n))
+                                .collect(Collectors.toCollection(ArrayList::new));
+                        list.add("RANDOM");
+                        return list;
+                    }
                 }
                 return new ArrayList<>();
             }

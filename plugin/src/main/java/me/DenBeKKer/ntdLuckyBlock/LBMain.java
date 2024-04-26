@@ -560,8 +560,15 @@ public class LBMain extends JavaPlugin {
         }
 
         public static LuckyBlockType parse(String name) {
-            for (LuckyBlockType type : values())
-                if (type.name().equalsIgnoreCase(name)) return type;
+            if (name.equalsIgnoreCase("random")) {
+                return random(true);
+            }
+
+            for (LuckyBlockType type : values()) {
+                if (type.name().equalsIgnoreCase(name)) {
+                    return type;
+                }
+            }
             return null;
         }
 
