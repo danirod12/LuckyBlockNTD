@@ -340,6 +340,11 @@ public class LBMain extends JavaPlugin {
         if (NMS_VERSION == null) return false;
         switch (NMS_VERSION) {
 
+            case "v1_20_R4": {
+                itemTagAdapter = new ItemTag1_20_R4();
+                return true;
+            }
+
             case "v1_20_R3": {
                 itemTagAdapter = new ItemTag1_20_R3();
                 return true;
@@ -386,7 +391,7 @@ public class LBMain extends JavaPlugin {
                     itemTagAdapter = new ItemTagLegacy();
                     return true;
                 } catch (UnsupportedOperationException ex) {
-                    log(Level.WARNING, "Your platform is not supported. Supported versions 1.8 - 1.20.2");
+                    log(Level.WARNING, "Your platform is not supported. Supported versions 1.8 - 1.20.5");
                     Bukkit.getPluginManager().disablePlugin(this);
                     return false;
                 }
