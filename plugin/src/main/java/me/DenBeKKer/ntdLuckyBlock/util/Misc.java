@@ -46,7 +46,7 @@ public class Misc {
             new GameProfile(UUID.randomUUID(), null);
             profileName = null;
         } catch (NullPointerException exception) {
-            profileName = "md_5";
+            profileName = "";
         }
         PROFILE_NAME = profileName;
     }
