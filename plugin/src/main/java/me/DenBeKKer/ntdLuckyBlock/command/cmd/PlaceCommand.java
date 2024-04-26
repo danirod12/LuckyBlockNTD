@@ -82,7 +82,9 @@ public class PlaceCommand implements LBCommand {
 
             Location location = new Location(world, x, y, z);
             try {
-                LuckyBlockAPI.placeLuckyBlock(world.getBlockAt(location), type);
+                Block block = world.getBlockAt(location);
+                LuckyBlockAPI.clearBlock(block);
+                LuckyBlockAPI.placeLuckyBlock(block, type);
             } catch (LuckyBlockNotLoadedException exception) {
                 throw new RuntimeException(exception);
             }

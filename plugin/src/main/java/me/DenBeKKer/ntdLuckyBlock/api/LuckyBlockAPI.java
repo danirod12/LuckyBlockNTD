@@ -410,6 +410,17 @@ public class LuckyBlockAPI {
         return null;
     }
 
+    public static void clearBlock(Block block) {
+        block.getWorld()
+                .getNearbyEntities(
+                        block.getLocation().add(0.5, -1.2, 0.5),
+                        0.1, 0.1, 0.1
+                )
+                .stream()
+                .filter(entity -> searchByEntity(entity) != null)
+                .forEach(Entity::remove);
+    }
+
     public static LuckyBlockType searchByEntity(Entity entity) {
         if (entity.getType() != EntityType.ARMOR_STAND)
             return null;
