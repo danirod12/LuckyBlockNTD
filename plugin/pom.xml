@@ -206,9 +206,7 @@
                         <option>-dontshrink</option>
                         <option>-dontoptimize</option>
                         <option>-obfuscationdictionary ${project.parent.basedir}/java-ob.txt</option>
-                        <option>-overloadaggressively</option>
-                        <option>-keepattributes
-                            Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,LocalVariable*Table,*Annotation*,Synthetic,EnclosingMethod
+                        <option>-keepattributes Exceptions,InnerClasses,Signature,Deprecated,LineNumberTable,*Annotation*,Synthetic,EnclosingMethod
                         </option>
                         <option>-dontnote</option>
                         <option>-dontwarn</option>
