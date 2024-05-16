@@ -1,5 +1,6 @@
 package me.DenBeKKer.ntdLuckyBlock;
 
+import com.github.danirod12.mcversion.MinecraftVersion;
 import me.DenBeKKer.ntdLuckyBlock.api.DropChance;
 import me.DenBeKKer.ntdLuckyBlock.api.exceptions.LuckyBlockNotLoadedException;
 import me.DenBeKKer.ntdLuckyBlock.command.CommandsManager;
@@ -44,7 +45,6 @@ import java.util.logging.Level;
 public class LBMain extends JavaPlugin {
 
     private static LBMain instance;
-    private static String NMS_VERSION;
 
     // General variables
     private static final Map<LuckyBlockType, LuckyBlock> map = new HashMap<>();
@@ -94,7 +94,7 @@ public class LBMain extends JavaPlugin {
     }
 
     public static String getNMSVersion() {
-        return NMS_VERSION;
+        return MinecraftVersion.getNMSVersion().getCraftBukkitName();
     }
 
     public static LBMain getInstance() {
@@ -180,8 +180,6 @@ public class LBMain extends JavaPlugin {
         // data for onEnable
         long ms = System.currentTimeMillis();
 
-        NMS_VERSION = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-
         // Init logger
         MvLogger.setInstance(instance = this);
 
@@ -232,7 +230,7 @@ public class LBMain extends JavaPlugin {
         this.tinted = tinted == null || !getVersionType().isPremium() ? null : tinted;
 
         // NMS
-        log(Level.INFO, "Loading NMS for your platform (" + Bukkit.getVersion() + ", " + NMS_VERSION + ")...");
+        log(Level.INFO, "Loading NMS for your platform (" + Bukkit.getVersion() + ", " + getNMSVersion() + ")...");
         if (!loadNMS()) return;
 
         // Before config
@@ -336,70 +334,59 @@ public class LBMain extends JavaPlugin {
     }
 
     private boolean loadNMS() {
-
-        if (NMS_VERSION == null) return false;
-        switch (NMS_VERSION) {
-
-            case "v1_20_R4": {
-                itemTagAdapter = new ItemTag1_20_R4();
-                return true;
-            }
-
-            case "v1_20_R3": {
-                itemTagAdapter = new ItemTag1_20_R3();
-                return true;
-            }
-
-            case "v1_20_R2": {
-                itemTagAdapter = new ItemTag1_20_R2();
-                return true;
-            }
-
-            case "v1_20_R1": {
-                itemTagAdapter = new ItemTag1_20_R1();
-                return true;
-            }
-
-            case "v1_19_R3": {
-                itemTagAdapter = new ItemTag1_19_R3();
-                return true;
-            }
-
-            case "v1_19_R2": {
-                itemTagAdapter = new ItemTag1_19_R2();
-                return true;
-            }
-
-            case "v1_19_R1": {
-                itemTagAdapter = new ItemTag1_19_R1();
-                return true;
-            }
-
-            case "v1_18_R2": {
-                itemTagAdapter = new ItemTag1_18_R2();
-                return true;
-            }
-
-            case "v1_18_R1": {
-                itemTagAdapter = new ItemTag1_18_R1();
-                return true;
-            }
-
-            default: {
-
-                try {
-                    itemTagAdapter = new ItemTagLegacy();
+        try {
+            switch (MinecraftVersion.getPossibleNMSVersion()) {
+                case v1_20_R4: {
+                    itemTagAdapter = new ItemTag1_20_R4();
                     return true;
-                } catch (UnsupportedOperationException ex) {
-                    log(Level.WARNING, "Your platform is not supported. Supported versions 1.8 - 1.20.5");
-                    Bukkit.getPluginManager().disablePlugin(this);
-                    return false;
                 }
-
+                case v1_20_R3: {
+                    itemTagAdapter = new ItemTag1_20_R3();
+                    return true;
+                }
+                case v1_20_R2: {
+                    itemTagAdapter = new ItemTag1_20_R2();
+                    return true;
+                }
+                case v1_20_R1: {
+                    itemTagAdapter = new ItemTag1_20_R1();
+                    return true;
+                }
+                case v1_19_R3: {
+                    itemTagAdapter = new ItemTag1_19_R3();
+                    return true;
+                }
+                case v1_19_R2: {
+                    itemTagAdapter = new ItemTag1_19_R2();
+                    return true;
+                }
+                case v1_19_R1: {
+                    itemTagAdapter = new ItemTag1_19_R1();
+                    return true;
+                }
+                case v1_18_R2: {
+                    itemTagAdapter = new ItemTag1_18_R2();
+                    return true;
+                }
+                case v1_18_R1: {
+                    itemTagAdapter = new ItemTag1_18_R1();
+                    return true;
+                }
+                default: {
+                    break;
+                }
             }
-
+        } catch (Throwable ignored) {
         }
 
+        try {
+            itemTagAdapter = new ItemTagLegacy();
+            return true;
+        } catch (UnsupportedOperationException ex) {
+            log(Level.WARNING, "Your platform is not supported. Supported versions 1.8 - 1.20.5");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return false;
+        }
     }
 
     @Override
