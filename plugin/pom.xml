@@ -242,6 +242,7 @@
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.particle.ParticleManager { &lt;methods&gt;;
                             }
                         </option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.MinecraftVersion$NMSVersion { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.particle.ParticleType { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.* { &lt;methods&gt;; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.factory.LBFactory { *; }</option>
