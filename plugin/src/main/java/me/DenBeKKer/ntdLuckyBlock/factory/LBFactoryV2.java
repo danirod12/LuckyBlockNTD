@@ -133,6 +133,11 @@ public class LBFactoryV2 implements LBFactory {
                 .filter(material -> !material.name().startsWith("LEGACY"))
                 .unordered().collect(Collectors.toList());
         Material material = materials.get(ThreadLocalRandom.current().nextInt(materials.size()));
+
+        if (LBMain.getInstance().getItemTagAdapter().asNMSCopy(new ItemStack(material)) == null) {
+            return generateItem();
+        }
+
         if (material.isBlock()) {
             int amount;
             switch (ThreadLocalRandom.current().nextInt(4)) {
