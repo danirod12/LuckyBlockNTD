@@ -2,68 +2,112 @@ package me.DenBeKKer.ntdLuckyBlock.recipe;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
+import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.api.events.PrepareLuckyBlockCraftEvent;
-import me.DenBeKKer.ntdLuckyBlock.api.exceptions.LuckyBlockNotLoadedException;
-import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
+import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.CraftingInventory;
+import org.bukkit.inventory.ItemStack;
 
 public class CraftListener implements Listener {
 
-    @EventHandler
-    public void craft(PrepareItemCraftEvent e) throws LuckyBlockNotLoadedException {
-
-        CraftingInventory inventory = e.getInventory();
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPrepareItemCraft(PrepareItemCraftEvent event) {
+        CraftingInventory inventory = event.getInventory();
         Player player;
         try {
-            player = (Player) e.getViewers().get(0);
-        } catch (Exception ex) {
-            if (LBMain.isDebug())
-                ex.printStackTrace();
+            player = (Player) event.getViewers().get(0);
+        } catch (Exception ignored) {
             return;
         }
 
-        LBMain.debug("PrepareItemCraftEvent, player - " + (player == null ? "null" : player.getName()));
-        if (player == null) return;
-
-        for (LuckyBlockType type : LuckyBlockType.map().keySet()) {
-
-            for (LuckyRecipe recipe : type.getRecipes()) {
-
-                if (recipe == null || !recipe.hasAccess(player)) {
-                    LBMain.debug("No permission for craft");
+        for (LuckyBlock block : LuckyBlockType.map().values()) {
+            for (LuckyRecipe recipe : block.getRecipes()) {
+                if (recipe == null || (LBMain.getInstance().craftPermissions
+                        && !recipe.hasAccess(player))) {
                     continue;
                 }
-
-                if (recipe.verify(inventory.getMatrix())) {
-
-                    for (int i = 0; i < inventory.getMatrix().length; i++) {
-                        if (inventory.getMatrix()[i] != null
-                                && inventory.getMatrix()[i].getAmount() > 1) {
-                            LBMain.debug("Matrix checking. Проверка, один предмет в каждом слоте или нет");
-                            player.sendMessage(Message.CRAFT_ALLOWED_ONE_LAYER.getAsString());
-                            player.closeInventory();
-                            return;
-                        }
+                int verification = recipe.verify(inventory.getMatrix());
+                if (verification > 0) {
+                    PrepareLuckyBlockCraftEvent customEvent = new PrepareLuckyBlockCraftEvent(player,
+                            inventory.getMatrix(), verification, recipe);
+                    Bukkit.getPluginManager().callEvent(customEvent);
+                    if (customEvent.isCancelled()) {
+                        return;
                     }
-
-                    PrepareLuckyBlockCraftEvent event = new PrepareLuckyBlockCraftEvent(player, inventory.getMatrix(), recipe);
-                    Bukkit.getPluginManager().callEvent(event);
-                    if (event.isCancelled()) return;
-
-                    LBMain.debug("Inserting new craft result");
-                    inventory.setResult(recipe.getResult());
+                    inventory.setResult(block.getSkull());
                     return;
                 }
-
             }
-
         }
-
     }
 
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onCraftItem(InventoryClickEvent event) {
+        if (event.getInventory() instanceof CraftingInventory && event.getSlot() == 0) {
+            CraftingInventory craftingInventory = (CraftingInventory) event.getInventory();
+            HumanEntity human = event.getWhoClicked();
+            if (craftingInventory.getResult() != null) {
+
+                LuckyBlockType type = LuckyBlockAPI.parseLuckyBlock(craftingInventory.getResult());
+                if (type != null) {
+                    event.setCancelled(true);
+                    LuckyBlock block = LuckyBlockType.map().get(type);
+                    if (block != null) {
+                        for (LuckyRecipe recipe : block.getRecipes()) {
+                            int amount = recipe.verify(craftingInventory.getMatrix());
+                            int maxAmount = amount;
+                            if (amount > 0 && !event.getClick().isShiftClick()) {
+                                amount = 1;
+                            }
+                            if (amount > 0) {
+                                ItemStack stack = block.getSkull();
+                                stack.setAmount(amount);
+                                if (event.getClick().isShiftClick()) {
+                                    for (ItemStack value : human.getInventory().addItem(stack).values()) {
+                                        human.getWorld().dropItem(human.getLocation(), value);
+                                    }
+                                } else {
+                                    ItemStack current = human.getItemOnCursor();
+                                    if (current != null && !current.getType().name().contains("AIR")) {
+                                        if (current.isSimilar(stack)) {
+                                            current.setAmount(current.getAmount() + stack.getAmount());
+                                        } else {
+                                            // not craft
+                                            return;
+                                        }
+                                    } else {
+                                        human.setItemOnCursor(stack);
+                                    }
+                                }
+
+                                ItemStack[] itemStacks = craftingInventory.getMatrix();
+                                for (int i = 0; i < itemStacks.length; i++) {
+                                    if (itemStacks[i] == null || itemStacks[i].getAmount() <= amount) {
+                                        itemStacks[i] = null;
+                                    } else {
+                                        itemStacks[i].setAmount(itemStacks[i].getAmount() - amount);
+                                    }
+                                }
+                                craftingInventory.setMatrix(itemStacks);
+                                if (maxAmount == amount) {
+                                    craftingInventory.setResult(null);
+                                }
+                                return;
+                            }
+                        }
+                        // error / runtime recipe change
+                        human.closeInventory();
+                    }
+                }
+            }
+        }
+    }
 }

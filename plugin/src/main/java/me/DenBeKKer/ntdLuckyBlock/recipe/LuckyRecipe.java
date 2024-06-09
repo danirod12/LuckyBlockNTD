@@ -31,53 +31,56 @@ public class LuckyRecipe {
 
     }
 
-    public boolean verify(ItemStack[] origin) {
-
+    public int verify(ItemStack[] origin) {
         if (origin.length != 9) {
-            return false;
+            return 0;
+        }
+        if (any_matrix) {
+            return verifyAny(origin);
         }
 
-        if (any_matrix) return verifyAny(origin);
-
+        int minAmount = 64;
         for (int i = 0; i < origin.length; i++) {
             if (items[i] == null) {
-                if (origin[i] == null) continue;
-                return false;
+                if (origin[i] == null) {
+                    continue;
+                }
+                return 0;
             }
             if (!items[i].isMatch(origin[i])) {
-                LBMain.debug("Item " + items[i].toString() + " not matches "
-                        + (origin[i] == null ? "null" : origin[i].getType().name()));
-                return false;
+                return 0;
+            }
+            if (origin[i].getAmount() < minAmount) {
+                minAmount = origin[i].getAmount();
             }
         }
-
-        return true;
-
+        return minAmount;
     }
 
-    public boolean verifyAny(ItemStack[] origin) {
-
-        if (origin.length != 9) return false;
+    private int verifyAny(ItemStack[] origin) {
+        if (origin.length != 9) {
+            return 0;
+        }
 
         ItemStack[] array = origin.clone();
-
+        int minAmount = 64;
         items:
         for (LuckyRecipeItem item : items) {
-
-            if (item == null) continue;
+            if (item == null) {
+                continue;
+            }
             for (int i = 0; i < array.length; i++) {
-
                 if (item.isMatch(array[i])) {
+                    if (array[i].getAmount() < minAmount) {
+                        minAmount = array[i].getAmount();
+                    }
                     array[i] = null;
                     continue items;
                 }
-
             }
-            return false;
-
+            return 0;
         }
-        return Stream.of(array).noneMatch(Objects::nonNull);
-
+        return Stream.of(array).noneMatch(Objects::nonNull) ? minAmount : 0;
     }
 
     public ItemStack getResult() throws LuckyBlockNotLoadedException {

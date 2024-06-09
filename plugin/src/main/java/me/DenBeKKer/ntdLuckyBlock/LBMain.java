@@ -69,6 +69,7 @@ public class LBMain extends JavaPlugin {
     private boolean debug = false;
     public boolean preventHatLB = true;
     public boolean breakPermissions = true;
+    public boolean craftPermissions = true;
     public boolean reduceAuthorInfo = false;
     public boolean disableAuthorInfo = false;
     public boolean informAboutUpdates = true;
@@ -399,6 +400,7 @@ public class LBMain extends JavaPlugin {
         disableConvertCheck = config.getBoolean("disable-json-convert-checking");
         informAboutUpdates = config.getBoolean("inform-about-update");
         breakPermissions = config.getBoolean("break-permissions");
+        craftPermissions = config.getBoolean("craft-permissions");
         reduceAuthorInfo = config.getBoolean("reduce-command-author-info");
         preventHatLB = config.getBoolean("prevent-hat-luckyblocks");
         worldeditMask = config.getStringList("worldedit-mask");

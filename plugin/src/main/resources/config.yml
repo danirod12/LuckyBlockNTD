@@ -49,6 +49,9 @@ permission-for-each-gui-get: false
 # Permission for luckyblock breaking (luckyblock.break.color or luckyblock.break.*)
 break-permissions: true
 
+# Permission for luckyblock breaking (luckyblock.break.color or luckyblock.break.*)
+craft-permissions: true
+
 # Disable author info for command /ntdluckyblock gui get
 # NOTE: This feature can be used only in premium plugin version
 disable-author-info: false
