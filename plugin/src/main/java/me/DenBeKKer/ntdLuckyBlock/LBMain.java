@@ -388,7 +388,7 @@ public class LBMain extends JavaPlugin {
             itemTagAdapter = new ItemTagLegacy();
             return true;
         } catch (UnsupportedOperationException ex) {
-            log(Level.WARNING, "Your platform is not supported. Supported versions 1.8 - 1.20.5");
+            log(Level.WARNING, "Your platform is not supported. Supported versions 1.8 - 1.21.0");
             Bukkit.getPluginManager().disablePlugin(this);
             return false;
         }
