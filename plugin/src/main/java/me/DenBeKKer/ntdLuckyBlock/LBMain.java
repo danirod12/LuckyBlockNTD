@@ -77,6 +77,7 @@ public class LBMain extends JavaPlugin {
     public boolean disableWebIssuePrint = false;
     public boolean forceUpdateInventory = false;
     public boolean lightSource = false;
+    public boolean breakEventHighestPriority = false;
 
     public static boolean isPremium() {
         return Templates.VERSION.isPremium();
@@ -408,6 +409,7 @@ public class LBMain extends JavaPlugin {
         reduceAuthorInfo = config.getBoolean("reduce-command-author-info");
         preventHatLB = config.getBoolean("prevent-hat-luckyblocks");
         worldeditMask = config.getStringList("worldedit-mask");
+        breakEventHighestPriority = config.getBoolean("event-priority.block-break-event");
 
         boolean lightSource = config.getBoolean("light-source");
         if (this.factory instanceof Mat1_12 && !lightSource) {
