@@ -263,7 +263,7 @@
 
                     <libs>
                         <!-- Well, it is a temp solution (I hope) -->
-                        <lib>C:\Program Files\Java\jre-1.8\lib\rt.jar</lib>
+                        <lib>C:\Program Files\Java\lib\rt.jar</lib>
                     </libs>
 
                     <outjar>ntdLuckyBlock-${project.parent.version}.jar</outjar>
