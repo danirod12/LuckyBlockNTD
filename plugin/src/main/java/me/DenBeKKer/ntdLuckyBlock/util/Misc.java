@@ -320,27 +320,32 @@ public class Misc {
     }
 
     public static UUID getUUID(ItemStack item) {
-
-        if (item == null) return null;
-
-        ItemMeta meta = item.getItemMeta();
-        if (!(meta instanceof SkullMeta)) return null;
-
-        SkullMeta skullMeta = (SkullMeta) meta;
-        try {
-
-            Field profileField = skullMeta.getClass().getDeclaredField("profile");
-
-            profileField.setAccessible(true);
-
-            GameProfile profile = (GameProfile) profileField.get(skullMeta);
-            return profile == null ? null : profile.getId();
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (item == null) {
             return null;
         }
 
+        ItemMeta meta = item.getItemMeta();
+        if (!(meta instanceof SkullMeta)) {
+            return null;
+        }
+
+        SkullMeta skullMeta = (SkullMeta) meta;
+        try {
+            Field profileField = skullMeta.getClass().getDeclaredField("profile");
+            profileField.setAccessible(true);
+
+            GameProfile profile;
+            if (profileField.getType() == GameProfile.class) {
+                profile = (GameProfile) profileField.get(skullMeta);
+            } else {
+                Object obj = profileField.get(skullMeta);
+                profile = ((GameProfile) obj.getClass().getMethod("gameProfile").invoke(obj));
+            }
+            return profile == null ? null : profile.getId();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
     }
 
     public static ItemStack getPlayerHead(String url, String name, List<String> lore, UUID uuid) {
@@ -355,27 +360,40 @@ public class Misc {
         GameProfile profile = new GameProfile(uuid == null ? UUID.randomUUID() : uuid, PROFILE_NAME);
         profile.getProperties().put("textures", new Property("textures",
                 new String(Base64.getEncoder().encode(("{textures:{SKIN:{url:\"" + url + "\"}}}").getBytes()))));
+
         try {
+            // New method that modifies profile and serializedProfile
+            Method method = headMeta.getClass().getDeclaredMethod("setProfile", GameProfile.class);
+            method.setAccessible(true);
+            method.invoke(headMeta, profile);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex1) {
             try {
-                // New method that modifies profile and serializedProfile
-                Method method = headMeta.getClass().getDeclaredMethod("setProfile", GameProfile.class);
+                // MC 1.21.1 +
+                Class<?> clazz = Class.forName("net.minecraft.world.item.component.ResolvableProfile");
+                Method method = headMeta.getClass().getDeclaredMethod("setProfile", clazz);
+                Object resolvable = clazz.getConstructor(GameProfile.class).newInstance(profile);
                 method.setAccessible(true);
-                method.invoke(headMeta, profile);
-            } catch (NoSuchMethodException | InvocationTargetException exception) {
-                // Old method that modifies profile
-                Field profileField = headMeta.getClass().getDeclaredField("profile");
-                profileField.setAccessible(true);
-                profileField.set(headMeta, profile);
+                method.invoke(headMeta, resolvable);
+            } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException |
+                     InvocationTargetException | IllegalAccessException ex2) {
+                try {
+                    // Old method that modifies profile
+                    Field profileField = headMeta.getClass().getDeclaredField("profile");
+                    profileField.setAccessible(true);
+                    profileField.set(headMeta, profile);
+                } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException ex3) {
+                    ex1.printStackTrace();
+                    ex2.printStackTrace();
+                    ex3.printStackTrace();
+                }
             }
-        } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
         }
+
         headMeta.setDisplayName(name);
         headMeta.setLore(lore);
 
         head.setItemMeta(headMeta);
         return head;
-
     }
 
     public static void giveItemsOrDrop(Player target, ItemStack... itemStacks) {
