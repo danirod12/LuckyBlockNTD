@@ -8,6 +8,7 @@ import me.DenBeKKer.ntdLuckyBlock.util.string.PopulationResult;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,6 +24,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,6 +40,7 @@ public class Misc {
                     "(?<int>|_int)%",
             Pattern.CASE_INSENSITIVE
     );
+    private static final Function<SkullMeta, UUID> UUID_RETRIEVER;
 
     static {
         String profileName;
@@ -49,6 +52,61 @@ public class Misc {
             profileName = "";
         }
         PROFILE_NAME = profileName;
+
+        ItemStack skullExample;
+        try {
+            // 1.13+
+            skullExample = new ItemStack(Material.valueOf("PLAYER_HEAD"));
+        } catch (IllegalArgumentException exception) {
+            // legacy method
+            skullExample = new ItemStack(Material.valueOf("SKULL_ITEM"), 1, (short) 3);
+        }
+        Class<?> skullMetaClazz = skullExample.getItemMeta().getClass();
+
+        Function<SkullMeta, GameProfile> profileRetriever = null;
+        for (Field field : skullMetaClazz.getDeclaredFields()) {
+            if (field.getType() == GameProfile.class) {
+                // 1.21.1<
+                profileRetriever = meta -> {
+                    try {
+                        field.setAccessible(true);
+                        return ((GameProfile) field.get(meta));
+                    } catch (IllegalAccessException exception) {
+                        exception.printStackTrace();
+                        return null;
+                    }
+                };
+            } else if (field.getType().getSimpleName().contains("Profile" /* ResolvableProfile */)) {
+                // 1.12.1>
+                Class<?> resolvableProfileClazz = field.getType();
+                for (Method method : resolvableProfileClazz.getMethods()) {
+                    if (method.getReturnType() == GameProfile.class) {
+                        profileRetriever = meta -> {
+                            field.setAccessible(true);
+                            try {
+                                return ((GameProfile) method.invoke(field.get(meta)));
+                            } catch (IllegalAccessException | InvocationTargetException exception) {
+                                exception.printStackTrace();
+                                return null;
+                            }
+                        };
+                        break;
+                    }
+                }
+            } else {
+                continue;
+            }
+            break;
+        }
+
+        if (profileRetriever == null) {
+            throw new RuntimeException("Was not able to find GameProfile retriever");
+        }
+        final Function<SkullMeta, GameProfile> retriever = profileRetriever;
+        UUID_RETRIEVER = meta -> {
+            GameProfile profile = retriever.apply(meta);
+            return profile == null ? null : profile.getId();
+        };
     }
 
     /**
@@ -328,24 +386,7 @@ public class Misc {
         if (!(meta instanceof SkullMeta)) {
             return null;
         }
-
-        SkullMeta skullMeta = (SkullMeta) meta;
-        try {
-            Field profileField = skullMeta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-
-            GameProfile profile;
-            if (profileField.getType() == GameProfile.class) {
-                profile = (GameProfile) profileField.get(skullMeta);
-            } else {
-                Object obj = profileField.get(skullMeta);
-                profile = ((GameProfile) obj.getClass().getMethod("gameProfile").invoke(obj));
-            }
-            return profile == null ? null : profile.getId();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return null;
-        }
+        return UUID_RETRIEVER.apply((SkullMeta) meta);
     }
 
     public static ItemStack getPlayerHead(String url, String name, List<String> lore, UUID uuid) {
