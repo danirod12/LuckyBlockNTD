@@ -39,7 +39,7 @@ system:
   cmd_lb_received: "&aOtrzymałeś(aś) LuckyBlocki (%amount% - Kolor: %lb%&7)"
   cmd_lb_give: "&aDałeś(aś) LuckyBlocki (%amount% - Kolor: %lb%&7)"
   
-  cmd_help:
+  cmd:
     help_title: "&eLista komend pluginu na LuckyBlocki:"
     get: "&8 > &e/%label% get <kolor> [ilość] &f- daje Tobie luckyblock."
     give: "&8 > &e/%label% give <gracz> <kolor> [ilość] &f- daje luckyblock dla gracza."
