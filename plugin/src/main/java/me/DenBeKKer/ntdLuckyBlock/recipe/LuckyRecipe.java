@@ -1,6 +1,5 @@
 package me.DenBeKKer.ntdLuckyBlock.recipe;
 
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.exceptions.LuckyBlockNotLoadedException;
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
@@ -14,28 +13,30 @@ public class LuckyRecipe {
 
     private final LuckyRecipeItem[] items;
     private final LuckyBlockType type;
-    private final boolean any_matrix;
+    private final boolean anyMatrix;
     private final String permission;
 
-    public LuckyRecipe(LuckyBlockType type, LuckyRecipeItem[] items, String permission, boolean anymatrix) {
+    public LuckyRecipe(LuckyBlockType type, LuckyRecipeItem[] items, String permission, boolean anyMatrix) {
 
-        if (!anymatrix && items.length != 9)
+        if (!anyMatrix && items.length != 9) {
             throw new IllegalArgumentException("You should provide 9 LuckyRecipeItems");
+        }
 
-        if (!type.isLoaded()) throw new UnsupportedOperationException("LuckyBlockType " + type.name() + " is unloaded");
+        if (!type.isLoaded()) {
+            throw new UnsupportedOperationException("LuckyBlockType " + type.name() + " is unloaded");
+        }
 
         this.items = items;
         this.type = type;
-        this.any_matrix = anymatrix;
+        this.anyMatrix = anyMatrix;
         this.permission = permission;
-
     }
 
     public int verify(ItemStack[] origin) {
         if (origin.length != 9) {
             return 0;
         }
-        if (any_matrix) {
+        if (anyMatrix) {
             return verifyAny(origin);
         }
 
@@ -91,5 +92,4 @@ public class LuckyRecipe {
         if (permission == null || player == null) return true;
         return Misc.hasPermission(player, permission);
     }
-
 }

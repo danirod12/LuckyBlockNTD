@@ -30,7 +30,7 @@ import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_13;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
 import me.DenBeKKer.ntdLuckyBlock.variables.PlayerHead;
 import me.DenBeKKer.ntdLuckyBlock.variables.PluginVersion;
-import me.DenBeKKer.ntdLuckyBlock.variables.WorldListDataHandler;
+import me.DenBeKKer.ntdLuckyBlock.variables.world.WorldListDataHandler;
 import org.bukkit.*;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;

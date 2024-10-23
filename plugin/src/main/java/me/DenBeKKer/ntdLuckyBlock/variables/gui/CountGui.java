@@ -1,7 +1,8 @@
-package me.DenBeKKer.ntdLuckyBlock.variables;
+package me.DenBeKKer.ntdLuckyBlock.variables.gui;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
+import me.DenBeKKer.ntdLuckyBlock.variables.PlayerHead;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

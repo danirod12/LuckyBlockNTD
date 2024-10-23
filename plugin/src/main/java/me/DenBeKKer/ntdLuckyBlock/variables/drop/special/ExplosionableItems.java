@@ -1,4 +1,4 @@
-package me.DenBeKKer.ntdLuckyBlock.variables;
+package me.DenBeKKer.ntdLuckyBlock.variables.drop.special;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
