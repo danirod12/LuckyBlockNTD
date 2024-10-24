@@ -338,6 +338,10 @@ public class LBMain extends JavaPlugin {
     private boolean loadNMS() {
         try {
             switch (MinecraftVersion.getPossibleNMSVersion()) {
+                case v1_21_R2: {
+                    itemTagAdapter = new ItemTag1_21_R2();
+                    return true;
+                }
                 case v1_21_R1: {
                     itemTagAdapter = new ItemTag1_21_R1();
                     return true;
