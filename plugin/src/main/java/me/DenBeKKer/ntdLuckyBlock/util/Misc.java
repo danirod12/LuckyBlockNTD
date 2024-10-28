@@ -84,7 +84,8 @@ public class Misc {
                         profileRetriever = meta -> {
                             field.setAccessible(true);
                             try {
-                                return ((GameProfile) method.invoke(field.get(meta)));
+                                Object object = field.get(meta);
+                                return object == null ? null : ((GameProfile) method.invoke(object));
                             } catch (IllegalAccessException | InvocationTargetException exception) {
                                 exception.printStackTrace();
                                 return null;
