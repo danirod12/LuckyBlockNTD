@@ -336,6 +336,7 @@ public class LBMain extends JavaPlugin {
     }
 
     private boolean loadNMS() {
+        Throwable throwable = null;
         try {
             switch (MinecraftVersion.getPossibleNMSVersion()) {
                 case v1_21_R5: {
@@ -398,14 +399,21 @@ public class LBMain extends JavaPlugin {
                     break;
                 }
             }
-        } catch (Throwable ignored) {
+        } catch (Throwable th) {
+            throwable = th;
         }
 
         try {
             itemTagAdapter = new ItemTagLegacy();
             return true;
         } catch (UnsupportedOperationException ex) {
-            log(Level.WARNING, "Your platform is not supported. Supported versions 1.8 - 1.21.0");
+            log(Level.WARNING, "Your platform is not supported. Supported versions from 1.8 to "
+                    + MinecraftVersion.NMSVersion.values()[MinecraftVersion.NMSVersion.values().length - 1]
+                    .getCandidateVersion().getName() + " (approximately)");
+            if (throwable != null) {
+                throwable.printStackTrace();
+            }
+            ex.printStackTrace();
             Bukkit.getPluginManager().disablePlugin(this);
             return false;
         }
