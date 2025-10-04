@@ -8,6 +8,6 @@ public class Templates {
     public static final String COMPILE_VERSION = "${project.version}";
 
     public static final String COMPILE_DATE = "${timestamp}";
-    public static final int BUILD = 136;
+    public static final int BUILD = 137;
 
 }

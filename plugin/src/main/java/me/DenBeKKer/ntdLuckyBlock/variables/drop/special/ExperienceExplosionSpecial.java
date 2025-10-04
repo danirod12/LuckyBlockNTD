@@ -26,7 +26,7 @@ public class ExperienceExplosionSpecial extends ExplosionableItems implements Lu
         EntityType type;
         try {
             type = EntityType.EXPERIENCE_BOTTLE;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             type = EntityType.valueOf("THROWN_EXP_BOTTLE");
         }
 

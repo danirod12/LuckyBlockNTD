@@ -25,7 +25,7 @@ public class TntExplosionSpecial extends ExplosionableItems implements LuckyDrop
         EntityType type;
         try {
             type = EntityType.TNT;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             type = EntityType.valueOf("PRIMED_TNT");
         }
         throwExplosion(type, (target == null ? b.getLocation() : target.getLocation()).add(.5, .5, .5), a);
