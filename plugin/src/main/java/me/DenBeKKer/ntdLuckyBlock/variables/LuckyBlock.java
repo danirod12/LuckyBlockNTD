@@ -11,6 +11,7 @@ import me.DenBeKKer.ntdLuckyBlock.customitem.Identifier;
 import me.DenBeKKer.ntdLuckyBlock.recipe.CraftTheory;
 import me.DenBeKKer.ntdLuckyBlock.recipe.LuckyRecipe;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
+import me.DenBeKKer.ntdLuckyBlock.util.HeadUtils;
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import me.DenBeKKer.ntdLuckyBlock.util.material.IMat;
@@ -234,7 +235,7 @@ public class LuckyBlock {
 
 	public ItemStack getSkull() {
 		if (head == null)
-			head = identifier.apply(Misc.getPlayerHead("http://textures.minecraft.net/texture/" + texture,
+			head = identifier.apply(HeadUtils.getPlayerHead("http://textures.minecraft.net/texture/" + texture,
 					Misc.setColors(name), lore, type.getUUID()));
 		return head.clone();
 	}

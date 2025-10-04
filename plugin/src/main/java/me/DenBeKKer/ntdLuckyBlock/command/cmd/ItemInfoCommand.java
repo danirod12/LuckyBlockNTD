@@ -9,7 +9,7 @@ import me.DenBeKKer.ntdLuckyBlock.command.LBPlayerCommand;
 import me.DenBeKKer.ntdLuckyBlock.customitem.BekkerItemStack;
 import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
 import me.DenBeKKer.ntdLuckyBlock.nms.ItemTag;
-import me.DenBeKKer.ntdLuckyBlock.util.Misc;
+import me.DenBeKKer.ntdLuckyBlock.util.HeadUtils;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
 import org.bukkit.entity.Player;
@@ -55,7 +55,7 @@ public class ItemInfoCommand implements LBPlayerCommand {
             if (tag != null || uuid != null) {
 
                 if (uuid != null) {
-                    player.sendMessage("\u00a7cItem UUID \"\u00a7f" + Misc.getUUID(item)
+                    player.sendMessage("\u00a7cItem UUID \"\u00a7f" + HeadUtils.getUUID(item)
                             + "\u00a7c\" matches with \u00a7" + uuid.getCustomName(true) + "\u00a7c luckyblock");
                 }
                 if (tag != null) {

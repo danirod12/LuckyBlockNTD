@@ -23,9 +23,14 @@ public class ExperienceExplosionSpecial extends ExplosionableItems implements Lu
     @Override
     public void execute(LBMain.LuckyBlockType related, Block block, Player player) {
 
-        throwExplosion(EntityType.THROWN_EXP_BOTTLE,
-                player == null ? block.getLocation().add(.5, .5, .5) : player.getLocation().clone().add(.0, .5, .0), a);
+        EntityType type;
+        try {
+            type = EntityType.EXPERIENCE_BOTTLE;
+        } catch (Exception e) {
+            type = EntityType.valueOf("THROWN_EXP_BOTTLE");
+        }
 
+        throwExplosion(type, player == null ? block.getLocation().add(.5, .5, .5)
+                : player.getLocation().clone().add(.0, .5, .0), a);
     }
-
 }

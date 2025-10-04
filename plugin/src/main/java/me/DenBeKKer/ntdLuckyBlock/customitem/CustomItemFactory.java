@@ -108,11 +108,34 @@ public class CustomItemFactory {
         Config custom_items = new Config(LBMain.getInstance(), "configuration.other", null, "custom_items");
         custom_items.copyMissedFields(added -> LBMain.log(Level.INFO, "A new custom item here (" + added + "). \u00a7aEnabling!"));
 
+        Enchantment durability = null;
+        Enchantment damageAll = null;
+        try {
+            durability = Enchantment.UNBREAKING;
+            damageAll = Enchantment.SHARPNESS;
+        } catch (Exception exception) {
+            for (Enchantment value : Enchantment.values()) {
+                if (value.getName().equals("DURABILITY")) {
+                    durability = value;
+                    break;
+                }
+            }
+            for (Enchantment value : Enchantment.values()) {
+                if (value.getName().equals("DAMAGE_ALL")) {
+                    damageAll = value;
+                    break;
+                }
+            }
+        }
+        if (durability == null) {
+            throw new RuntimeException();
+        }
+
         // check if new items is missed
         if (custom_items.getBoolean("magic_wool.enabled")) {
             try {
                 register(new BekkerItemStackBuilder(LBMain.getInstance().factory.getItem(Mat.WHITE_WOOL, 1))
-                        .addUnsafeEnchantment(Enchantment.DURABILITY, 1).setSerialID("magic_wool")
+                        .addUnsafeEnchantment(durability, 1).setSerialID("magic_wool")
                         .hideEnchantments().setName(Message.CI_MAGIC_WOOL.getAsString(true))
                         .registerEvent(ItemEvent.PLACE, n -> new BukkitRunnable() {
 
@@ -145,7 +168,7 @@ public class CustomItemFactory {
                 double h = custom_items.get().getDouble("sword_of_justice.heal");
                 if (h <= 0) h = 1;
                 final double heal = h;
-                register(new BekkerItemStackBuilder(Material.IRON_SWORD).addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 2)
+                register(new BekkerItemStackBuilder(Material.IRON_SWORD).addUnsafeEnchantment(damageAll, 2)
                         .setSerialID("sword_of_justice").setName(Message.CI_SWORD_OF_JUSTICE.getAsString(true))
                         .registerEvent(ItemEvent.HIT, n -> {
                             if (n.getType() != HitEvent.Type.DAMAGER) return;
@@ -161,7 +184,7 @@ public class CustomItemFactory {
                 double d = custom_items.get().getDouble("axe_of_perun.damage");
                 if (d <= 0) d = .1D;
                 final double damage = d;
-                register(new BekkerItemStackBuilder(Material.DIAMOND_AXE).addUnsafeEnchantment(Enchantment.DURABILITY, 1)
+                register(new BekkerItemStackBuilder(Material.DIAMOND_AXE).addUnsafeEnchantment(durability, 1)
                         .setSerialID("axe_of_perun").setName(Message.CI_AXE_OF_PERUN.getAsString(true))
                         .registerEvent(ItemEvent.HIT, n -> {
                             if (n.getType() != HitEvent.Type.DAMAGER || !(n.getVictim() instanceof Damageable)) return;
@@ -175,7 +198,7 @@ public class CustomItemFactory {
         if (custom_items.getBoolean("mystery_meat.enabled")) {
             try {
                 register(new BekkerItemStackBuilder(LBMain.getInstance().factory.getItem(Mat.BEEF, 1).getType())
-                        .addUnsafeEnchantment(Enchantment.DURABILITY, 1)
+                        .addUnsafeEnchantment(durability, 1)
                         .hideEnchantments().setSerialID("mystery_meat").setName(Message.CI_MYSTERY_MEAT.getAsString(true))
                         .registerEvent(ItemEvent.CONSUME, n -> {
 
@@ -219,7 +242,7 @@ public class CustomItemFactory {
             final float wither_skull_yield = custom_items.getFloat("wither_blast_rod.yield");
             try {
                 register(new BekkerItemStackBuilder(Material.BLAZE_ROD).setSerialID("wither_blast_rod")
-                        .addUnsafeEnchantment(Enchantment.DURABILITY, 1).hideEnchantments()
+                        .addUnsafeEnchantment(durability, 1).hideEnchantments()
                         .setName(Message.CI_WITHER_BLAST_ROD.getAsString(true))
                         .registerEvent(ItemEvent.INTERACT, event -> {
 
@@ -234,7 +257,7 @@ public class CustomItemFactory {
         }
         if (LBMain.getInstance().factory instanceof Mat1_13 && custom_items.getBoolean("carrot_corrupter.enabled")) {
             try {
-                register(new BekkerItemStackBuilder(Material.CARROT).addUnsafeEnchantment(Enchantment.DURABILITY, 1)
+                register(new BekkerItemStackBuilder(Material.CARROT).addUnsafeEnchantment(durability, 1)
                         .hideEnchantments().setSerialID("carrot_corrupter").setName(Message.CI_CARROT_CORRUPTER.getAsString(true))
                         .registerEvent(ItemEvent.HIT, n -> {
                             if (n.getType() != HitEvent.Type.DAMAGER) return;

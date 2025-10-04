@@ -1,37 +1,25 @@
 package me.DenBeKKer.ntdLuckyBlock.util;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.util.material.IMat;
 import me.DenBeKKer.ntdLuckyBlock.util.string.PopulationResult;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Misc {
 
-    private final static String PROFILE_NAME;
     private final static Pattern LOCATION_PATTERN = Pattern.compile(
             "%(?:|(?<target>player|block)_)" +
                     "(?<format>location|x|y|z)" +
@@ -40,75 +28,6 @@ public class Misc {
                     "(?<int>|_int)%",
             Pattern.CASE_INSENSITIVE
     );
-    private static final Function<SkullMeta, UUID> UUID_RETRIEVER;
-
-    static {
-        String profileName;
-        try {
-            // Causes NullPointerException since 1.20.2
-            new GameProfile(UUID.randomUUID(), null);
-            profileName = null;
-        } catch (NullPointerException exception) {
-            profileName = "";
-        }
-        PROFILE_NAME = profileName;
-
-        ItemStack skullExample;
-        try {
-            // 1.13+
-            skullExample = new ItemStack(Material.valueOf("PLAYER_HEAD"));
-        } catch (IllegalArgumentException exception) {
-            // legacy method
-            skullExample = new ItemStack(Material.valueOf("SKULL_ITEM"), 1, (short) 3);
-        }
-        Class<?> skullMetaClazz = skullExample.getItemMeta().getClass();
-
-        Function<SkullMeta, GameProfile> profileRetriever = null;
-        for (Field field : skullMetaClazz.getDeclaredFields()) {
-            if (field.getType() == GameProfile.class) {
-                // 1.21.1<
-                profileRetriever = meta -> {
-                    try {
-                        field.setAccessible(true);
-                        return ((GameProfile) field.get(meta));
-                    } catch (IllegalAccessException exception) {
-                        exception.printStackTrace();
-                        return null;
-                    }
-                };
-            } else if (field.getType().getSimpleName().contains("Profile" /* ResolvableProfile */)) {
-                // 1.12.1>
-                Class<?> resolvableProfileClazz = field.getType();
-                for (Method method : resolvableProfileClazz.getMethods()) {
-                    if (method.getReturnType() == GameProfile.class) {
-                        profileRetriever = meta -> {
-                            field.setAccessible(true);
-                            try {
-                                Object object = field.get(meta);
-                                return object == null ? null : ((GameProfile) method.invoke(object));
-                            } catch (IllegalAccessException | InvocationTargetException exception) {
-                                exception.printStackTrace();
-                                return null;
-                            }
-                        };
-                        break;
-                    }
-                }
-            } else {
-                continue;
-            }
-            break;
-        }
-
-        if (profileRetriever == null) {
-            throw new RuntimeException("Was not able to find GameProfile retriever");
-        }
-        final Function<SkullMeta, GameProfile> retriever = profileRetriever;
-        UUID_RETRIEVER = meta -> {
-            GameProfile profile = retriever.apply(meta);
-            return profile == null ? null : profile.getId();
-        };
-    }
 
     /**
      * @param target Player to check permission
@@ -378,67 +297,14 @@ public class Misc {
         return ChatColor.GREEN;
     }
 
+    @Deprecated
     public static UUID getUUID(ItemStack item) {
-        if (item == null) {
-            return null;
-        }
-
-        ItemMeta meta = item.getItemMeta();
-        if (!(meta instanceof SkullMeta)) {
-            return null;
-        }
-        return UUID_RETRIEVER.apply((SkullMeta) meta);
+        return HeadUtils.getUUID(item);
     }
 
+    @Deprecated
     public static ItemStack getPlayerHead(String url, String name, List<String> lore, UUID uuid) {
-
-        if (url == null || url.isEmpty())
-            throw new UnsupportedOperationException("URL cannot be null");
-        if (!url.contains("textures.minecraft.net/texture")) {
-            url = "http://textures.minecraft.net/texture/" + url;
-        }
-
-        ItemStack head = LBMain.getInstance().factory.getItem(IMat.Mat.PLAYER_SKULL, 1);
-        SkullMeta headMeta = (SkullMeta) head.getItemMeta();
-        assert headMeta != null;
-
-        GameProfile profile = new GameProfile(uuid == null ? UUID.randomUUID() : uuid, PROFILE_NAME);
-        profile.getProperties().put("textures", new Property("textures",
-                new String(Base64.getEncoder().encode(("{textures:{SKIN:{url:\"" + url + "\"}}}").getBytes()))));
-
-        try {
-            // New method that modifies profile and serializedProfile
-            Method method = headMeta.getClass().getDeclaredMethod("setProfile", GameProfile.class);
-            method.setAccessible(true);
-            method.invoke(headMeta, profile);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex1) {
-            try {
-                // MC 1.21.1 +
-                Class<?> clazz = Class.forName("net.minecraft.world.item.component.ResolvableProfile");
-                Method method = headMeta.getClass().getDeclaredMethod("setProfile", clazz);
-                Object resolvable = clazz.getConstructor(GameProfile.class).newInstance(profile);
-                method.setAccessible(true);
-                method.invoke(headMeta, resolvable);
-            } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException |
-                     InvocationTargetException | IllegalAccessException ex2) {
-                try {
-                    // Old method that modifies profile
-                    Field profileField = headMeta.getClass().getDeclaredField("profile");
-                    profileField.setAccessible(true);
-                    profileField.set(headMeta, profile);
-                } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException ex3) {
-                    ex1.printStackTrace();
-                    ex2.printStackTrace();
-                    ex3.printStackTrace();
-                }
-            }
-        }
-
-        headMeta.setDisplayName(name);
-        headMeta.setLore(lore);
-
-        head.setItemMeta(headMeta);
-        return head;
+        return HeadUtils.getPlayerHead(url, name, lore, uuid);
     }
 
     public static void giveItemsOrDrop(Player target, ItemStack... itemStacks) {

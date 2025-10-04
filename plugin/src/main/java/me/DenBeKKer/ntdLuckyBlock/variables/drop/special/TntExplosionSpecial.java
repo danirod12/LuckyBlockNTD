@@ -22,7 +22,13 @@ public class TntExplosionSpecial extends ExplosionableItems implements LuckyDrop
 
     @Override
     public void execute(LBMain.LuckyBlockType related, Block b, Player target) {
-        throwExplosion(EntityType.PRIMED_TNT, (target == null ? b.getLocation() : target.getLocation()).add(.5, .5, .5), a);
+        EntityType type;
+        try {
+            type = EntityType.TNT;
+        } catch (Exception e) {
+            type = EntityType.valueOf("PRIMED_TNT");
+        }
+        throwExplosion(type, (target == null ? b.getLocation() : target.getLocation()).add(.5, .5, .5), a);
     }
 
 }

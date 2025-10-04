@@ -10,7 +10,7 @@ import me.DenBeKKer.ntdLuckyBlock.customitem.Identifier;
 import me.DenBeKKer.ntdLuckyBlock.loader.JSONLoader;
 import me.DenBeKKer.ntdLuckyBlock.loader.LegacyLoader;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
-import me.DenBeKKer.ntdLuckyBlock.util.Misc;
+import me.DenBeKKer.ntdLuckyBlock.util.HeadUtils;
 import me.DenBeKKer.ntdLuckyBlock.util.Pair;
 import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_13;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
@@ -236,7 +236,7 @@ public class LuckyBlockAPI {
     public static LuckyBlockType parseLuckyBlock(ItemStack stack, boolean check_uuid, boolean check_tag) {
         UUID uuid = null;
         if (check_uuid) {
-            uuid = Misc.getUUID(stack);
+            uuid = HeadUtils.getUUID(stack);
             if (uuid == null)
                 return null;
         }
@@ -281,7 +281,7 @@ public class LuckyBlockAPI {
 
     public static LuckyBlockType parseOldLuckyBlock(ItemStack stack) {
 
-        UUID uuid = Misc.getUUID(stack);
+        UUID uuid = HeadUtils.getUUID(stack);
         if (uuid == null) return null;
         if (CustomItemFactory.parseValue(stack, CustomItemFactory.TAG_LUCKYBLOCK_TYPE) != null) return null;
 
