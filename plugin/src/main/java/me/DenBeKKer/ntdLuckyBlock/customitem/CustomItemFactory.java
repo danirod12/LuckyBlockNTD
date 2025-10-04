@@ -113,7 +113,7 @@ public class CustomItemFactory {
         try {
             durability = Enchantment.UNBREAKING;
             damageAll = Enchantment.SHARPNESS;
-        } catch (Exception exception) {
+        } catch (Throwable exception) {
             for (Enchantment value : Enchantment.values()) {
                 if (value.getName().equals("DURABILITY")) {
                     durability = value;
