@@ -340,7 +340,11 @@ public class LBMain extends JavaPlugin {
         try {
             switch (MinecraftVersion.getPossibleNMSVersion()) {
                 case v1_21_R7: {
-                    itemTagAdapter = new ItemTag1_21_R7();
+                    try {
+                        itemTagAdapter = new ItemTag1_21_R7();
+                    } catch (Throwable th1) {
+                        itemTagAdapter = new ItemTag1_21_Mojang();
+                    }
                     return true;
                 }
                 case v1_21_R6: {

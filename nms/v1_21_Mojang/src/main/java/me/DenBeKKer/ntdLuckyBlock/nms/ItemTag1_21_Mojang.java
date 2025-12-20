@@ -9,10 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Optional;
 
-public class ItemTag1_21_R7 implements ItemTag {
-    static {
-        CraftItemStack.class.getClass(); // Ensure class exists at runtime
-    }
+public class ItemTag1_21_Mojang implements ItemTag {
 
     @Override
     public ItemStack asBukkitCopy(Object nmsItem) {

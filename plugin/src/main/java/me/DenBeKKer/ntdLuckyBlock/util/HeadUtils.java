@@ -16,6 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -181,7 +182,12 @@ public class HeadUtils {
                 try {
                     // MC 1.21.9 +
                     resolvable = new net.minecraft.world.item.component.ResolvableProfile.Static(Either.left(profile),
-                            net.minecraft.world.entity.player.PlayerSkin.Patch.a);
+                            new net.minecraft.world.entity.player.PlayerSkin.Patch(
+                                    Optional.empty(), // Patch.a 1.21.10
+                                    Optional.empty(), // Patch.a (spigot) or PlayerSkin.EMPTY (paper) 1.21.11
+                                    Optional.empty(),
+                                    Optional.empty()
+                            ));
                 } catch (Throwable throwable) {
                     // MC 1.21.1 +
                     resolvable = clazz.getConstructor(GameProfile.class).newInstance(profile);
