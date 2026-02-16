@@ -48,8 +48,11 @@ public class StringMatcher<T> extends ArrayList<String> {
     }
 
     private boolean containsIgnoreCase(String element) {
-        for (String string : this)
-            if (element.equalsIgnoreCase(string)) return true;
+        for (String string : this) {
+            if (element.equalsIgnoreCase(string)) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -64,15 +67,16 @@ public class StringMatcher<T> extends ArrayList<String> {
         }
 
         public static Type parse(String name) {
-            for (Type type : values())
-                if (type.getName().equalsIgnoreCase(name)) return type;
+            for (Type type : values()) {
+                if (type.getName().equalsIgnoreCase(name)) {
+                    return type;
+                }
+            }
             return DISABLED;
         }
 
         public String getName() {
             return name;
         }
-
     }
-
 }

@@ -1,6 +1,6 @@
 package me.DenBeKKer.ntdLuckyBlock.api;
 
-import me.DenBeKKer.ntdLuckyBlock.util.Pair;
+import me.DenBeKKer.ntdLuckyBlock.api.util.Pair;
 import me.DenBeKKer.ntdLuckyBlock.variables.LuckyEntry;
 
 import java.util.ArrayList;
@@ -27,10 +27,8 @@ public enum DropChance {
     }
 
     public static DropChance random(List<DropChance> chances) {
-
         if (chances.size() == 0)
             throw new UnsupportedOperationException("Chances mismatch, random() got an empty List");
-
         if (chances.size() == 1)
             return chances.get(0);
 
@@ -50,18 +48,7 @@ public enum DropChance {
 
     @Deprecated
     public static int chance(List<DropChance> chances, DropChance chance) {
-
-        if (chances.size() == 0)
-            throw new UnsupportedOperationException("Chances mismatch, random() got an empty List");
-
-        if (!chances.contains(chance)) return 0;
-        if (chances.size() == 1) return 100;
-
-        int a = 0;
-        for (DropChance c : chances)
-            a += chance.weight;
-        return chance.weight * 100 / a;
-
+        return (int) getChanceOf(chances, chance);
     }
 
     public static double getChanceOf(List<DropChance> chances, DropChance chance) {
@@ -101,5 +88,4 @@ public enum DropChance {
         List<LuckyEntry> list = items.stream().filter(n -> n.getDropChance() == this).collect(Collectors.toList());
         return list.get(ThreadLocalRandom.current().nextInt(list.size()));
     }
-
 }

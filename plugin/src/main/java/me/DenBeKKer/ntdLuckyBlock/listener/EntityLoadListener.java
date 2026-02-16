@@ -1,7 +1,6 @@
 package me.DenBeKKer.ntdLuckyBlock.listener;
 
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
+import me.DenBeKKer.ntdLuckyBlock.engine.LuckyBlockEngine;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
@@ -10,20 +9,24 @@ import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.plugin.Plugin;
 
 public class EntityLoadListener implements Listener {
 
-    private final LBMain instance;
+    private final Plugin plugin;
+    private final LuckyBlockEngine engine;
 
-    public EntityLoadListener(LBMain instance) {
-        this.instance = instance;
+    public EntityLoadListener(Plugin plugin, LuckyBlockEngine engine) {
+        this.plugin = plugin;
+        this.engine = engine;
     }
 
+    @SuppressWarnings({"unused"})
     @EventHandler
     public void onChunkLoad(ChunkLoadEvent event) {
         if (event.isNewChunk())
             return;
-        Bukkit.getScheduler().runTaskLater(instance, () -> {
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
             updateChunks(event.getChunk());
         }, 10L);
     }
@@ -40,8 +43,8 @@ public class EntityLoadListener implements Listener {
                 continue;
             }
             for (Entity entity : chunk.getEntities()) {
-                if (LuckyBlockAPI.searchByEntity(entity) != null) {
-                    if (instance.isLightSource()) {
+                if (engine.searchByEntity(entity) != null) {
+                    if (engine.getConfigHolder().lightSource) {
                         entity.setFireTicks(Integer.MAX_VALUE);
                     } else {
                         entity.setFireTicks(0);
@@ -55,5 +58,4 @@ public class EntityLoadListener implements Listener {
             }
         }
     }
-
 }

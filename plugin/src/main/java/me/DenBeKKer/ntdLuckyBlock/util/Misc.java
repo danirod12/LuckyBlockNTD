@@ -1,20 +1,21 @@
 package me.DenBeKKer.ntdLuckyBlock.util;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.util.material.IMat;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
-import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Misc {
 
@@ -126,34 +127,31 @@ public class Misc {
 
     }
 
-    public static ItemStack getPlayerHead(String url, String name, List<String> lore, UUID uuid) {
-
-        if (url == null || url.isEmpty())
-            throw new UnsupportedOperationException("URL cannot be null");
-        if (!url.contains("textures.minecraft.net/texture")) {
-            url = "http://textures.minecraft.net/texture/" + url;
-        }
-
-        ItemStack head = LBMain.getInstance().factory.getItem(IMat.Mat.PLAYER_SKULL, 1);
-        SkullMeta headMeta = (SkullMeta) head.getItemMeta();
-        assert headMeta != null;
-
-        GameProfile profile = new GameProfile(uuid == null ? UUID.randomUUID() : uuid, null);
-        profile.getProperties().put("textures", new Property("textures",
-                new String(Base64.getEncoder().encode(("{textures:{SKIN:{url:\"" + url + "\"}}}").getBytes()))));
+    public static int parseInteger(String base, int min) {
         try {
-            Field profileField = headMeta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(headMeta, profile);
-        } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
+            return Math.max(min, Integer.parseInt(base));
+        } catch (NumberFormatException exception) {
+            return min;
         }
-        headMeta.setDisplayName(name);
-        headMeta.setLore(lore);
-
-        head.setItemMeta(headMeta);
-        return head;
-
     }
 
+    public static void throwExplosion(Entity... entities) {
+        for (Entity entity : entities) {
+            entity.setVelocity(new Vector(ThreadLocalRandom.current().nextDouble(-.25, .25),
+                    ThreadLocalRandom.current().nextDouble(.75, 1.25),
+                    ThreadLocalRandom.current().nextDouble(-.25, .25)));
+        }
+    }
+
+    public static Entity[] spawnEntities(Location location, EntityType type, int amount) {
+        World world = location.getWorld();
+        if (world == null) {
+            throw new IllegalArgumentException();
+        }
+        Entity[] entities = new Entity[amount];
+        for (int i = 0; i < amount; i++) {
+            entities[i] = world.spawnEntity(location, type);
+        }
+        return entities;
+    }
 }

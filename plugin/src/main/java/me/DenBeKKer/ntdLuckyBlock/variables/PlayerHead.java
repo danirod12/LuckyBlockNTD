@@ -41,7 +41,6 @@ public enum PlayerHead {
     }
 
     public ItemStack getHead(String name, List<String> lore) {
-
         if (stack == null) loadHead();
         ItemStack item = stack.clone();
 
@@ -52,7 +51,6 @@ public enum PlayerHead {
         item.setItemMeta(meta);
 
         return item;
-
     }
 
     public ItemStack getHead() {

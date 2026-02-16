@@ -1,14 +1,14 @@
 package me.DenBeKKer.ntdLuckyBlock.customitem;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.api.events.CustomItemAddedEvent;
-import me.DenBeKKer.ntdLuckyBlock.api.events.CustomItemFactoryReloadEvent;
+import me.DenBeKKer.ntdLuckyBlock.api.event.CustomItemAddedEvent;
+import me.DenBeKKer.ntdLuckyBlock.api.event.CustomItemFactoryReloadEvent;
 import me.DenBeKKer.ntdLuckyBlock.nms.ItemTag;
+import me.DenBeKKer.ntdLuckyBlock.nms.material.IMat;
+import me.DenBeKKer.ntdLuckyBlock.nms.material.IMat.Mat;
+import me.DenBeKKer.ntdLuckyBlock.nms.material.Mat1_13;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
-import me.DenBeKKer.ntdLuckyBlock.util.material.IMat;
-import me.DenBeKKer.ntdLuckyBlock.util.material.IMat.Mat;
-import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_13;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -111,7 +111,7 @@ public class CustomItemFactory {
         // check if new items is missed
         if (custom_items.getBoolean("magic_wool.enabled")) {
             try {
-                register(new BekkerItemStackBuilder(LBMain.getInstance().factory.getItem(Mat.WHITE_WOOL, 1))
+                register(new BekkerItemStackBuilder(LBMain.getInstance().materialFactory.getItem(Mat.WHITE_WOOL, 1))
                         .addUnsafeEnchantment(Enchantment.DURABILITY, 1).setSerialID("magic_wool")
                         .hideEnchantments().setName(Message.CI_MAGIC_WOOL.getAsString(true))
                         .registerEvent(ItemEvent.PLACE, n -> new BukkitRunnable() {
@@ -127,7 +127,7 @@ public class CustomItemFactory {
                                     return;
                                 }
 
-                                if (LBMain.getInstance().factory instanceof Mat1_13)
+                                if (LBMain.getInstance().materialFactory instanceof Mat1_13)
                                     block.setType(IMat.WOOLS.get(ThreadLocalRandom.current().nextInt(IMat.WOOLS.size())));
                                 else IMat.setData(block, (byte) ThreadLocalRandom.current().nextInt(16));
 
@@ -174,7 +174,7 @@ public class CustomItemFactory {
         }
         if (custom_items.getBoolean("mystery_meat.enabled")) {
             try {
-                register(new BekkerItemStackBuilder(LBMain.getInstance().factory.getItem(Mat.BEEF, 1).getType())
+                register(new BekkerItemStackBuilder(LBMain.getInstance().materialFactory.getItem(Mat.BEEF, 1).getType())
                         .addUnsafeEnchantment(Enchantment.DURABILITY, 1)
                         .hideEnchantments().setSerialID("mystery_meat").setName(Message.CI_MYSTERY_MEAT.getAsString(true))
                         .registerEvent(ItemEvent.CONSUME, n -> {
@@ -232,7 +232,7 @@ public class CustomItemFactory {
                 th.printStackTrace();
             }
         }
-        if (LBMain.getInstance().factory instanceof Mat1_13 && custom_items.getBoolean("carrot_corrupter.enabled")) {
+        if (LBMain.getInstance().materialFactory instanceof Mat1_13 && custom_items.getBoolean("carrot_corrupter.enabled")) {
             try {
                 register(new BekkerItemStackBuilder(Material.CARROT).addUnsafeEnchantment(Enchantment.DURABILITY, 1)
                         .hideEnchantments().setSerialID("carrot_corrupter").setName(Message.CI_CARROT_CORRUPTER.getAsString(true))

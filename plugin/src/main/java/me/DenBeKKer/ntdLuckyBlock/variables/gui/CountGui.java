@@ -95,7 +95,7 @@ public class CountGui implements Listener {
 
             e.setCancelled(true);
             ItemStack item = e.getInventory().getItem(e.getSlot());
-            if (item == null || !LBMain.getInstance().factory.isSkull(item)) return;
+            if (item == null || !LBMain.getInstance().materialFactory.isSkull(item)) return;
 
             switch (e.getSlot()) {
                 case 18: {

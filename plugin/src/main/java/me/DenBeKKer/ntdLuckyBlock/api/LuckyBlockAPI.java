@@ -1,527 +1,103 @@
 package me.DenBeKKer.ntdLuckyBlock.api;
 
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
-import me.DenBeKKer.ntdLuckyBlock.api.exceptions.LuckyBlockNotLoadedException;
-import me.DenBeKKer.ntdLuckyBlock.api.loader.PathLoader;
-import me.DenBeKKer.ntdLuckyBlock.api.loader.StringLoader;
-import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
+import me.DenBeKKer.ntdLuckyBlock.api.exception.ApiNotInitializedException;
+import me.DenBeKKer.ntdLuckyBlock.api.exception.StaticMethodsOnlyException;
+import me.DenBeKKer.ntdLuckyBlock.api.model.PluginVersion;
+import me.DenBeKKer.ntdLuckyBlock.api.provider.GenerationFactoryProvider;
+import me.DenBeKKer.ntdLuckyBlock.api.provider.JPAdapter;
+import me.DenBeKKer.ntdLuckyBlock.api.provider.LuckyEngineProvider;
+import me.DenBeKKer.ntdLuckyBlock.api.provider.LuckyRecipeProvider;
 import me.DenBeKKer.ntdLuckyBlock.customitem.Identifier;
-import me.DenBeKKer.ntdLuckyBlock.loader.JSONLoader;
-import me.DenBeKKer.ntdLuckyBlock.loader.LegacyLoader;
-import me.DenBeKKer.ntdLuckyBlock.util.Config;
-import me.DenBeKKer.ntdLuckyBlock.util.Misc;
-import me.DenBeKKer.ntdLuckyBlock.util.Pair;
-import me.DenBeKKer.ntdLuckyBlock.util.material.Mat1_13;
-import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
-import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
-import me.DenBeKKer.ntdLuckyBlock.variables.LuckyEntry;
-import me.DenBeKKer.ntdLuckyBlock.variables.drop.ItemDrop;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
+import me.DenBeKKer.ntdLuckyBlock.util.Templates;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-import java.util.*;
-import java.util.logging.Level;
-
 public class LuckyBlockAPI {
 
-    private final static StringLoader LEGACY = new LegacyLoader();
-    private final static PathLoader JSON = new JSONLoader();
-
-    /**
-     * @return LegacyLoader (Free version config loader)
-     */
-    public static StringLoader getLegacyLoader() {
-        return LEGACY;
+    public LuckyBlockAPI() {
+        throw new StaticMethodsOnlyException();
     }
 
-    /**
-     * @return JSON loader (Premium version config loader)
-     */
-    public static PathLoader getJSONLoader() {
-        return JSON;
-    }
+    private static JPAdapter jpAdapter;
+    private static LuckyEngineProvider luckyEngineProvider;
 
-    /**
-     * @param loaded Config for LuckyEntry loading
-     * @param path   Config path
-     * @return LuckyEntry from config path
-     */
-    public static LuckyEntry loadDropEntry(Config loaded, String path) {
-
-        if (loaded == null) throw new NullPointerException("Config is unloaded");
-
-        if (loaded.get().isSet(path + ".items")) {
-
-            if (!LBMain.isPremium()) {
-                LBMain.log(Level.SEVERE, "Configuration path " + loaded.getName() + "/" + path
-                        + " was converted to JSON format. Free version supports only legacy formats");
-                return new LuckyEntry(DropChance.MEDIUM, new ItemDrop(new ItemStack(Material.STONE)));
-            }
-
-            String ch = loaded.get().getString(path + ".chance");
-            DropChance chance = DropChance.MEDIUM;
-            try {
-                chance = DropChance.valueOf(ch);
-            } catch (Exception ex) {
-                LBMain.log(Level.WARNING, "Drop chance \""
-                        + (ch == null ? "null" : ch) + "\" is unsupported (" + loaded.getName() + ", " + path + ".chance)");
-            }
-            LuckyEntry entry = new LuckyEntry(chance);
-            for (String drop0 : loaded.get().getConfigurationSection(path + ".items").getKeys(false)) {
-
-                try {
-                    LuckyDrop drop = JSON.load(loaded, path + ".items." + drop0);
-                    if (drop != null)
-                        entry.add(drop);
-                } catch (Throwable th) {
-
-                    if (LBMain.isDebug())
-                        th.printStackTrace();
-
-                }
-
-            }
-            return entry;
-
+    public static LuckyEngineProvider getLuckyEngineProvider() {
+        if (luckyEngineProvider == null) {
+            throw new ApiNotInitializedException();
         }
+        return luckyEngineProvider;
+    }
 
-        if (loaded.get().isSet(path)) {
-
-            List<String> list = loaded.get().getStringList(path);
-            LuckyEntry entry = new LuckyEntry();
-            for (String drop0 : list) {
-
-                LuckyDrop drop = LEGACY.load(drop0);
-                if (drop != null)
-                    entry.add(drop);
-
-            }
-            LBMain.getInstance().getConvertManager().add(loaded, path);
-            return entry;
-
+    public static LuckyRecipeProvider getLuckyRecipeProvider() {
+        if (luckyEngineProvider == null) {
+            throw new ApiNotInitializedException();
         }
-
-        return null;
-
+        return luckyEngineProvider.getRecipeProvider();
     }
 
-    /**
-     * @deprecated Legacy: {@link #getLegacyLoader()}
-     * JSON: {@link #getJSONLoader()}
-     */
-    @Deprecated
-    public static LuckyDrop loadDrop(String drop0) {
-        return LEGACY.load(drop0);
-    }
-
-    /**
-     * @deprecated Get LuckyBlock using {@link LuckyBlockType#get()} and add intent {@link LuckyBlock#addIntent(LuckyEntry)}
-     */
-    @Deprecated
-    public static void addLuckyDrop(LuckyBlockType type, LuckyDrop drop) throws LuckyBlockNotLoadedException {
-        addLuckyDrop(type, Arrays.asList(drop));
-    }
-
-    /**
-     * @deprecated Get LuckyBlock using {@link LuckyBlockType#get()} and add intent {@link LuckyBlock#addIntent(LuckyEntry)}
-     */
-    @Deprecated
-    public static void addLuckyDrop(LuckyBlockType type, LuckyDrop... drop) throws LuckyBlockNotLoadedException {
-        addLuckyDrop(type, Arrays.asList(drop));
-    }
-
-    /**
-     * @deprecated Get LuckyBlock using {@link LuckyBlockType#get()} and add intent {@link LuckyBlock#addIntent(LuckyEntry)}
-     */
-    @Deprecated
-    public static void addLuckyDrop(LuckyBlockType type, Collection<LuckyDrop> drop) throws LuckyBlockNotLoadedException {
-
-        LuckyBlock block = type.get();
-        block.addIntent(new LuckyEntry(drop));
-
-    }
-
-    @Deprecated
-    public static boolean isLuckyBlock(ItemStack item) {
-        return getLuckyBlock(item) != null;
-    }
-
-    @Deprecated
-    public static LuckyBlockType getLuckyBlock(ItemStack item) {
-
-        return getLuckyBlock(item, false, true);
-
-    }
-
-    @Deprecated
-    public static boolean isLuckyBlock(ItemStack item, boolean unavailable, boolean checkUUID) {
-        return getLuckyBlock(item, unavailable, checkUUID) != null;
-    }
-
-    @Deprecated
-    public static LuckyBlockType getLuckyBlock(ItemStack item, boolean unavailable, boolean checkUUID) {
-        return parseLuckyBlock(item, checkUUID, false);
-    }
-
-    /**
-     * Check that item is LuckyBlock
-     *
-     * @param stack ItemStack to be checked
-     * @return Checks that item is LuckyBlock
-     */
-    public static boolean checkLuckyBlock(ItemStack stack) {
-        return checkLuckyBlock(stack, true);
-    }
-
-    /**
-     * Check that item is LuckyBlock
-     *
-     * @param stack     ItemStack to be checked
-     * @param check_tag Check tag
-     * @return Checks that item is LuckyBlock
-     */
-    public static boolean checkLuckyBlock(ItemStack stack, boolean check_tag) {
-        return checkLuckyBlock(stack, true, check_tag);
-    }
-
-    /**
-     * Check that item is LuckyBlock
-     *
-     * @param stack      ItemStack to be checked
-     * @param check_uuid Check uuid
-     * @param check_tag  Check tag
-     * @return Checks that item is LuckyBlock
-     */
-    public static boolean checkLuckyBlock(ItemStack stack, boolean check_uuid, boolean check_tag) {
-        return parseLuckyBlock(stack, check_uuid, check_tag) != null;
-    }
-
-    /**
-     * Parse LuckyBlock type from ItemStack
-     *
-     * @param stack ItemStack to be parsed
-     * @return LuckyBlockType from item if item is LuckyBlock and null if not
-     */
-    public static LuckyBlockType parseLuckyBlock(ItemStack stack) {
-        return parseLuckyBlock(stack, true);
-    }
-
-    /**
-     * Parse LuckyBlock type from ItemStack
-     *
-     * @param stack     ItemStack to be parsed
-     * @param check_tag Check tag
-     * @return LuckyBlockType from item if item is LuckyBlock and null if not
-     */
-    public static LuckyBlockType parseLuckyBlock(ItemStack stack, boolean check_tag) {
-        return parseLuckyBlock(stack, true, check_tag);
-    }
-
-    /**
-     * Parse LuckyBlock type from ItemStack
-     *
-     * @param stack      ItemStack to be parsed
-     * @param check_uuid Check uuid
-     * @param check_tag  Check tag
-     * @return LuckyBlockType from item if item is LuckyBlock and null if not
-     */
-    public static LuckyBlockType parseLuckyBlock(ItemStack stack, boolean check_uuid, boolean check_tag) {
-        UUID uuid = null;
-        if (check_uuid) {
-            uuid = Misc.getUUID(stack);
-            if (uuid == null)
-                return null;
+    public static GenerationFactoryProvider getGenerationFactoryProvider() {
+        if (luckyEngineProvider == null) {
+            throw new ApiNotInitializedException();
         }
-        if (check_tag) {
-            final String type = CustomItemFactory.parseValue(stack, CustomItemFactory.TAG_LUCKYBLOCK_TYPE);
-            final LuckyBlockType parsed = LuckyBlockType.parse(type);
-            return parsed == null || uuid == null || parsed.getUUID().equals(uuid) ? parsed : null;
-        } else {
-            return LuckyBlockType.parse(uuid);
-        }
+        return luckyEngineProvider.getGenerationFactory();
     }
 
     /**
-     * @param stack    ItemStack to mark
-     * @param tag_name Tag name
-     * @param plugin   Plugin
-     * @param value    Value to insert
-     * @return Insert custom tag
-     */
-    public static ItemStack insertTag(ItemStack stack, String tag_name, Plugin plugin, String value) {
-        return new Identifier(plugin, tag_name, value).apply(stack);
-    }
-
-    /**
-     * @param stack    ItemStack to check
-     * @param tag_name Tag name
-     * @param plugin   Plugin
-     * @param value    Value
-     * @return Check if ItemStack has tag and value is same
-     */
-    public static boolean compareTag(ItemStack stack, String tag_name, Plugin plugin, String value) {
-        return new Identifier(plugin, tag_name, value).compare(stack);
-    }
-
-    /**
-     * @param b    Block that will be replaced
-     * @param type LuckyBlockType to be inserted
-     */
-    public static void placeLuckyBlock(Block b, LuckyBlockType type) throws LuckyBlockNotLoadedException {
-        type.get().placeBlock(b, false);
-    }
-
-    public static LuckyBlockType parseOldLuckyBlock(ItemStack stack) {
-
-        UUID uuid = Misc.getUUID(stack);
-        if (uuid == null) return null;
-        if (CustomItemFactory.parseValue(stack, CustomItemFactory.TAG_LUCKYBLOCK_TYPE) != null) return null;
-
-        LuckyBlockType type = LuckyBlockType.parse(uuid);
-        if (type == null) {
-
-            // 1.8 display name could be null
-            if (stack.getItemMeta() == null || stack.getItemMeta().getDisplayName() == null) return null;
-            for (Map.Entry<LuckyBlockType, LuckyBlock> loaded : LuckyBlockType.map().entrySet())
-                if (stack.getItemMeta().getDisplayName().equalsIgnoreCase(loaded.getValue().getOldName()))
-                    return loaded.getKey();
-
-        }
-        return type;
-
-    }
-
-    /**
-     * @param b Block to be checked
-     * @return Check if block is LuckyBlock
-     */
-    public static boolean isLuckyBlock(Block b) {
-        return searchByBlock(b) != null;
-    }
-
-    @Deprecated
-    public static void resolve_sign(Block block, boolean update) {
-        resolveSign(block, update);
-    }
-
-    public static void resolveSign(Block block, boolean update) {
-
-        if (LBMain.getInstance().factory.isOakSign(block.getType())) {
-            Sign sign = (Sign) block.getState();
-            String[] lines = sign.getLines();
-            if (lines[0].equalsIgnoreCase("[ntdluckyblock]")) {
-
-                LuckyBlockType type = lines[1].equalsIgnoreCase("random") ? LuckyBlockType.random(true) : LuckyBlockType.parse(lines[1]);
-
-                if (type == null) {
-                    LBMain.log(Level.WARNING, "LuckyBlock type " + lines[1].toUpperCase() + " not found");
-                } else {
-
-                    try {
-                        LuckyBlockAPI.placeLuckyBlock(block, type);
-                    } catch (LuckyBlockNotLoadedException e) {
-                        LBMain.log(Level.WARNING, "LuckyBlock type " + type.name() + " was not loaded");
-                    }
-
-                }
-
-            }
-        } else if (update && block.isLiquid()) {
-            Material item = block.getType();
-            block.setType(Material.AIR);
-            block.setType(item);
-        }
-
-    }
-
-    /**
-     * @deprecated {@link #breakLuckyBlock0(Block, boolean)}
-     */
-    @Deprecated
-    public static void breakLuckyBlock0(Block b) {
-        breakLuckyBlock0(b, false);
-    }
-
-    /**
-     * If you want destroy luckyblock without drop use {@link #breakLuckyBlock(Block, Player, boolean, boolean)} (Player null)
+     * Inserts to stack identified NBT tag
      *
-     * @param b      Block to break
-     * @param ignore Ignore cancellable
+     * @param stack   ItemStack to mark
+     * @param plugin  Plugin instance
+     * @param tagName Tag key
+     * @param value   Value to insert
+     * @return Item copy with inserted tag
      */
-    public static void breakLuckyBlock0(Block b, boolean ignore) {
-        breakLuckyBlock(b, null, true, ignore);
+    public static ItemStack insertTag(ItemStack stack, Plugin plugin, String tagName, String value) {
+        return new Identifier(plugin, tagName, value).apply(stack);
     }
 
     /**
-     * @deprecated {@link #breakLuckyBlock(Block, Player, boolean, boolean)}
-     */
-    @Deprecated
-    public static void breakLuckyBlock(Block b, Player p) {
-        breakLuckyBlock(b, p, true);
-    }
-
-    /**
-     * @deprecated {@link #breakLuckyBlock(Block, Player, boolean, boolean)}
-     */
-    @Deprecated
-    public static void breakLuckyBlock(Block b, Player p, boolean drop) {
-        breakLuckyBlock(b, p, drop, false);
-    }
-
-    /**
-     * @param b      Block to break
-     * @param p      Player that break it ( target )
-     * @param drop   Drop items (IF DROP FALSE PLAYER MAY BE NULL)
-     * @param ignore Ignore cancellable
-     */
-    public static void breakLuckyBlock(Block b, Player p, boolean drop, boolean ignore) {
-        if (b.getType().name().toUpperCase().contains("STAINED_GLASS") ||
-                b.getType().name().equalsIgnoreCase("TINTED_GLASS") || b.getType() == Material.ICE) {
-            Pair<LuckyBlockType, Entity> pair = searchByBlock(b);
-            if (pair == null) return;
-            if (drop && pair.getKey().isLoaded()) {
-                LuckyBlock luckyBlock = LuckyBlockType.map().get(pair.getKey());
-                if (!luckyBlock.tryOpen(b, p, ignore)) {
-                    return;
-                }
-            }
-            pair.getValue().remove();
-            b.setType(Material.AIR);
-        }
-    }
-
-    public static Pair<LuckyBlockType, Entity> searchByBlock(Block block) {
-        Collection<Entity> entities = block.getWorld().getNearbyEntities(block.getLocation()
-                .add(0.5, -1.2, 0.5), 0.1, 0.1, 0.1);
-        for (Entity entity : entities) {
-            LuckyBlockType type = searchByEntity(entity);
-            if (type != null) {
-                return new Pair<>(type, entity);
-            }
-        }
-        return null;
-    }
-
-    public static LuckyBlockType searchByEntity(Entity entity) {
-        if (entity.getType() != EntityType.ARMOR_STAND)
-            return null;
-        ArmorStand stand = (ArmorStand) entity;
-        if (stand.getCustomName() == null)
-            return null;
-        String[] data = stand.getCustomName().split(";");
-        if (data.length != 4)
-            return null;
-        LuckyBlockType type = LuckyBlockType.parse(data[0]);
-        if (type == null)
-            return null;
-        // legacy offsets check
-        if (!stand.getCustomName().equalsIgnoreCase(type.getLocatedName(stand.getLocation())))
-            return null;
-        return type;
-    }
-
-    public static List<Pair<LuckyBlockType, Entity>> searchByEntities(Collection<Entity> entities) {
-        List<Pair<LuckyBlockType, Entity>> list = new ArrayList<>();
-        for (Entity entity : entities) {
-            LuckyBlockType type = searchByEntity(entity);
-            if (type != null) {
-                list.add(new Pair<>(type, entity));
-            }
-        }
-        return list;
-    }
-
-    public static int destroyEntity(Entity[] array, boolean destroyAll) {
-
-        int removed = 0;
-        for (Entity entity : array) {
-
-            if (entity.getType() != EntityType.ARMOR_STAND) continue;
-            ArmorStand stand = (ArmorStand) entity;
-            if (stand.getCustomName() == null || !stand.getCustomName().contains(";")) continue;
-
-            final LuckyBlockType type = LuckyBlockType.parse(stand.getCustomName().split(";")[0]);
-            if (type == null) continue;
-
-            final Block block = stand.getWorld().getBlockAt(stand.getLocation().add(-.5, 1.2, -.5));
-            if (type.getMaterial() == block.getType() && (!type.isColoredGlass()
-                    || LBMain.getInstance().factory instanceof Mat1_13
-                    || block.getData() == type.asColor().getData())) {
-
-                if (!destroyAll) continue;
-                block.setType(Material.AIR);
-
-            }
-            entity.remove();
-            removed++;
-
-        }
-        return removed;
-
-    }
-
-    /**
-     * Change {@link LuckyBlockType#map()} element to null
+     * Check if stack has identified NBT tag
      *
-     * @param type LuckyBlockType
+     * @param stack   ItemStack to check
+     * @param plugin  Plugin instance
+     * @param tagName Tag key
+     * @param value   Value to compare
+     * @return True if item has identified key and value equals to requested
      */
-    public static void destroy(LuckyBlockType type) {
-        LuckyBlockType.map().put(type, null);
+    public static boolean checkTag(ItemStack stack, Plugin plugin, String tagName, String value) {
+        return new Identifier(plugin, tagName, value).compare(stack);
     }
 
-    /**
-     * Change {@link LuckyBlockType#map()} element to null
-     *
-     * @param luckyblock LuckyBlock
-     */
-    public static void destroy(LuckyBlock luckyblock) {
-        LuckyBlockType.map().put(luckyblock.getType(), null);
+    public static void __injectAPI(JPAdapter adapter, LuckyEngineProvider provider) {
+        jpAdapter = adapter;
+        luckyEngineProvider = provider;
     }
 
-    /**
-     * Change {@link LuckyBlockType#map()} element to new one
-     *
-     * @param luckyblock LuckyBlock
-     */
-    public static void rewrite(LuckyBlock luckyblock) {
-        LuckyBlockType.map().put(luckyblock.getType(), luckyblock);
+    public static void checkForUpdates(boolean notify) {
+        jpAdapter.checkForUpdates(notify);
+    }
+
+    public static void reloadConfig() {
+        jpAdapter.reloadConfig();
     }
 
     public static void reloadSystem() {
-        LBMain.getInstance().reloadSystem();
-    }
-
-    @Deprecated
-    public static void system_load(Plugin deprecated) {
-        reloadSystem();
+        jpAdapter.reloadSystem();
     }
 
     public static String getVersion() {
-        return LBMain.getInstance().getVersion();
+        return jpAdapter.getVersion();
     }
 
     public static String getLastUpdate() {
-        return LBMain.getLastUpdate();
+        return Templates.COMPILE_DATE;
     }
 
     public static int getBuild() {
-        return LBMain.getBuild();
+        return Templates.BUILD;
     }
 
-    public static LBMain getMainInstance() {
-        return LBMain.getInstance();
+    public static PluginVersion getVersionType() {
+        return Templates.VERSION;
     }
-
-    public static boolean isPremium() {
-        return LBMain.isPremium();
-    }
-
 }

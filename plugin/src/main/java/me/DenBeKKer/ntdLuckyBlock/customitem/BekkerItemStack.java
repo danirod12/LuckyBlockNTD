@@ -1,7 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.customitem;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.api.events.CustomItemHandleEvent;
+import me.DenBeKKer.ntdLuckyBlock.api.event.CustomItemHandleEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;

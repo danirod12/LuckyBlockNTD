@@ -1,12 +1,11 @@
 package me.DenBeKKer.ntdLuckyBlock.util.manager;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
-import me.DenBeKKer.ntdLuckyBlock.economy.EconomyBridge;
+import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlock;
+import me.DenBeKKer.ntdLuckyBlock.hook.economy.EconomyBridge;
+import me.DenBeKKer.ntdLuckyBlock.nms.material.IMat.Mat;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
-import me.DenBeKKer.ntdLuckyBlock.util.material.IMat.Mat;
-import me.DenBeKKer.ntdLuckyBlock.variables.LuckyBlock;
 import me.DenBeKKer.ntdLuckyBlock.variables.PlayerHead;
 import me.DenBeKKer.ntdLuckyBlock.variables.gui.ConfirmEvent;
 import me.DenBeKKer.ntdLuckyBlock.variables.gui.CountGui;
@@ -64,21 +63,23 @@ public class GuiManager implements Listener {
                 return;
             }
 
-            LuckyBlockType type = LuckyBlockAPI.parseLuckyBlock(event.getInventory().getItem(event.getSlot()));
-            if (type == null || !type.isLoaded()) {
+            final LuckyBlock block = instance.getEngine().parseLuckyBlock(event.getInventory()
+                    .getItem(event.getSlot())).flatMap(instance.getEngine()::get).orElse(null);
+            if (block == null) {
                 return;
             }
 
             final Player player = ((Player) event.getWhoClicked());
             if (this.instance.config.get().getBoolean("permission-for-each-gui-get") &&
-                    !player.hasPermission("luckyblock.get." + type.name().toLowerCase())
+                    !player.hasPermission("luckyblock.get." + block.getKey().name().toLowerCase())
                     && !player.hasPermission("luckyblock.get.*")) {
                 player.sendMessage(Message.CMD_NO_PERM_TO_COLOR.getAsString().replace("%lb%",
-                        type.forceGet().getCustomName()));
+                        block.getCustomName()));
                 return;
             }
 
-            final LuckyBlock block = type.forceGet();
+            ShopSetup shopSetup = block.getShopSetup();
+            boolean economy = this.instance.getEconomyBridge() != null && this.instance.getEconomyBridge().enabled();
             map.put(player, new CountGui(player, 1, 64, 1, (new ConfirmEvent() {
 
                 @Override
@@ -88,7 +89,7 @@ public class GuiManager implements Listener {
 
                     if (amount < 0) return;
 
-                    if (!block.canBeSold()) {
+                    if (!shopSetup.isEnabled() || !economy) {
                         for (int i = 0; i < amount; i++)
                             block.giveItem(player);
                         player.closeInventory();
@@ -97,7 +98,7 @@ public class GuiManager implements Listener {
 
                     EconomyBridge economyBridge = GuiManager.this.instance.getEconomyBridge();
                     double current = economyBridge.getBalance(player);
-                    double cost = block.getPrice() * amount;
+                    double cost = shopSetup.getPrice() * amount;
                     if (current < cost) {
                         player.sendMessage(Message.GUI_GET_NOT_MONEY.getAsString().replace("%eco%",
                                 economyBridge.format((int) (cost - current))));
@@ -122,10 +123,8 @@ public class GuiManager implements Listener {
                     map.remove(player);
                     player.openInventory(event.getInventory());
                 }
-
-            }), block.getSkull(), block.canBeSold(), block.getPrice()));
+            }), block.getItem(), economy && shopSetup.isEnabled(), shopSetup.getPrice()));
         }
-
     }
 
     @EventHandler
@@ -141,16 +140,15 @@ public class GuiManager implements Listener {
     public void reload() {
         close();
 
-        List<LuckyBlock> types = LuckyBlockType.enabled().stream()
-                .sorted(Comparator.comparingInt(n -> n.asColor().getData()))
-                .map(LuckyBlockType::forceGet)
-                .filter(LuckyBlock::canBeShoped)
+        List<LuckyBlock> types = instance.getEngine().mapCopy().entrySet().stream()
+                .sorted(Comparator.comparingInt(entry -> entry.getKey().asColor().getData()))
+                .map(Map.Entry::getValue).filter(block -> block.getShopSetup().isEnabled())
                 .collect(Collectors.toList());
         LBMain.debug("[GUIMANAGER] Found " + types.size() + " types");
 
         int rows = types.size() == 0 ? 3 : (int) Math.ceil(((double) types.size()) / 5);
         get = Bukkit.createInventory(null, (2 + rows) * 9, Message.GUI_GET_TITLE.getAsString(true));
-        ItemStack grayPane = this.instance.factory.getItem(Mat.GRAY_PANE, 1);
+        ItemStack grayPane = this.instance.materialFactory.getItem(Mat.GRAY_PANE, 1);
 
         for (int row = 0; row < rows + 2; row++) {
             get.setItem(row * 9, grayPane);
@@ -167,11 +165,11 @@ public class GuiManager implements Listener {
             get.setItem(row * 9 + 8, grayPane);
         }
 
-        grayPane = this.instance.factory.getItem(Mat.BLACK_PANE, 1);
+        grayPane = this.instance.materialFactory.getItem(Mat.BLACK_PANE, 1);
 
         int amount = 0, slot = 11;
         for (LuckyBlock block : types) {
-            get.setItem(slot, block.getSkull());
+            get.setItem(slot, block.getItem());
 
             amount++;
             slot++;
@@ -206,7 +204,5 @@ public class GuiManager implements Listener {
                     return type;
             return null;
         }
-
     }
-
 }

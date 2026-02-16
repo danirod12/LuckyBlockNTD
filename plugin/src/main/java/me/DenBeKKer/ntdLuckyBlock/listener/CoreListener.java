@@ -2,60 +2,69 @@ package me.DenBeKKer.ntdLuckyBlock.listener;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
-import me.DenBeKKer.ntdLuckyBlock.api.events.LuckyBlockPlaceEvent;
+import me.DenBeKKer.ntdLuckyBlock.api.event.LuckyBlockPlaceEvent;
+import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlock;
+import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlockKey;
+import me.DenBeKKer.ntdLuckyBlock.api.util.Pair;
+import me.DenBeKKer.ntdLuckyBlock.api.util.Single;
+import me.DenBeKKer.ntdLuckyBlock.engine.LuckyBlockEngine;
+import me.DenBeKKer.ntdLuckyBlock.engine.loader.ConvertFactory;
 import me.DenBeKKer.ntdLuckyBlock.hook.Hook;
-import me.DenBeKKer.ntdLuckyBlock.hook.sk89q.LBWorldGuard;
-import me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager;
+import me.DenBeKKer.ntdLuckyBlock.hook.sk89q.WorldGuardProvider;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
-import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
-import me.DenBeKKer.ntdLuckyBlock.util.Pair;
+import me.DenBeKKer.ntdLuckyBlock.util.Misc;
+import me.DenBeKKer.ntdLuckyBlock.util.SpigotUpdater;
+import me.DenBeKKer.ntdLuckyBlock.util.StringMatcher;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager;
+import me.DenBeKKer.ntdLuckyBlock.variables.world.WorldListDataHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 
 @SuppressWarnings({"unused"})
 public class CoreListener implements Listener {
 
-    private final LBMain instance;
+    private final LuckyBlockEngine engine;
+    private final SpigotUpdater spigotUpdater;
+    private final WorldGuardProvider worldGuardProvider;
+    private final Single<StringMatcher<WorldListDataHandler>> worldsFilter;
     private final Cache<Player, ItemStack> cache;
 
-    public CoreListener(LBMain instance) {
-        this.instance = instance;
-        switch (LBMain.getNMSVersion()) {
+    public CoreListener(LuckyBlockEngine engine, SpigotUpdater spigotUpdater, WorldGuardProvider worldGuardProvider,
+                        Single<StringMatcher<WorldListDataHandler>> worldsFilter) {
+        this.engine = engine;
+        this.spigotUpdater = spigotUpdater;
+        this.worldGuardProvider = worldGuardProvider;
+        this.worldsFilter = worldsFilter;
+        switch (engine.getVersionControl().getNmsVersion()) {
             case "v1_19_R1":
             case "v1_19_R2":
                 this.cache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build();
-                MvLogger.log(Level.WARNING, "You are using bugged Spigot version 1.19.0-1.19.3!"
+                engine.getLogChannel().warning("You are using bugged Spigot version 1.19.0-1.19.3!"
                         + " These versions contains critical issue that breaks plugins that uses PLAYER_HEADs."
                         + " Enabled beta fix for 1.19.0-1.19.3 using caches.");
-                MvLogger.log(Level.WARNING, "It is recommended to update to 1.19.4!");
-                MvLogger.log(Level.WARNING, "CONVERT FACTORY IS STILL UNSUPPORTED ON 1.19.0-1.19.3");
+                engine.getLogChannel().warning("It is recommended to update to 1.19.4!");
                 break;
             default:
                 this.cache = null;
@@ -67,55 +76,40 @@ public class CoreListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (this.cache == null)
             return;
+        // This code part could be run only on 1.13+. Cache is not null, so we are sure
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK || event.getItem() == null
                 || event.getItem().getType() != Material.PLAYER_HEAD)
             return;
         ItemStack helmet = event.getPlayer().getInventory().getItem(EquipmentSlot.HEAD);
         if (helmet != null && helmet.getType() != Material.AIR) {
             this.cache.put(event.getPlayer(), event.getItem());
-            if (LBMain.isDebug()) {
+            if (this.engine.getLogChannel().isDebug()) {
                 String message = "Created cache for " + event.getPlayer().getName()
                         + " with item " + event.getItem().getType();
                 event.getPlayer().sendMessage(message);
-                LBMain.debug(message);
+                this.engine.getLogChannel().debug(message);
             }
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         ItemStack stack = event.getItemInHand();
         if (this.cache != null && stack.getType() == Material.AIR
                 && event.getBlockPlaced().getType() == Material.PLAYER_HEAD) {
             stack = this.cache.getIfPresent(event.getPlayer());
-            if (LBMain.isDebug()) {
+            if (this.engine.getLogChannel().isDebug()) {
                 String message = "Retrieved cache for " + event.getPlayer().getName()
                         + " with item " + (stack == null ? "null" : stack.getType().name());
                 event.getPlayer().sendMessage(message);
-                LBMain.debug(message);
+                this.engine.getLogChannel().debug(message);
             }
         }
 
-        LuckyBlockType temp = null;
-        if (this.cache == null && instance.getConvertManager()
-                .isFactoryEnabled() && instance.getConvertManager().isVerifyTAG()) {
-            temp = LuckyBlockAPI.parseOldLuckyBlock(stack);
-            if (temp != null) {
-                Bukkit.getScheduler().runTaskLater(instance,
-                        () -> ConvertManager.convert(event.getPlayer()), 1L);
-            }
-        }
-
-        LuckyBlockType type = temp != null ? temp : LuckyBlockAPI.parseLuckyBlock(stack,
-                instance.getConvertManager().isVerifyUUID(),
-                instance.getConvertManager().isVerifyTAG());
-        if (type != null && type.isLoaded()) {
-            if (event.isCancelled()) {
-                return;
-            }
-
-            if (!instance.worldsFilter.isEnabled(event.getBlock().getWorld().getName())) {
-                if (!instance.worldsFilter.getDataHandler().getPlaceAdmins()
+        this.engine.parseLuckyBlock(stack).flatMap(this.engine::get).ifPresent(block -> {
+            StringMatcher<WorldListDataHandler> matcher = this.worldsFilter.get();
+            if (matcher != null && !matcher.isEnabled(event.getBlock().getWorld().getName())) {
+                if (!matcher.getDataHandler().getPlaceAdmins()
                         && event.getPlayer().hasPermission("luckyblock.place.disabled")) {
                     event.getPlayer().sendMessage(MessagesManager.Message.CANT_INTERACT_WORLD.getAsString(true)
                             .replace("%world%", event.getBlock().getWorld().getName()));
@@ -124,46 +118,63 @@ public class CoreListener implements Listener {
                 }
             }
 
-            LuckyBlockPlaceEvent apiEventCall = new LuckyBlockPlaceEvent(event.getBlock(), event.getPlayer(), type);
-            Bukkit.getPluginManager().callEvent(apiEventCall);
-            if (apiEventCall.isCancelled()) return;
-            Bukkit.getScheduler().runTaskLater(instance, () -> {
-                LuckyBlockType.map().get(type).placeBlock(event.getBlock(), true);
-                if (instance.forceUpdateInventory && event.getPlayer().isOnline())
+            LuckyBlockPlaceEvent luckyBlockPlaceEvent = new LuckyBlockPlaceEvent(event,
+                    event.getBlock(), event.getPlayer(), block.getKey());
+            Bukkit.getPluginManager().callEvent(luckyBlockPlaceEvent);
+            if (luckyBlockPlaceEvent.isCancelled()) {
+                // I was thinking if we should cancel the event and decided to shift it to API client
+                // We give the user the ability to accept event
+                return;
+            }
+
+            // We cannot force set skull with another block and summon start there
+            // Cannot say clear if it is only a legacy problem or not, but it is ok to have it on all versions
+            Bukkit.getScheduler().runTaskLater(engine.getLogChannel().getPlugin(), () -> {
+                // Well, 1 tick may change a lot
+                if (!engine.getVersionControl().getMat().isSkull(event.getBlock().getType())) {
+                    return;
+                }
+                block.placeBlock(event.getBlock());
+                if (engine.getConfigHolder().forceUpdateInventory && event.getPlayer().isOnline())
                     event.getPlayer().updateInventory();
             }, 1L);
-        }
+        });
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-        String blockType = event.getBlock().getType().name();
-        if (!blockType.toUpperCase().contains("STAINED_GLASS") &&
-                !blockType.equalsIgnoreCase("TINTED_GLASS") &&
-                event.getBlock().getType() != Material.ICE) {
+        if (!engine.isLuckyBlock(event.getBlock().getType())) {
             return;
         }
 
-        Pair<LuckyBlockType, Entity> pair = LuckyBlockAPI.searchByBlock(event.getBlock());
+        Pair<LuckyBlockKey, ArmorStand> pair = engine.searchByBlock(event.getBlock());
         if (pair != null) {
             event.setCancelled(true);
-            if (Hook.WorldGuard.isEnabled() && !LBWorldGuard.canBreak(event.getBlock())) {
+            if (Hook.WorldGuard.isEnabled() && !worldGuardProvider.canBreak(event.getBlock())) {
                 return;
             }
 
+            LuckyBlock block = engine.get(pair.getKey()).orElse(null);
             Player player = event.getPlayer();
-            if (instance.breakPermissions && !player.hasPermission("luckyblock.break."
-                    + pair.getKey().name().toLowerCase()) && !player.hasPermission("luckyblock.break.*")) {
-                player.sendMessage(MessagesManager.Message.CANT_BREAK_LUCKYBLOCK.getAsString()
-                        .replace("%lb%", pair.getKey().getCustomName(true)));
+            if (engine.getConfigHolder().breakPermissions && !Misc.hasPermission(player,
+                    "luckyblock.break." + pair.getKey())) {
+                player.sendMessage(MessagesManager.Message.CANT_BREAK_LUCKYBLOCK.getAsString().replace("%lb%",
+                        block == null ? pair.getKey().getDefaultCustomName() : block.getCustomName()));
                 return;
             }
 
-            if (pair.getKey().isLoaded()) {
-                if (LBMain.LuckyBlockType.map().get(pair.getKey()).tryOpen(event.getBlock(), player, false)) {
+            if (block != null) {
+                boolean dropItems = true;
+                if (!worldsFilter.get().isEnabled(event.getBlock().getWorld().getName())) {
+                    if (worldsFilter.get().getDataHandler().getBreakNoDrop()) {
+                        dropItems = false;
+                    } else {
+                        player.sendMessage(MessagesManager.Message.CANT_INTERACT_WORLD.getAsString(true)
+                                .replace("%world%", event.getBlock().getWorld().getName()));
+                        return;
+                    }
+                }
+                if (block.playOpen(event.getBlock(), player, dropItems, false)) {
                     event.getBlock().setType(Material.AIR);
                     pair.getValue().remove();
                 }
@@ -175,15 +186,15 @@ public class CoreListener implements Listener {
     }
 
     @EventHandler
-    public void noBlockPistonExtend(BlockPistonExtendEvent event) {
+    public void onBlockPistonExtend(BlockPistonExtendEvent event) {
         for (Block block : event.getBlocks()) {
-            if (LuckyBlockAPI.isLuckyBlock(block)) {
+            if (engine.isLuckyBlock(block)) {
                 event.setCancelled(true);
                 return;
             }
         }
 
-        if (event.getDirection() == BlockFace.UP && LuckyBlockAPI.isLuckyBlock(event.getBlock()
+        if (event.getDirection() == BlockFace.UP && engine.isLuckyBlock(event.getBlock()
                 .getLocation().add(0, 2, 0).getBlock())) {
             event.setCancelled(true);
         }
@@ -192,7 +203,7 @@ public class CoreListener implements Listener {
     @EventHandler
     public void onBlockPistonRetract(BlockPistonRetractEvent event) {
         for (Block block : event.getBlocks()) {
-            if (LuckyBlockAPI.isLuckyBlock(block)) {
+            if (engine.isLuckyBlock(block)) {
                 event.setCancelled(true);
                 return;
             }
@@ -201,50 +212,57 @@ public class CoreListener implements Listener {
 
     @EventHandler
     public void onEntityExplode(EntityExplodeEvent event) {
-        event.blockList().removeIf(LuckyBlockAPI::isLuckyBlock);
+        event.blockList().removeIf(engine::isLuckyBlock);
+    }
+
+    @EventHandler
+    public void onBlockExplode(BlockExplodeEvent event) {
+        event.blockList().removeIf(engine::isLuckyBlock);
     }
 
     @EventHandler
     public void onBlockFade(BlockFadeEvent event) {
-        if (event.getBlock().getType() == Material.ICE
-                && LuckyBlockAPI.isLuckyBlock(event.getBlock())) {
+        // This considered to be really often, we cannot check everything
+        if (engine.isLuckyBlock(event.getBlock().getType()) && engine.isLuckyBlock(event.getBlock())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void onBlockExplode(BlockExplodeEvent event) {
-        event.blockList().removeIf(LuckyBlockAPI::isLuckyBlock);
+    public void onEntityChangeBlock(EntityChangeBlockEvent event) {
+        if (engine.isLuckyBlock(event.getBlock())) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
-        if (instance.informAboutUpdates && player.hasPermission("luckyblock.update")
-                && instance.getUpdater().need_update$cache()) {
-            Bukkit.getScheduler().runTaskLater(instance, () -> {
+        if (engine.getConfigHolder().informAboutUpdates
+                && player.hasPermission("luckyblock.update") && spigotUpdater.isNeedUpdate()) {
+            Bukkit.getScheduler().runTaskLater(engine.getLogChannel().getPlugin(), () -> {
                 if (player.isOnline()) {
-                    instance.getUpdater().announce(player);
+                    spigotUpdater.sendUpdateMessage(player);
                 }
             }, 40L);
         }
 
-        if (!instance.disableConvertCheck && player.hasPermission("luckyblock.convert")) {
-            ConvertManager manager = instance.getConvertManager();
-            int convert = manager.getRequests();
+        if (!engine.getConfigHolder().disableJsonConvertCheck && player.hasPermission("luckyblock.convert")) {
+            ConvertFactory factory = engine.getConvertFactory();
+            int convert = factory.getRequests();
             if (convert > 0) {
-
-                if (LBMain.isPremium()) {
+                if (LuckyBlockAPI.getVersionType().isPremium()) {
                     player.sendMessage("§7[§eLuckyBlock§7] §fNew LuckyBlock configuration " +
                             "update available! Now my plugin can store almost any item from any plugin and you can " +
                             "set drop chances for each lucky entry. You can convert §c" + convert + "§f" +
                             "entry drops to new JSON store format. §bPerform - §l/luckyblock convert");
                     player.sendMessage("§4[*] §cTo prevent loss of configuration in case of error, make " +
                             "backup of some files first");
-                    for (Map.Entry<Config, List<String>> entry : manager.getRequestMap().entrySet())
+                    for (Map.Entry<Config, List<String>> entry : factory.getRequestMap().entrySet()) {
                         player.sendMessage("§4 - §c" + entry.getKey().getName() + " §7(Have " +
                                 entry.getValue().size() + " unconverted items)");
+                    }
                 } else {
                     player.sendMessage("§7[§eLuckyBlock§7] §fNew LuckyBlock configuration update available! Now " +
                             "my plugin can store almost any item from any plugin and you can set drop chances for " +
@@ -257,27 +275,9 @@ public class CoreListener implements Listener {
         }
     }
 
-    @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        instance.getCommandsManager().gc(event.getPlayer());
-    }
-
-    @SuppressWarnings("deprecation")
-    @EventHandler
-    public void onPlayerPickupItem(org.bukkit.event.player.PlayerPickupItemEvent event) {
-        Item item = event.getItem();
-        LuckyBlockType type = LuckyBlockAPI.parseLuckyBlock(item.getItemStack(), false);
-        if (type != null && type.isLoaded()) {
-            ItemStack stack = LuckyBlockType.map().get(type).getSkull();
-            stack.setAmount(item.getItemStack().getAmount());
-            item.setItemStack(stack);
-        }
-    }
-
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
-
-        if (!instance.preventHatLB) return;
+        if (!this.engine.getConfigHolder().preventHatLuckyBlock) return;
         if (event.isCancelled() || event.getAction() == InventoryAction.NOTHING) return;
         if (!(event.getWhoClicked() instanceof Player)) return;
 
@@ -293,7 +293,7 @@ public class CoreListener implements Listener {
 
         boolean shift = event.getClick().name().contains("SHIFT");
         ItemStack stack = shift ? event.getCurrentItem() : event.getCursor();
-        if (LuckyBlockAPI.checkLuckyBlock(stack)) {
+        if (this.engine.isLuckyBlock(stack)) {
             if (shift) {
                 ItemStack helmet = event.getWhoClicked().getInventory().getHelmet();
                 if (helmet == null || helmet.getType() == Material.AIR) {
@@ -304,5 +304,4 @@ public class CoreListener implements Listener {
             }
         }
     }
-
 }

@@ -3,7 +3,7 @@ package me.DenBeKKer.ntdLuckyBlock.customitem;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.util.Pair;
+import me.DenBeKKer.ntdLuckyBlock.api.util.Pair;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.Event;

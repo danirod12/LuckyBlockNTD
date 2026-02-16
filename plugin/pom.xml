@@ -203,15 +203,16 @@
                         </option>
 
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.PlayerHead { *; }</option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.PluginVersion { *; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.api.model.PluginVersion { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.hook.Hook { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.api.** { &lt;methods&gt;; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.api.setup.ILuckyRecipeItem$* { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.api.DropChance { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.drop.** { &lt;methods&gt;; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.Lucky* { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.Templates { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.Metrics** { *; }</option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.ColorData { &lt;fields&gt;; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.api.util.ColorData { &lt;fields&gt;; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.particle.ParticleManager { &lt;methods&gt;;
                             }
                         </option>
@@ -220,15 +221,18 @@
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.factory.LBFactory { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory { *** TAG_IDENTIFIER_NAME; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.customitem.** { &lt;methods&gt;; }</option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager { &lt;methods&gt;; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.engine.loader.ConvertFactory { &lt;methods&gt;;
+                            }
+                        </option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop$* { *; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.setup.*Setup { &lt;methods&gt;; }
+                        </option>
 
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.CooldownStorage { static final &lt;fields&gt;; }</option>
 
                     </options>
 
                     <libs>
-                        <!-- Well, it is a temp solution (I hope) -->
                         <lib>C:\Program Files\Java\jre-1.8\lib\rt.jar</lib>
                     </libs>
 

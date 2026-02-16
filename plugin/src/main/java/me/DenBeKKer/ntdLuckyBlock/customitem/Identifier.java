@@ -11,19 +11,18 @@ public class Identifier {
 
     private static final Pattern pattern = Pattern.compile("[a-z][a-z0-9_]{2,}[a-z0-9]");
 
-    private final String identifier, tag_name;
+    private final String identifier, tagName;
 
     /**
      * Custom tags with plugin
      */
-    public Identifier(Plugin plugin, String tag_name, String identifier) {
+    public Identifier(Plugin plugin, String tagName, String identifier) {
+        if (!pattern.matcher(identifier).matches()) {
+            throw new UnsupportedOperationException("Identifier should be from pattern \"" + pattern.pattern() + "\"");
+        }
 
-        if (!pattern.matcher(identifier).matches())
-            throw new UnsupportedOperationException("Identifier must be \"" + pattern.pattern() + "\"");
-
-        this.identifier = plugin.getName().toLowerCase() + "-" + identifier;
-        this.tag_name = tag_name;
-
+        this.identifier = plugin.getName().toLowerCase() + "-" + identifier.toLowerCase();
+        this.tagName = tagName.toLowerCase();
     }
 
     /**
@@ -36,9 +35,9 @@ public class Identifier {
     /**
      * Custom tags without plugin
      */
-    public Identifier(String tag_name, String identifier) {
-        this.identifier = identifier;
-        this.tag_name = tag_name;
+    public Identifier(String tagName, String identifier) {
+        this.identifier = identifier.toLowerCase();
+        this.tagName = tagName.toLowerCase();
     }
 
     public ItemStack apply(ItemStack origin) {
@@ -46,51 +45,26 @@ public class Identifier {
         Object nmsItem = adapter.asNMSCopy(origin);
         Object tag = adapter.getTag(nmsItem);
         if (tag == null) tag = adapter.newTag();
-        adapter.setTagString(tag, tag_name, identifier);
+        adapter.setTagString(tag, tagName, identifier);
         adapter.setTag(nmsItem, tag);
         return adapter.asBukkitCopy(nmsItem);
     }
 
-    @Deprecated
     @Override
     public String toString() {
-        return identifier;
-    }
-
-    @Deprecated
-    public boolean isItem(ItemStack item) {
-        return compare(item);
+        return identifier + ":" + tagName;
     }
 
     @Override
     public boolean equals(Object object) {
-
-        if (object == null) return false;
-        if (object instanceof String) return compare((String) object);
-        if (object instanceof Identifier) return compare((Identifier) object);
-        if (object instanceof ItemStack) return compare((ItemStack) object);
-        else return false;
-
+        return object instanceof Identifier && object.toString().equals(toString());
     }
 
     public String getTagName() {
-        return tag_name;
+        return tagName;
     }
 
     public String getIdentifier() {
         return identifier;
     }
-
-    public boolean compare(ItemStack stack) {
-        return CustomItemFactory.compare(stack, tag_name, identifier);
-    }
-
-    public boolean compare(Identifier identifier) {
-        return identifier.identifier.equalsIgnoreCase(this.identifier);
-    }
-
-    public boolean compare(String string) {
-        return string.equalsIgnoreCase(identifier);
-    }
-
 }

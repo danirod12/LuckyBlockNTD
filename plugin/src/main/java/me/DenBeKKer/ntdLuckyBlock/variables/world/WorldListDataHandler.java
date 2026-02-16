@@ -2,27 +2,19 @@ package me.DenBeKKer.ntdLuckyBlock.variables.world;
 
 public class WorldListDataHandler {
 
-    public WorldListDataHandler(boolean c, boolean d) {
-        this.c = c;
-        this.d = d;
-    }
+    private final boolean breakNoDrops;
+    private final boolean placeAdmins;
 
-    private boolean c, d;
-
-    public void setBreakNoDrop(boolean b) {
-        this.c = b;
-    }
-
-    public void setPlaceAdmins(boolean b) {
-        this.d = b;
+    public WorldListDataHandler(boolean breakNoDrops, boolean placeAdmins) {
+        this.breakNoDrops = breakNoDrops;
+        this.placeAdmins = placeAdmins;
     }
 
     public boolean getBreakNoDrop() {
-        return c;
+        return breakNoDrops;
     }
 
     public boolean getPlaceAdmins() {
-        return d;
+        return placeAdmins;
     }
-
 }

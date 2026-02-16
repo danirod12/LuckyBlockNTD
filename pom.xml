@@ -51,6 +51,9 @@
                             <addClasspath>false</addClasspath>
                         </manifest>
                     </archive>
+                    <excludes>
+                        <exclude>me/DenBeKKer/ntdLuckyBlock/variables/OldLuckyBlock.class</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
 

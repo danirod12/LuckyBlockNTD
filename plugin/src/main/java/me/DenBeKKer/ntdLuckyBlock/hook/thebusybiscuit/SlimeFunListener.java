@@ -2,21 +2,27 @@ package me.DenBeKKer.ntdLuckyBlock.hook.thebusybiscuit;
 
 import io.github.thebusybiscuit.slimefun4.api.events.BlockPlacerPlaceEvent;
 import io.github.thebusybiscuit.slimefun4.api.events.ExplosiveToolBreakBlocksEvent;
-import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
+import me.DenBeKKer.ntdLuckyBlock.engine.LuckyBlockEngine;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 public class SlimeFunListener implements Listener {
 
-    @EventHandler
-    public void place(BlockPlacerPlaceEvent e) {
-        if (LuckyBlockAPI.isLuckyBlock(e.getBlockPlacer()))
-            e.setCancelled(true);
+    private final LuckyBlockEngine engine;
+
+    public SlimeFunListener(LuckyBlockEngine engine) {
+        this.engine = engine;
     }
 
     @EventHandler
-    public void explode(ExplosiveToolBreakBlocksEvent e) {
-        e.getAdditionalBlocks().removeIf(LuckyBlockAPI::isLuckyBlock);
+    public void onBlockPlacerPlace(BlockPlacerPlaceEvent event) {
+        if (engine.isLuckyBlock(event.getBlockPlacer())) {
+            event.setCancelled(true);
+        }
     }
 
+    @EventHandler
+    public void onExplosiveToolBreakBlocks(ExplosiveToolBreakBlocksEvent event) {
+        event.getAdditionalBlocks().removeIf(engine::isLuckyBlock);
+    }
 }

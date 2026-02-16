@@ -49,6 +49,13 @@ permission-for-each-gui-get: false
 # Permission for luckyblock breaking (luckyblock.break.color or luckyblock.break.*)
 break-permissions: true
 
+# Permission for luckyblock crafting (luckyblock.craft.color or luckyblock.craft.*)
+craft-permissions: true
+
+# Permission for luckyblock crafting (luckyblock.dye.color or luckyblock.dye.*)
+# Dye craft is when you use a LuckyBlock and a dye to change its color
+craft-dye-permissions: true
+
 # Disable author info for command /ntdluckyblock gui get
 # NOTE: This feature can be used only in premium plugin version
 disable-author-info: false
@@ -58,19 +65,6 @@ disable-json-convert-checking: false
 
 # Skip exceptions for broken entry drops from LBFactory
 skip-factory-broken: true
-
-# verify-UUID checks if placing skull UUID matchs with origin LuckyBlock UUID
-# verify-TAG checks if placing skull contains NBT tag compound luckyblock_type
-#
-#   WARNING: Both false disable all luckyblocks
-place:
-  verify-UUID: true
-  verify-TAG: true
-  
-  # Not needed. Enable it if you have used my plugin before 2.4.3
-  # This will check joining players inventories and all container change events
-  #		to replace old LuckyBlock items (Name & UUID) to new one (Tag & UUID)
-  convert-factory: false
 
 # Force update player inventory on luckyblock place
 force-update-inventory: false
