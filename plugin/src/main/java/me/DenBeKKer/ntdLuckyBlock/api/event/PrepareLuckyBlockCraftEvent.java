@@ -10,11 +10,13 @@ public class PrepareLuckyBlockCraftEvent extends CancellableEvent {
     private static final HandlerList handlers = new HandlerList();
     private final Player player;
     private final ItemStack[] matrix;
+    private final int amount;
     private final ILuckyRecipe recipe;
 
-    public PrepareLuckyBlockCraftEvent(Player player, ItemStack[] matrix, ILuckyRecipe recipe) {
+    public PrepareLuckyBlockCraftEvent(Player player, ItemStack[] matrix, int amount, ILuckyRecipe recipe) {
         this.player = player;
         this.matrix = matrix;
+        this.amount = amount;
         this.recipe = recipe;
     }
 
@@ -39,4 +41,7 @@ public class PrepareLuckyBlockCraftEvent extends CancellableEvent {
         return recipe;
     }
 
+    public int getAmount() {
+        return amount;
+    }
 }
