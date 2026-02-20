@@ -59,21 +59,36 @@ public class BaseDataGenerator {
     }
 
     public static UUID genUUID(LuckyBlockKey type) {
-        int hash;
+        StringBuilder hash = new StringBuilder();
+        String symbol;
         if (type.isInternal()) {
-            hash = type.getInternal().hashCode();
+            LuckyBlockType internal = type.getInternal();
+            if (internal.ordinal() > 15) {
+                switch (internal) {
+                    case TINTED:
+                        hash.append("10");
+                        break;
+                    case ICED:
+                        hash.append("11");
+                        break;
+                    default:
+                        throw new UnsupportedOperationException("Not implemented UUID for " + internal);
+                }
+            } else {
+                hash.append(Integer.toHexString(type.getInternal().getColorData().getData()));
+            }
+            symbol = "0";
         } else {
-            hash = type.hashCode();
+            int hashCode = type.hashCode();
+            symbol = hashCode < 0 ? "1" : "2";
+            hash.append(Integer.toHexString(hashCode < 0 ? -hashCode : hashCode));
         }
-        return UUID.fromString("12345678-1234-1234-1234-" + adaptZeros(hash));
-    }
 
-    private static String adaptZeros(int hash) {
-        StringBuilder value = new StringBuilder((hash < 0 ? "1" : "0")).append((hash < 0 ? -hash : hash));
-        while (value.length() < 12) {
-            value.insert(0, "0");
+        while (hash.length() < 11) {
+            hash.insert(0, "0");
         }
-        return value.toString();
+
+        return UUID.fromString("12345678-1234-1234-1234-" + symbol + hash);
     }
 
     public static boolean hasDefaultCrafts(LuckyBlockKey key) {
