@@ -2,17 +2,24 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <artifactId>luckyblock-parent</artifactId>
-        <groupId>me.DenBeKKer.ntdLuckyBlock</groupId>
-        <version>2.8.10</version>
+        <groupId>com.github.danirod12.luckyblock</groupId>
+        <version>3.0.0-dev</version>
     </parent>
-    <version>2.5.0</version>
+
     <packaging>pom</packaging>
+
+    <artifactId>sk89q</artifactId>
+    <version>sk89q</version>
+
     <modules>
         <module>we6</module>
         <module>we7</module>
     </modules>
+
     <dependencies>
         <dependency>
             <groupId>org.spigotmc</groupId>
@@ -21,9 +28,6 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
-    <modelVersion>4.0.0</modelVersion>
-
-    <artifactId>sk89q</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

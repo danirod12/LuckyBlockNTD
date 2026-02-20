@@ -2,15 +2,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>luckyblock-parent</artifactId>
-        <groupId>me.DenBeKKer.ntdLuckyBlock</groupId>
-        <version>2.8.10</version>
-    </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <version>2.5.0</version>
-    <artifactId>logger</artifactId>
+    <parent>
+        <artifactId>luckyblock-parent</artifactId>
+        <groupId>com.github.danirod12.luckyblock</groupId>
+        <version>3.0.0-dev</version>
+    </parent>
+
+    <artifactId>shared-logger</artifactId>
+    <version>logger</version>
+
     <dependencies>
         <dependency>
             <groupId>org.spigotmc</groupId>
