@@ -216,7 +216,7 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
         if (skippedEntries > 0 || skippedPremium > 0) {
             this.logChannel.warning("Skipped " + (skippedEntries + skippedPremium)
                     + " entries for " + config.getName() + " due misconfiguration"
-                    + (skippedEntries > 0 ? " (" + skippedPremium + " premium items)" : ""));
+                    + (skippedPremium > 0 ? " (" + skippedPremium + " premium items)" : ""));
         }
 
         // Check if we have made any updates. If so, write it to remote. Then remove completed object
