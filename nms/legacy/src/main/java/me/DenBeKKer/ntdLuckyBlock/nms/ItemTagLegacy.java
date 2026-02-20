@@ -8,24 +8,24 @@ import java.lang.reflect.InvocationTargetException;
 
 public class ItemTagLegacy implements ItemTag {
 
-    private final Class<?> CraftItemStack, NBTTagCompound;
+    private final Class<?> craftItemStack, nbttagcompound;
 
     public ItemTagLegacy() throws UnsupportedOperationException {
 
-        String nms_version = Bukkit.getServer().getClass().getPackage().getName();
-        nms_version = nms_version.substring(nms_version.lastIndexOf('.') + 1);
+        String nmsVersion = Bukkit.getServer().getClass().getPackage().getName();
+        nmsVersion = nmsVersion.substring(nmsVersion.lastIndexOf('.') + 1);
 
         Class<?> clazz;
         try {
-            clazz = Class.forName("org.bukkit.craftbukkit." + nms_version + ".inventory.CraftItemStack");
+            clazz = Class.forName("org.bukkit.craftbukkit." + nmsVersion + ".inventory.CraftItemStack");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
             throw new UnsupportedOperationException();
         }
-        this.CraftItemStack = clazz;
+        this.craftItemStack = clazz;
 
         try {
-            clazz = Class.forName("net.minecraft.server." + nms_version + ".NBTTagCompound");
+            clazz = Class.forName("net.minecraft.server." + nmsVersion + ".NBTTagCompound");
         } catch (Exception ex) {
             try {
                 clazz = Class.forName("net.minecraft.nbt.NBTTagCompound");
@@ -35,7 +35,7 @@ public class ItemTagLegacy implements ItemTag {
                 throw new UnsupportedOperationException();
             }
         }
-        this.NBTTagCompound = clazz;
+        this.nbttagcompound = clazz;
 
         // version verification
         try {
@@ -43,15 +43,15 @@ public class ItemTagLegacy implements ItemTag {
         } catch (NoSuchMethodException exception) {
             throw new UnsupportedOperationException();
         }
-
     }
 
     @Override
     public ItemStack asBukkitCopy(Object nmsItem) {
         try {
-            return (ItemStack) CraftItemStack.getMethod("asBukkitCopy", nmsItem.getClass()).invoke(null, nmsItem);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException |
-                 NoSuchMethodException | SecurityException e) {
+            return (ItemStack) craftItemStack.getMethod("asBukkitCopy",
+                    nmsItem.getClass()).invoke(null, nmsItem);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                 | NoSuchMethodException | SecurityException e) {
             e.printStackTrace();
             return null;
         }
@@ -61,7 +61,7 @@ public class ItemTagLegacy implements ItemTag {
     @SuppressWarnings("deprecation")
     public Object newTag() {
         try {
-            return NBTTagCompound.newInstance();
+            return nbttagcompound.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
             return null;
@@ -71,9 +71,9 @@ public class ItemTagLegacy implements ItemTag {
     @Override
     public Object asNMSCopy(ItemStack origin) {
         try {
-            return CraftItemStack.getMethod("asNMSCopy", ItemStack.class).invoke(null, origin);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException |
-                 NoSuchMethodException | SecurityException e) {
+            return craftItemStack.getMethod("asNMSCopy", ItemStack.class).invoke(null, origin);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                 | NoSuchMethodException | SecurityException e) {
             e.printStackTrace();
             return null;
         }
@@ -83,8 +83,8 @@ public class ItemTagLegacy implements ItemTag {
     public String getTagString(Object tag, String element) {
         try {
             return (String) tag.getClass().getMethod("getString", String.class).invoke(tag, element);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException |
-                 NoSuchMethodException | SecurityException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                 | NoSuchMethodException | SecurityException e) {
             e.printStackTrace();
             return null;
         }
@@ -94,8 +94,8 @@ public class ItemTagLegacy implements ItemTag {
     public void setTagString(Object tag, String element, String value) {
         try {
             tag.getClass().getMethod("setString", String.class, String.class).invoke(tag, element, value);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException |
-                 NoSuchMethodException | SecurityException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                 | NoSuchMethodException | SecurityException e) {
             e.printStackTrace();
         }
     }
@@ -104,8 +104,8 @@ public class ItemTagLegacy implements ItemTag {
     public Object getTag(Object nmsItem) {
         try {
             return nmsItem.getClass().getMethod("getTag").invoke(nmsItem);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException |
-                 NoSuchMethodException | SecurityException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                 | NoSuchMethodException | SecurityException e) {
             e.printStackTrace();
             return null;
         }
@@ -115,10 +115,9 @@ public class ItemTagLegacy implements ItemTag {
     public void setTag(Object nmsItem, Object newTag) {
         try {
             nmsItem.getClass().getMethod("setTag", newTag.getClass()).invoke(nmsItem, newTag);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException |
-                 NoSuchMethodException | SecurityException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                 | NoSuchMethodException | SecurityException e) {
             e.printStackTrace();
         }
     }
-
 }

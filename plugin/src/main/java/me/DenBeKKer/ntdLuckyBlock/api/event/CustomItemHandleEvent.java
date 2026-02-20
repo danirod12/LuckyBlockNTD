@@ -7,7 +7,7 @@ import org.bukkit.event.HandlerList;
 
 public class CustomItemHandleEvent extends Event implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList HANDLERS = new HandlerList();
     private final BekkerItemStack stack;
     private final Event event;
     private final boolean r;
@@ -20,12 +20,12 @@ public class CustomItemHandleEvent extends Event implements Cancellable {
     }
 
     public static HandlerList getHandlerList() {
-        return handlers;
+        return HANDLERS;
     }
 
     @Override
     public HandlerList getHandlers() {
-        return handlers;
+        return HANDLERS;
     }
 
     public BekkerItemStack getItem() {

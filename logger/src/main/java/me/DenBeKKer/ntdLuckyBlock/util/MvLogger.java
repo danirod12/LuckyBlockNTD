@@ -19,15 +19,14 @@ public class MvLogger {
     }
 
     public static void log(Level level, String message) {
-
-        if (level == Level.INFO)
+        if (level == Level.INFO) {
             Bukkit.getConsoleSender().sendMessage("[ntdLuckyBlock] " + message.replace("&", "\u00a7"));
-        else instance.getLogger().log(level, message.replace("&", "\u00a7"));
-
+        } else {
+            instance.getLogger().log(level, message.replace("&", "\u00a7"));
+        }
     }
 
     public static Plugin getInstance() {
         return instance;
     }
-
 }

@@ -8,7 +8,7 @@ import java.util.List;
 
 public class CustomItemFactoryReloadEvent extends Event {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList HANDLERS = new HandlerList();
     private final List<BekkerItemStack> items;
     private final Action action;
 
@@ -18,12 +18,12 @@ public class CustomItemFactoryReloadEvent extends Event {
     }
 
     public static HandlerList getHandlerList() {
-        return handlers;
+        return HANDLERS;
     }
 
     @Override
     public HandlerList getHandlers() {
-        return handlers;
+        return HANDLERS;
     }
 
     public List<BekkerItemStack> getLoadedItems() {
@@ -40,5 +40,4 @@ public class CustomItemFactoryReloadEvent extends Event {
     public enum Action {
         PRELOAD, LOADED;
     }
-
 }

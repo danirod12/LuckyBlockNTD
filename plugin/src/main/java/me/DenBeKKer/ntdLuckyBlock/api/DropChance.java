@@ -1,7 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.api;
 
+import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyEntry;
 import me.DenBeKKer.ntdLuckyBlock.api.util.Pair;
-import me.DenBeKKer.ntdLuckyBlock.variables.LuckyEntry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,8 @@ public enum DropChance {
     LOW(3),
     MEDIUM(6),
     HIGH(15),
-    HIGHEST(25);
+    HIGHEST(25),
+    ;
 
     private int weight;
 
@@ -27,10 +28,12 @@ public enum DropChance {
     }
 
     public static DropChance random(List<DropChance> chances) {
-        if (chances.size() == 0)
+        if (chances.isEmpty()) {
             throw new UnsupportedOperationException("Chances mismatch, random() got an empty List");
-        if (chances.size() == 1)
+        }
+        if (chances.size() == 1) {
             return chances.get(0);
+        }
 
         List<Pair<Integer, DropChance>> list = new ArrayList<>();
         for (int i = 0; i < chances.size(); i++) {
@@ -40,8 +43,9 @@ public enum DropChance {
         }
         int boot = ThreadLocalRandom.current().nextInt(list.get(list.size() - 1).getA()) + 1;
         for (Pair<Integer, DropChance> pair : list) {
-            if (boot <= pair.getA())
+            if (boot <= pair.getA()) {
                 return pair.getB();
+            }
         }
         throw new RuntimeException(boot + " dropped out of " + list.get(list.size() - 1).getA());
     }
@@ -52,7 +56,9 @@ public enum DropChance {
     }
 
     public static double getChanceOf(List<DropChance> chances, DropChance chance) {
-        if (!chances.contains(chance)) return 0.0D;
+        if (!chances.contains(chance)) {
+            return 0.0D;
+        }
         int boot = chances.stream().mapToInt(DropChance::getWeight).sum();
         return chance.weight * 100D / boot;
     }
@@ -65,8 +71,9 @@ public enum DropChance {
 
     public static DropChance parse(String key) {
         for (DropChance value : values()) {
-            if (value.name().equalsIgnoreCase(key))
+            if (value.name().equalsIgnoreCase(key)) {
                 return value;
+            }
         }
         return null;
     }

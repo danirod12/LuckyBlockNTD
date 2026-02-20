@@ -17,5 +17,4 @@ public interface ItemTag {
     Object getTag(Object nmsItem);
 
     void setTag(Object nmsItem, Object newTag);
-
 }

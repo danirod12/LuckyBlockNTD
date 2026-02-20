@@ -39,29 +39,24 @@ import java.util.logging.Level;
 
 public class WorldEdit7 implements IWorldEdit {
 
-    private static final Method resolveSign, destroyEntity;
+    private static final Method RESOLVE_SIGN, DESTROY_ENTITY;
 
     static {
-
         Method method0, method1;
         try {
-
             Class<?> clazz = Class.forName("me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI");
             method0 = clazz.getDeclaredMethod("resolveSign", Block.class, boolean.class);
             method1 = clazz.getDeclaredMethod("destroyEntity", Entity[].class, boolean.class);
-
         } catch (Throwable e) {
             e.printStackTrace();
             method0 = method1 = null;
         }
 
-        resolveSign = method0;
-        destroyEntity = method1;
-
+        RESOLVE_SIGN = method0;
+        DESTROY_ENTITY = method1;
     }
 
     public void paste(File file, Block obj, boolean a, List<String> blacklist) {
-
         Clipboard clipboard = null;
 
         ClipboardFormat format = ClipboardFormats.findByFile(file);
@@ -98,25 +93,22 @@ public class WorldEdit7 implements IWorldEdit {
             if (clipboard instanceof BlockArrayClipboard) {
                 Region region = clipboard.getRegion();
                 BlockVector3 clipboardOffset = clipboard.getRegion().getMinimumPoint().subtract(clipboard.getOrigin());
-                Vector3 realTo = BukkitAdapter.asVector(obj.getLocation()).add(holder.getTransform().apply(clipboardOffset.toVector3()));
-                Vector3 max = realTo.add(holder.getTransform().apply(region.getMaximumPoint().subtract(region.getMinimumPoint()).toVector3()));
+                Vector3 realTo = BukkitAdapter.asVector(obj.getLocation()).add(holder
+                        .getTransform().apply(clipboardOffset.toVector3()));
+                Vector3 max = realTo.add(holder.getTransform().apply(region.getMaximumPoint()
+                        .subtract(region.getMinimumPoint()).toVector3()));
 
-                Bukkit.getScheduler().runTaskLater(MvLogger.getInstance(), () ->
-                        formatPastedSchematic(obj.getWorld(), new CuboidRegion(realTo.toBlockPoint(), max.toBlockPoint()), a), 1);
-
+                Bukkit.getScheduler().runTaskLater(MvLogger.getInstance(), () -> formatPastedSchematic(obj.getWorld(),
+                        new CuboidRegion(realTo.toBlockPoint(), max.toBlockPoint()), a), 1);
             }
-
         } catch (WorldEditException e) {
             e.printStackTrace();
             MvLogger.log(Level.SEVERE, "Something went wrong");
         }
-
     }
 
     private void formatPastedSchematic(World world, CuboidRegion region, boolean a) {
-
         try {
-
             List<Entity> list = new ArrayList<>();
 
             BlockVector3 min = region.getMinimumPoint(), max = region.getMaximumPoint();
@@ -125,24 +117,22 @@ public class WorldEdit7 implements IWorldEdit {
                 Chunk chunk = world.getChunkAt(vector.getBlockX(), vector.getBlockZ());
                 for (Entity entity : chunk.getEntities()) {
                     Location location = entity.getLocation();
-                    if (location.getX() >= min.getX() && location.getZ() >= min.getZ() && location.getY() >= min.getY() - 1.2D &&
-                            location.getX() <= max.getX() && location.getZ() <= max.getZ() && location.getY() <= max.getY()) {
+                    if (location.getX() >= min.getX() && location.getZ() >= min.getZ()
+                            && location.getY() >= min.getY() - 1.2D && location.getX() <= max.getX()
+                            && location.getZ() <= max.getZ() && location.getY() <= max.getY()) {
                         list.add(entity);
                     }
                 }
-
             }
-            destroyEntity.invoke(null, list.toArray(new Entity[0]), true);
+            DESTROY_ENTITY.invoke(null, list.toArray(new Entity[0]), true);
 
             for (BlockVector3 vector : region) {
                 Block block = world.getBlockAt(vector.getX(), vector.getY(), vector.getZ());
-                resolveSign.invoke(null, block, a);
+                RESOLVE_SIGN.invoke(null, block, a);
             }
-
         } catch (Exception exception) {
             exception.printStackTrace();
         }
-
     }
 
     @SuppressWarnings("deprecation")
@@ -153,5 +143,4 @@ public class WorldEdit7 implements IWorldEdit {
             return WorldEdit.getInstance().getEditSessionFactory().getEditSession(BukkitAdapter.adapt(world), -1);
         }
     }
-
 }

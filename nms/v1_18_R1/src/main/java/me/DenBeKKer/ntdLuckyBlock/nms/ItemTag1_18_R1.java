@@ -40,5 +40,4 @@ public class ItemTag1_18_R1 implements ItemTag {
     public void setTag(Object nmsItem, Object newTag) {
         ((net.minecraft.world.item.ItemStack) nmsItem).setTag((CompoundTag) newTag);
     }
-
 }

@@ -47,102 +47,102 @@ public class WorldEdit6 implements IWorldEdit {
             e.printStackTrace();
             MvLogger.log(Level.SEVERE, "Something went wrong");
         }
-
     }
 
-//	private final WorldEditPlugin worldedit = (WorldEditPlugin)Bukkit.getPluginManager().getPlugin("WorldEdit");
+//    private final WorldEditPlugin worldedit = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 //
-//	@Override
-//	public void paste(File file, final Block obj, boolean a) {
+//    @Override
+//    public void paste(File file, final Block obj, boolean a) {
 //
-//		try {
-//			CuboidClipboard clipboard = MCEditSchematicFormat.getFormat(file).load(file);
-//			EditSession session = worldedit.getWorldEdit().getEditSessionFactory()
-//					.getEditSession(new BukkitWorld(obj.getWorld()), -1);
+//        try {
+//            CuboidClipboard clipboard = MCEditSchematicFormat.getFormat(file).load(file);
+//            EditSession session = worldedit.getWorldEdit().getEditSessionFactory()
+//                    .getEditSession(new BukkitWorld(obj.getWorld()), -1);
 //
-//			final Vector origin;
-//			clipboard.paste(session, origin = new Vector(obj.getX(), obj.getY(), obj.getZ()), true);
+//            final Vector origin;
+//            clipboard.paste(session, origin = new Vector(obj.getX(), obj.getY(), obj.getZ()), true);
 //
-////			min = max.add(clipboard.getWidth(), -clipboard.getHeight(), clipboard.getLength());
-//			Vector min = origin.add(clipboard.getOffset());
-//			Vector max = min.add(clipboard.getSize());
+////            min = max.add(clipboard.getWidth(), -clipboard.getHeight(), clipboard.getLength());
+//            Vector min = origin.add(clipboard.getOffset());
+//            Vector max = min.add(clipboard.getSize());
 //
-//			Bukkit.getScheduler().runTaskLater(MvLogger.getInstance(), () -> {
+//            Bukkit.getScheduler().runTaskLater(MvLogger.getInstance(), () -> {
 //
-//				try {
+//                try {
 //
-//					int chunkZ = min.getBlockZ() >> 4 - 1;
-//					for(int x = min.getBlockX(); x <= max.getBlockX(); x++) {
-//						for(int z = min.getBlockX(); z <= max.getBlockX(); z++) {
+//                    int chunkZ = min.getBlockZ() >> 4 - 1;
+//                    for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
+//                        for (int z = min.getBlockX(); z <= max.getBlockX(); z++) {
 //
-//							Bukkit.broadcastMessage("x: " + x + ", z: " + z);
+//                            Bukkit.broadcastMessage("x: " + x + ", z: " + z);
 //
-//							int i0 = z >> 4;
-//							if(i0 != chunkZ) {
+//                            int i0 = z >> 4;
+//                            if (i0 != chunkZ) {
 //
-//								Chunk chunk = obj.getWorld().getChunkAt(x >> 4, i0);
+//                                Chunk chunk = obj.getWorld().getChunkAt(x >> 4, i0);
 //
-//								List<Entity> list = new ArrayList<>();
-//								for(Entity entity : chunk.getEntities()) {
-//									Bukkit.broadcastMessage(entity.getType().name());
-//									if(entity.getType() != EntityType.ARMOR_STAND)
-//										continue;
-//									Location location = entity.getLocation();
-//									if(location.getX() >= min.getX() && location.getZ() >= min.getZ() && location.getY() >= min.getY() - 1.2D &&
-//											location.getX() <= max.getX() && location.getZ() <= max.getZ() && location.getY() <= max.getY()) {
-//										list.add(entity);
-//									}
-//								}
+//                                List<Entity> list = new ArrayList<>();
+//                                for (Entity entity : chunk.getEntities()) {
+//                                    Bukkit.broadcastMessage(entity.getType().name());
+//                                    if (entity.getType() != EntityType.ARMOR_STAND)
+//                                        continue;
+//                                    Location location = entity.getLocation();
+//                                    if (location.getX() >= min.getX() && location.getZ() >= min.getZ()
+//                                    && location.getY() >= min.getY() - 1.2D &&
+//                                            location.getX() <= max.getX() && location.getZ() <= max.getZ()
+//                                            && location.getY() <= max.getY()) {
+//                                        list.add(entity);
+//                                    }
+//                                }
 //
-//								if(list.size() > 0)
-//									destroyEntity.invoke(null, list.toArray(new Entity[0]), false);
+//                                if (list.size() > 0)
+//                                    destroyEntity.invoke(null, list.toArray(new Entity[0]), false);
 //
-//								chunkZ = i0;
+//                                chunkZ = i0;
 //
-//							}
+//                            }
 //
-//							for(int y = min.getBlockY(); y <= max.getBlockY(); y++) {
-//								Block block;
-//								resolveSign.invoke(null, block = obj.getWorld().getBlockAt(x, y, z), a);
-//								block.setType(Material.STAINED_GLASS);
-//							}
+//                            for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
+//                                Block block;
+//                                resolveSign.invoke(null, block = obj.getWorld().getBlockAt(x, y, z), a);
+//                                block.setType(Material.STAINED_GLASS);
+//                            }
 //
-//						}
-//					}
+//                        }
+//                    }
 //
-//				} catch (Exception exception) {
-//					exception.printStackTrace();
-//					MvLogger.log(Level.SEVERE, "Something went wrong");
-//				}
+//                } catch (Exception exception) {
+//                    exception.printStackTrace();
+//                    MvLogger.log(Level.SEVERE, "Something went wrong");
+//                }
 //
-//			}, 1L);
+//            }, 1L);
 //
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			MvLogger.log(Level.SEVERE, "Something went wrong");
-//		}
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            MvLogger.log(Level.SEVERE, "Something went wrong");
+//        }
 //
-//	}
+//    }
 //
-//	private static final Method resolveSign, destroyEntity;
+//    private static final Method resolveSign, destroyEntity;
 //
-//	static {
+//    static {
 //
-//		Method method0, method1;
-//		try {
+//        Method method0, method1;
+//        try {
 //
-//			Class<?> clazz = Class.forName("me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI");
-//			method0 = clazz.getDeclaredMethod("resolveSign", Block.class, boolean.class);
-//			method1 = clazz.getDeclaredMethod("destroyEntity", Entity[].class, boolean.class);
+//            Class<?> clazz = Class.forName("me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI");
+//            method0 = clazz.getDeclaredMethod("resolveSign", Block.class, boolean.class);
+//            method1 = clazz.getDeclaredMethod("destroyEntity", Entity[].class, boolean.class);
 //
-//		} catch (Throwable e) {
-//			e.printStackTrace();
-//			method0 = method1 = null;
-//		}
+//        } catch (Throwable e) {
+//            e.printStackTrace();
+//            method0 = method1 = null;
+//        }
 //
-//		resolveSign = method0;
-//		destroyEntity = method1;
+//        resolveSign = method0;
+//        destroyEntity = method1;
 //
-//	}
-
+//    }
 }

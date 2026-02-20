@@ -4,11 +4,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>luckyblock-nms</artifactId>
-        <groupId>me.DenBeKKer.ntdLuckyBlock</groupId>
-        <version>2.6.3</version>
+        <groupId>com.github.danirod12.luckyblock</groupId>
+        <version>nms</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <version>2.6.3</version>
+    <version>nms</version>
 
     <artifactId>luckyblock-nms-interfaces</artifactId>
 
