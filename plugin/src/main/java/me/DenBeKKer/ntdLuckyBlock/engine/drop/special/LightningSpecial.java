@@ -1,8 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.engine.drop.special;
 
 import com.google.gson.annotations.SerializedName;
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
+import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDrop;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -10,43 +9,31 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class LightningSpecial implements LuckyDrop {
 
     @SerializedName(value = "amount")
-    private final int a;
+    private final int amount;
 
-    public LightningSpecial(int a) {
-        this.a = a;
-    }
-
-    public int getAmount() {
-        return a;
+    public LightningSpecial(int amount) {
+        this.amount = amount;
     }
 
     @Override
-    public void execute(LBMain.LuckyBlockType related, Block b, Player target) {
-
+    public void execute(LuckyDrop.Execution execution) {
+        Player target = execution.getPlayer();
+        Block block = execution.getBlock();
         if (target == null) {
-            b.getWorld().strikeLightning(b.getLocation().add(0.5, 0.5, 0.5));
+            block.getWorld().strikeLightning(block.getLocation().add(0.5, 0.5, 0.5));
         } else {
-
             new BukkitRunnable() {
-
                 int i = 0;
 
                 @Override
                 public void run() {
-
-                    if (i >= a || !target.isOnline() || target.isDead()) {
+                    if (i++ >= amount || !target.isOnline() || target.isDead()) {
                         cancel();
                         return;
                     }
-                    b.getWorld().strikeLightning(target.getLocation());
-                    i++;
-
+                    block.getWorld().strikeLightning(target.getLocation());
                 }
-
-            }.runTaskTimer(LBMain.getInstance(), 15, 15);
-
+            }.runTaskTimer(execution.getInstance(), 15, 15);
         }
-
     }
-
 }

@@ -22,6 +22,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -211,7 +212,7 @@ public class LuckyBlockHolder implements LuckyBlock {
     }
 
     @Override
-    public boolean playOpen(Block block, Player target, boolean dropItems, boolean ignoreCancel) {
+    public boolean playOpen(Plugin instance, Block block, Player target, boolean dropItems, boolean ignoreCancel) {
         if (engine.getLogChannel().isDebug()) {
             engine.getLogChannel().debug("Playing LuckyBlock " + type.getKey() + " open as "
                     + (target == null ? "not presented" : target.getName()) + " at {x:" + block.getX() + ", y:"
@@ -248,7 +249,7 @@ public class LuckyBlockHolder implements LuckyBlock {
                     exception.printStackTrace();
                 }
             }
-            engine.executeDrop(luckyDrop, this.type, block, target);
+            engine.executeDrop(instance, luckyDrop, this.type, block, target);
         }
         return true;
     }

@@ -1,28 +1,23 @@
 package me.DenBeKKer.ntdLuckyBlock.engine.drop.special;
 
 import com.google.gson.annotations.SerializedName;
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
-import org.bukkit.block.Block;
+import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDrop;
+import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
 
 public class TntExplosionSpecial extends ExplosionableItems implements LuckyDrop {
 
     @SerializedName(value = "amount")
-    private final int a;
+    private final int amount;
 
-    public TntExplosionSpecial(int a) {
-        this.a = a;
-    }
-
-    public int getAmount() {
-        return a;
+    public TntExplosionSpecial(int amount) {
+        this.amount = amount;
     }
 
     @Override
-    public void execute(LBMain.LuckyBlockType related, Block b, Player target) {
-        throwExplosion(EntityType.PRIMED_TNT, (target == null ? b.getLocation() : target.getLocation()).add(.5, .5, .5), a);
+    public void execute(Execution execution) {
+        Location location = (execution.getPlayer() == null ?
+                execution.getBlock().getLocation() : execution.getPlayer().getLocation());
+        throwExplosion(EntityType.PRIMED_TNT, location.add(.5, .5, .5), amount);
     }
-
 }

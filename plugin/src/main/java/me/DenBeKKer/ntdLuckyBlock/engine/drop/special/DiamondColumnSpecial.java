@@ -1,60 +1,53 @@
 package me.DenBeKKer.ntdLuckyBlock.engine.drop.special;
 
 import com.google.gson.annotations.SerializedName;
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
+import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDrop;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class DiamondColumnSpecial implements LuckyDrop {
 
     @SerializedName(value = "materials")
-    private final Collection<Material> collection;
+    private final List<Material> materials;
 
-    public DiamondColumnSpecial(Collection<Material> collection) {
-        this.collection = collection;
-    }
-
-    public Collection<Material> getMaterials() {
-        return collection;
+    public DiamondColumnSpecial(List<Material> materials) {
+        this.materials = materials;
     }
 
     @Override
-    public void execute(LBMain.LuckyBlockType type, Block b, Player target) {
-        this.summonColumn(target == null ? b : target.getLocation().getBlock());
-    }
+    public void execute(LuckyDrop.Execution execution) {
+        if (materials == null) {
+            return;
+        }
 
-    public void summonColumn(Block block) {
-
-        if (collection == null) return;
-        int y = collection.size() + 10;
+        Block block = execution.getBlock();
+        int y = materials.size() + 10;
 
         new BukkitRunnable() {
 
-            List<Material> col1 = new ArrayList<>(collection);
-            short u = 4;
+            private final List<Material> list = new ArrayList<>(materials);
+            private int i = 4;
 
             @SuppressWarnings("deprecation")
             @Override
             public void run() {
-
-                if (u == 4 && col1.size() == 0) {
-                    block.getWorld().spawnFallingBlock(block.getLocation().add(0.5, y, 0.5), Material.DIAMOND_BLOCK, (byte) 0);
-                    u = 3;
+                if (i == 4 && list.isEmpty()) {
+                    block.getWorld().spawnFallingBlock(block.getLocation().add(0.5, y, 0.5),
+                            Material.DIAMOND_BLOCK, (byte) 0);
+                    i = 3;
                     return;
                 }
 
-                if (u <= 3) {
-                    u--;
-                    if (u <= 0) {
-                        if (block.getWorld().getBlockAt(block.getLocation().add(0.5, y - 9, 0.5)).getType() == Material.AIR) {
-                            block.getWorld().getBlockAt(block.getLocation().add(0.5, y - 9, 0.5)).setType(Material.FIRE);
+                if (i <= 3) {
+                    i--;
+                    if (i <= 0) {
+                        Block b = block.getWorld().getBlockAt(block.getLocation().add(0.5, y - 9, 0.5));
+                        if (b.getType() == Material.AIR) {
+                            b.setType(Material.FIRE);
                         }
                         block.getWorld().strikeLightning(block.getLocation().add(0.5, y - 10, 0.5));
                         cancel();
@@ -62,13 +55,10 @@ public class DiamondColumnSpecial implements LuckyDrop {
                     return;
                 }
 
-                block.getWorld().spawnFallingBlock(block.getLocation().add(0.5, y, 0.5), col1.get(0), (byte) 0);
-                col1.remove(0);
+                block.getWorld().spawnFallingBlock(block.getLocation().add(0.5, y, 0.5), list.get(0), (byte) 0);
+                list.remove(0);
 
             }
-
-        }.runTaskTimer(LBMain.getInstance(), 10, 10);
-
+        }.runTaskTimer(execution.getInstance(), 10, 10);
     }
-
 }

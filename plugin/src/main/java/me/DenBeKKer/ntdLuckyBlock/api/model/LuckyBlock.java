@@ -8,6 +8,7 @@ import me.DenBeKKer.ntdLuckyBlock.variables.setup.ShopSetup;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -63,5 +64,5 @@ public interface LuckyBlock {
 
     String getCustomName();
 
-    boolean playOpen(Block block, Player target, boolean dropItems, boolean ignoreCancel);
+    boolean playOpen(Plugin instance, Block block, Player target, boolean dropItems, boolean ignoreCancel);
 }

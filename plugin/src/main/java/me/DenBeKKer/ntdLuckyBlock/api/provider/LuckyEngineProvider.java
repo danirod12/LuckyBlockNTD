@@ -14,6 +14,7 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.util.*;
@@ -91,7 +92,7 @@ public interface LuckyEngineProvider {
 
     boolean isLuckyBlock(Material material);
 
-    boolean breakLuckyBlock(Block block, Player player, boolean dropItems, boolean ignoreCancelled);
+    boolean breakLuckyBlock(Plugin instance, Block block, Player player, boolean dropItems, boolean ignoreCancelled);
 
-    boolean executeDrop(LuckyDrop drop, LuckyBlockKey related, Block block, Player player);
+    boolean executeDrop(Plugin instance, LuckyDrop drop, LuckyBlockKey related, Block block, Player player);
 }

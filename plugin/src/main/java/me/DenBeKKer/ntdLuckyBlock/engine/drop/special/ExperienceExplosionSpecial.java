@@ -1,31 +1,22 @@
 package me.DenBeKKer.ntdLuckyBlock.engine.drop.special;
 
 import com.google.gson.annotations.SerializedName;
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
-import org.bukkit.block.Block;
+import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDrop;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
 
 public class ExperienceExplosionSpecial extends ExplosionableItems implements LuckyDrop {
 
     @SerializedName(value = "amount")
-    private final int a;
+    private final int amount;
 
-    public ExperienceExplosionSpecial(int a) {
-        this.a = a;
-    }
-
-    public int getAmount() {
-        return a;
+    public ExperienceExplosionSpecial(int amount) {
+        this.amount = amount;
     }
 
     @Override
-    public void execute(LBMain.LuckyBlockType related, Block block, Player player) {
-
-        throwExplosion(EntityType.THROWN_EXP_BOTTLE,
-                player == null ? block.getLocation().add(.5, .5, .5) : player.getLocation().clone().add(.0, .5, .0), a);
-
+    public void execute(LuckyDrop.Execution execution) {
+        throwExplosion(EntityType.THROWN_EXP_BOTTLE, execution.getPlayer() == null ?
+                execution.getBlock().getLocation().add(.5, .5, .5) :
+                execution.getPlayer().getLocation().clone().add(.0, .5, .0), amount);
     }
-
 }

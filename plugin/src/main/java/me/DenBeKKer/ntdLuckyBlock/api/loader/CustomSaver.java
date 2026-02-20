@@ -1,6 +1,6 @@
 package me.DenBeKKer.ntdLuckyBlock.api.loader;
 
-import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
+import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDrop;
 
 public interface CustomSaver {
 
@@ -9,5 +9,4 @@ public interface CustomSaver {
     }
 
     String getDescription();
-
 }

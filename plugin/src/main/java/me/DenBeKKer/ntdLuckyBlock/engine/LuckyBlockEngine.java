@@ -547,11 +547,12 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
     }
 
     @Override
-    public boolean breakLuckyBlock(Block block, Player player, boolean dropItems, boolean ignoreCancelled) {
+    public boolean breakLuckyBlock(Plugin instance, Block block, Player player,
+                                   boolean dropItems, boolean ignoreCancelled) {
         Pair<LuckyBlockKey, ArmorStand> pair = searchByBlock(block);
         if (pair != null) {
             LuckyBlock luckyBlock = get(pair.getKey()).orElse(null);
-            if (luckyBlock == null || luckyBlock.playOpen(block, player, dropItems, ignoreCancelled)) {
+            if (luckyBlock == null || luckyBlock.playOpen(instance, block, player, dropItems, ignoreCancelled)) {
                 block.setType(Material.AIR);
                 pair.getValue().remove();
             }
@@ -560,21 +561,22 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
     }
 
     @Override
-    public boolean executeDrop(LuckyDrop drop, LuckyBlockKey related, Block block, Player player) {
-        LuckyDropEvent event = new LuckyDropEvent(related, this, player);
+    public boolean executeDrop(Plugin instance, LuckyDrop drop, LuckyBlockKey related, Block block, Player player) {
+        LuckyDrop.Execution execution = new LuckyDrop.Execution(instance, related, block, player);
+        LuckyDropEvent event = new LuckyDropEvent(execution, drop);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return false;
         }
 
         try {
-            drop.execute(related, block, player);
+            drop.execute(execution);
         } catch (Throwable th) {
             if (th.getMessage() != null && !this.logChannel.isDebug()) {
-                if (this instanceof EntityDrop) {
+                if (drop instanceof EntityDrop) {
                     return true;
                 }
-                if (this instanceof ItemDrop && th.getMessage().toLowerCase().contains("air")) {
+                if (drop instanceof ItemDrop && th.getMessage().toLowerCase().contains("air")) {
                     return true;
                 }
             }
