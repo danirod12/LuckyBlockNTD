@@ -1,5 +1,6 @@
 package me.DenBeKKer.ntdLuckyBlock.hook.sk89q;
 
+import lombok.Getter;
 import me.DenBeKKer.ntdLuckyBlock.util.IWorldEdit;
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 import org.bukkit.Bukkit;
@@ -13,6 +14,7 @@ import java.util.logging.Logger;
 public class WorldEditProvider {
 
     private final Plugin plugin;
+    @Getter
     private final File folder;
     private final IWorldEdit worldedit;
     private final boolean fawe;
@@ -42,21 +44,18 @@ public class WorldEditProvider {
         return worldedit != null;
     }
 
-    public File getFolder() {
-        return folder;
-    }
-
     public IWorldEdit getPlatform() {
         return worldedit;
     }
 
-    public void paste(File file, Block target) {
+    public void paste(File file, Block target, boolean ignoreAir) {
         if (worldedit == null)
             return;
         if (fawe) {
-            Bukkit.getScheduler().runTaskLater(plugin, () -> worldedit.paste(file, target, true), 1);
+            Bukkit.getScheduler().runTaskLater(plugin,
+                    () -> worldedit.paste(file, target, true, ignoreAir), 1);
         } else {
-            worldedit.paste(file, target, false);
+            worldedit.paste(file, target, false, ignoreAir);
         }
     }
 }

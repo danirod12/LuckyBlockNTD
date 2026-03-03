@@ -113,6 +113,9 @@ public class LBMain extends JPAdapter {
         // some kind of timings ^_^
         long ms = System.currentTimeMillis();
 
+        // Init logger TODO remove ?
+        MvLogger.setInstance(this);
+
         // Plugin title
         logChannel.info("§fStarting LuckyBlock (ntdLuckyBlock) v" + getVersion() + ", build " + getBuild()
                 + " (" + getLastUpdate() + "), " + getVersionType().getSimpleName());
@@ -212,7 +215,7 @@ public class LBMain extends JPAdapter {
                             "bedrock_problem.schematic").copy(false);
                     if (!legacy) {
                         new Config(this, "configuration.schematics.main", schematicsFolder,
-                                "small_temple.schematic").copy(false);
+                                "small_temple.schem").copy(false);
                     }
                 }
             }

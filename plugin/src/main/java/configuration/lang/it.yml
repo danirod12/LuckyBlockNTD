@@ -55,7 +55,7 @@ system:
     reload: "&8 > &e/%label% reload &f- Ricarica tutte le configurazioni"
     support: "&8 > &e/%label% support &f- Ottieni i contatti dell'autore"
     checkforupdates: "&8 > &e/%label% checkforupdates &f- Controlla se ci sono degli aggiornamenti"
-    destroy: "&8 > &e/%label% destroy <radius/chunk> [-all] &f- Distruggi i LB"
+    destroy: "&8 > &e/%label% destroy <radius/chunk/(<xyz> [xyz] [world])> [-all] &f- Distruggi i LB"
     generate: "&8 > &e/%label% generate <type> <factory> <min> <max> &f- Genera dei drop"
     generateFull: "Con questo comando puoi generare dei LuckyDrops all'interno dei tuoi LuckyBlock. <type> - Il tipo di LuckyBlock da generare. <factory> - LB factory (Use `latest`). <min> - min EntryDrops. <max> - max EntryDrops"
 

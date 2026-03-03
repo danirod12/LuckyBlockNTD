@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlockKey;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDrop;
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
-import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
@@ -21,15 +20,8 @@ public class ConsoleDrop implements LuckyDrop {
     }
 
     @Override
-    public void execute(LuckyBlockKey related, Block block, Player player) {
-        String cmd = this.cmd.replace("%world%", block.getWorld().getName())
-                .replace("%block_location%", Misc.getLocation(block.getLocation().add(.5D, .5D, .5D)));
-        if (cmd.contains("%player%") || cmd.contains("%player_location%")) {
-            if (player == null) return;
-            cmd = cmd.replace("%player%", player.getName())
-                    .replace("%player_location%", Misc.getLocation(player.getLocation()));
-        }
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
+    public void execute(LuckyBlockKey related, Block b, Player player) {
+        Misc.performCommand(this.cmd, b, player, Misc.PerformCommandAs.CONSOLE);
     }
 
     public String getCommand() {

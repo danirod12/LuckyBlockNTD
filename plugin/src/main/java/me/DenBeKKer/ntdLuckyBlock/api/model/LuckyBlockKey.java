@@ -19,6 +19,9 @@ public class LuckyBlockKey {
         Objects.requireNonNull(key);
         Objects.requireNonNull(colorData);
         Objects.requireNonNull(material);
+        if (key.equalsIgnoreCase("random")) {
+            throw new IllegalArgumentException("Key cannot be 'random'");
+        }
         if (!KEY_PATTERN.matcher(key).matches()) {
             throw new IllegalArgumentException("Incorrect key. Key could contain a-z letters and _, but cannot"
                     + " start or end with _. Key length should be from 3 to 32 chars. You cannot use __");

@@ -1,20 +1,9 @@
 package me.DenBeKKer.ntdLuckyBlock.variables.world;
 
+import lombok.Data;
+
+@Data
 public class WorldListDataHandler {
-
-    private final boolean breakNoDrops;
-    private final boolean placeAdmins;
-
-    public WorldListDataHandler(boolean breakNoDrops, boolean placeAdmins) {
-        this.breakNoDrops = breakNoDrops;
-        this.placeAdmins = placeAdmins;
-    }
-
-    public boolean getBreakNoDrop() {
-        return breakNoDrops;
-    }
-
-    public boolean getPlaceAdmins() {
-        return placeAdmins;
-    }
+    private boolean breakNoDrops;
+    private boolean placeAdmins;
 }

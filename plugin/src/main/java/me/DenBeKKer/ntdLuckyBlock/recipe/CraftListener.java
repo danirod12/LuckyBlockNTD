@@ -1,5 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.recipe;
 
+import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
+import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.api.event.PrepareLuckyBlockCraftEvent;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlock;
 import me.DenBeKKer.ntdLuckyBlock.api.setup.ILuckyRecipe;
@@ -23,7 +25,7 @@ public class CraftListener implements Listener {
         this.luckyBlockEngine = luckyBlockEngine;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPrepareItemCraft(PrepareItemCraftEvent event) {
         CraftingInventory inventory = event.getInventory();
         Player player;
@@ -54,6 +56,67 @@ public class CraftListener implements Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onCraftItem(InventoryClickEvent event) {
+        if (event.getInventory() instanceof CraftingInventory && event.getSlot() == 0) {
+            CraftingInventory craftingInventory = (CraftingInventory) event.getInventory();
+            HumanEntity human = event.getWhoClicked();
+            if (craftingInventory.getResult() != null) {
+
+                LuckyBlockType type = LuckyBlockAPI.parseLuckyBlock(craftingInventory.getResult());
+                if (type != null) {
+                    event.setCancelled(true);
+                    LuckyBlock block = LuckyBlockType.map().get(type);
+                    if (block != null) {
+                        for (LuckyRecipe recipe : block.getRecipes()) {
+                            int amount = recipe.verify(craftingInventory.getMatrix());
+                            int maxAmount = amount;
+                            if (amount > 0 && !event.getClick().isShiftClick()) {
+                                amount = 1;
+                            }
+                            if (amount > 0) {
+                                ItemStack stack = block.getSkull();
+                                stack.setAmount(amount);
+                                if (event.getClick().isShiftClick()) {
+                                    for (ItemStack value : human.getInventory().addItem(stack).values()) {
+                                        human.getWorld().dropItem(human.getLocation(), value);
+                                    }
+                                } else {
+                                    ItemStack current = human.getItemOnCursor();
+                                    if (current != null && !current.getType().name().contains("AIR")) {
+                                        if (current.isSimilar(stack)) {
+                                            current.setAmount(current.getAmount() + stack.getAmount());
+                                        } else {
+                                            // not craft
+                                            return;
+                                        }
+                                    } else {
+                                        human.setItemOnCursor(stack);
+                                    }
+                                }
+
+                                ItemStack[] itemStacks = craftingInventory.getMatrix();
+                                for (int i = 0; i < itemStacks.length; i++) {
+                                    if (itemStacks[i] == null || itemStacks[i].getAmount() <= amount) {
+                                        itemStacks[i] = null;
+                                    } else {
+                                        itemStacks[i].setAmount(itemStacks[i].getAmount() - amount);
+                                    }
+                                }
+                                craftingInventory.setMatrix(itemStacks);
+                                if (maxAmount == amount) {
+                                    craftingInventory.setResult(null);
+                                }
+                                return;
+                            }
+                        }
+                        // error / runtime recipe change
+                        human.closeInventory();
+                    }
+                }
+            }
+        }
+    }
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onCraftItem(InventoryClickEvent event) {
         if (event.getInventory() instanceof CraftingInventory && event.getSlot() == 0) {

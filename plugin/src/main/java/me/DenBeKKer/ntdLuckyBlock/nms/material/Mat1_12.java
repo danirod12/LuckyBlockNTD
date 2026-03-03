@@ -46,7 +46,7 @@ public class Mat1_12 implements IMat {
     }
 
     @Override
-    public boolean isOakSign(Material type) {
+    public boolean isSign(Material type) {
         return type.name().equalsIgnoreCase("SIGN");
     }
 

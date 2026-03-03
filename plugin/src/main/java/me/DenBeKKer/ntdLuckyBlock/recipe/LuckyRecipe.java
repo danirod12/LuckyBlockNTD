@@ -38,8 +38,9 @@ public class LuckyRecipe implements ILuckyRecipe {
         int minAmount = 64;
         for (int i = 0; i < origin.length; i++) {
             if (items[i] == null) {
-                if (origin[i] == null)
+                if (origin[i] == null) {
                     continue;
+                }
                 return 0;
             }
             if (!items[i].isMatch(origin[i])) {
@@ -53,15 +54,17 @@ public class LuckyRecipe implements ILuckyRecipe {
     }
 
     private int verifyAny(ItemStack[] origin) {
-        if (origin.length != 9)
+        if (origin.length != 9) {
             return 0;
+        }
 
         ItemStack[] array = origin.clone();
         int minAmount = 64;
         items:
         for (ILuckyRecipeItem item : items) {
-            if (item == null)
+            if (item == null) {
                 continue;
+            }
             for (int i = 0; i < array.length; i++) {
                 if (item.isMatch(array[i])) {
                     if (array[i].getAmount() < minAmount) {

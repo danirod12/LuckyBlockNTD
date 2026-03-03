@@ -319,6 +319,9 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
 
     @Override
     public Optional<LuckyBlockKey> getLoaded(String key) {
+        if (key.equalsIgnoreCase("random")) {
+            return Optional.of(random());
+        }
         for (LuckyBlockKey luckyBlockKey : this.map.keySet()) {
             if (luckyBlockKey.getKey().equals(key)) {
                 return Optional.of(luckyBlockKey);

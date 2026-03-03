@@ -112,7 +112,8 @@ public class LegacyLoader implements StringLoader {
                 } else {
                     throw new IllegalArgumentException("Schematic format allow only player and block arguments");
                 }
-                return new SchematicDrop(getSchematicFile(baseData), setAsBlock);
+                return new SchematicDrop(getSchematicFile(baseData), setAsBlock,
+                        baseData.length > 3 && baseData[3].equalsIgnoreCase("true"));
             }
             case SPECIAL: {
                 Special special = Special.valueOf(baseData[1].toUpperCase());

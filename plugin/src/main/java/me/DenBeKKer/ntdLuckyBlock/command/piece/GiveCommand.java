@@ -81,7 +81,7 @@ public class GiveCommand extends LBCommand {
             int amount = Misc.parseInteger(args[2], 1);
             ItemStack stack = block.getItem(amount);
             for (Player target : targets) {
-                target.getInventory().addItem(stack);
+                Misc.giveItemsOrDrop(target, stack);
             }
             sender.sendMessage(Message.CMD_LB_GIVE.getAsString().replace("%lb%", block.getCustomName())
                     .replace("%amount%", String.valueOf(amount)));

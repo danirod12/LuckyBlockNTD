@@ -32,7 +32,7 @@ public interface IMat {
 
     String build();
 
-    boolean isOakSign(Material type);
+    boolean isSign(Material type);
 
     boolean isSkull(Material type);
 

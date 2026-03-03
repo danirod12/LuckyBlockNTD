@@ -9,7 +9,6 @@ import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import me.DenBeKKer.ntdLuckyBlock.variables.PlayerHead;
 import me.DenBeKKer.ntdLuckyBlock.variables.gui.ConfirmEvent;
 import me.DenBeKKer.ntdLuckyBlock.variables.gui.CountGui;
-import me.DenBeKKer.ntdLuckyBlock.variables.setup.ShopSetup;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;

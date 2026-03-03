@@ -12,6 +12,7 @@ import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
 import me.DenBeKKer.ntdLuckyBlock.customitem.Identifier;
 import me.DenBeKKer.ntdLuckyBlock.engine.LuckyBlockEngine;
 import me.DenBeKKer.ntdLuckyBlock.nms.material.IMat;
+import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 import me.DenBeKKer.ntdLuckyBlock.variables.setup.AnimationSetup;
 import me.DenBeKKer.ntdLuckyBlock.variables.setup.ShopSetup;
 import org.bukkit.Bukkit;
@@ -129,7 +130,7 @@ public class LuckyBlockHolder implements LuckyBlock {
             return;
         }
         stack.setAmount(amount);
-        player.getInventory().addItem(stack);
+        Misc.giveItemsOrDrop(player, stack);
     }
 
     @Override

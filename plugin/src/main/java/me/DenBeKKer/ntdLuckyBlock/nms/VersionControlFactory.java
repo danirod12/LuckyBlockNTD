@@ -1,5 +1,6 @@
 package me.DenBeKKer.ntdLuckyBlock.nms;
 
+import com.github.danirod12.mcversion.MinecraftVersion;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import me.DenBeKKer.ntdLuckyBlock.nms.material.IMat;
@@ -20,37 +21,53 @@ import java.util.UUID;
 
 public class VersionControlFactory {
 
-    private final String nmsVersion;
     private final IMat materialFactory;
     private final Material tinted;
     private final ItemTag itemTagAdapter;
 
     public VersionControlFactory(LogChannel logChannel) {
-        this.nmsVersion = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-        logChannel.info("Loading NMS for your platform (" + Bukkit.getVersion() + ", " + nmsVersion + ")...");
+        MinecraftVersion.NMSVersion nmsVersion = MinecraftVersion.getPossibleNMSVersion();
+        logChannel.info("Loading NMS for your platform ("
+                + Bukkit.getVersion() + ", " + nmsVersion.getCraftBukkitName() + ")...");
         // Load NMS classes
-        switch (this.nmsVersion) {
-            case "v1_20_R1": {
+        switch (nmsVersion) {
+            case v1_21_R1: {
+                itemTagAdapter = new ItemTag1_21_R1();
+                break;
+            }
+            case v1_20_R4: {
+                itemTagAdapter = new ItemTag1_20_R4();
+                break;
+            }
+            case v1_20_R3: {
+                itemTagAdapter = new ItemTag1_20_R3();
+                break;
+            }
+            case v1_20_R2: {
+                itemTagAdapter = new ItemTag1_20_R2();
+                break;
+            }
+            case v1_20_R1: {
                 itemTagAdapter = new ItemTag1_20_R1();
                 break;
             }
-            case "v1_19_R3": {
+            case v1_19_R3: {
                 itemTagAdapter = new ItemTag1_19_R3();
                 break;
             }
-            case "v1_19_R2": {
+            case v1_19_R2: {
                 itemTagAdapter = new ItemTag1_19_R2();
                 break;
             }
-            case "v1_19_R1": {
+            case v1_19_R1: {
                 itemTagAdapter = new ItemTag1_19_R1();
                 break;
             }
-            case "v1_18_R2": {
+            case v1_18_R2: {
                 itemTagAdapter = new ItemTag1_18_R2();
                 break;
             }
-            case "v1_18_R1": {
+            case v1_18_R1: {
                 itemTagAdapter = new ItemTag1_18_R1();
                 break;
             }
@@ -74,7 +91,7 @@ public class VersionControlFactory {
     }
 
     public String getNmsVersion() {
-        return nmsVersion;
+        return MinecraftVersion.getPossibleNMSVersion().getCraftBukkitName();
     }
 
     public IMat getMat() {

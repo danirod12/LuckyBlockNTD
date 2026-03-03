@@ -142,6 +142,19 @@ public class CoreListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBlockBreakHighest(BlockBreakEvent event) {
+        if (instance.breakEventHighestPriority) {
+            this.onBlockBreak(event);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onBlockBreakHigh(BlockBreakEvent event) {
+        if (!instance.breakEventHighestPriority) {
+            this.onBlockBreak(event);
+        }
+    }
+
     public void onBlockBreak(BlockBreakEvent event) {
         if (!engine.isLuckyBlock(event.getBlock().getType())) {
             return;

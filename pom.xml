@@ -133,6 +133,12 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <relocations>
+                        <relocation>
+                            <pattern>com.github.danirod12.mcversion</pattern>
+                            <shadedPattern>me.DenBeKKer.ntdLuckyBlock.util</shadedPattern>
+                        </relocation>
+                    </relocations>
                     <filters>
                         <filter>
                             <artifact>*:*</artifact>
