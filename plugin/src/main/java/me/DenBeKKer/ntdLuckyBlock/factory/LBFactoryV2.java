@@ -37,7 +37,6 @@ public class LBFactoryV2 implements LBFactory {
         file.set("name", "&" + type.toColorSymbol() + String.valueOf(type.name().toCharArray()[0]).toUpperCase()
                 + type.name().substring(1).toLowerCase().replace("_", " ") + " LuckyBlock");
         file.set("lore", Collections.singletonList("&7Place me :D"));
-        file.set("eco", true);
         file.set("shop", true);
         file.set("price", 250);
         file.set("animation", true);

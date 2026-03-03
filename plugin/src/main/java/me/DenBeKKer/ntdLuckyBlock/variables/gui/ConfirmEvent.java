@@ -1,4 +1,4 @@
-package me.DenBeKKer.ntdLuckyBlock.variables;
+package me.DenBeKKer.ntdLuckyBlock.variables.gui;
 
 public interface ConfirmEvent {
 
