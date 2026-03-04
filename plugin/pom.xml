@@ -60,7 +60,7 @@
         <dependency>
             <groupId>com.github.danirod12</groupId>
             <artifactId>mc-version</artifactId>
-            <version>1.2.1</version>
+            <version>1.2.2</version>
             <scope>compile</scope>
         </dependency>
 
@@ -194,6 +194,12 @@
         <dependency>
             <groupId>me.DenBeKKer.ntdLuckyBlock</groupId>
             <artifactId>luckyblock-nms-v1_21_R1</artifactId>
+            <version>2.6.3</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>me.DenBeKKer.ntdLuckyBlock</groupId>
+            <artifactId>luckyblock-nms-v1_21_R2</artifactId>
             <version>2.6.3</version>
             <scope>compile</scope>
         </dependency>

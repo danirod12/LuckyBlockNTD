@@ -8,7 +8,7 @@ public class Templates {
     public static final String COMPILE_VERSION = "${project.version}";
 
     public static final String COMPILE_DATE = "${timestamp}";
-    public static final int BUILD = 132;
+    public static final int BUILD = 133;
 
     public static final String DISCORD_URL = "https://discord.gg/vbYW3sperj";
     public static final String API_USAGE_URL = "https://clck.ru/34gZSd https://shorturl.at/gNOUX";
