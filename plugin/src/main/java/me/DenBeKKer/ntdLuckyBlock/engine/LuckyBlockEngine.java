@@ -520,7 +520,7 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
 
     @Override
     public void resolveSign(Block block) {
-        if (versionControl.getMat().isOakSign(block.getType())) {
+        if (versionControl.getMat().isSign(block.getType())) {
             Sign sign = (Sign) block.getState();
             String[] lines = sign.getLines();
             if (lines[0].equalsIgnoreCase("[ntdluckyblock]")) {

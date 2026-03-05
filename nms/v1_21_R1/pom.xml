@@ -12,9 +12,9 @@
     <artifactId>luckyblock-nms-v1_21_R1</artifactId>
     <dependencies>
         <dependency>
-            <groupId>me.DenBeKKer.ntdLuckyBlock</groupId>
+            <groupId>com.github.danirod12.luckyblock</groupId>
             <artifactId>luckyblock-nms-interfaces</artifactId>
-            <version>2.6.3</version>
+            <version>nms</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
