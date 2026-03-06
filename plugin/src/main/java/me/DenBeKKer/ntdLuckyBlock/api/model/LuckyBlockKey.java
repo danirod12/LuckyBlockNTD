@@ -1,11 +1,15 @@
 package me.DenBeKKer.ntdLuckyBlock.api.model;
 
+import lombok.Getter;
+import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.api.util.ColorData;
 import org.bukkit.Material;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
+@Getter
 public class LuckyBlockKey {
 
     private static final Pattern KEY_PATTERN = Pattern.compile("^(?!.*__)([a-zA-Z][a-zA-Z_]{1,30}[a-zA-Z])$");
@@ -37,33 +41,17 @@ public class LuckyBlockKey {
         this.applyColorDataToBlock = applyColorDataToBlock;
     }
 
-    public String getKey() {
-        return key;
-    }
-
     public String getDefaultCustomName() {
         return '§' + colorData.asColorCode() + String.valueOf(key.toCharArray()[0]).toUpperCase()
                 + key.substring(1).replace("_", "") + " LuckyBlock";
-    }
-
-    public ColorData getColorData() {
-        return colorData;
-    }
-
-    public Material getMaterial() {
-        return material;
-    }
-
-    public boolean isApplyColorDataToBlock() {
-        return applyColorDataToBlock;
     }
 
     public boolean isInternal() {
         return internal != null;
     }
 
-    public LuckyBlockType getInternal() {
-        return internal;
+    public Optional<LuckyBlock> getSetup() {
+        return LuckyBlockAPI.getLuckyEngineProvider().get(this);
     }
 
     @Override

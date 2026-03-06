@@ -1,33 +1,27 @@
 package me.DenBeKKer.ntdLuckyBlock.engine.drop;
 
 import com.google.gson.annotations.SerializedName;
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
+import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDrop;
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
-import me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 
 public class OppedDrop implements LuckyDrop {
 
     @SerializedName(value = "command")
-    private final String cmd;
+    private final String command;
 
     /**
-     * @param cmd - Command that will be executed
+     * @param command - Command that will be executed
      */
-    public OppedDrop(String cmd) {
-        this.cmd = cmd;
+    public OppedDrop(String command) {
+        this.command = command;
     }
 
     @Override
-    public void execute(LBMain.LuckyBlockType related, Block block, Player target) {
-        if (target == null) {
+    public void execute(LuckyDrop.Execution execution) {
+        if (execution.getPlayer() == null) {
             return;
         }
-        Misc.performCommand(this.cmd, block, target, Misc.PerformCommandAs.OPPED_PLAYER);
-    }
-
-    public String getCommand() {
-        return cmd;
+        Misc.performCommand(this.command, execution.getBlock(),
+                execution.getPlayer(), Misc.PerformCommandAs.OPPED_PLAYER);
     }
 }

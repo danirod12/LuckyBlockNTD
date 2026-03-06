@@ -1,45 +1,24 @@
 package me.DenBeKKer.ntdLuckyBlock.api.event;
 
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
+import lombok.Data;
+import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDrop;
 import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+@Data
 public class ItemSpawnEvent extends Event {
 
-    private static final HandlerList handlers = new HandlerList();
-    private final LBMain.LuckyBlockType r;
-    private final Item i;
-    private final Player p;
-
-    public ItemSpawnEvent(LBMain.LuckyBlockType related, Item item, Player player) {
-
-        this.r = related;
-        this.i = item;
-        this.p = player;
-
-    }
+    private static final HandlerList HANDLERS = new HandlerList();
+    private final LuckyDrop.Execution execution;
+    private final Item drop;
 
     public static HandlerList getHandlerList() {
-        return handlers;
+        return HANDLERS;
     }
 
     @Override
     public HandlerList getHandlers() {
-        return handlers;
+        return HANDLERS;
     }
-
-    public Player getPlayer() {
-        return p;
-    }
-
-    public LBMain.LuckyBlockType getSource() {
-        return r;
-    }
-
-    public Item getItem() {
-        return i;
-    }
-
 }

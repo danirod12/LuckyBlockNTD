@@ -2,13 +2,11 @@ package me.DenBeKKer.ntdLuckyBlock.engine.drop;
 
 import com.google.gson.annotations.SerializedName;
 import me.DenBeKKer.ntdLuckyBlock.api.event.EntitySpawnEvent;
-import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlockKey;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDrop;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,19 +28,12 @@ public class EntityDrop implements LuckyDrop {
     }
 
     @Override
-    public void execute(LuckyBlockKey related, Block block, Player target) {
+    public void execute(LuckyDrop.Execution execution) {
+        Block block = execution.getBlock();
         List<Entity> entities = new ArrayList<>();
         for (int i = 0; i < amount; i++) {
             entities.add(block.getWorld().spawnEntity(block.getLocation().add(0.5, 1, 0.5), entity));
         }
-        Bukkit.getPluginManager().callEvent(new EntitySpawnEvent(related, entities, target));
-    }
-
-    public EntityType getEntityType() {
-        return entity;
-    }
-
-    public int getAmount() {
-        return amount;
+        Bukkit.getPluginManager().callEvent(new EntitySpawnEvent(execution, entities));
     }
 }

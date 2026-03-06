@@ -8,41 +8,33 @@ import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDrop;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class LuckyItemDrop implements LuckyDrop {
 
     @SerializedName(value = "type")
-    private final LuckyBlockKey type;
+    private final LuckyBlockKey key;
     @SerializedName(value = "amount")
     private final int amount;
 
     /**
-     * @param type   - LuckyBlockKey will be dropped
+     * @param key    - LuckyBlockKey will be dropped
      * @param amount - LuckyBlock's amount
      */
-    public LuckyItemDrop(LuckyBlockKey type, int amount) {
-        this.type = type;
+    public LuckyItemDrop(LuckyBlockKey key, int amount) {
+        this.key = key;
         this.amount = amount;
     }
 
-    public int getAmount() {
-        return amount;
-    }
-
-    public LuckyBlockKey getKey() {
-        return type;
-    }
-
     @Override
-    public void execute(LuckyBlockKey related, Block block, Player target) {
-        LuckyBlockAPI.getLuckyEngineProvider().get(type).ifPresent(instance -> {
+    public void execute(LuckyDrop.Execution execution) {
+        LuckyBlockAPI.getLuckyEngineProvider().get(key).ifPresent(instance -> {
             ItemStack stack = instance.getItem();
             if (stack != null) {
                 stack.setAmount(amount);
+                Block block = execution.getBlock();
                 Item item = block.getWorld().dropItem(block.getLocation().add(.5, .4, .5), stack);
-                Bukkit.getPluginManager().callEvent(new ItemSpawnEvent(related, item, target));
+                Bukkit.getPluginManager().callEvent(new ItemSpawnEvent(execution, item));
             }
         });
     }

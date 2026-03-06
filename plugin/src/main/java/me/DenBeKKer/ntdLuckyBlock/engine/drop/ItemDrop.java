@@ -1,15 +1,12 @@
 package me.DenBeKKer.ntdLuckyBlock.engine.drop;
 
 import com.google.gson.annotations.SerializedName;
-import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.api.event.ItemSpawnEvent;
-import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlockKey;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDrop;
 import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.logging.Level;
@@ -31,19 +28,20 @@ public class ItemDrop implements LuckyDrop {
     }
 
     @Override
-    public void execute(LuckyBlockKey related, Block block, Player target) {
+    public void execute(LuckyDrop.Execution execution) {
+        Block block = execution.getBlock();
         Item drop = block.getWorld().dropItem(block.getLocation().add(0.5, 0.4, 0.5), item);
         // 1.8 fix
         if (drop.getItemStack().getType() != item.getType()) {
             drop.remove();
-            MvLogger.log(Level.WARNING, related + " have corrupted item " + item.getType()
+            MvLogger.log(Level.WARNING, execution.getKey() + " have corrupted item " + item.getType()
                     + ", remove it manually");
-            LuckyBlockAPI.getLuckyEngineProvider().get(related).ifPresent(instance -> {
+            execution.getKey().getSetup().ifPresent(instance -> {
                 instance.getItemsBag().remove(this);
                 // TODO auto-remove?
             });
             return;
         }
-        Bukkit.getPluginManager().callEvent(new ItemSpawnEvent(related, drop, target));
+        Bukkit.getPluginManager().callEvent(new ItemSpawnEvent(execution, drop));
     }
 }
