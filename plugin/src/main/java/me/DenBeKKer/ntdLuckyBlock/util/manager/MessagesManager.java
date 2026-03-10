@@ -1,6 +1,6 @@
 package me.DenBeKKer.ntdLuckyBlock.util.manager;
 
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
+import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
@@ -12,12 +12,13 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+// TODO rework. Remove static
 public class MessagesManager {
 
     private static final Map<Message, Object> map = new HashMap<>();
     private final static List<String> build_in_languages = Arrays.asList("en", "ru", "zh_cn", "de", "pl",
             "pt_br", "tr", "es", "fr", "it");
-    public static File lang_folder = new File(LBMain.getInstance().getDataFolder() + File.separator + "lang");
+    public static File lang_folder = new File(LuckyBlockAPI.getInstance().getDataFolder() + File.separator + "lang");
     private static Config config = null;
 
     /**
@@ -46,7 +47,7 @@ public class MessagesManager {
     public static void reload(String lang) {
 
         for (String language : build_in_languages)
-            new Config(LBMain.getInstance(), "configuration.lang", lang_folder, language + ".yml").copy(false);
+            new Config(LuckyBlockAPI.getInstance(), "configuration.lang", lang_folder, language + ".yml").copy(false);
 
         if (lang == null) lang = "en";
         File translation = new File(lang_folder + File.separator + lang + ".yml");
@@ -61,7 +62,7 @@ public class MessagesManager {
             MvLogger.log(Level.WARNING, "Loading unverified language file! It may contains exceptions or illegal words. Check before using is recommended");
 
         if (translation.exists()) {
-            config = new Config(LBMain.getInstance(), "configuration.lang", lang_folder, lang + ".yml");
+            config = new Config(LuckyBlockAPI.getInstance(), "configuration.lang", lang_folder, lang + ".yml");
             config.copy(true);
 
             if (config.get().getString("author") == null) {
@@ -69,9 +70,9 @@ public class MessagesManager {
                 config.save();
             }
 
-            LBMain.log(Level.INFO, "Loading language file \"" + lang + "\" by " + config.get().getString("author"));
+            MvLogger.log(Level.INFO, "Loading language file \"" + lang + "\" by " + config.get().getString("author"));
             Message.loadAll();
-        } else LBMain.log(Level.SEVERE, "Reset translation config was not found!");
+        } else MvLogger.log(Level.SEVERE, "Reset translation config was not found!");
 
     }
 
@@ -81,8 +82,8 @@ public class MessagesManager {
         if (file != null && file.isSet(path)) {
             config.get().set(path, file.get(path));
         } else {
-            LBMain.log(Level.WARNING, "Translation path <" + path + "> not found for language " + config.getName() + ", using english!");
-            config.get().set(path, new Config(LBMain.getInstance(), "configuration.lang", lang_folder, "en.yml").getDefault().get(path));
+            MvLogger.log(Level.WARNING, "Translation path <" + path + "> not found for language " + config.getName() + ", using english!");
+            config.get().set(path, new Config(LuckyBlockAPI.getInstance(), "configuration.lang", lang_folder, "en.yml").getDefault().get(path));
         }
 
         config.save();
@@ -191,7 +192,7 @@ public class MessagesManager {
             map.put(this, config.get().get(this.path));
 
             if (copy_path && map.get(this) == null) {
-                LBMain.log(Level.WARNING, "Translation for path <" + this.path + "> not found. Creating...");
+                MvLogger.log(Level.WARNING, "Translation for path <" + this.path + "> not found. Creating...");
                 updateLocalePath(config, path);
                 load(false);
             }

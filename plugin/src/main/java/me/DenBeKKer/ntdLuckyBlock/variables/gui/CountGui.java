@@ -1,6 +1,8 @@
 package me.DenBeKKer.ntdLuckyBlock.variables.gui;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
+import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
+import me.DenBeKKer.ntdLuckyBlock.nms.VersionControlFactory;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import me.DenBeKKer.ntdLuckyBlock.variables.PlayerHead;
 import org.bukkit.Bukkit;
@@ -15,6 +17,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 
+// TODO rework
 public class CountGui implements Listener {
 
     private final int start;
@@ -43,7 +46,7 @@ public class CountGui implements Listener {
         inventory.setItem(26, PlayerHead.NEXT_WOOD.getHead(Message.GUI_COUNT_CONFIRM.getAsString(), null));
         generateInventory();
 
-        Bukkit.getPluginManager().registerEvents(this, LBMain.getInstance());
+        Bukkit.getPluginManager().registerEvents(this, LuckyBlockAPI.getInstance());
         p.openInventory(inventory);
 
     }
@@ -79,7 +82,7 @@ public class CountGui implements Listener {
     }
 
     private String getPrice() {
-        return LBMain.getInstance().getEconomyBridge().format((int) (current * price));
+        return ((LBMain) LuckyBlockAPI.getInstance()).getEconomyBridge().format((int) (current * price));
     }
 
     @EventHandler
@@ -95,21 +98,22 @@ public class CountGui implements Listener {
 
             e.setCancelled(true);
             ItemStack item = e.getInventory().getItem(e.getSlot());
-            if (item == null || !LBMain.getInstance().materialFactory.isSkull(item)) return;
+            if (item == null || !((VersionControlFactory) LuckyBlockAPI.getLuckyEngineProvider().getVersionControl()).getMat().isSkull(item))
+                return;
 
             switch (e.getSlot()) {
                 case 18: {
-                    if (LBMain.isDebug()) LBMain.debug("back");
+//                    if (LBMain.isDebug()) LBMain.debug("back");
                     event.goBack();
                     return;
                 }
                 case 26: {
-                    if (LBMain.isDebug()) LBMain.debug("confirm");
+//                    if (LBMain.isDebug()) LBMain.debug("confirm");
                     event.onConfirm(current);
                     return;
                 }
                 case 11: {
-                    if (LBMain.isDebug()) LBMain.debug("minus");
+//                    if (LBMain.isDebug()) LBMain.debug("minus");
                     current -= offset;
                     if (current < start) current = start;
                     generateBag();
@@ -117,7 +121,7 @@ public class CountGui implements Listener {
                     return;
                 }
                 case 15: {
-                    if (LBMain.isDebug()) LBMain.debug("plus");
+//                    if (LBMain.isDebug()) LBMain.debug("plus");
                     current += offset;
                     if (current > limit) current = limit;
                     generateBag();

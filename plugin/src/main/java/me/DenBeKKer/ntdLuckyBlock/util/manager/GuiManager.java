@@ -1,7 +1,6 @@
 package me.DenBeKKer.ntdLuckyBlock.util.manager;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlock;
 import me.DenBeKKer.ntdLuckyBlock.hook.economy.EconomyBridge;
 import me.DenBeKKer.ntdLuckyBlock.nms.material.IMat.Mat;
@@ -9,6 +8,7 @@ import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import me.DenBeKKer.ntdLuckyBlock.variables.PlayerHead;
 import me.DenBeKKer.ntdLuckyBlock.variables.gui.ConfirmEvent;
 import me.DenBeKKer.ntdLuckyBlock.variables.gui.CountGui;
+import me.DenBeKKer.ntdLuckyBlock.variables.setup.ShopSetup;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -69,8 +69,8 @@ public class GuiManager implements Listener {
             }
 
             final Player player = ((Player) event.getWhoClicked());
-            if (this.instance.config.get().getBoolean("permission-for-each-gui-get") &&
-                    !player.hasPermission("luckyblock.get." + block.getKey().name().toLowerCase())
+            if (this.instance.getConfigHolder().getShopPermissionsForEach &&
+                    !player.hasPermission("luckyblock.get." + block.getKey().toString().toLowerCase())
                     && !player.hasPermission("luckyblock.get.*")) {
                 player.sendMessage(Message.CMD_NO_PERM_TO_COLOR.getAsString().replace("%lb%",
                         block.getCustomName()));
@@ -140,31 +140,32 @@ public class GuiManager implements Listener {
         close();
 
         List<LuckyBlock> types = instance.getEngine().mapCopy().entrySet().stream()
-                .sorted(Comparator.comparingInt(entry -> entry.getKey().asColor().getData()))
+                .sorted(Comparator.comparingInt(entry -> entry.getKey().getColorData().getData()))
                 .map(Map.Entry::getValue).filter(block -> block.getShopSetup().isEnabled())
                 .collect(Collectors.toList());
-        LBMain.debug("[GUIMANAGER] Found " + types.size() + " types");
+//        LBMain.debug("[GUIMANAGER] Found " + types.size() + " types");
 
         int rows = types.size() == 0 ? 3 : (int) Math.ceil(((double) types.size()) / 5);
         get = Bukkit.createInventory(null, (2 + rows) * 9, Message.GUI_GET_TITLE.getAsString(true));
-        ItemStack grayPane = this.instance.materialFactory.getItem(Mat.GRAY_PANE, 1);
+        ItemStack grayPane = this.instance.getEngine().getVersionControl().getMat().getItem(Mat.GRAY_PANE, 1);
 
         for (int row = 0; row < rows + 2; row++) {
             get.setItem(row * 9, grayPane);
 
-            if (row - 1 == rows && !(LuckyBlockAPI.isPremium() && this.instance.disableAuthorInfo)) {
+            // TODO rework
+            if (row - 1 == rows && !(LBMain.isPremium() && this.instance.getConfigHolder().reduceAuthorInfo)) {
                 ItemMeta meta = grayPane.getItemMeta();
                 assert meta != null;
                 meta.setLore(Arrays.asList("\u00a7f ", "\u00a7fRunning \u00a7eLuckyBlock NTD v"
                                 + this.instance.getVersion() + " \u00a77("
                                 + (LBMain.getVersionType().getColoredSimpleName()) + "\u00a77)",
-                        "\u00a7fby\u00a7a danirod12 \u00a77(aka DenBeKKer)"));
+                        "\u00a7fby\u00a7a danirod12"));
                 grayPane.setItemMeta(meta);
             }
             get.setItem(row * 9 + 8, grayPane);
         }
 
-        grayPane = this.instance.materialFactory.getItem(Mat.BLACK_PANE, 1);
+        grayPane = this.instance.getEngine().getVersionControl().getMat().getItem(Mat.BLACK_PANE, 1);
 
         int amount = 0, slot = 11;
         for (LuckyBlock block : types) {
