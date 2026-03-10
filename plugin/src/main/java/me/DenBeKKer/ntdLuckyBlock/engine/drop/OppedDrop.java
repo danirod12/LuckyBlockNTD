@@ -1,9 +1,11 @@
 package me.DenBeKKer.ntdLuckyBlock.engine.drop;
 
 import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDrop;
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 
+@Getter
 public class OppedDrop implements LuckyDrop {
 
     @SerializedName(value = "command")

@@ -1,7 +1,6 @@
 package me.DenBeKKer.ntdLuckyBlock.api.model;
 
-enum SpecialDropType {
-
+public enum SpecialDropType {
     PIG(4),
     LIGHTNING(3),
     WATER_BUCKET(64),

@@ -1,11 +1,13 @@
 package me.DenBeKKer.ntdLuckyBlock.engine.drop.special;
 
 import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDrop;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+@Getter
 public class LightningSpecial implements LuckyDrop {
 
     @SerializedName(value = "amount")

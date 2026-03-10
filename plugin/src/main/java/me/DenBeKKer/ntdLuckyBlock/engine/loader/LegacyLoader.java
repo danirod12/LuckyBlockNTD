@@ -4,6 +4,7 @@ import me.DenBeKKer.ntdLuckyBlock.api.exception.DependencyNotFoundException;
 import me.DenBeKKer.ntdLuckyBlock.api.loader.StringLoader;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDrop;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDropType;
+import me.DenBeKKer.ntdLuckyBlock.api.model.SpecialDropType;
 import me.DenBeKKer.ntdLuckyBlock.customitem.BekkerItemStack;
 import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
 import me.DenBeKKer.ntdLuckyBlock.engine.LuckyBlockEngine;
@@ -33,6 +34,7 @@ public class LegacyLoader implements StringLoader {
         this.worldEditProvider = worldEditProvider;
     }
 
+    // TODO forward down?
     @Override
     public LuckyDrop deserialize(String drop) {
         String[] baseData = drop.split(" : ");
@@ -116,7 +118,7 @@ public class LegacyLoader implements StringLoader {
                         baseData.length > 3 && baseData[3].equalsIgnoreCase("true"));
             }
             case SPECIAL: {
-                Special special = Special.valueOf(baseData[1].toUpperCase());
+                SpecialDropType special = SpecialDropType.valueOf(baseData[1].toUpperCase());
                 switch (special) {
                     case DIAMOND_COLUMN: {
                         List<Material> list = new ArrayList<>();
@@ -161,7 +163,7 @@ public class LegacyLoader implements StringLoader {
         return file;
     }
 
-    public int apply(Special special, String value) {
+    public int apply(SpecialDropType special, String value) {
         int plainValue;
         try {
             plainValue = Integer.parseInt(value);
@@ -171,6 +173,7 @@ public class LegacyLoader implements StringLoader {
         return plainValue < 1 ? special.defaultValue() : plainValue;
     }
 
+    // TODO forward down?
     @Override
     public String serialize(LuckyDrop drop) {
         if (drop instanceof CommandDrop) {
@@ -178,7 +181,7 @@ public class LegacyLoader implements StringLoader {
         } else if (drop instanceof ConsoleDrop) {
             return "CONSOLE : " + ((ConsoleDrop) drop).getCommand();
         } else if (drop instanceof EntityDrop) {
-            return "ENTITY : " + ((EntityDrop) drop).getEntityType() + " : " + ((EntityDrop) drop).getAmount();
+            return "ENTITY : " + ((EntityDrop) drop).getEntity() + " : " + ((EntityDrop) drop).getAmount();
         } else if (drop instanceof ItemDrop) {
             ItemStack stack = ((ItemDrop) drop).getItemCopy();
             StringBuilder item = new StringBuilder("ITEM : " + stack.getType().name() + " : "

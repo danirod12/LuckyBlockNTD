@@ -1,6 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.engine.drop.special;
 
 import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
 import me.DenBeKKer.ntdLuckyBlock.api.event.EntitySpawnEvent;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDrop;
 import org.bukkit.Bukkit;
@@ -12,6 +13,7 @@ import org.bukkit.entity.Pig;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class PigSpecial implements LuckyDrop {
 
     @SerializedName(value = "amount")

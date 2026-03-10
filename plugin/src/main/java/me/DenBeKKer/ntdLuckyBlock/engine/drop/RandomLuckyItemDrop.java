@@ -1,6 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.engine.drop;
 
 import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.api.event.ItemSpawnEvent;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlockKey;
@@ -10,6 +11,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
+@Getter
 public class RandomLuckyItemDrop implements LuckyDrop {
 
     @SerializedName(value = "amount")

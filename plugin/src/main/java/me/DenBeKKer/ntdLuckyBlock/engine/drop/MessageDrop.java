@@ -1,10 +1,12 @@
 package me.DenBeKKer.ntdLuckyBlock.engine.drop;
 
 import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDrop;
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 import org.bukkit.entity.Player;
 
+@Getter
 public class MessageDrop implements LuckyDrop {
 
     @SerializedName(value = "message")

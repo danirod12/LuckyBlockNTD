@@ -1,24 +1,30 @@
 package me.DenBeKKer.ntdLuckyBlock.engine.drop;
 
 import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
+import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.api.loader.CustomSaver;
-import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlockKey;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDrop;
 import me.DenBeKKer.ntdLuckyBlock.hook.Hook;
 import me.DenBeKKer.ntdLuckyBlock.hook.sk89q.WorldEditProvider;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
+import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
 
 import java.io.File;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 
-public class SchematicDrop implements LuckyDrop, CustomSaver {
+// TODO rework
+public class SchematicDrop implements CustomSaver, LuckyDrop {
+
+    private static final Supplier<WorldEditProvider> WE_PROVIDER =
+            () -> ((LBMain) LuckyBlockAPI.getInstance()).getWorldEditProvider(); // TODO rework
 
     @SerializedName(value = "block")
     private final boolean b;
     @SerializedName(value = "air")
     private final boolean i;
+    @Getter
     @SerializedName(value = "file")
     private final File file;
 
@@ -40,7 +46,7 @@ public class SchematicDrop implements LuckyDrop, CustomSaver {
     public static LuckyDrop load(String description) {
 
         if (!Hook.WorldEdit.isEnabled()) {
-            LBMain.getInstance().getLogger().log(Level.WARNING, "WorldEdit was not found, lucky item \""
+            MvLogger.log(Level.WARNING, "WorldEdit was not found, lucky item \""
                     + description + "\" wont be loaded");
             throw new UnsupportedOperationException();
         }
@@ -48,40 +54,33 @@ public class SchematicDrop implements LuckyDrop, CustomSaver {
         boolean b = Boolean.parseBoolean(description.split(" : ")[1]);
 
         String schematic = description.split(" : ")[0];
-        String file$name = schematic.endsWith(".schem") ? schematic : schematic + ".schem";
+        String fileName = schematic.endsWith(".schem") ? schematic : schematic + ".schem";
 
-        File file = new File(LBMain.getSchematicsFolder(), file$name);
+        File file = new File(WE_PROVIDER.get().getFolder(), fileName);
         if (!file.exists()) {
-
-            file$name = schematic.endsWith(".schematic") ? schematic : schematic + ".schematic";
-            file = new File(LBMain.getSchematicsFolder(), file$name);
+            fileName = schematic.endsWith(".schematic") ? schematic : schematic + ".schematic";
+            file = new File(WE_PROVIDER.get().getFolder(), fileName);
 
             if (!file.exists()) {
-                LBMain.getInstance().getLogger().log(Level.WARNING, "Schematic " + file.getPath() + " not found");
+                MvLogger.log(Level.WARNING, "Schematic " + file.getPath() + " not found");
                 return null;
             }
-
         }
-
         return new SchematicDrop(file, b);
-
-    }
-
-    public File getFile() {
-        return file;
-    }
-
-    public boolean atBlock() {
-        return b;
     }
 
     @Override
-    public void execute(LuckyBlockKey related, Block block, Player target) {
-        WorldEditProvider.paste(file, this.b || target == null ? block : target.getLocation().getBlock(), i);
+    public void execute(LuckyDrop.Execution execution) {
+        WE_PROVIDER.get().paste(file, this.b || execution.getPlayer() == null
+                ? execution.getBlock() : execution.getPlayer().getLocation().getBlock(), i);
     }
 
     @Override
     public String getDescription() {
         return file.getName() + " : " + (b ? "true" : "false");
+    }
+
+    public boolean atBlock() {
+        return b;
     }
 }

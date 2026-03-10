@@ -1,10 +1,12 @@
 package me.DenBeKKer.ntdLuckyBlock.engine.drop.special;
 
 import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDrop;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 
+@Getter
 public class TntExplosionSpecial extends ExplosionableItems implements LuckyDrop {
 
     @SerializedName(value = "amount")
