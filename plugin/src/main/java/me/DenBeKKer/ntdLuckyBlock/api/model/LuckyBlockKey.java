@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 @Getter
 public class LuckyBlockKey {
 
-    private static final Pattern KEY_PATTERN = Pattern.compile("^(?!.*__)([a-zA-Z][a-zA-Z_]{1,30}[a-zA-Z])$");
+    private static final Pattern KEY_PATTERN = Pattern.compile("^(?!.*__)([a-zA-Z1-9][a-zA-Z_1-9]{1,30}[a-zA-Z1-9])$");
     private final String key;
     private final LuckyBlockType internal;
     private final ColorData colorData;
@@ -42,8 +42,11 @@ public class LuckyBlockKey {
     }
 
     public String getDefaultCustomName() {
-        return '§' + colorData.asColorCode() + String.valueOf(key.toCharArray()[0]).toUpperCase()
-                + key.substring(1).replace("_", "") + " LuckyBlock";
+        StringBuilder builder = new StringBuilder("§" + colorData.asColorCode());
+        for (String s : key.split("_")) {
+            builder.append(String.valueOf(s.toCharArray()[0]).toUpperCase()).append(s.substring(1));
+        }
+        return builder.append(" LuckyBlock").toString();
     }
 
     public boolean isInternal() {
