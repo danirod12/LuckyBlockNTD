@@ -1,5 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.variables;
 
+import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
+import me.DenBeKKer.ntdLuckyBlock.api.provider.VersionControl;
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -26,14 +28,14 @@ public enum PlayerHead {
         this.url = url;
     }
 
-    public static void loadAll() {
+    public static void loadAll(VersionControl versionControl) {
         for (PlayerHead value : PlayerHead.values()) {
-            value.loadHead();
+            value.loadHead(versionControl);
         }
     }
 
-    public void loadHead() {
-        stack = Misc.getPlayerHead(url, "name", new ArrayList<>(), null);
+    public void loadHead(VersionControl versionControl) {
+        stack = versionControl.getPlayerHead(url, "name", new ArrayList<>(), null);
     }
 
     public String getURL() {
@@ -41,7 +43,9 @@ public enum PlayerHead {
     }
 
     public ItemStack getHead(String name, List<String> lore) {
-        if (stack == null) loadHead();
+        if (stack == null) {
+            loadHead(LuckyBlockAPI.getLuckyEngineProvider().getVersionControl());
+        }
         ItemStack item = stack.clone();
 
         ItemMeta meta = item.getItemMeta();
@@ -56,5 +60,4 @@ public enum PlayerHead {
     public ItemStack getHead() {
         return this.getHead(null, null);
     }
-
 }

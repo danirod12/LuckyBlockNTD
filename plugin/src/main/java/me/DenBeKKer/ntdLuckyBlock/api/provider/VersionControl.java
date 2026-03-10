@@ -1,0 +1,18 @@
+package me.DenBeKKer.ntdLuckyBlock.api.provider;
+
+import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
+import java.util.UUID;
+
+public interface VersionControl {
+    String getNmsVersion();
+
+    boolean isModern();
+
+    boolean isLegacy();
+
+    ItemStack apply(ItemStack origin, String tagName, String identifier);
+
+    ItemStack getPlayerHead(String url, String name, List<String> lore, UUID uuid);
+}

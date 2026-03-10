@@ -62,6 +62,8 @@ public interface LuckyEngineProvider {
 
     File getFolder();
 
+    VersionControl getVersionControl();
+
     LuckyRecipeProvider getRecipeProvider();
 
     GenerationFactoryProvider getGenerationFactory();

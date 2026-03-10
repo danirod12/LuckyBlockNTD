@@ -1,9 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.util;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.nms.material.IMat;
+import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.util.string.PopulationResult;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -20,7 +18,6 @@ import org.bukkit.util.Vector;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -32,7 +29,6 @@ import java.util.regex.Pattern;
 
 public class Misc {
 
-    private final static String PROFILE_NAME;
     private final static Pattern LOCATION_PATTERN = Pattern.compile(
             "%(?:|(?<target>player|block)_)" +
                     "(?<format>location|x|y|z)" +
@@ -44,16 +40,6 @@ public class Misc {
     private static final Function<SkullMeta, UUID> UUID_RETRIEVER;
 
     static {
-        String profileName;
-        try {
-            // Causes NullPointerException since 1.20.2
-            new GameProfile(UUID.randomUUID(), null);
-            profileName = null;
-        } catch (NullPointerException exception) {
-            profileName = "";
-        }
-        PROFILE_NAME = profileName;
-
         ItemStack skullExample;
         try {
             // 1.13+
@@ -292,7 +278,7 @@ public class Misc {
             if (populationResult.isTouchesOriginBlock()) {
                 final String finalResult = result;
                 final CommandSender finalCommandSender = commandSender;
-                Bukkit.getScheduler().runTask(LBMain.getInstance(), () ->
+                Bukkit.getScheduler().runTask(LuckyBlockAPI.getInstance(), () ->
                         dispatch(finalCommandSender, finalResult, as == PerformCommandAs.OPPED_PLAYER));
             } else {
                 dispatch(commandSender, result, as == PerformCommandAs.OPPED_PLAYER);
@@ -388,57 +374,6 @@ public class Misc {
             return null;
         }
         return UUID_RETRIEVER.apply((SkullMeta) meta);
-    }
-
-    public static ItemStack getPlayerHead(String url, String name, List<String> lore, UUID uuid) {
-
-        if (url == null || url.isEmpty())
-            throw new UnsupportedOperationException("URL cannot be null");
-        if (!url.contains("textures.minecraft.net/texture")) {
-            url = "http://textures.minecraft.net/texture/" + url;
-        }
-
-        ItemStack head = LBMain.getInstance().factory.getItem(IMat.Mat.PLAYER_SKULL, 1);
-        SkullMeta headMeta = (SkullMeta) head.getItemMeta();
-        assert headMeta != null;
-
-        GameProfile profile = new GameProfile(uuid == null ? UUID.randomUUID() : uuid, PROFILE_NAME);
-        profile.getProperties().put("textures", new Property("textures",
-                new String(Base64.getEncoder().encode(("{textures:{SKIN:{url:\"" + url + "\"}}}").getBytes()))));
-
-        try {
-            // New method that modifies profile and serializedProfile
-            Method method = headMeta.getClass().getDeclaredMethod("setProfile", GameProfile.class);
-            method.setAccessible(true);
-            method.invoke(headMeta, profile);
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex1) {
-            try {
-                // MC 1.21.1 +
-                Class<?> clazz = Class.forName("net.minecraft.world.item.component.ResolvableProfile");
-                Method method = headMeta.getClass().getDeclaredMethod("setProfile", clazz);
-                Object resolvable = clazz.getConstructor(GameProfile.class).newInstance(profile);
-                method.setAccessible(true);
-                method.invoke(headMeta, resolvable);
-            } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException |
-                     InvocationTargetException | IllegalAccessException ex2) {
-                try {
-                    // Old method that modifies profile
-                    Field profileField = headMeta.getClass().getDeclaredField("profile");
-                    profileField.setAccessible(true);
-                    profileField.set(headMeta, profile);
-                } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException ex3) {
-                    ex1.printStackTrace();
-                    ex2.printStackTrace();
-                    ex3.printStackTrace();
-                }
-            }
-        }
-
-        headMeta.setDisplayName(name);
-        headMeta.setLore(lore);
-
-        head.setItemMeta(headMeta);
-        return head;
     }
 
     public static void giveItemsOrDrop(Player target, ItemStack... itemStacks) {

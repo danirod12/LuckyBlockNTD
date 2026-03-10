@@ -179,7 +179,7 @@ public class LBMain extends LBMainProvider {
         }
 
         // Init caches for textures player heads
-        PlayerHead.loadAll();
+        PlayerHead.loadAll(this.versionControl);
         // Check all hooks if related plugins exists
         Hook.loadAll();
 
