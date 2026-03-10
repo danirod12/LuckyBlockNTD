@@ -5,6 +5,8 @@ import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.model.PluginVersion;
 import me.DenBeKKer.ntdLuckyBlock.api.provider.JPAdapter;
+import me.DenBeKKer.ntdLuckyBlock.api.provider.LBMainProvider;
+import me.DenBeKKer.ntdLuckyBlock.api.util.ISpigotUpdater;
 import me.DenBeKKer.ntdLuckyBlock.api.util.Single;
 import me.DenBeKKer.ntdLuckyBlock.command.CommandsManager;
 import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
@@ -35,7 +37,7 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import java.io.File;
 
-public class LBMain extends JPAdapter {
+public class LBMain extends LBMainProvider {
 
     // General variables
     public SpigotUpdater updater;
@@ -158,6 +160,7 @@ public class LBMain extends JPAdapter {
         luckyBlockEngine = new LuckyBlockEngine(this, logChannel, folder,
                 configHolder, versionControl, worldEditProvider);
         entityLoadListener = new EntityLoadListener(this, luckyBlockEngine);
+        LuckyBlockAPI.__injectAPI(this, luckyBlockEngine);
 
         // Loading config
         reloadConfig();
@@ -259,7 +262,6 @@ public class LBMain extends JPAdapter {
 
         // Inject API to static provider
         logChannel.info("Injecting API...");
-        LuckyBlockAPI.__injectAPI(this, luckyBlockEngine);
 
         // Timings finish, print time taken to start all managers
         ms = (System.currentTimeMillis() - ms);
@@ -363,9 +365,15 @@ public class LBMain extends JPAdapter {
         logChannel.info("System loaded (took " + (System.currentTimeMillis() - ms) + " ms)...");
     }
 
+    private void checkForUpdates(boolean inform) {
+        this.getSpigotUpdater().checkForUpdates(
+                logChannel.isDebug() || !this.configHolder.webUnavailableDisable,
+                inform || this.configHolder.informAboutUpdates
+        );
+    }
+
     @Override
-    public void checkForUpdates(boolean inform) {
-        getUpdater().checkForUpdates(logChannel.isDebug() || !this.configHolder.webUnavailableDisable,
-                inform || this.configHolder.informAboutUpdates);
+    public ISpigotUpdater getSpigotUpdater() {
+        return this.updater;
     }
 }

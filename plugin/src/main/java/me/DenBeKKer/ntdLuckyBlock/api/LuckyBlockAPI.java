@@ -4,7 +4,7 @@ import me.DenBeKKer.ntdLuckyBlock.api.exception.ApiNotInitializedException;
 import me.DenBeKKer.ntdLuckyBlock.api.exception.StaticMethodsOnlyException;
 import me.DenBeKKer.ntdLuckyBlock.api.model.PluginVersion;
 import me.DenBeKKer.ntdLuckyBlock.api.provider.GenerationFactoryProvider;
-import me.DenBeKKer.ntdLuckyBlock.api.provider.JPAdapter;
+import me.DenBeKKer.ntdLuckyBlock.api.provider.LBMainProvider;
 import me.DenBeKKer.ntdLuckyBlock.api.provider.LuckyEngineProvider;
 import me.DenBeKKer.ntdLuckyBlock.api.provider.LuckyRecipeProvider;
 import me.DenBeKKer.ntdLuckyBlock.customitem.Identifier;
@@ -18,8 +18,15 @@ public class LuckyBlockAPI {
         throw new StaticMethodsOnlyException();
     }
 
-    private static JPAdapter jpAdapter;
+    private static LBMainProvider provider;
     private static LuckyEngineProvider luckyEngineProvider;
+
+    public static LBMainProvider getInstance() {
+        if (provider == null) {
+            throw new ApiNotInitializedException();
+        }
+        return provider;
+    }
 
     public static LuckyEngineProvider getLuckyEngineProvider() {
         if (luckyEngineProvider == null) {
@@ -68,25 +75,21 @@ public class LuckyBlockAPI {
         return new Identifier(plugin, tagName, value).compare(stack);
     }
 
-    public static void __injectAPI(JPAdapter adapter, LuckyEngineProvider provider) {
-        jpAdapter = adapter;
-        luckyEngineProvider = provider;
-    }
-
-    public static void checkForUpdates(boolean notify) {
-        jpAdapter.checkForUpdates(notify);
+    public static void __injectAPI(LBMainProvider provider, LuckyEngineProvider engine) {
+        LuckyBlockAPI.provider = provider;
+        luckyEngineProvider = engine;
     }
 
     public static void reloadConfig() {
-        jpAdapter.reloadConfig();
+        provider.reloadConfig();
     }
 
     public static void reloadSystem() {
-        jpAdapter.reloadSystem();
+        provider.reloadSystem();
     }
 
     public static String getVersion() {
-        return jpAdapter.getVersion();
+        return provider.getVersion();
     }
 
     public static String getLastUpdate() {

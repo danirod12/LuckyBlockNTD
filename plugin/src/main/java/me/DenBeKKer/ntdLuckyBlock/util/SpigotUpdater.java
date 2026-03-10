@@ -1,5 +1,6 @@
 package me.DenBeKKer.ntdLuckyBlock.util;
 
+import me.DenBeKKer.ntdLuckyBlock.api.util.ISpigotUpdater;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -15,7 +16,7 @@ import java.util.logging.Level;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public class SpigotUpdater {
+public class SpigotUpdater implements ISpigotUpdater {
 
     private final int id;
     private final URL url;
@@ -44,47 +45,17 @@ public class SpigotUpdater {
         this.url = url;
     }
 
-    // Static methods
-    public static boolean isNewer(String version, String origin) {
-        return compareVersions(version, origin) > 0;
-    }
-
-    public static int compareVersions(String version, String origin) {
-        final int[] a = prepare(version), b = prepare(origin);
-
-        int A = 0, B = 0;
-        for (int i = 0; i < a.length || i < b.length; i++) {
-            int length = String.valueOf(Math.max(i < a.length ? a[i] : 1, i < b.length ? b[i] : 1)).length();
-            for (int j = 1; j < length; j++) {
-                A *= 10;
-                B *= 10;
-            }
-
-            if (i < a.length)
-                A += a[i];
-            if (i < b.length)
-                B += b[i];
-            A *= 10;
-            B *= 10;
-        }
-        return A - B;
-    }
-
-    public static int[] prepare(String version) {
-        if (version.contains("-")) version = version.split("-")[0];
-        version = version.replace("_", ".");
-        if (!pattern.matcher(version).matches()) return new int[0];
-        return Stream.of(version.split("\\.")).mapToInt(Integer::valueOf).toArray();
-    }
-
+    @Override
     public int getProjectID() {
         return id;
     }
 
+    @Override
     public Plugin getPlugin() {
         return plugin;
     }
 
+    @Override
     public boolean checkForUpdates() throws Exception {
         URLConnection con = url.openConnection();
         this.version = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
@@ -92,18 +63,22 @@ public class SpigotUpdater {
         return needUpdate;
     }
 
+    @Override
     public String getLatestVersion() {
         return version;
     }
 
+    @Override
     public String getResourceURL() {
         return "https://www.spigotmc.org/resources/" + id;
     }
 
+    @Override
     public boolean isNeedUpdate() {
         return needUpdate;
     }
 
+    @Override
     public void sendUpdateMessage(CommandSender target) {
         if (!needUpdate) {
             return;
@@ -129,6 +104,7 @@ public class SpigotUpdater {
         sender.sendMessage("§6╚");
     }
 
+    @Override
     public void checkForUpdates(boolean notifyWebIssue, boolean inform) {
         try {
             if (checkForUpdates() && inform) {
@@ -141,5 +117,38 @@ public class SpigotUpdater {
                 exception.printStackTrace();
             }
         }
+    }
+
+    // Static methods
+    private boolean isNewer(String version, String origin) {
+        return compareVersions(version, origin) > 0;
+    }
+
+    private int compareVersions(String version, String origin) {
+        final int[] a = prepare(version), b = prepare(origin);
+
+        int A = 0, B = 0;
+        for (int i = 0; i < a.length || i < b.length; i++) {
+            int length = String.valueOf(Math.max(i < a.length ? a[i] : 1, i < b.length ? b[i] : 1)).length();
+            for (int j = 1; j < length; j++) {
+                A *= 10;
+                B *= 10;
+            }
+
+            if (i < a.length)
+                A += a[i];
+            if (i < b.length)
+                B += b[i];
+            A *= 10;
+            B *= 10;
+        }
+        return A - B;
+    }
+
+    private int[] prepare(String version) {
+        if (version.contains("-")) version = version.split("-")[0];
+        version = version.replace("_", ".");
+        if (!SpigotUpdater.pattern.matcher(version).matches()) return new int[0];
+        return Stream.of(version.split("\\.")).mapToInt(Integer::valueOf).toArray();
     }
 }
