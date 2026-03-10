@@ -1,5 +1,6 @@
 package me.DenBeKKer.ntdLuckyBlock.engine;
 
+import lombok.Getter;
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.api.DropChance;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
@@ -25,6 +26,7 @@ import me.DenBeKKer.ntdLuckyBlock.engine.model.LuckyBlockHolder;
 import me.DenBeKKer.ntdLuckyBlock.engine.model.LuckyEntryHolder;
 import me.DenBeKKer.ntdLuckyBlock.hook.sk89q.WorldEditProvider;
 import me.DenBeKKer.ntdLuckyBlock.nms.VersionControlFactory;
+import me.DenBeKKer.ntdLuckyBlock.nms.material.IMat;
 import me.DenBeKKer.ntdLuckyBlock.recipe.LuckyRecipe;
 import me.DenBeKKer.ntdLuckyBlock.recipe.LuckyRecipeProviderImpl;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
@@ -44,6 +46,7 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
@@ -57,11 +60,15 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
 
     private static final double ASSOCIATION_OFFSET = 1.2;
 
+    @Getter
     private final Plugin plugin;
+    @Getter
     private final LogChannel logChannel;
     private final File folder;
+    @Getter
     private final ConfigHolder configHolder;
     private final VersionControlFactory versionControl;
+    @Getter
     private final ConvertFactory convertFactory;
 
     private final StringLoader stringLoader;
@@ -70,7 +77,7 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
     private final GenerationFactoryProvider generationFactory;
 
     private final Map<LuckyBlockKey, LuckyBlock> map = new HashMap<>();
-    private final List<Material> materialsRegistry = new ArrayList<>();
+    private final Set<Material> materialsRegistry = new HashSet<>();
 
     public LuckyBlockEngine(Plugin plugin, LogChannel logChannel, File folder, ConfigHolder configHolder,
                             VersionControlFactory versionControl, WorldEditProvider worldEditProvider) {
@@ -86,16 +93,9 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
         this.convertFactory = new ConvertFactory();
     }
 
-    public LogChannel getLogChannel() {
-        return this.logChannel;
-    }
-
+    @Override
     public VersionControlFactory getVersionControl() {
-        return this.versionControl;
-    }
-
-    public ConvertFactory getConvertFactory() {
-        return convertFactory;
+        return versionControl;
     }
 
     @Override
@@ -106,10 +106,6 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
     @Override
     public GenerationFactoryProvider getGenerationFactory() {
         return generationFactory;
-    }
-
-    public ConfigHolder getConfigHolder() {
-        return configHolder;
     }
 
     @Override
@@ -150,7 +146,7 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
             config.save();
         }
         config.copy(true);
-        map.put(key, loadFromConfig(newLuckyBlockHolder(key), config));
+        register(loadFromConfig(newLuckyBlockHolder(key), config));
     }
 
     @Override
@@ -165,12 +161,12 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
 
         // Load main item from config and then apply it to holder
         String texture = this.getConfigField(config, "texture", String.class, () -> BaseDataGenerator.getTexture(type));
-        String name = this.getConfigField(config, "name", String.class, type::getKey);
+        String name = Misc.setColors(this.getConfigField(config, "name", String.class, type::getKey));
         List<String> lore = new ArrayList<>();
         if (config.isSet("lore")) {
             lore.addAll(config.getStringList("lore").stream().map(Misc::setColors).collect(Collectors.toList()));
         }
-        luckyBlock.setItem(this.versionControl.createPlayerHead(texture, name, lore, this.genUUID(type)));
+        luckyBlock.setItem(this.versionControl.getPlayerHead(texture, name, lore, this.genUUID(type)));
 
         // Load shop settings from config and then apply it to holder
         boolean shopEnabled = this.getConfigField(config, "shop", Boolean.class, () -> true);
@@ -335,9 +331,8 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
         if (luckyBlock instanceof LuckyBlockHolder) {
             ((LuckyBlockHolder) luckyBlock).verifyDataOrThrowException();
             this.map.put(luckyBlock.getKey(), luckyBlock);
-            if (!isLuckyBlock(luckyBlock.getKey().getMaterial())) {
-                this.materialsRegistry.add(luckyBlock.getKey().getMaterial());
-            }
+            this.materialsRegistry.add(luckyBlock.getKey().getMaterial());
+            return;
         }
         throw new RuntimeException("Internal class mismatch. Use LuckyBlockEngine builder");
     }
@@ -537,6 +532,68 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
     @Override
     public List<Pair<LuckyBlockKey, ArmorStand>> searchByEntities(Collection<Entity> entities) {
         return entities.stream().map(this::searchByEntity).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    @Override
+    public void placeBlockForce(LuckyBlockKey key, Block block, ItemStack icon) {
+        block.setType(Material.AIR);
+
+        ArmorStand stand = (ArmorStand) block.getWorld().spawnEntity(
+                getAssociatedLocation(block), EntityType.ARMOR_STAND);
+        stand.setArms(false);
+        stand.setCanPickupItems(false);
+        stand.setCustomNameVisible(false);
+        stand.setGravity(false);
+        stand.setVisible(false);
+        stand.setMarker(true);
+        stand.setCustomName(getLocatedName(key, stand.getLocation()));
+
+        EntityEquipment entityEquipment = stand.getEquipment();
+        assert entityEquipment != null;
+        entityEquipment.setHelmet(icon);
+
+        // Light source feature
+        // The trick is based on fire effect that is not rendering on client if stand is marker
+        if (isLightSource()) {
+            if (getVersionControl().isLegacy()) {
+                // 1.8 - 1.12 ArmorStand (Or even Entity) meta apply is delayed
+                // If we do not give 2 ticks delay, client will play fire animation
+                Bukkit.getScheduler().runTaskLater(getLogChannel().getPlugin(),
+                        () -> stand.setFireTicks(Integer.MAX_VALUE), 2L);
+            } else {
+                stand.setFireTicks(Integer.MAX_VALUE);
+            }
+        }
+
+        // Update block. If we are on legacy MC version, apply block data
+        block.setType(key.getMaterial());
+        if (getVersionControl().isLegacy() && key.isApplyColorDataToBlock()) {
+            IMat.setData(block, key.getColorData().getData());
+        }
+    }
+
+    @Override
+    public void placeBlock(LuckyBlockKey key, Block block) {
+        LuckyBlockKey loaded = get(key.getKey());
+        if (loaded instanceof LuckyBlockKey.NotLoadedLuckyBlockKey) {
+            return;
+        }
+        placeBlockForce(loaded, block, get(key).map(LuckyBlock::getIcon).orElseThrow(RuntimeException::new));
+    }
+
+    @Override
+    public void clearBlock(Block block, boolean setAir) {
+        block.getWorld()
+                .getNearbyEntities(
+                        getAssociatedLocation(block),
+                        0.1, 0.1, 0.1
+                )
+                .stream()
+                .filter(entity -> searchByEntity(entity) != null)
+                .forEach(Entity::remove);
+        if (setAir) {
+            block.setType(Material.AIR);
+        }
     }
 
     @Override

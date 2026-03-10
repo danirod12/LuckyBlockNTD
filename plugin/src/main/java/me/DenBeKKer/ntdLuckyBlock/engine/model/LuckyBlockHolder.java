@@ -11,17 +11,12 @@ import me.DenBeKKer.ntdLuckyBlock.api.setup.ItemsBag;
 import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
 import me.DenBeKKer.ntdLuckyBlock.customitem.Identifier;
 import me.DenBeKKer.ntdLuckyBlock.engine.LuckyBlockEngine;
-import me.DenBeKKer.ntdLuckyBlock.nms.material.IMat;
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 import me.DenBeKKer.ntdLuckyBlock.variables.setup.AnimationSetup;
 import me.DenBeKKer.ntdLuckyBlock.variables.setup.ShopSetup;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
@@ -76,10 +71,10 @@ public class LuckyBlockHolder implements LuckyBlock {
     @Override
     public void setIcon(ItemStack itemStack) {
         Objects.requireNonNull(itemStack);
-        if (!LuckyBlockAPI.getVersionType().isPremium()) {
-            this.engine.getLogChannel().warning("Your plugin version does not support icon assignment");
-            return;
-        }
+//        if (!LuckyBlockAPI.getVersionType().isPremium()) { TODO?
+//            this.engine.getLogChannel().warning("Your plugin version does not support icon assignment");
+//            return;
+//        }
         this.icon = itemStack;
     }
 
@@ -140,7 +135,7 @@ public class LuckyBlockHolder implements LuckyBlock {
 
     @Override
     public ItemStack getIcon() {
-        return this.icon == null ? null : this.icon.clone();
+        return (this.icon == null ? this.item : this.icon).clone();
     }
 
     @Override
@@ -172,44 +167,7 @@ public class LuckyBlockHolder implements LuckyBlock {
 
     @Override
     public void placeBlock(Block block) {
-        block.setType(Material.AIR);
-
-        ArmorStand stand = (ArmorStand) block.getWorld().spawnEntity(
-                engine.getAssociatedLocation(block), EntityType.ARMOR_STAND);
-        stand.setArms(false);
-        stand.setCanPickupItems(false);
-        stand.setCustomNameVisible(false);
-        stand.setGravity(false);
-        stand.setVisible(false);
-        stand.setMarker(true);
-        stand.setCustomName(this.engine.getLocatedName(type, stand.getLocation()));
-
-        EntityEquipment entityEquipment = stand.getEquipment();
-        assert entityEquipment != null;
-        if (this.icon != null) {
-            throw new UnsupportedOperationException("Not implemented");
-        } else {
-            entityEquipment.setHelmet(this.item);
-        }
-
-        // Light source feature
-        // The trick is based on fire effect that is not rendering on client if stand is marker
-        if (this.engine.isLightSource()) {
-            if (this.engine.getVersionControl().isLegacy()) {
-                // 1.8 - 1.12 ArmorStand (Or even Entity) meta apply is delayed
-                // If we do not give 2 ticks delay, client will play fire animation
-                Bukkit.getScheduler().runTaskLater(this.engine.getLogChannel().getPlugin(),
-                        () -> stand.setFireTicks(Integer.MAX_VALUE), 2L);
-            } else {
-                stand.setFireTicks(Integer.MAX_VALUE);
-            }
-        }
-
-        // Update block. If we are on legacy MC version, apply block data
-        block.setType(type.getMaterial());
-        if (this.engine.getVersionControl().isLegacy() && type.isApplyColorDataToBlock()) {
-            IMat.setData(block, type.getColorData().getData());
-        }
+        this.engine.placeBlockForce(this.type, block, this.getIcon());
     }
 
     @Override
@@ -241,7 +199,7 @@ public class LuckyBlockHolder implements LuckyBlock {
             engine.getLogChannel().debug("LuckyBlock has no items");
             return true;
         }
-        for (LuckyDrop luckyDrop : this.itemsBag.getEntry()) {
+        for (LuckyDrop luckyDrop : new ArrayList<>(this.itemsBag.getEntry())) {
             if (engine.getLogChannel().isDebug()) {
                 try {
                     engine.getLogChannel().debug(this.gson.toJson(luckyDrop));

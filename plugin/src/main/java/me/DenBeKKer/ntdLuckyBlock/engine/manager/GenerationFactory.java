@@ -4,6 +4,7 @@ import me.DenBeKKer.ntdLuckyBlock.api.DropChance;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlockKey;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDrop;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyEntry;
+import me.DenBeKKer.ntdLuckyBlock.api.model.SpecialDropType;
 import me.DenBeKKer.ntdLuckyBlock.api.provider.GenerationFactoryProvider;
 import me.DenBeKKer.ntdLuckyBlock.engine.LuckyBlockEngine;
 import me.DenBeKKer.ntdLuckyBlock.engine.drop.EntityDrop;
@@ -11,6 +12,7 @@ import me.DenBeKKer.ntdLuckyBlock.engine.drop.ItemDrop;
 import me.DenBeKKer.ntdLuckyBlock.engine.drop.LuckyItemDrop;
 import me.DenBeKKer.ntdLuckyBlock.engine.drop.RandomLuckyItemDrop;
 import me.DenBeKKer.ntdLuckyBlock.engine.drop.special.*;
+import me.DenBeKKer.ntdLuckyBlock.engine.model.LuckyEntryHolder;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
 import me.DenBeKKer.ntdLuckyBlock.util.Templates;
 import org.bukkit.Material;
@@ -36,7 +38,7 @@ public class GenerationFactory implements GenerationFactoryProvider {
                 + " LuckyBlock§f configuration §6(LBF version: 3)");
         FileConfiguration file = config.get();
         file.set("texture", BaseDataGenerator.getTexture(type));
-        file.set("name", "&" + type.getDefaultCustomName());
+        file.set("name", type.getDefaultCustomName());
         file.set("lore", Collections.singletonList("&7Place me :D"));
         file.set("shop", true);
         file.set("price", 250);
@@ -76,7 +78,7 @@ public class GenerationFactory implements GenerationFactoryProvider {
 
     @Override
     public LuckyEntry generateLuckyEntry() {
-        LuckyEntry entry = new LuckyEntry(DropChance.random());
+        LuckyEntry entry = new LuckyEntryHolder(DropChance.random());
         for (int i = 0; i < ThreadLocalRandom.current().nextInt(1, 5); i++) {
             LuckyDrop drop = generateLuckyDrop();
             if (drop == null) continue;
@@ -117,19 +119,19 @@ public class GenerationFactory implements GenerationFactoryProvider {
     public LuckyDrop generateSpecial() {
         switch (ThreadLocalRandom.current().nextInt(6)) {
             case 0:
-                return new WaterBucketSpecial(LuckyDrop.Special.WATER_BUCKET.defaultValue());
+                return new WaterBucketSpecial(SpecialDropType.WATER_BUCKET.defaultValue());
             case 1:
-                return new TntExplosionSpecial(LuckyDrop.Special.TNT_EXPLOSION.defaultValue());
+                return new TntExplosionSpecial(SpecialDropType.TNT_EXPLOSION.defaultValue());
             case 2:
-                return new TntColumnSpecial(LuckyDrop.Special.TNT_COLUMN.defaultValue());
+                return new TntColumnSpecial(SpecialDropType.TNT_COLUMN.defaultValue());
             case 3:
                 return new PigSpecial(ThreadLocalRandom.current().nextBoolean() ?
-                        LuckyDrop.Special.PIG.defaultValue() : (LuckyDrop.Special.PIG.defaultValue()
+                        SpecialDropType.PIG.defaultValue() : (SpecialDropType.PIG.defaultValue()
                         + ThreadLocalRandom.current().nextInt(20)));
             case 4:
-                return new LightningSpecial(LuckyDrop.Special.LIGHTNING.defaultValue());
+                return new LightningSpecial(SpecialDropType.LIGHTNING.defaultValue());
             case 5:
-                return new ExperienceExplosionSpecial(LuckyDrop.Special.EXPERIENCE_EXPLOSION.defaultValue());
+                return new ExperienceExplosionSpecial(SpecialDropType.EXPERIENCE_EXPLOSION.defaultValue());
         }
         return null;
     }
@@ -148,7 +150,7 @@ public class GenerationFactory implements GenerationFactoryProvider {
                 .unordered().collect(Collectors.toList());
         Material material = materials.get(ThreadLocalRandom.current().nextInt(materials.size()));
 
-        if (LBMain.getInstance().getItemTagAdapter().asNMSCopy(new ItemStack(material)) == null) {
+        if (engine.getVersionControl().asNMSCopy(new ItemStack(material)) == null) {
             return generateItem();
         }
 
@@ -177,5 +179,4 @@ public class GenerationFactory implements GenerationFactoryProvider {
         return new ItemDrop(new ItemStack(material,
                 ThreadLocalRandom.current().nextInt(material.getMaxStackSize()) + 1));
     }
-
 }

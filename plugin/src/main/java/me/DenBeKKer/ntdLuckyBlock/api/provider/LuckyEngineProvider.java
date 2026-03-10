@@ -90,6 +90,12 @@ public interface LuckyEngineProvider {
 
     UUID genUUID(LuckyBlockKey type);
 
+    void placeBlockForce(LuckyBlockKey key, Block block, ItemStack icon);
+
+    void placeBlock(LuckyBlockKey key, Block block);
+
+    void clearBlock(Block block, boolean setAir);
+
     List<Material> getMaterialsRegistry();
 
     boolean isLuckyBlock(Material material);
