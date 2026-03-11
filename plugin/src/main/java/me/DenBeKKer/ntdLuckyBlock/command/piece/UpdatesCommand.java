@@ -1,28 +1,25 @@
 package me.DenBeKKer.ntdLuckyBlock.command.piece;
 
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
+import me.DenBeKKer.ntdLuckyBlock.api.util.ISpigotUpdater;
 import me.DenBeKKer.ntdLuckyBlock.command.base.CommandResponse;
 import me.DenBeKKer.ntdLuckyBlock.command.base.LBCommand;
-import me.DenBeKKer.ntdLuckyBlock.util.SpigotUpdater;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.Plugin;
 
 public class UpdatesCommand extends LBCommand {
 
-    private final Plugin plugin;
-    private final SpigotUpdater updater;
+    private final ISpigotUpdater updater;
 
-    public UpdatesCommand(Plugin plugin, SpigotUpdater updater) {
+    public UpdatesCommand(ISpigotUpdater updater) {
         super(true, Message.CMD_CHECKFORUPDATES, "checkforupdates", "updates", "update");
-        this.plugin = plugin;
         this.updater = updater;
     }
 
     @Override
     public CommandResponse execute(CommandSender sender, String label, String[] args) {
         sender.sendMessage("§aChecking for an updates...");
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+        this.updater.getPlugin().getServer().getScheduler().runTaskAsynchronously(this.updater.getPlugin(), () -> {
             updater.checkForUpdates(true, true);
             if (!updater.isNeedUpdate()) {
                 sender.sendMessage("§aNo updates were found :(");

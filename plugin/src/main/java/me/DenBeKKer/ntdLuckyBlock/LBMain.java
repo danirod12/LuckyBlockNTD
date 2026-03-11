@@ -1,11 +1,14 @@
 package me.DenBeKKer.ntdLuckyBlock;
 
+import lombok.Getter;
 import me.DenBeKKer.ntdLuckyBlock.api.DropChance;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
+import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlock;
+import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlockKey;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlockType;
 import me.DenBeKKer.ntdLuckyBlock.api.model.PluginVersion;
-import me.DenBeKKer.ntdLuckyBlock.api.provider.JPAdapter;
 import me.DenBeKKer.ntdLuckyBlock.api.provider.LBMainProvider;
+import me.DenBeKKer.ntdLuckyBlock.api.util.ColorData;
 import me.DenBeKKer.ntdLuckyBlock.api.util.ISpigotUpdater;
 import me.DenBeKKer.ntdLuckyBlock.api.util.Single;
 import me.DenBeKKer.ntdLuckyBlock.command.CommandsManager;
@@ -32,8 +35,11 @@ import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager;
 import me.DenBeKKer.ntdLuckyBlock.variables.PlayerHead;
 import me.DenBeKKer.ntdLuckyBlock.variables.world.WorldListDataHandler;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.File;
 
@@ -41,20 +47,25 @@ public class LBMain extends LBMainProvider {
 
     // General variables
     public SpigotUpdater updater;
+    @Getter
     private WorldEditProvider worldEditProvider;
     private WorldGuardProvider worldGuardProvider;
     public Single<StringMatcher<WorldListDataHandler>> worldsFilter = new Single<>();
 
     // Managers
+    @Getter
     private VersionControlFactory versionControl;
     private LuckyBlockEngine luckyBlockEngine;
     private EconomyBridge economy;
+    @Getter
     private GuiManager guiManager;
+    @Getter
     private CommandsManager commandsManager;
     private EntityLoadListener entityLoadListener;
 
-    // Config fields
+    @Getter
     private final ConfigHolder configHolder = new ConfigHolder();
+    @Getter
     private final LogChannel logChannel = new LogChannel(this);
 
     public static boolean isPremium() {
@@ -73,28 +84,8 @@ public class LBMain extends LBMainProvider {
         return Templates.BUILD;
     }
 
-    public SpigotUpdater getUpdater() {
-        return updater;
-    }
-
     public EconomyBridge getEconomyBridge() {
         return economy;
-    }
-
-    public CommandsManager getCommandsManager() {
-        return commandsManager;
-    }
-
-    public VersionControlFactory getVersionControl() {
-        return versionControl;
-    }
-
-    public GuiManager getGuiManager() {
-        return guiManager;
-    }
-
-    public EntityLoadListener getEntityLoadListener() {
-        return entityLoadListener;
     }
 
     public LuckyBlockEngine getEngine() {
@@ -241,7 +232,7 @@ public class LBMain extends LBMainProvider {
             Bukkit.getPluginManager().registerEvents(new SlimeFunListener(luckyBlockEngine), this);
         }
         Bukkit.getPluginManager().registerEvents(new CoreListener(luckyBlockEngine, updater,
-                worldGuardProvider, worldsFilter), this);
+                worldGuardProvider, worldsFilter, configHolder), this);
         Bukkit.getPluginManager().registerEvents(entityLoadListener, this);
         Bukkit.getPluginManager().registerEvents(new CustomItemListener(), this);
         Bukkit.getPluginManager().registerEvents(new CraftListener(luckyBlockEngine), this);
@@ -254,11 +245,11 @@ public class LBMain extends LBMainProvider {
         }
 
         logChannel.info("Loading commands...");
-        commandsManager = new CommandsManager(luckyBlockEngine);
+        commandsManager = new CommandsManager(luckyBlockEngine, this);
         PluginCommand command = Bukkit.getPluginCommand("ntdluckyblock");
         if (command == null) throw new UnsupportedOperationException("Command not found");
         command.setExecutor(commandsManager);
-        command.setTabCompleter(commandsManager);
+//        command.setTabCompleter(commandsManager); TODO
 
         // Inject API to static provider
         logChannel.info("Injecting API...");

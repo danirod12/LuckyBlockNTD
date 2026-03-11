@@ -9,6 +9,7 @@ import me.DenBeKKer.ntdLuckyBlock.engine.LuckyBlockEngine;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import org.bukkit.command.CommandSender;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -24,7 +25,7 @@ public class ListCommand extends LBCommand {
 
     @Override
     public CommandResponse execute(CommandSender sender, String label, String[] args) {
-        List<LuckyBlockKey> list = Arrays.asList(this.engine.getLoadedTypes());
+        List<LuckyBlockKey> list = new ArrayList<>(Arrays.asList(this.engine.getLoadedTypes()));
         for (LuckyBlockType internalValue : LuckyBlockType.values()) {
             if (list.stream().noneMatch(key -> key.getInternal() == internalValue)) {
                 list.add(new LuckyBlockKey.NotLoadedLuckyBlockKey(internalValue.name()));

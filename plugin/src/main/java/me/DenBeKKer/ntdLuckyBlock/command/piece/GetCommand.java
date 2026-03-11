@@ -44,7 +44,7 @@ public class GetCommand extends LBPlayerCommand {
                 return CommandResponse.SUCCESS;
             }
 
-            int amount = Misc.parseInteger(args[1], 1);
+            int amount = args.length < 2 ? 1 : Misc.parseInteger(args[1], 1);
             block.giveItem(player, amount);
             player.sendMessage(Message.CMD_LB_RECEIVED.getAsString().replace("%lb%", block.getCustomName())
                     .replace("%amount%", String.valueOf(amount)));

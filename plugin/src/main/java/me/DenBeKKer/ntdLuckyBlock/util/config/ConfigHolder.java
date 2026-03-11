@@ -1,5 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.util.config;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.DenBeKKer.ntdLuckyBlock.api.util.Single;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
 
@@ -10,15 +12,9 @@ import java.util.List;
 
 public class ConfigHolder {
 
+    @Setter
+    @Getter
     private Config config;
-
-    public Config getConfig() {
-        return config;
-    }
-
-    public void setConfig(Config config) {
-        this.config = config;
-    }
 
     @ConfigField(path = "inform-about-update")
     public boolean informAboutUpdates;
@@ -58,6 +54,9 @@ public class ConfigHolder {
 
     @ConfigField(path = "worldedit-mask")
     public List<String> worldEditMask;
+
+    @ConfigField(path = "event-priority.block-break-event")
+    public boolean breakEventHighestPriority;
 
     public void dirtyPickUp() {
         if (this.config == null) {

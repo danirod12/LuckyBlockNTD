@@ -1,12 +1,12 @@
 package me.DenBeKKer.ntdLuckyBlock.command;
 
+import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
-import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlockKey;
+import me.DenBeKKer.ntdLuckyBlock.api.provider.LBMainProvider;
 import me.DenBeKKer.ntdLuckyBlock.command.base.BaseAlias;
 import me.DenBeKKer.ntdLuckyBlock.command.base.CommandResponse;
 import me.DenBeKKer.ntdLuckyBlock.command.base.LBCommand;
 import me.DenBeKKer.ntdLuckyBlock.command.piece.*;
-import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
 import me.DenBeKKer.ntdLuckyBlock.engine.LuckyBlockEngine;
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
@@ -14,45 +14,42 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.generator.WorldInfo;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class CommandsManager implements CommandExecutor, TabCompleter, Listener {
+public class CommandsManager implements CommandExecutor, /* TODO TabCompleter, */ Listener {
 
     private final LuckyBlockEngine engine;
     private final List<LBCommand> commands = new ArrayList<>();
     private final List<BaseAlias> aliases = new ArrayList<>();
 
-    public CommandsManager(LuckyBlockEngine engine) {
+    public CommandsManager(LuckyBlockEngine engine, LBMainProvider provider) {
         this.engine = engine;
 
         // Basic
         register(new GetCommand(engine));
         register(new GiveCommand(engine));
-        register(new PlaceCommand());
-        register(new GuiCommand());
+        register(new PlaceCommand(engine));
+        register(new GuiCommand(((LBMain) provider).getGuiManager())); // TODO rework
 
         // System
         register(new SupportCommand(engine.getLogChannel()));
-        register(new UpdatesCommand());
+        register(new UpdatesCommand(provider.getSpigotUpdater()));
         register(new ReloadCommand(engine));
         register(new DestroyCommand(engine));
 
         // Items Management
         register(new ListCommand(engine));
-        register(new ListCustomItemsCommand());
-        register(new GetCustomItemCommand());
-        register(new ItemInfoCommand());
+//        register(new ListCustomItemsCommand());
+//        register(new GetCustomItemCommand());
+//        register(new ItemInfoCommand());
 
         // Other
-        register(new VersionCommand());
-        register(new ConvertCommand());
+        register(new VersionCommand(provider.getSpigotUpdater(), engine.getVersionControl().getNmsVersion()));
+        register(new ConvertCommand(engine.getConvertFactory()));
         register(new GenerateCommand(engine));
 
         // Redirections
@@ -149,103 +146,104 @@ public class CommandsManager implements CommandExecutor, TabCompleter, Listener 
         return null;
     }
 
-    @Override
-    public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-        if (args.length > 1) {
-            if (sender instanceof Player && args[0].equalsIgnoreCase("get") && (args.length < 3)) {
-                return Arrays.stream(engine.getLoadedTypes()).map(LuckyBlockKey::getKey)
-                        .filter(n -> Misc.hasPermission((Player) sender, "luckyblock.command.get." + n))
-                        .filter(n -> n.startsWith(args[1].toUpperCase()))
-                        .collect(Collectors.toList());
-            }
-            if (args[0].equalsIgnoreCase("give") && (!(sender instanceof Player)
-                    || Misc.hasPermission((Player) sender, "luckyblock.command.give"))) {
-                if (args.length == 2) {
-                    return Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName)
-                            .filter(n -> n.toLowerCase().startsWith(args[1].toLowerCase()))
-                            .collect(Collectors.toList());
-                }
-                if (args.length == 3) {
-                    return Arrays.stream(engine.getLoadedTypes()).map(LuckyBlockKey::getKey)
-                            .filter(n -> !(sender instanceof Player) ||
-                                    Misc.hasPermission((Player) sender, "luckyblock.command.give." + n))
-                            .filter(n -> n.startsWith(args[2].toUpperCase()))
-                            .collect(Collectors.toList());
-                }
-            }
-            if (args[0].equalsIgnoreCase("place") || args[0].equalsIgnoreCase("setblock")) {
-                if (!sender.hasPermission("luckyblock.command.place"))
-                    return new ArrayList<>();
-
-                if (args.length == 2) {
-                    // java.lang.NoClassDefFoundError: org/bukkit/generator/WorldInfo on lambda (World::getName)
-                    List<String> list = Bukkit.getWorlds().stream().map(WorldInfo::getName)
-                            .collect(Collectors.toCollection(ArrayList::new));
-                    list.addAll(Bukkit.getOnlinePlayers().stream().map(p -> "p:" + p.getName())
-                            .collect(Collectors.toList()));
-                    list = list.stream()
-                            .filter(n -> n.toLowerCase().startsWith(args[1].toLowerCase()))
-                            .collect(Collectors.toList());
-                    if (sender instanceof Player) {
-                        list.add("~");
-                    }
-                    return list;
-                } else {
-                    boolean suggestLuckyBlocks = false;
-                    if (!args[1].replaceAll("[~0-9]", "").isEmpty()) {
-                        if (args[1].length() > 1 && Bukkit.getPlayerExact(args[1].substring(2)) != null) {
-                            // player
-                            if (args.length < 6) {
-                                return Collections.singletonList("~");
-                            } else if (args.length == 6) {
-                                suggestLuckyBlocks = true;
-                            }
-                        } else {
-                            // world
-                            suggestLuckyBlocks = args.length == 6;
-                        }
-                    } else {
-                        // location
-                        if (args.length < 5) {
-                            return Collections.singletonList("~");
-                        } else if (args.length == 5) {
-                            suggestLuckyBlocks = true;
-                        }
-                    }
-                    if (suggestLuckyBlocks) {
-                        List<String> list = LuckyBlockType.enabled().stream().map(Enum::name)
-                                .filter(n -> n.startsWith(args[args.length - 1].toUpperCase()))
-                                .filter(n -> !(sender instanceof Player) || Misc.hasPermission((Player) sender,
-                                        "luckyblock.command.place." + n))
-                                .collect(Collectors.toCollection(ArrayList::new));
-                        list.add("RANDOM");
-                        return list;
-                    }
-                }
-                return new ArrayList<>();
-            }
-            if ((args[0].equalsIgnoreCase("customitemget") ||
-                    args[0].equalsIgnoreCase("getcustomitem") ||
-                    args[0].equalsIgnoreCase("cig") ||
-                    args[0].equalsIgnoreCase("gci")) && (!(sender instanceof Player)
-                    || Misc.hasPermission((Player) sender, "luckyblock.command.customitemget"))) {
-                if (args.length == 2) {
-                    return CustomItemFactory.copy().stream().map(n -> n.getIdentifier().getIdentifier())
-                            .filter(n -> n.toLowerCase().startsWith(args[1].toLowerCase()) ||
-                                    !args[1].contains("-") && n.split("-")[1].startsWith(args[1].toLowerCase()))
-                            .collect(Collectors.toList());
-                }
-            }
-            return new ArrayList<>();
-        }
-
-        return commands.stream().filter(command -> {
-            if (sender instanceof Player) {
-                return !(command.isPermission() && !Misc.hasPermission((Player) sender,
-                        "luckyblock.command." + command.getCommands()[0]));
-            } else {
-                return !command.isOnlyPlayer();
-            }
-        }).map(n -> n.getCommands()[0]).filter(n -> n.startsWith(args[0].toLowerCase())).collect(Collectors.toList());
-    }
+    // TODO forward down to the commands
+//    @Override
+//    public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+//        if (args.length > 1) {
+//            if (sender instanceof Player && args[0].equalsIgnoreCase("get") && (args.length < 3)) {
+//                return Arrays.stream(engine.getLoadedTypes()).map(LuckyBlockKey::getKey)
+//                        .filter(n -> Misc.hasPermission((Player) sender, "luckyblock.command.get." + n))
+//                        .filter(n -> n.startsWith(args[1].toUpperCase()))
+//                        .collect(Collectors.toList());
+//            }
+//            if (args[0].equalsIgnoreCase("give") && (!(sender instanceof Player)
+//                    || Misc.hasPermission((Player) sender, "luckyblock.command.give"))) {
+//                if (args.length == 2) {
+//                    return Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName)
+//                            .filter(n -> n.toLowerCase().startsWith(args[1].toLowerCase()))
+//                            .collect(Collectors.toList());
+//                }
+//                if (args.length == 3) {
+//                    return Arrays.stream(engine.getLoadedTypes()).map(LuckyBlockKey::getKey)
+//                            .filter(n -> !(sender instanceof Player) ||
+//                                    Misc.hasPermission((Player) sender, "luckyblock.command.give." + n))
+//                            .filter(n -> n.startsWith(args[2].toUpperCase()))
+//                            .collect(Collectors.toList());
+//                }
+//            }
+//            if (args[0].equalsIgnoreCase("place") || args[0].equalsIgnoreCase("setblock")) {
+//                if (!sender.hasPermission("luckyblock.command.place"))
+//                    return new ArrayList<>();
+//
+//                if (args.length == 2) {
+//                    // java.lang.NoClassDefFoundError: org/bukkit/generator/WorldInfo on lambda (World::getName)
+//                    List<String> list = Bukkit.getWorlds().stream().map(WorldInfo::getName)
+//                            .collect(Collectors.toCollection(ArrayList::new));
+//                    list.addAll(Bukkit.getOnlinePlayers().stream().map(p -> "p:" + p.getName())
+//                            .collect(Collectors.toList()));
+//                    list = list.stream()
+//                            .filter(n -> n.toLowerCase().startsWith(args[1].toLowerCase()))
+//                            .collect(Collectors.toList());
+//                    if (sender instanceof Player) {
+//                        list.add("~");
+//                    }
+//                    return list;
+//                } else {
+//                    boolean suggestLuckyBlocks = false;
+//                    if (!args[1].replaceAll("[~0-9]", "").isEmpty()) {
+//                        if (args[1].length() > 1 && Bukkit.getPlayerExact(args[1].substring(2)) != null) {
+//                            // player
+//                            if (args.length < 6) {
+//                                return Collections.singletonList("~");
+//                            } else if (args.length == 6) {
+//                                suggestLuckyBlocks = true;
+//                            }
+//                        } else {
+//                            // world
+//                            suggestLuckyBlocks = args.length == 6;
+//                        }
+//                    } else {
+//                        // location
+//                        if (args.length < 5) {
+//                            return Collections.singletonList("~");
+//                        } else if (args.length == 5) {
+//                            suggestLuckyBlocks = true;
+//                        }
+//                    }
+//                    if (suggestLuckyBlocks) {
+//                        List<String> list = LuckyBlockType.enabled().stream().map(Enum::name)
+//                                .filter(n -> n.startsWith(args[args.length - 1].toUpperCase()))
+//                                .filter(n -> !(sender instanceof Player) || Misc.hasPermission((Player) sender,
+//                                        "luckyblock.command.place." + n))
+//                                .collect(Collectors.toCollection(ArrayList::new));
+//                        list.add("RANDOM");
+//                        return list;
+//                    }
+//                }
+//                return new ArrayList<>();
+//            }
+//            if ((args[0].equalsIgnoreCase("customitemget") ||
+//                    args[0].equalsIgnoreCase("getcustomitem") ||
+//                    args[0].equalsIgnoreCase("cig") ||
+//                    args[0].equalsIgnoreCase("gci")) && (!(sender instanceof Player)
+//                    || Misc.hasPermission((Player) sender, "luckyblock.command.customitemget"))) {
+//                if (args.length == 2) {
+//                    return CustomItemFactory.copy().stream().map(n -> n.getIdentifier().getIdentifier())
+//                            .filter(n -> n.toLowerCase().startsWith(args[1].toLowerCase()) ||
+//                                    !args[1].contains("-") && n.split("-")[1].startsWith(args[1].toLowerCase()))
+//                            .collect(Collectors.toList());
+//                }
+//            }
+//            return new ArrayList<>();
+//        }
+//
+//        return commands.stream().filter(command -> {
+//            if (sender instanceof Player) {
+//                return !(command.isPermission() && !Misc.hasPermission((Player) sender,
+//                        "luckyblock.command." + command.getCommands()[0]));
+//            } else {
+//                return !command.isOnlyPlayer();
+//            }
+//        }).map(n -> n.getCommands()[0]).filter(n -> n.startsWith(args[0].toLowerCase())).collect(Collectors.toList());
+//    }
 }

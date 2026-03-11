@@ -16,6 +16,7 @@ import me.DenBeKKer.ntdLuckyBlock.util.Config;
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 import me.DenBeKKer.ntdLuckyBlock.util.SpigotUpdater;
 import me.DenBeKKer.ntdLuckyBlock.util.StringMatcher;
+import me.DenBeKKer.ntdLuckyBlock.util.config.ConfigHolder;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager;
 import me.DenBeKKer.ntdLuckyBlock.variables.world.WorldListDataHandler;
 import org.bukkit.Bukkit;
@@ -50,13 +51,15 @@ public class CoreListener implements Listener {
     private final WorldGuardProvider worldGuardProvider;
     private final Single<StringMatcher<WorldListDataHandler>> worldsFilter;
     private final Cache<Player, ItemStack> cache;
+    private final ConfigHolder config;
 
     public CoreListener(LuckyBlockEngine engine, SpigotUpdater spigotUpdater, WorldGuardProvider worldGuardProvider,
-                        Single<StringMatcher<WorldListDataHandler>> worldsFilter) {
+                        Single<StringMatcher<WorldListDataHandler>> worldsFilter, ConfigHolder config) {
         this.engine = engine;
         this.spigotUpdater = spigotUpdater;
         this.worldGuardProvider = worldGuardProvider;
         this.worldsFilter = worldsFilter;
+        this.config = config;
         switch (engine.getVersionControl().getNmsVersion()) {
             case "v1_19_R1":
             case "v1_19_R2":
@@ -106,10 +109,12 @@ public class CoreListener implements Listener {
             }
         }
 
+        Material requiredType = event.getBlockPlaced().getType();
+
         this.engine.parseLuckyBlock(stack).flatMap(this.engine::get).ifPresent(block -> {
             StringMatcher<WorldListDataHandler> matcher = this.worldsFilter.get();
             if (matcher != null && !matcher.isEnabled(event.getBlock().getWorld().getName())) {
-                if (!matcher.getDataHandler().getPlaceAdmins()
+                if (!matcher.getDataHandler().isPlaceAdmins()
                         && event.getPlayer().hasPermission("luckyblock.place.disabled")) {
                     event.getPlayer().sendMessage(MessagesManager.Message.CANT_INTERACT_WORLD.getAsString(true)
                             .replace("%world%", event.getBlock().getWorld().getName()));
@@ -131,7 +136,7 @@ public class CoreListener implements Listener {
             // Cannot say clear if it is only a legacy problem or not, but it is ok to have it on all versions
             Bukkit.getScheduler().runTaskLater(engine.getLogChannel().getPlugin(), () -> {
                 // Well, 1 tick may change a lot
-                if (!engine.getVersionControl().getMat().isSkull(event.getBlock().getType())) {
+                if (event.getBlock().getType() != requiredType) { // TODO check, make tests on all versions with heads
                     return;
                 }
                 block.placeBlock(event.getBlock());
@@ -143,14 +148,14 @@ public class CoreListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlockBreakHighest(BlockBreakEvent event) {
-        if (instance.breakEventHighestPriority) {
+        if (config.breakEventHighestPriority) {
             this.onBlockBreak(event);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockBreakHigh(BlockBreakEvent event) {
-        if (!instance.breakEventHighestPriority) {
+        if (!config.breakEventHighestPriority) {
             this.onBlockBreak(event);
         }
     }
@@ -179,7 +184,7 @@ public class CoreListener implements Listener {
             if (block != null) {
                 boolean dropItems = true;
                 if (!worldsFilter.get().isEnabled(event.getBlock().getWorld().getName())) {
-                    if (worldsFilter.get().getDataHandler().getBreakNoDrop()) {
+                    if (worldsFilter.get().getDataHandler().isBreakNoDrops()) {
                         dropItems = false;
                     } else {
                         player.sendMessage(MessagesManager.Message.CANT_INTERACT_WORLD.getAsString(true)
@@ -187,7 +192,7 @@ public class CoreListener implements Listener {
                         return;
                     }
                 }
-                if (block.playOpen(event.getBlock(), player, dropItems, false)) {
+                if (block.playOpen(engine.getPlugin(), event.getBlock(), player, dropItems, false)) {
                     event.getBlock().setType(Material.AIR);
                     pair.getValue().remove();
                 }

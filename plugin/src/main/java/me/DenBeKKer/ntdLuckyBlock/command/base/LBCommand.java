@@ -1,8 +1,10 @@
 package me.DenBeKKer.ntdLuckyBlock.command.base;
 
+import lombok.Getter;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import org.bukkit.command.CommandSender;
 
+@Getter
 public abstract class LBCommand {
 
     private final boolean onlyPlayer;
@@ -22,20 +24,4 @@ public abstract class LBCommand {
     }
 
     public abstract CommandResponse execute(CommandSender sender, String label, String[] args);
-
-    public boolean isOnlyPlayer() {
-        return onlyPlayer;
-    }
-
-    public boolean isPermission() {
-        return permission;
-    }
-
-    public String[] getCommands() {
-        return commands;
-    }
-
-    public Message getHelpMessage() {
-        return helpMessage;
-    }
 }

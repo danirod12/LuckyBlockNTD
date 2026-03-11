@@ -1,10 +1,10 @@
-package me.DenBeKKer.ntdLuckyBlock.command.cmd;
+package me.DenBeKKer.ntdLuckyBlock.command.piece;
 
-import me.DenBeKKer.ntdLuckyBlock.LBMain.LuckyBlockType;
-import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
-import me.DenBeKKer.ntdLuckyBlock.api.exceptions.LuckyBlockNotLoadedException;
-import me.DenBeKKer.ntdLuckyBlock.command.CommandResponse;
-import me.DenBeKKer.ntdLuckyBlock.command.LBCommand;
+import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlock;
+import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlockKey;
+import me.DenBeKKer.ntdLuckyBlock.command.base.CommandResponse;
+import me.DenBeKKer.ntdLuckyBlock.command.base.LBCommand;
+import me.DenBeKKer.ntdLuckyBlock.engine.LuckyBlockEngine;
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager;
 import org.bukkit.Bukkit;
@@ -16,16 +16,13 @@ import org.bukkit.entity.Player;
 
 import java.util.function.Function;
 
-public class PlaceCommand implements LBCommand {
+public class PlaceCommand extends LBCommand {
 
-    @Override
-    public boolean onlyPlayer() {
-        return false;
-    }
+    private final LuckyBlockEngine engine;
 
-    @Override
-    public boolean permission() {
-        return true;
+    public PlaceCommand(LuckyBlockEngine engine) {
+        super(true, MessagesManager.Message.CMD_PLACE, "place", "setblock");
+        this.engine = engine;
     }
 
     // [world] <x> <y> <z> <type>
@@ -81,30 +78,27 @@ public class PlaceCommand implements LBCommand {
                 return CommandResponse.SEND_HELP;
             }
 
-            LuckyBlockType type = LuckyBlockType.parse(args[args.length - 1]);
-            if (type == null || !type.isLoaded()) {
+            LuckyBlockKey key = this.engine.get(args[args.length - 1]);
+            LuckyBlock instance = this.engine.get(key).orElse(null);
+            if (instance == null) {
                 sender.sendMessage(MessagesManager.Message.LB_NOT_FOUND.getAsString()
                         .replace("%world%", args[0]));
                 return CommandResponse.SUCCESS;
             }
             if (player != null && !Misc.hasPermission(player,
-                    "luckyblock.command.place." + type.name().toLowerCase())) {
+                    "luckyblock.command.place." + key.toString().toLowerCase())) {
                 sender.sendMessage(MessagesManager.Message.CMD_NO_PERM_TO_COLOR.getAsString());
                 return CommandResponse.SUCCESS;
             }
 
             Location location = new Location(world, x, y, z);
-            try {
-                Block block = world.getBlockAt(location);
-                LuckyBlockAPI.clearBlock(block);
-                LuckyBlockAPI.placeLuckyBlock(block, type);
-            } catch (LuckyBlockNotLoadedException exception) {
-                throw new RuntimeException(exception);
-            }
+            Block block = world.getBlockAt(location);
+            engine.clearBlock(block, false);
+            instance.placeBlock(block);
 
             if (notify) {
                 sender.sendMessage(MessagesManager.Message.LB_PLACED.getAsString()
-                        .replace("%type%", type.forceGet().getCustomName())
+                        .replace("%type%", instance.getCustomName())
                         .replace("%location%", "(" + world.getName()
                                 + ", x: " + location.getBlockX() + ", y: " + location.getBlockY()
                                 + ", z: " + location.getBlockZ() + ")"));
@@ -126,15 +120,5 @@ public class PlaceCommand implements LBCommand {
                     : Double.parseDouble(value.substring(1)));
         }
         return Double.parseDouble(value);
-    }
-
-    @Override
-    public final String[] commands() {
-        return new String[]{"place", "setblock"};
-    }
-
-    @Override
-    public MessagesManager.Message helpMessage() {
-        return MessagesManager.Message.CMD_PLACE;
     }
 }
