@@ -257,6 +257,40 @@ public class LBMain extends LBMainProvider {
         // Timings finish, print time taken to start all managers
         ms = (System.currentTimeMillis() - ms);
         logChannel.info("§6Enabled in " + Misc.getColorLevel(ms, 1000, 3000) + ms + " ms§6...");
+
+
+        // TODO remove all below (tests)
+
+        luckyBlockEngine.register(luckyBlockEngine.loadFromConfig(
+                luckyBlockEngine.newLuckyBlockHolder(new LuckyBlockKey("danirod12",
+                        ColorData.YELLOW, Material.HONEY_BLOCK, false)),
+                new Config(new File(getDataFolder(), "luckyblocks"), "danirod12.yml").load()));
+
+        LuckyBlock lb = luckyBlockEngine.loadFromConfig(
+                luckyBlockEngine.newLuckyBlockHolder(new LuckyBlockKey("slime",
+                        ColorData.GREEN, Material.SLIME_BLOCK, false)),
+                new Config(new File(getDataFolder(), "luckyblocks"), "danirod12.yml").load());
+        ItemStack stack = new ItemStack(Material.HONEY_BLOCK);
+        ItemMeta meta = stack.getItemMeta();
+        assert meta != null;
+        meta.setDisplayName("§6§lHoney LuckyBlock");
+        stack.setItemMeta(meta);
+        lb.setIcon(stack);
+        lb.setItem(stack);
+        luckyBlockEngine.register(lb);
+
+        lb = luckyBlockEngine.loadFromConfig(
+                luckyBlockEngine.newLuckyBlockHolder(new LuckyBlockKey("slab",
+                        ColorData.WHITE, Material.END_STONE_BRICK_SLAB, false)),
+                new Config(new File(getDataFolder(), "luckyblocks"), "danirod12.yml").load());
+        stack = new ItemStack(Material.END_STONE_BRICK_SLAB);
+        meta = stack.getItemMeta();
+        assert meta != null;
+        meta.setDisplayName("§6§lStrange LuckyBlock");
+        stack.setItemMeta(meta);
+        lb.setIcon(new ItemStack(Material.SCAFFOLDING));
+        lb.setItem(stack);
+        luckyBlockEngine.register(lb);
     }
 
     @Override
