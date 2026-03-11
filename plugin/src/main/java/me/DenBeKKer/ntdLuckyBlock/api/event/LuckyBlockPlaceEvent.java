@@ -8,7 +8,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 public class LuckyBlockPlaceEvent extends CancellableEvent {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList HANDLERS = new HandlerList();
 
     private final BlockPlaceEvent event;
     private final Block block;
@@ -23,7 +23,7 @@ public class LuckyBlockPlaceEvent extends CancellableEvent {
     }
 
     public static HandlerList getHandlerList() {
-        return handlers;
+        return HANDLERS;
     }
 
     public BlockPlaceEvent getEvent() {
@@ -44,6 +44,6 @@ public class LuckyBlockPlaceEvent extends CancellableEvent {
 
     @Override
     public HandlerList getHandlers() {
-        return handlers;
+        return HANDLERS;
     }
 }

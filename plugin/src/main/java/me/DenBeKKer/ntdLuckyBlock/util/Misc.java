@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 
 public class Misc {
 
-    private final static Pattern LOCATION_PATTERN = Pattern.compile(
+    private static final Pattern LOCATION_PATTERN = Pattern.compile(
             "%(?:|(?<target>player|block)_)" +
                     "(?<format>location|x|y|z)" +
                     "(?:|_above_(?<above>(?:|-)[0-9]+(?:|.[0-9]+)))" +
@@ -108,15 +108,17 @@ public class Misc {
         }
 
         node = node.toLowerCase();
-        if (target.hasPermission(node))
+        if (target.hasPermission(node)) {
             return true;
+        }
 
         String permission = null;
         String[] nodes = node.split("\\.");
         for (int i = 0; i < nodes.length - 1; ++i) {
             permission = permission == null ? nodes[i] : permission + "." + nodes[i];
-            if (target.hasPermission(permission + ".*"))
+            if (target.hasPermission(permission + ".*")) {
                 return true;
+            }
         }
         return false;
     }
@@ -138,15 +140,18 @@ public class Misc {
      * @return Stringed array
      */
     public static String toString(List<?> array, boolean a) {
-
-        if (array.size() == 0) return a ? "[]" : "";
-        if (array.size() == 1) return (a ? "[]" : "") + array.get(0) + (a ? "[]" : "");
+        if (array.isEmpty()) {
+            return a ? "[]" : "";
+        }
+        if (array.size() == 1) {
+            return (a ? "[]" : "") + array.get(0) + (a ? "[]" : "");
+        }
 
         String string = null;
-        for (Object obj : array)
+        for (Object obj : array) {
             string = string == null ? obj.toString() : string + ", " + obj.toString();
+        }
         return "[" + string + "]";
-
     }
 
     public static String getLocation(Location location) {
@@ -359,8 +364,12 @@ public class Misc {
     }
 
     public static ChatColor getColorLevel(long number, int yellow, int red) {
-        if (number > red) return ChatColor.RED;
-        if (number > yellow) return ChatColor.YELLOW;
+        if (number > red) {
+            return ChatColor.RED;
+        }
+        if (number > yellow) {
+            return ChatColor.YELLOW;
+        }
         return ChatColor.GREEN;
     }
 

@@ -11,16 +11,20 @@ import java.util.regex.Pattern;
 @Getter
 public class Identifier {
 
-    private static final Pattern pattern = Pattern.compile("[a-z][a-z0-9_]{2,}[a-z0-9]");
+    private static final Pattern PATTERN = Pattern.compile("[a-z][a-z0-9_]{2,}[a-z0-9]");
 
     private final String identifier, tagName;
 
     /**
      * Custom tags with plugin
+     *
+     * @param plugin     Plugin instance
+     * @param tagName    Tag key
+     * @param identifier Identifier
      */
     public Identifier(Plugin plugin, String tagName, String identifier) {
-        if (!pattern.matcher(identifier).matches()) {
-            throw new UnsupportedOperationException("Identifier should be from pattern \"" + pattern.pattern() + "\"");
+        if (!PATTERN.matcher(identifier).matches()) {
+            throw new UnsupportedOperationException("Identifier should be from pattern \"" + PATTERN.pattern() + "\"");
         }
 
         this.identifier = plugin.getName().toLowerCase() + "-" + identifier.toLowerCase();
@@ -29,6 +33,9 @@ public class Identifier {
 
     /**
      * Custom items
+     *
+     * @param plugin     Plugin instance
+     * @param identifier Identifier
      */
     public Identifier(Plugin plugin, String identifier) {
         this(plugin, CustomItemFactory.TAG_IDENTIFIER_NAME, identifier);
@@ -36,6 +43,9 @@ public class Identifier {
 
     /**
      * Custom tags without plugin
+     *
+     * @param tagName    Tag key
+     * @param identifier Identifier
      */
     public Identifier(String tagName, String identifier) {
         this.identifier = identifier.toLowerCase();
@@ -54,11 +64,19 @@ public class Identifier {
 
     @Override
     public boolean equals(Object object) {
-        if (object == null) return false;
-        if (object instanceof String) return compare((String) object);
-        if (object instanceof Identifier) return compare((Identifier) object);
-        if (object instanceof ItemStack) return compare((ItemStack) object);
-        else return false;
+        if (object == null) {
+            return false;
+        }
+        if (object instanceof String) {
+            return compare((String) object);
+        }
+        if (object instanceof Identifier) {
+            return compare((Identifier) object);
+        }
+        if (object instanceof ItemStack) {
+            return compare((ItemStack) object);
+        }
+        return false;
     }
 
     public boolean compare(ItemStack stack) {

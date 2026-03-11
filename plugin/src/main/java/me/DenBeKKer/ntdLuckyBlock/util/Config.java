@@ -1,6 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.util;
 
 import com.google.common.collect.Maps;
+import lombok.Getter;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -18,10 +19,14 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+// TODO implements ConfigurationSection that falls to just FileConfiguration config
 public class Config {
 
+    @Getter
     private final File folder;
+    @Getter
     private final String name, resource;
+    @Getter
     private final Plugin plugin;
     private boolean hasChanges = false;
 
@@ -48,16 +53,19 @@ public class Config {
     }
 
     public Config(Plugin plugin, String resource, File folder, String name) {
-        if (name == null) throw new IllegalArgumentException("You need to provide a config name");
-        if ((folder == null || resource != null) && plugin == null)
+        Objects.requireNonNull(name, "You need to provide a config name");
+        if ((folder == null || resource != null) && plugin == null) {
             throw new IllegalArgumentException("You need to provide a plugin instance for this action");
+        }
 
         this.folder = folder == null ? plugin.getDataFolder() : folder;
         this.name = name.contains(".") ? name : name + ".yml";
 
         if (resource != null) {
             resource = resource.replace(".", "/");
-            if (!resource.endsWith("/")) resource += "/";
+            if (!resource.endsWith("/")) {
+                resource += "/";
+            }
         }
         this.resource = resource;
         this.plugin = plugin;
@@ -65,20 +73,13 @@ public class Config {
 
     @Override
     public String toString() {
-        return "Config{plugin=" + (plugin == null ? "null" : plugin.getName()) + ",resource=" + (resource == null ? "null" : resource) +
-                ",folder=" + (folder == null ? "null" : folder.toString()) + ",name=" + name + "}";
-    }
-
-    public File getFolder() {
-        return folder;
+        return "Config{plugin=" + (plugin == null ? "null" : plugin.getName()) + ",resource="
+                + (resource == null ? "null" : resource) + ",folder="
+                + (folder == null ? "null" : folder.toString()) + ",name=" + name + "}";
     }
 
     public File getFile() {
         return new File(folder, name);
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String getResourceURL() {
@@ -86,13 +87,10 @@ public class Config {
     }
 
     public InputStream getResource() {
-        if (plugin == null)
+        if (plugin == null) {
             throw new UnsupportedOperationException("Instance not provided to copy resource. Use \"#write\" method");
+        }
         return plugin.getResource((resource == null ? "" : resource) + name);
-    }
-
-    public Plugin getPlugin() {
-        return plugin;
     }
 
     public FileConfiguration get() {
@@ -100,7 +98,9 @@ public class Config {
     }
 
     public FileConfiguration getSafe() {
-        if (config == null) load();
+        if (config == null) {
+            load();
+        }
         return config;
     }
 
@@ -111,8 +111,12 @@ public class Config {
     public Config write(File target) {
         try {
             File folder = target.getParentFile();
-            if (!folder.exists() && folder.isDirectory()) folder.mkdirs();
-            if (!target.exists()) target.createNewFile();
+            if (!folder.exists() && folder.isDirectory()) {
+                folder.mkdirs();
+            }
+            if (!target.exists()) {
+                target.createNewFile();
+            }
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -125,7 +129,6 @@ public class Config {
     }
 
     public Config copy(boolean load) {
-
         folder.mkdirs();
         File file = getFile();
         if (!file.exists()) {
@@ -136,9 +139,10 @@ public class Config {
                 return this;
             }
         }
-        if (load) load();
+        if (load) {
+            load();
+        }
         return this;
-
     }
 
     public Config save() {
@@ -146,10 +150,16 @@ public class Config {
     }
 
     public Config save(File target) {
-        if (config == null) throw new UnsupportedOperationException("Config not loaded. Use \"#load\" first");
+        if (config == null) {
+            throw new UnsupportedOperationException("Config not loaded. Use \"#load\" first");
+        }
         try {
-            if (!folder.exists()) folder.mkdirs();
-            if (!target.exists()) write(target);
+            if (!folder.exists()) {
+                folder.mkdirs();
+            }
+            if (!target.exists()) {
+                write(target);
+            }
             config.save(target);
             this.hasChanges = false;
         } catch (IOException ex) {
@@ -181,7 +191,6 @@ public class Config {
     }
 
     public void delete(boolean folder) {
-
         File file = getFile();
         if (file.exists()) {
             do {
@@ -189,7 +198,6 @@ public class Config {
                 file = file.getParentFile();
             } while (folder && file.isDirectory() && file.listFiles().length == 0);
         }
-
     }
 
     public boolean hasChanges() {
@@ -208,8 +216,12 @@ public class Config {
     }
 
     public FileConfiguration getDefault(InputStream stream, boolean reload) {
-        if (def != null && !reload) return def;
-        if (stream == null) stream = getResource();
+        if (def != null && !reload) {
+            return def;
+        }
+        if (stream == null) {
+            stream = getResource();
+        }
         try {
             def = new YamlConfiguration();
             def.load(new InputStreamReader(stream, "UTF-8"));
@@ -220,9 +232,13 @@ public class Config {
         return null;
     }
 
-    public void gc(boolean origin, boolean copy) {
-        if (origin) config = null;
-        if (copy) def = null;
+    public void resetField(boolean origin, boolean copy) {
+        if (origin) {
+            config = null;
+        }
+        if (copy) {
+            def = null;
+        }
     }
 
     // Some methods from FileConfiguration
@@ -273,13 +289,16 @@ public class Config {
         List<T> list = new ArrayList<>();
         for (String element : config.getConfigurationSection(path).getKeys(false)) {
             T t = function.apply(Maps.immutableEntry(config, path + "." + element));
-            if (t == null) continue;
+            if (t == null) {
+                continue;
+            }
             list.add(t);
         }
         return list;
     }
 
-    public <T> void saveList(String path, List<T> list, Function<T, String> name, Function<T, HashMap<String, Object>> save) {
+    public <T> void saveList(String path, List<T> list,
+                             Function<T, String> name, Function<T, HashMap<String, Object>> save) {
         config.set(path, null);
         int id = 0;
         for (T element : list) {
@@ -304,25 +323,30 @@ public class Config {
     }
 
     public Config copyMissedFields(Collection<String> skip, Consumer<String> callback) {
-        if (this.config == null) this.copy(true);
+        if (this.config == null) {
+            this.copy(true);
+        }
 
         skip = skip.stream().map(String::toLowerCase).collect(Collectors.toList());
 
-        final YamlConfiguration yml_default = ((YamlConfiguration) getDefault());
+        final YamlConfiguration ymlDefault = ((YamlConfiguration) getDefault());
         keys:
-        for (String key : yml_default.getKeys(true)) {
+        for (String key : ymlDefault.getKeys(true)) {
             for (String string : skip) {
-                if (key.toLowerCase().startsWith(string))
+                if (key.toLowerCase().startsWith(string)) {
                     continue keys;
+                }
             }
             if (!this.isSet(key)) {
-                this.set(key, yml_default.get(key));
-                if (callback != null)
+                this.set(key, ymlDefault.get(key));
+                if (callback != null) {
                     callback.accept(key);
+                }
             }
         }
-        if (this.hasChanges())
+        if (this.hasChanges()) {
             this.save();
+        }
         return this;
     }
 }

@@ -5,5 +5,4 @@ public interface ConfirmEvent {
     void onConfirm(int amount);
 
     void goBack();
-
 }

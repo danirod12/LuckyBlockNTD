@@ -55,7 +55,9 @@ public class LegacyLoader implements StringLoader {
                     amount = Integer.parseInt(baseData[2]);
                 } catch (Exception ignored) {
                 }
-                if (amount < 1) amount = 1;
+                if (amount < 1) {
+                    amount = 1;
+                }
                 return new EntityDrop(EntityType.valueOf(baseData[1].toUpperCase()), amount);
             }
             case ITEM: {
@@ -81,8 +83,12 @@ public class LegacyLoader implements StringLoader {
                     amount = Integer.parseInt(baseData[2]);
                 } catch (Exception ignored) {
                 }
-                if (amount < 1) amount = 1;
-                if (baseData[1].equalsIgnoreCase("random")) return new RandomLuckyItemDrop(amount);
+                if (amount < 1) {
+                    amount = 1;
+                }
+                if (baseData[1].equalsIgnoreCase("random")) {
+                    return new RandomLuckyItemDrop(amount);
+                }
                 return new LuckyItemDrop(engine.get(baseData[1]), amount);
             }
             case CUSTOM_ITEM: {
@@ -91,7 +97,9 @@ public class LegacyLoader implements StringLoader {
                     amount = Integer.parseInt(baseData[2]);
                 } catch (Exception ignored) {
                 }
-                if (amount < 1) amount = 1;
+                if (amount < 1) {
+                    amount = 1;
+                }
                 BekkerItemStack item = CustomItemFactory.fetchCustomItem(baseData[1].contains("-")
                         ? baseData[1] : "ntdluckyblock-" + baseData[1]);
                 if (item == null) {
@@ -187,9 +195,12 @@ public class LegacyLoader implements StringLoader {
             StringBuilder item = new StringBuilder("ITEM : " + stack.getType().name() + " : "
                     + stack.getAmount() + " : " + stack.getDurability());
             ItemMeta meta = stack.getItemMeta();
-            if (meta == null) return item.toString();
-            if (meta.hasDisplayName() || !meta.getEnchants().isEmpty())
+            if (meta == null) {
+                return item.toString();
+            }
+            if (meta.hasDisplayName() || !meta.getEnchants().isEmpty()) {
                 item.append(" : ").append(meta.getDisplayName());
+            }
             for (Map.Entry<Enchantment, Integer> entry : meta.getEnchants().entrySet()) {
                 item.append(" : ").append(entry.getKey().getName()).append(" : ").append(entry.getValue());
             }

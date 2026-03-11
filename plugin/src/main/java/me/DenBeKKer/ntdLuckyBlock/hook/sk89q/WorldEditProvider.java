@@ -22,10 +22,10 @@ public class WorldEditProvider {
     public WorldEditProvider(Plugin plugin, File folder, Logger logger) {
         this.plugin = plugin;
         this.folder = folder;
-        if (Bukkit.getPluginManager().isPluginEnabled("WorldEdit") ||
-                Bukkit.getPluginManager().isPluginEnabled("FastAsyncWorldEdit")) {
-            fawe = Misc.getClass("com.fastasyncworldedit.bukkit.FaweBukkit") != null ||
-                    Misc.getClass("com.boydti.fawe.Fawe") != null;
+        if (Bukkit.getPluginManager().isPluginEnabled("WorldEdit")
+                || Bukkit.getPluginManager().isPluginEnabled("FastAsyncWorldEdit")) {
+            fawe = Misc.getClass("com.fastasyncworldedit.bukkit.FaweBukkit") != null
+                    || Misc.getClass("com.boydti.fawe.Fawe") != null;
             String pluginName = fawe ? "FastAsyncWorldEdit" : "WorldEdit";
             if (Misc.getClass("com.sk89q.worldedit.math.Vector2") != null) {
                 worldedit = new WorldEdit7();
@@ -49,8 +49,9 @@ public class WorldEditProvider {
     }
 
     public void paste(File file, Block target, boolean ignoreAir) {
-        if (worldedit == null)
+        if (worldedit == null) {
             return;
+        }
         if (fawe) {
             Bukkit.getScheduler().runTaskLater(plugin,
                     () -> worldedit.paste(file, target, true, ignoreAir), 1);

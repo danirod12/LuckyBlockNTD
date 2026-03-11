@@ -21,5 +21,4 @@ public final class ItemEvent<E> {
     public Class<?> getInstance() {
         return clazz;
     }
-
 }

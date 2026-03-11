@@ -429,15 +429,18 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
 
     @Override
     public Pair<LuckyBlockKey, ArmorStand> searchByEntity(Entity entity) {
-        if (entity.getType() != EntityType.ARMOR_STAND)
+        if (entity.getType() != EntityType.ARMOR_STAND) {
             return null;
+        }
         ArmorStand stand = (ArmorStand) entity;
-        if (stand.getCustomName() == null)
+        if (stand.getCustomName() == null) {
             return null;
+        }
 
         String[] data = stand.getCustomName().split(";");
-        if (data.length < 4)
+        if (data.length < 4) {
             return null;
+        }
 
         if (data.length == 4) {
             // old version
@@ -459,9 +462,9 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
 
         // Location check
         Location location = stand.getLocation();
-        if (!(data[2].equals(String.valueOf((int) location.getX())) &&
-                data[3].equals(String.valueOf((int) location.getY())) &&
-                data[4].equals(String.valueOf((int) location.getZ())))) {
+        if (!(data[2].equals(String.valueOf((int) location.getX()))
+                && data[3].equals(String.valueOf((int) location.getY()))
+                && data[4].equals(String.valueOf((int) location.getZ())))) {
             return null;
         }
         return new Pair<>(get(data[1]), stand);

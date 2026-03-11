@@ -35,122 +35,138 @@ public class CustomItemFactory {
 
     public static final String TAG_IDENTIFIER_NAME = "bekker_item_identifier";
     public static final String TAG_LUCKYBLOCK_TYPE = "luckyblock_type";
-    private static final Collection<BekkerItemStack> storage = new ArrayList<>();
+    private static final Collection<BekkerItemStack> STORAGE = new ArrayList<>();
 
-    public static boolean chilly_pants = false, rage_armor = false;
+    public static boolean chillyPants = false, rageArmor = false;
     public static boolean solid;
-    public static int rage_armor_percentage;
+    public static int rageArmorPercentage;
 
     public static void register(BekkerItemStack item) {
         BekkerItemStack origin = fetchCustomItem(item);
-        if (origin != null)
-            storage.remove(origin);
-        storage.add(item);
-        MvLogger.log(Level.INFO, "Registered a new custom item - " + item.getClass().getSimpleName() + " (" + item.getEvents().size() + " events)");
+        if (origin != null) {
+            STORAGE.remove(origin);
+        }
+        STORAGE.add(item);
+        MvLogger.log(Level.INFO, "Registered a new custom item - " + item.getClass().getSimpleName()
+                + " (" + item.getEvents().size() + " events)");
         Bukkit.getPluginManager().callEvent(new CustomItemAddedEvent(item));
     }
 
     private static void register(BekkerItemStackBuilder builder) {
-        if (!builder.getIdentifier().getIdentifier().split("-")[0].equalsIgnoreCase(LuckyBlockAPI.getInstance().getName())) {
+        if (!builder.getIdentifier().getIdentifier().split("-")[0]
+                .equalsIgnoreCase(LuckyBlockAPI.getInstance().getName())) {
             throw new UnsupportedOperationException("Only system items can be registered using this method.");
         }
         BekkerItemStack stack = builder.build();
-        if (stack != null) storage.add(stack);
+        if (stack != null) {
+            STORAGE.add(stack);
+        }
     }
 
     public static boolean compare(ItemStack item, String identifier) {
-
         return compare(item, TAG_IDENTIFIER_NAME, identifier);
-
     }
 
-    public static boolean compare(ItemStack item, String tag_name, String identifier) {
+    public static boolean compare(ItemStack item, String tagName, String identifier) {
+        if (item == null || tagName == null || identifier == null) {
+            return false;
+        }
 
-        if (item == null || tag_name == null || identifier == null) return false;
-
-        ItemTag adapter = ((VersionControlFactory) LuckyBlockAPI.getLuckyEngineProvider().getVersionControl()).getItemTagAdapter();
+        ItemTag adapter = getFactory().getItemTagAdapter();
         final Object tag = adapter.getTag(adapter.asNMSCopy(item));
-        if (tag == null) return false;
+        if (tag == null) {
+            return false;
+        }
 
-        final String id = adapter.getTagString(tag, tag_name);
+        final String id = adapter.getTagString(tag, tagName);
         return id != null && id.equalsIgnoreCase(identifier);
-
     }
 
-    public static String parseValue(ItemStack item, String tag_name) {
-
-        ItemTag adapter = ((VersionControlFactory) LuckyBlockAPI.getLuckyEngineProvider().getVersionControl()).getItemTagAdapter();
+    public static String parseValue(ItemStack item, String tagName) {
+        ItemTag adapter = getFactory().getItemTagAdapter();
         final Object tag = adapter.getTag(adapter.asNMSCopy(item));
-        if (tag == null) return null;
+        if (tag == null) {
+            return null;
+        }
 
-        final String id = adapter.getTagString(tag, tag_name);
+        final String id = adapter.getTagString(tag, tagName);
         return id != null && id.isEmpty() ? null : id;
-
     }
 
     public static BekkerItemStack fetchCustomItem(ItemStack item) {
-
-        ItemTag adapter = ((VersionControlFactory) LuckyBlockAPI.getLuckyEngineProvider().getVersionControl()).getItemTagAdapter();
+        ItemTag adapter = getFactory().getItemTagAdapter();
         final Object tag = adapter.getTag(adapter.asNMSCopy(item));
-        if (tag == null) return null;
+        if (tag == null) {
+            return null;
+        }
 
         final String identifier = adapter.getTagString(tag, CustomItemFactory.TAG_IDENTIFIER_NAME);
-        if (identifier == null) return null;
-
-        for (BekkerItemStack stack : storage)
-            if (stack.equals(identifier)) return stack;
-        return null;
-
+        if (identifier == null) {
+            return null;
+        }
+        return fetchCustomItem(identifier);
     }
 
-    public static void loadSystem() throws Throwable {
+    private static VersionControlFactory getFactory() {
+        return (VersionControlFactory) LuckyBlockAPI.getLuckyEngineProvider().getVersionControl();
+    }
 
-        storage.clear();
+    public static void loadSystem() {
+        STORAGE.clear();
 
-        Config custom_items = new Config(LuckyBlockAPI.getInstance(), "configuration.other", null, "custom_items");
-        custom_items.copyMissedFields(added -> MvLogger.log(Level.INFO, "A new custom item here (" + added + "). \u00a7aEnabling!"));
+        Config customItems = new Config(LuckyBlockAPI.getInstance(),
+                "configuration.other", null, "custom_items");
+        customItems.copyMissedFields(added -> MvLogger.log(Level.INFO,
+                "A new custom item here (" + added + "). §aEnabling!"));
 
         // check if new items is missed
-        if (custom_items.getBoolean("magic_wool.enabled")) {
+        if (customItems.getBoolean("magic_wool.enabled")) {
             try {
-                register(new BekkerItemStackBuilder(((VersionControlFactory) LuckyBlockAPI.getLuckyEngineProvider().getVersionControl()).getMat().getItem(Mat.WHITE_WOOL, 1))
+                register(new BekkerItemStackBuilder(((VersionControlFactory) LuckyBlockAPI.getLuckyEngineProvider()
+                        .getVersionControl()).getMat().getItem(Mat.WHITE_WOOL, 1))
                         .addUnsafeEnchantment(Enchantment.DURABILITY, 1).setSerialID("magic_wool")
-                        .hideEnchantments().setName(Message.CI_MAGIC_WOOL.getAsString(true))
+                        .hideEnchantments()
+                        .setName(Message.CI_MAGIC_WOOL.getAsString(true))
                         .registerEvent(ItemEvent.PLACE, n -> new BukkitRunnable() {
-
                             final Block block = n.getBlock();
                             int rounds = ThreadLocalRandom.current().nextInt(5, 15);
 
                             @Override
                             public void run() {
-
                                 if (rounds < 0 || !block.getType().name().contains("WOOL")) {
                                     cancel();
                                     return;
                                 }
 
-                                if (((VersionControlFactory) LuckyBlockAPI.getLuckyEngineProvider().getVersionControl()).isModern())
-                                    block.setType(IMat.WOOLS.get(ThreadLocalRandom.current().nextInt(IMat.WOOLS.size())));
-                                else IMat.setData(block, (byte) ThreadLocalRandom.current().nextInt(16));
+                                if (LuckyBlockAPI.getLuckyEngineProvider().getVersionControl().isModern()) {
+                                    block.setType(IMat.WOOLS
+                                            .get(ThreadLocalRandom.current().nextInt(IMat.WOOLS.size())));
+                                } else {
+                                    IMat.setData(block, (byte) ThreadLocalRandom.current().nextInt(16));
+                                }
 
                                 rounds--;
-
                             }
-
                         }.runTaskTimer(LuckyBlockAPI.getInstance(), 2L, 5L)));
             } catch (Throwable th) {
                 th.printStackTrace();
             }
         }
-        if (custom_items.getBoolean("sword_of_justice.enabled")) {
+        if (customItems.getBoolean("sword_of_justice.enabled")) {
             try {
-                double h = custom_items.get().getDouble("sword_of_justice.heal");
-                if (h <= 0) h = 1;
+                double h = customItems.get().getDouble("sword_of_justice.heal");
+                if (h <= 0) {
+                    h = 1;
+                }
                 final double heal = h;
-                register(new BekkerItemStackBuilder(Material.IRON_SWORD).addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 2)
-                        .setSerialID("sword_of_justice").setName(Message.CI_SWORD_OF_JUSTICE.getAsString(true))
+                register(new BekkerItemStackBuilder(Material.IRON_SWORD)
+                        .addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 2)
+                        .setSerialID("sword_of_justice")
+                        .setName(Message.CI_SWORD_OF_JUSTICE.getAsString(true))
                         .registerEvent(ItemEvent.HIT, n -> {
-                            if (n.getType() != HitEvent.Type.DAMAGER) return;
+                            if (n.getType() != HitEvent.Type.DAMAGER) {
+                                return;
+                            }
                             final Player player = (Player) n.getDamager();
                             player.setHealth(Math.min(player.getMaxHealth(), heal + player.getHealth()));
                         }));
@@ -158,15 +174,17 @@ public class CustomItemFactory {
                 th.printStackTrace();
             }
         }
-        if (custom_items.getBoolean("axe_of_perun.enabled")) {
+        if (customItems.getBoolean("axe_of_perun.enabled")) {
             try {
-                double d = custom_items.get().getDouble("axe_of_perun.damage");
-                if (d <= 0) d = .1D;
-                final double damage = d;
-                register(new BekkerItemStackBuilder(Material.DIAMOND_AXE).addUnsafeEnchantment(Enchantment.DURABILITY, 1)
-                        .setSerialID("axe_of_perun").setName(Message.CI_AXE_OF_PERUN.getAsString(true))
+                double damage = Math.max(.1D, customItems.get().getDouble("axe_of_perun.damage"));
+                register(new BekkerItemStackBuilder(Material.DIAMOND_AXE)
+                        .addUnsafeEnchantment(Enchantment.DURABILITY, 1)
+                        .setSerialID("axe_of_perun")
+                        .setName(Message.CI_AXE_OF_PERUN.getAsString(true))
                         .registerEvent(ItemEvent.HIT, n -> {
-                            if (n.getType() != HitEvent.Type.DAMAGER || !(n.getVictim() instanceof Damageable)) return;
+                            if (n.getType() != HitEvent.Type.DAMAGER || !(n.getVictim() instanceof Damageable)) {
+                                return;
+                            }
                             n.getVictim().getWorld().strikeLightningEffect(n.getVictim().getLocation());
                             ((Damageable) n.getVictim()).damage(damage);
                         }));
@@ -174,82 +192,108 @@ public class CustomItemFactory {
                 th.printStackTrace();
             }
         }
-        if (custom_items.getBoolean("mystery_meat.enabled")) {
+        if (customItems.getBoolean("mystery_meat.enabled")) {
             try {
-                register(new BekkerItemStackBuilder(((VersionControlFactory) LuckyBlockAPI.getLuckyEngineProvider().getVersionControl()).getMat().getItem(Mat.BEEF, 1).getType())
+                register(new BekkerItemStackBuilder(((VersionControlFactory) LuckyBlockAPI.getLuckyEngineProvider()
+                        .getVersionControl()).getMat().getItem(Mat.BEEF, 1).getType())
                         .addUnsafeEnchantment(Enchantment.DURABILITY, 1)
-                        .hideEnchantments().setSerialID("mystery_meat").setName(Message.CI_MYSTERY_MEAT.getAsString(true))
+                        .hideEnchantments().setSerialID("mystery_meat")
+                        .setName(Message.CI_MYSTERY_MEAT.getAsString(true))
                         .registerEvent(ItemEvent.CONSUME, n -> {
 
                             final Player player = n.getPlayer();
-                            final PotionEffectType type = PotionEffectType.values()[ThreadLocalRandom.current().nextInt(PotionEffectType.values().length)];
+                            final PotionEffectType type = PotionEffectType.values()[ThreadLocalRandom.current()
+                                    .nextInt(PotionEffectType.values().length)];
                             try {
-                                player.addPotionEffect(new PotionEffect(type, ThreadLocalRandom.current().nextInt(5, 45) * 20, 1));
+                                player.addPotionEffect(new PotionEffect(type, ThreadLocalRandom.current()
+                                        .nextInt(5, 45) * 20, 1));
                             } catch (Exception ex) {
-                                MvLogger.log(Level.WARNING, " > PotionEffectType - " + type + ", " + ex.getLocalizedMessage());
+                                MvLogger.log(Level.WARNING, " > PotionEffectType - "
+                                        + type + ", " + ex.getLocalizedMessage());
                                 ex.printStackTrace();
                             }
-
                         }));
             } catch (Throwable th) {
                 th.printStackTrace();
             }
         }
-        if (custom_items.getBoolean("chilly_pants.enabled")) {
-            solid = custom_items.get().getBoolean("chilly_pants.only_solid");
+        if (customItems.getBoolean("chilly_pants.enabled")) {
+            solid = customItems.get().getBoolean("chilly_pants.only_solid");
             try {
-                register(new BekkerItemStackBuilder(Material.LEATHER_LEGGINGS).setSerialID("chilly_pants").setName(Message.CI_CHILLY_PANTS.getAsString(true)));
-                chilly_pants = true;
+                register(new BekkerItemStackBuilder(Material.LEATHER_LEGGINGS)
+                        .setSerialID("chilly_pants")
+                        .setName(Message.CI_CHILLY_PANTS.getAsString(true)));
+                chillyPants = true;
             } catch (Throwable th) {
                 th.printStackTrace();
             }
         }
-        if (custom_items.getBoolean("rage_armor.enabled")) {
-            rage_armor_percentage = custom_items.get().getInt("rage_armor.percentage");
+        if (customItems.getBoolean("rage_armor.enabled")) {
+            rageArmorPercentage = customItems.get().getInt("rage_armor.percentage");
             try {
-                register(new BekkerItemStackBuilder(Material.LEATHER_LEGGINGS).setSerialID("rage_armor_leggings").setName(Message.CI_RAGE_ARMOR.getAsString(true)));
-                register(new BekkerItemStackBuilder(Material.LEATHER_BOOTS).setSerialID("rage_armor_boots").setName(Message.CI_RAGE_ARMOR.getAsString(true)));
-                register(new BekkerItemStackBuilder(Material.LEATHER_CHESTPLATE).setSerialID("rage_armor_chestplate").setName(Message.CI_RAGE_ARMOR.getAsString(true)));
-                register(new BekkerItemStackBuilder(Material.LEATHER_HELMET).setSerialID("rage_armor_helmet").setName(Message.CI_RAGE_ARMOR.getAsString(true)));
-                rage_armor = true;
+                register(new BekkerItemStackBuilder(Material.LEATHER_LEGGINGS)
+                        .setSerialID("rage_armor_leggings")
+                        .setName(Message.CI_RAGE_ARMOR.getAsString(true)));
+                register(new BekkerItemStackBuilder(Material.LEATHER_BOOTS)
+                        .setSerialID("rage_armor_boots")
+                        .setName(Message.CI_RAGE_ARMOR.getAsString(true)));
+                register(new BekkerItemStackBuilder(Material.LEATHER_CHESTPLATE)
+                        .setSerialID("rage_armor_chestplate")
+                        .setName(Message.CI_RAGE_ARMOR.getAsString(true)));
+                register(new BekkerItemStackBuilder(Material.LEATHER_HELMET)
+                        .setSerialID("rage_armor_helmet")
+                        .setName(Message.CI_RAGE_ARMOR.getAsString(true)));
+                rageArmor = true;
             } catch (Throwable th) {
                 th.printStackTrace();
             }
         }
-        if (custom_items.getBoolean("wither_blast_rod.enabled")) {
-            final float wither_skull_yield = custom_items.getFloat("wither_blast_rod.yield");
+        if (customItems.getBoolean("wither_blast_rod.enabled")) {
+            final float witherSkullYield = customItems.getFloat("wither_blast_rod.yield");
             try {
-                register(new BekkerItemStackBuilder(Material.BLAZE_ROD).setSerialID("wither_blast_rod")
-                        .addUnsafeEnchantment(Enchantment.DURABILITY, 1).hideEnchantments()
+                register(new BekkerItemStackBuilder(Material.BLAZE_ROD)
+                        .setSerialID("wither_blast_rod")
+                        .addUnsafeEnchantment(Enchantment.DURABILITY, 1)
+                        .hideEnchantments()
                         .setName(Message.CI_WITHER_BLAST_ROD.getAsString(true))
                         .registerEvent(ItemEvent.INTERACT, event -> {
-
                             withdrawItem(event.getPlayer());
                             WitherSkull skull = event.getPlayer().launchProjectile(WitherSkull.class);
-                            skull.setYield(wither_skull_yield);
-
+                            skull.setYield(witherSkullYield);
                         }));
             } catch (Throwable th) {
                 th.printStackTrace();
             }
         }
-        if (((VersionControlFactory) LuckyBlockAPI.getLuckyEngineProvider().getVersionControl()).isModern() && custom_items.getBoolean("carrot_corrupter.enabled")) {
+        if (LuckyBlockAPI.getLuckyEngineProvider().getVersionControl().isModern()
+                && customItems.getBoolean("carrot_corrupter.enabled")) {
             try {
                 register(new BekkerItemStackBuilder(Material.CARROT).addUnsafeEnchantment(Enchantment.DURABILITY, 1)
-                        .hideEnchantments().setSerialID("carrot_corrupter").setName(Message.CI_CARROT_CORRUPTER.getAsString(true))
+                        .hideEnchantments()
+                        .setSerialID("carrot_corrupter")
+                        .setName(Message.CI_CARROT_CORRUPTER.getAsString(true))
                         .registerEvent(ItemEvent.HIT, n -> {
-                            if (n.getType() != HitEvent.Type.DAMAGER) return;
-                            if (!(n.getVictim() instanceof Player)) return;
+                            if (n.getType() != HitEvent.Type.DAMAGER) {
+                                return;
+                            }
+                            if (!(n.getVictim() instanceof Player)) {
+                                return;
+                            }
 
                             final Player victim = (Player) n.getVictim();
                             List<Integer> slots = new ArrayList<>();
-                            for (int slot = 0; slot < 9; slot++)
-                                if (!isEmpty(victim.getInventory().getItem(slot))) slots.add(slot);
-                            if (slots.size() != 0) {
-                                victim.getInventory().setItem(slots.get(ThreadLocalRandom.current().nextInt(slots.size())),
-                                        new ItemStack(Material.CARROT));
+                            for (int slot = 0; slot < 9; slot++) {
+                                if (!isEmpty(victim.getInventory().getItem(slot))) {
+                                    slots.add(slot);
+                                }
+                            }
+                            if (!slots.isEmpty()) {
+                                victim.getInventory()
+                                        .setItem(slots.get(ThreadLocalRandom.current().nextInt(slots.size())),
+                                                new ItemStack(Material.CARROT));
                             } else {
-                                victim.getInventory().setItem(ThreadLocalRandom.current().nextInt(9), new ItemStack(Material.CARROT));
+                                victim.getInventory().setItem(ThreadLocalRandom.current().nextInt(9),
+                                        new ItemStack(Material.CARROT));
                             }
                             withdrawItem((Player) n.getDamager());
                         }));
@@ -259,70 +303,75 @@ public class CustomItemFactory {
         }
 
         final int internal;
-        MvLogger.log(Level.INFO, "Loaded " + (internal = storage.size()) + " internal custom items...");
-        Bukkit.getPluginManager().callEvent(new CustomItemFactoryReloadEvent(new ArrayList<>(storage), CustomItemFactoryReloadEvent.Action.PRELOAD));
+        MvLogger.log(Level.INFO, "Loaded " + (internal = STORAGE.size()) + " internal custom items...");
+        Bukkit.getPluginManager().callEvent(new CustomItemFactoryReloadEvent(new ArrayList<>(STORAGE),
+                CustomItemFactoryReloadEvent.Action.PRELOAD));
 
-        if (storage.size() > internal)
-            MvLogger.log(Level.INFO, "Loaded " + (storage.size() - internal) + " external custom items...");
-        Bukkit.getPluginManager().callEvent(new CustomItemFactoryReloadEvent(new ArrayList<>(storage), CustomItemFactoryReloadEvent.Action.LOADED));
+        if (STORAGE.size() > internal) {
+            MvLogger.log(Level.INFO, "Loaded " + (STORAGE.size() - internal) + " external custom items...");
+        }
+        Bukkit.getPluginManager().callEvent(new CustomItemFactoryReloadEvent(new ArrayList<>(STORAGE),
+                CustomItemFactoryReloadEvent.Action.LOADED));
 
-        MvLogger.log(Level.INFO, "Loaded " + storage.size() + " custom items... (Total)");
-
+        MvLogger.log(Level.INFO, "Loaded " + STORAGE.size() + " custom items... (Total)");
     }
 
     public static void withdrawItem(Player damager) {
-
-        if (damager.getGameMode() == GameMode.CREATIVE) return;
-
-        PlayerInventory i = damager.getInventory();
-        ItemStack stack = i.getItem(i.getHeldItemSlot());
-        if (stack.getAmount() > 1) {
-            stack.setAmount(stack.getAmount() - 1);
-            i.setItem(i.getHeldItemSlot(), stack);
-        } else {
-            i.setItem(i.getHeldItemSlot(), null);
+        if (damager.getGameMode() == GameMode.CREATIVE) {
+            return;
         }
 
+        PlayerInventory inventory = damager.getInventory();
+        ItemStack stack = inventory.getItem(inventory.getHeldItemSlot());
+        if (stack.getAmount() > 1) {
+            stack.setAmount(stack.getAmount() - 1);
+            inventory.setItem(inventory.getHeldItemSlot(), stack);
+        } else {
+            inventory.setItem(inventory.getHeldItemSlot(), null);
+        }
     }
 
     public static boolean isEmpty(ItemStack stack) {
         return stack == null || stack.getType() == Material.AIR;
     }
 
-//	public static void reloadSystem() throws Throwable {
+//    public static void reloadSystem() throws Throwable {
 //
-//		ItemTag adapter = LBMain.getItemTagAdapter();
-//		if(LuckyBlockAPI.getInstance().factory != null) {
+//        ItemTag adapter = LBMain.getItemTagAdapter();
+//        if(LuckyBlockAPI.getInstance().factory != null) {
 //
-//			new ArrayList<>(storage).stream().filter(item -> {
+//            new ArrayList<>(storage).stream().filter(item -> {
 //
-//				String identifier = adapter.getTagString(adapter.getTag(adapter.asNMSCopy(item)), CustomItemFactory.TAG_IDENTIFIER_NAME);
-//				return identifier.split("-")[0].equalsIgnoreCase(LuckyBlockAPI.getInstance().getName());
+//                String identifier = adapter.getTagString(adapter.getTag(adapter.asNMSCopy(item)),
+//                                                            CustomItemFactory.TAG_IDENTIFIER_NAME);
+//                return identifier.split("-")[0].equalsIgnoreCase(LuckyBlockAPI.getInstance().getName());
 //
-//			}).forEach(n -> storage.remove(n));
+//            }).forEach(n -> storage.remove(n));
 //
-//			loadSystem();
+//            loadSystem();
 //
-//		}
+//        }
 //
-//	}
+//    }
 
     public static BekkerItemStack fetchCustomItem(String string) {
-        for (BekkerItemStack stack : storage)
-            if (stack.equals((Object) string)) return stack;
+        for (BekkerItemStack stack : STORAGE) {
+            if (stack.equals(string)) {
+                return stack;
+            }
+        }
         return null;
     }
 
     public static Collection<BekkerItemStack> copy() {
-        return new ArrayList<>(storage);
+        return new ArrayList<>(STORAGE);
     }
 
     public static boolean isRageArmor(Player player) {
-
-        PlayerInventory i = player.getInventory();
-        return compare(i.getHelmet(), "ntdluckyblock-rage_armor_helmet") && compare(i.getLeggings(), "ntdluckyblock-rage_armor_leggings") &&
-                compare(i.getChestplate(), "ntdluckyblock-rage_armor_chestplate") && compare(i.getBoots(), "ntdluckyblock-rage_armor_boots");
-
+        PlayerInventory playerInventory = player.getInventory();
+        return compare(playerInventory.getHelmet(), "ntdluckyblock-rage_armor_helmet")
+                && compare(playerInventory.getLeggings(), "ntdluckyblock-rage_armor_leggings")
+                && compare(playerInventory.getChestplate(), "ntdluckyblock-rage_armor_chestplate")
+                && compare(playerInventory.getBoots(), "ntdluckyblock-rage_armor_boots");
     }
-
 }

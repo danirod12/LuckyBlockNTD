@@ -2,8 +2,7 @@ package me.DenBeKKer.ntdLuckyBlock.customitem;
 
 import org.bukkit.event.block.BlockBreakEvent;
 
+@FunctionalInterface
 public interface BreakEvent {
-
-    public void execute(BlockBreakEvent e);
-
+    void execute(BlockBreakEvent e);
 }

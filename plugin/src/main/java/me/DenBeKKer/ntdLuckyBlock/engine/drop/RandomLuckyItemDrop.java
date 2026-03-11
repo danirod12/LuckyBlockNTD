@@ -27,8 +27,9 @@ public class RandomLuckyItemDrop implements LuckyDrop {
     @Override
     public void execute(LuckyDrop.Execution execution) {
         LuckyBlockKey key = LuckyBlockAPI.getLuckyEngineProvider().random();
-        if (key instanceof LuckyBlockKey.NotLoadedLuckyBlockKey)
+        if (key instanceof LuckyBlockKey.NotLoadedLuckyBlockKey) {
             return;
+        }
         ItemStack stack = LuckyBlockAPI.getLuckyEngineProvider().get(key).orElseThrow(RuntimeException::new).getItem();
         if (stack == null) {
             return;

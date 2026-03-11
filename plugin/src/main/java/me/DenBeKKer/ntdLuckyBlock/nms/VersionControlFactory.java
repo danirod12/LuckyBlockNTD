@@ -142,7 +142,9 @@ public class VersionControlFactory implements VersionControl {
     public ItemStack apply(ItemStack origin, String tagName, String identifier) {
         Object nmsItem = itemTagAdapter.asNMSCopy(origin);
         Object tag = itemTagAdapter.getTag(nmsItem);
-        if (tag == null) tag = itemTagAdapter.newTag();
+        if (tag == null) {
+            tag = itemTagAdapter.newTag();
+        }
         itemTagAdapter.setTagString(tag, tagName, identifier);
         itemTagAdapter.setTag(nmsItem, tag);
         return itemTagAdapter.asBukkitCopy(nmsItem);
@@ -178,8 +180,8 @@ public class VersionControlFactory implements VersionControl {
                 Object resolvable = clazz.getConstructor(GameProfile.class).newInstance(profile);
                 method.setAccessible(true);
                 method.invoke(headMeta, resolvable);
-            } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException |
-                     InvocationTargetException | IllegalAccessException ex2) {
+            } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException
+                     | InvocationTargetException | IllegalAccessException ex2) {
                 try {
                     // Old method that modifies profile
                     Field profileField = headMeta.getClass().getDeclaredField("profile");

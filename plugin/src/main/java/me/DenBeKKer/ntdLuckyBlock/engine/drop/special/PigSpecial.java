@@ -25,8 +25,8 @@ public class PigSpecial implements LuckyDrop {
 
     @Override
     public void execute(Execution execution) {
-        Location location = execution.getPlayer() == null ?
-                execution.getBlock().getLocation().add(0.5, 0.4, 0.5) : execution.getPlayer().getLocation();
+        Location location = execution.getPlayer() == null
+                ? execution.getBlock().getLocation().add(0.5, 0.4, 0.5) : execution.getPlayer().getLocation();
 
         List<Entity> list = new ArrayList<>();
         Pig current = null;

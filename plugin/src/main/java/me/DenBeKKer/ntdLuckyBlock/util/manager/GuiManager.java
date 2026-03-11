@@ -51,8 +51,9 @@ public class GuiManager implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         // -999 click out of container
-        if (event.getSlot() < 0)
+        if (event.getSlot() < 0) {
             return;
+        }
 
         if (get.equals(event.getClickedInventory())) {
             event.setCancelled(true);
@@ -69,8 +70,8 @@ public class GuiManager implements Listener {
             }
 
             final Player player = ((Player) event.getWhoClicked());
-            if (this.instance.getConfigHolder().getShopPermissionsForEach &&
-                    !player.hasPermission("luckyblock.get." + block.getKey().toString().toLowerCase())
+            if (this.instance.getConfigHolder().getShopPermissionsForEach
+                    && !player.hasPermission("luckyblock.get." + block.getKey().toString().toLowerCase())
                     && !player.hasPermission("luckyblock.get.*")) {
                 player.sendMessage(Message.CMD_NO_PERM_TO_COLOR.getAsString().replace("%lb%",
                         block.getCustomName()));
@@ -83,14 +84,16 @@ public class GuiManager implements Listener {
 
                 @Override
                 public void onConfirm(int amount) {
-
                     map.remove(player);
 
-                    if (amount < 0) return;
+                    if (amount < 0) {
+                        return;
+                    }
 
                     if (!shopSetup.isEnabled() || !economy) {
-                        for (int i = 0; i < amount; i++)
+                        for (int i = 0; i < amount; i++) {
                             block.giveItem(player);
+                        }
                         player.closeInventory();
                         return;
                     }
@@ -104,8 +107,9 @@ public class GuiManager implements Listener {
                         player.closeInventory();
                     } else {
                         if (economyBridge.withdraw(player, (int) cost)) {
-                            for (int i = 0; i < amount; i++)
+                            for (int i = 0; i < amount; i++) {
                                 block.giveItem(player);
+                            }
                             player.sendMessage(Message.GUI_GET_SUCCESS.getAsString().replace("%eco%",
                                             economyBridge.format((int) cost))
                                     .replace("%amount%", String.valueOf(amount)));
@@ -114,7 +118,6 @@ public class GuiManager implements Listener {
                             player.closeInventory();
                         }
                     }
-
                 }
 
                 @Override
@@ -191,7 +194,9 @@ public class GuiManager implements Listener {
     public void close() {
         new ArrayList<>(map.keySet()).forEach(HumanEntity::closeInventory);
         map.clear();
-        if (get != null) new ArrayList<>(get.getViewers()).forEach(HumanEntity::closeInventory);
+        if (get != null) {
+            new ArrayList<>(get.getViewers()).forEach(HumanEntity::closeInventory);
+        }
     }
 
     public enum GuiType {
@@ -199,9 +204,11 @@ public class GuiManager implements Listener {
         EDIT, GET;
 
         public static GuiType parseGuiType(String name) {
-            for (GuiType type : values())
-                if (type.name().equalsIgnoreCase(name))
+            for (GuiType type : values()) {
+                if (type.name().equalsIgnoreCase(name)) {
                     return type;
+                }
+            }
             return null;
         }
     }

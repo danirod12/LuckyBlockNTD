@@ -25,14 +25,16 @@ public class LuckyRecipeItem implements ILuckyRecipeItem {
 
     @Override
     public boolean isMatch(ItemStack item) {
-        if (item == null)
+        if (item == null) {
             return false;
+        }
 
         switch (type) {
             case DYE: {
                 if (engine.getVersionControl().isLegacy()) {
-                    if (!(item.getData() instanceof Dye))
+                    if (!(item.getData() instanceof Dye)) {
                         return false;
+                    }
                     return ((Dye) item.getData()).getColor() == object;
                 } else {
                     return item.getType().name().equalsIgnoreCase(((Enum<?>) object).name() + "_DYE");

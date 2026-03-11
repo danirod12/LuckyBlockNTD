@@ -25,7 +25,7 @@ public class SpigotUpdater implements ISpigotUpdater {
     private String version;
     private boolean needUpdate = false;
 
-    public final static Pattern pattern = Pattern.compile("[0-9.]*");
+    public static final Pattern VERSION_PATTERN = Pattern.compile("[0-9.]*");
 
     public SpigotUpdater(JavaPlugin plugin, int id) {
         this(plugin, id, null);
@@ -125,30 +125,37 @@ public class SpigotUpdater implements ISpigotUpdater {
     }
 
     private int compareVersions(String version, String origin) {
-        final int[] a = prepare(version), b = prepare(origin);
+        final int[] versionPart = prepare(version), originPart = prepare(origin);
 
-        int A = 0, B = 0;
-        for (int i = 0; i < a.length || i < b.length; i++) {
-            int length = String.valueOf(Math.max(i < a.length ? a[i] : 1, i < b.length ? b[i] : 1)).length();
+        int versionId = 0, originId = 0;
+        for (int i = 0; i < versionPart.length || i < originPart.length; i++) {
+            int length = String.valueOf(Math.max(i < versionPart.length
+                    ? versionPart[i] : 1, i < originPart.length ? originPart[i] : 1)).length();
             for (int j = 1; j < length; j++) {
-                A *= 10;
-                B *= 10;
+                versionId *= 10;
+                originId *= 10;
             }
 
-            if (i < a.length)
-                A += a[i];
-            if (i < b.length)
-                B += b[i];
-            A *= 10;
-            B *= 10;
+            if (i < versionPart.length) {
+                versionId += versionPart[i];
+            }
+            if (i < originPart.length) {
+                originId += originPart[i];
+            }
+            versionId *= 10;
+            originId *= 10;
         }
-        return A - B;
+        return versionId - originId;
     }
 
     private int[] prepare(String version) {
-        if (version.contains("-")) version = version.split("-")[0];
+        if (version.contains("-")) {
+            version = version.split("-")[0];
+        }
         version = version.replace("_", ".");
-        if (!SpigotUpdater.pattern.matcher(version).matches()) return new int[0];
+        if (!SpigotUpdater.VERSION_PATTERN.matcher(version).matches()) {
+            return new int[0];
+        }
         return Stream.of(version.split("\\.")).mapToInt(Integer::valueOf).toArray();
     }
 }

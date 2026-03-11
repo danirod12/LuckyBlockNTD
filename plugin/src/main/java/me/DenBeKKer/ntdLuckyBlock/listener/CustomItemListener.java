@@ -24,12 +24,18 @@ public class CustomItemListener implements Listener {
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
-        if (CustomItemFactory.chilly_pants && CustomItemFactory.compare(event.getPlayer()
+        if (CustomItemFactory.chillyPants && CustomItemFactory.compare(event.getPlayer()
                 .getInventory().getLeggings(), "ntdluckyblock-chilly_pants")) {
-            if (event.getPlayer().getGameMode() == GameMode.SPECTATOR) return;
+            if (event.getPlayer().getGameMode() == GameMode.SPECTATOR) {
+                return;
+            }
             Block target = event.getTo().clone().add(.0D, -1.0D, .0D).getBlock();
-            if (target.getType() == Material.ICE) return;
-            if (CustomItemFactory.solid && !target.getType().isSolid()) return;
+            if (target.getType() == Material.ICE) {
+                return;
+            }
+            if (CustomItemFactory.solid && !target.getType().isSolid()) {
+                return;
+            }
             target.setType(Material.ICE);
         }
     }
@@ -38,59 +44,77 @@ public class CustomItemListener implements Listener {
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         victim:
         if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
 
-            final Player player = (Player) event.getEntity();
-
-            if (CustomItemFactory.rage_armor && CustomItemFactory.isRageArmor(player))
-                event.setDamage(event.getDamage() * (100 - CustomItemFactory.rage_armor_percentage));
+            if (CustomItemFactory.rageArmor && CustomItemFactory.isRageArmor(player)) {
+                event.setDamage(event.getDamage() * (100 - CustomItemFactory.rageArmorPercentage));
+            }
 
             final ItemStack stack = player.getInventory().getItem(player.getInventory().getHeldItemSlot());
-            if (stack == null) break victim;
+            if (stack == null) {
+                break victim;
+            }
             BekkerItemStack item = CustomItemFactory.fetchCustomItem(stack);
-            if (item == null) break victim;
+            if (item == null) {
+                break victim;
+            }
             item.handle(new HitEvent(event.getDamager(), player, HitEvent.Type.VICTIM));
-
         }
+
         damager:
         if (event.getDamager() instanceof Player) {
-
-            final Player player = (Player) event.getDamager();
-            final ItemStack stack = player.getInventory().getItem(player.getInventory().getHeldItemSlot());
-            if (stack == null) break damager;
+            Player player = (Player) event.getDamager();
+            ItemStack stack = player.getInventory().getItem(player.getInventory().getHeldItemSlot());
+            if (stack == null) {
+                break damager;
+            }
             BekkerItemStack item = CustomItemFactory.fetchCustomItem(stack);
-            if (item == null) break damager;
+            if (item == null) {
+                break damager;
+            }
             item.handle(new HitEvent(player, event.getEntity(), HitEvent.Type.DAMAGER));
-
         }
     }
 
     @EventHandler
-    public void onPlayerConsume(PlayerItemConsumeEvent e) {
-        BekkerItemStack item = CustomItemFactory.fetchCustomItem(e.getItem());
-        if (item == null) return;
-        item.handle(e);
+    public void onPlayerConsume(PlayerItemConsumeEvent event) {
+        BekkerItemStack item = CustomItemFactory.fetchCustomItem(event.getItem());
+        if (item == null) {
+            return;
+        }
+        item.handle(event);
     }
 
     @EventHandler
     public void onPlayerInteractEvent(PlayerInteractEvent event) {
         try {
-            if (event.getHand() != EquipmentSlot.HAND) return;
+            if (event.getHand() != EquipmentSlot.HAND) {
+                return;
+            }
         } catch (Throwable ignored) {
         }
         PlayerInventory inventory = event.getPlayer().getInventory();
         final ItemStack stack = inventory.getItem(inventory.getHeldItemSlot());
-        if (stack == null) return;
+        if (stack == null) {
+            return;
+        }
         BekkerItemStack item = CustomItemFactory.fetchCustomItem(stack);
-        if (item == null) return;
+        if (item == null) {
+            return;
+        }
         item.handle(event);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockPlace(BlockPlaceEvent event) {
         ItemStack stack = event.getItemInHand();
-        if (stack == null) return;
+        if (stack == null) {
+            return;
+        }
         BekkerItemStack item = CustomItemFactory.fetchCustomItem(stack);
-        if (item == null) return;
+        if (item == null) {
+            return;
+        }
         item.handle(event);
     }
 
@@ -98,10 +122,13 @@ public class CustomItemListener implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
         PlayerInventory inventory = event.getPlayer().getInventory();
         final ItemStack stack = inventory.getItem(inventory.getHeldItemSlot());
-        if (stack == null) return;
+        if (stack == null) {
+            return;
+        }
         BekkerItemStack item = CustomItemFactory.fetchCustomItem(stack);
-        if (item == null) return;
+        if (item == null) {
+            return;
+        }
         item.handle(event);
     }
-
 }

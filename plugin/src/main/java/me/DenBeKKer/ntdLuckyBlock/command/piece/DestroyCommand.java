@@ -37,8 +37,8 @@ public class DestroyCommand extends LBCommand {
 
         // Notification
         boolean notify = true;
-        if (args[args.length - 1].equalsIgnoreCase("-silent") ||
-                args[args.length - 1].equalsIgnoreCase("-s")) {
+        if (args[args.length - 1].equalsIgnoreCase("-silent")
+                || args[args.length - 1].equalsIgnoreCase("-s")) {
             notify = false;
             String[] argsCopy = args;
             args = new String[argsCopy.length - 1];
@@ -59,8 +59,16 @@ public class DestroyCommand extends LBCommand {
         // else load two positions from the arguments and destroy all entities in the area
         // if only one position is given then threat the second position as the first position
         if (args[0].equalsIgnoreCase("chunk")) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage("§cThis command's subcommand is only available for players");
+                return CommandResponse.SUCCESS;
+            }
             entities.addAll(Arrays.asList(((Player) sender).getLocation().getChunk().getEntities()));
         } else if (args.length < 3) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage("§cThis command's subcommand is only available for players");
+                return CommandResponse.SUCCESS;
+            }
             try {
                 int radius = Integer.parseInt(args[0]);
                 entities.addAll(((Player) sender).getWorld().getNearbyEntities(((Player) sender).getLocation()

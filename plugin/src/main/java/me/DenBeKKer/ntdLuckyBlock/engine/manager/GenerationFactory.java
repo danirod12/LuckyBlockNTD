@@ -81,7 +81,9 @@ public class GenerationFactory implements GenerationFactoryProvider {
         LuckyEntry entry = new LuckyEntryHolder(DropChance.random());
         for (int i = 0; i < ThreadLocalRandom.current().nextInt(1, 5); i++) {
             LuckyDrop drop = generateLuckyDrop();
-            if (drop == null) continue;
+            if (drop == null) {
+                continue;
+            }
             entry.add(drop);
         }
         return entry;
@@ -105,7 +107,9 @@ public class GenerationFactory implements GenerationFactoryProvider {
         LuckyBlockKey[] blockKeys = engine.getLoadedTypes();
         int index = ThreadLocalRandom.current().nextInt(blockKeys.length + 2);
         int amount = ThreadLocalRandom.current().nextInt(1, 5);
-        if (index >= blockKeys.length) return new RandomLuckyItemDrop(amount);
+        if (index >= blockKeys.length) {
+            return new RandomLuckyItemDrop(amount);
+        }
         return new LuckyItemDrop(blockKeys[index], amount);
     }
 
@@ -125,8 +129,8 @@ public class GenerationFactory implements GenerationFactoryProvider {
             case 2:
                 return new TntColumnSpecial(SpecialDropType.TNT_COLUMN.defaultValue());
             case 3:
-                return new PigSpecial(ThreadLocalRandom.current().nextBoolean() ?
-                        SpecialDropType.PIG.defaultValue() : (SpecialDropType.PIG.defaultValue()
+                return new PigSpecial(ThreadLocalRandom.current().nextBoolean()
+                        ? SpecialDropType.PIG.defaultValue() : (SpecialDropType.PIG.defaultValue()
                         + ThreadLocalRandom.current().nextInt(20)));
             case 4:
                 return new LightningSpecial(SpecialDropType.LIGHTNING.defaultValue());
@@ -170,10 +174,12 @@ public class GenerationFactory implements GenerationFactoryProvider {
                     amount = 8;
                     break;
             }
-            if (amount > material.getMaxStackSize())
+            if (amount > material.getMaxStackSize()) {
                 amount = material.getMaxStackSize();
-            if (amount < 1)
+            }
+            if (amount < 1) {
                 amount = 1;
+            }
             return new ItemDrop(new ItemStack(material, amount));
         }
         return new ItemDrop(new ItemStack(material,

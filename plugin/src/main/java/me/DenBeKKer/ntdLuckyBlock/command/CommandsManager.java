@@ -105,7 +105,9 @@ public class CommandsManager implements CommandExecutor, /* TODO TabCompleter, *
             try {
                 CommandResponse response = command.execute(sender, label,
                         args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[0]);
-                if (response == CommandResponse.SUCCESS) return true;
+                if (response == CommandResponse.SUCCESS) {
+                    return true;
+                }
                 if (response == CommandResponse.MISSED_PERMISSION) {
                     sender.sendMessage(Message.CMD_NO_PERM.getAsString(true));
                     return true;
@@ -128,8 +130,9 @@ public class CommandsManager implements CommandExecutor, /* TODO TabCompleter, *
             }
         }).map(LBCommand::getHelpMessage).filter(Objects::nonNull).map(msg -> msg.getAsString(true)
                 .replace("%label%", label)).collect(Collectors.toList());
-        if (messages.isEmpty())
+        if (messages.isEmpty()) {
             return true;
+        }
         sender.sendMessage(Message.CMD_HELP.getAsString(true));
         messages.forEach(sender::sendMessage);
         return true;

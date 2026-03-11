@@ -77,12 +77,14 @@ public class CoreListener implements Listener {
     // 1.19.0-1.19.3 fix
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (this.cache == null)
+        if (this.cache == null) {
             return;
+        }
         // This code part could be run only on 1.13+. Cache is not null, so we are sure
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK || event.getItem() == null
-                || event.getItem().getType() != Material.PLAYER_HEAD)
+                || event.getItem().getType() != Material.PLAYER_HEAD) {
             return;
+        }
         ItemStack helmet = event.getPlayer().getInventory().getItem(EquipmentSlot.HEAD);
         if (helmet != null && helmet.getType() != Material.AIR) {
             this.cache.put(event.getPlayer(), event.getItem());
@@ -140,8 +142,9 @@ public class CoreListener implements Listener {
                     return;
                 }
                 block.placeBlock(event.getBlock());
-                if (engine.getConfigHolder().forceUpdateInventory && event.getPlayer().isOnline())
+                if (engine.getConfigHolder().forceUpdateInventory && event.getPlayer().isOnline()) {
                     event.getPlayer().updateInventory();
+                }
             }, 1L);
         });
     }
@@ -295,17 +298,23 @@ public class CoreListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!this.engine.getConfigHolder().preventHatLuckyBlock) return;
-        if (event.isCancelled() || event.getAction() == InventoryAction.NOTHING) return;
-        if (!(event.getWhoClicked() instanceof Player)) return;
-
-        if (event.getSlotType() != InventoryType.SlotType.ARMOR &&
-                event.getSlotType() != InventoryType.SlotType.CONTAINER &&
-                event.getSlotType() != InventoryType.SlotType.QUICKBAR) {
+        if (!this.engine.getConfigHolder().preventHatLuckyBlock) {
             return;
         }
-        if (!event.getInventory().getType().equals(InventoryType.CRAFTING) &&
-                !event.getInventory().getType().equals(InventoryType.PLAYER)) {
+        if (event.isCancelled() || event.getAction() == InventoryAction.NOTHING) {
+            return;
+        }
+        if (!(event.getWhoClicked() instanceof Player)) {
+            return;
+        }
+
+        if (event.getSlotType() != InventoryType.SlotType.ARMOR
+                && event.getSlotType() != InventoryType.SlotType.CONTAINER
+                && event.getSlotType() != InventoryType.SlotType.QUICKBAR) {
+            return;
+        }
+        if (!event.getInventory().getType().equals(InventoryType.CRAFTING)
+                && !event.getInventory().getType().equals(InventoryType.PLAYER)) {
             return;
         }
 

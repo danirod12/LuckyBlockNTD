@@ -23,9 +23,10 @@ public class VersionCommand extends LBCommand {
     public CommandResponse execute(CommandSender sender, String label, String[] args) {
         sender.sendMessage("§7[§eLuckyBlock§7] §fThis server is running §eLuckyBlock NTD");
         sender.sendMessage("§8 • §fRunning version - §e" + LuckyBlockAPI.getVersion() + " §7(" +
-                LuckyBlockAPI.getVersionType().getColoredSimpleName() + "§7) " + (spigotUpdater.isNeedUpdate() ?
-                "§c§l[!] §cVersion " + spigotUpdater.getLatestVersion() + " available" : "§aLatest version"));
-        sender.sendMessage("§8 • §fBuild - §e" + LuckyBlockAPI.getBuild() + "§f, last update - §e" + LuckyBlockAPI.getLastUpdate());
+                LuckyBlockAPI.getVersionType().getColoredSimpleName() + "§7) " + (spigotUpdater.isNeedUpdate()
+                ? "§c§l[!] §cVersion " + spigotUpdater.getLatestVersion() + " available" : "§aLatest version"));
+        sender.sendMessage("§8 • §fBuild - §e" + LuckyBlockAPI.getBuild()
+                + "§f, last update - §e" + LuckyBlockAPI.getLastUpdate());
         sender.sendMessage("§8 • §fPlugin author -§e danirod12 §7(aka Den Bekker)");
 
         for (String arg : args) {

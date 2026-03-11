@@ -43,29 +43,29 @@
         <defaultGoal>clean package</defaultGoal>
 
         <plugins>
-            <!--            <plugin>-->
-            <!--                <groupId>org.apache.maven.plugins</groupId>-->
-            <!--                <artifactId>maven-checkstyle-plugin</artifactId>-->
-            <!--                <version>3.3.1</version>-->
-            <!--                <configuration>-->
-            <!--                    <configLocation>checkstyle.xml</configLocation>-->
-            <!--                    <inputEncoding>UTF-8</inputEncoding>-->
-            <!--                    <consoleOutput>true</consoleOutput>-->
-            <!--                    <failsOnError>true</failsOnError>-->
-            <!--                    <violationSeverity>warning</violationSeverity>-->
-            <!--                    <failOnViolation>true</failOnViolation>-->
-            <!--                    <linkXRef>true</linkXRef>-->
-            <!--                </configuration>-->
-            <!--                <executions>-->
-            <!--                    <execution>-->
-            <!--                        <id>validate</id>-->
-            <!--                        <phase>validate</phase>-->
-            <!--                        <goals>-->
-            <!--                            <goal>check</goal>-->
-            <!--                        </goals>-->
-            <!--                    </execution>-->
-            <!--                </executions>-->
-            <!--            </plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.3.1</version>
+                <configuration>
+                    <configLocation>checkstyle.xml</configLocation>
+                    <inputEncoding>UTF-8</inputEncoding>
+                    <consoleOutput>true</consoleOutput>
+                    <failsOnError>true</failsOnError>
+                    <violationSeverity>warning</violationSeverity>
+                    <failOnViolation>true</failOnViolation>
+                    <linkXRef>true</linkXRef>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -137,6 +137,10 @@
                         <relocation>
                             <pattern>com.github.danirod12.mcversion</pattern>
                             <shadedPattern>me.DenBeKKer.ntdLuckyBlock.util</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.bstats</pattern>
+                            <shadedPattern>me.DenBeKKer.ntdLuckyBlock.util.bstats</shadedPattern>
                         </relocation>
                     </relocations>
                     <filters>

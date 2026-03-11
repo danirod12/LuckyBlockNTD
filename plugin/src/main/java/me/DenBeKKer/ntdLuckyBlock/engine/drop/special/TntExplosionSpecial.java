@@ -18,8 +18,8 @@ public class TntExplosionSpecial extends ExplosionableItems implements LuckyDrop
 
     @Override
     public void execute(Execution execution) {
-        Location location = (execution.getPlayer() == null ?
-                execution.getBlock().getLocation() : execution.getPlayer().getLocation());
+        Location location = (execution.getPlayer() == null
+                ? execution.getBlock().getLocation() : execution.getPlayer().getLocation());
         throwExplosion(EntityType.PRIMED_TNT, location.add(.5, .5, .5), amount);
     }
 }

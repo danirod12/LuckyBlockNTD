@@ -43,6 +43,14 @@
             <version>5.0.47</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>3.0.2</version>
+            <scope>compile</scope>
+        </dependency>
+
         <dependency>
             <artifactId>tokenmanager</artifactId>
             <groupId>tokenmanager</groupId>
@@ -250,7 +258,7 @@
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.drop.** { &lt;methods&gt;; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.Lucky* { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.Templates { *; }</option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.Metrics** { *; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.bstats.** { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.ColorData { &lt;fields&gt;; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.particle.ParticleManager { &lt;methods&gt;;
                             }

@@ -59,7 +59,6 @@ public class DiamondColumnSpecial implements LuckyDrop {
 
                 block.getWorld().spawnFallingBlock(block.getLocation().add(0.5, y, 0.5), list.get(0), (byte) 0);
                 list.remove(0);
-
             }
         }.runTaskTimer(execution.getInstance(), 10, 10);
     }

@@ -18,8 +18,9 @@ public class LuckyRecipe implements ILuckyRecipe {
     private final String permission;
 
     public LuckyRecipe(LuckyBlockKey type, ILuckyRecipeItem[] items, String permission, boolean anyMatrix) {
-        if (!anyMatrix && items.length != 9)
+        if (!anyMatrix && items.length != 9) {
             throw new IllegalArgumentException("You should provide 9 LuckyRecipeItems");
+        }
         this.items = items;
         this.type = type;
         this.anyMatrix = anyMatrix;
@@ -91,7 +92,9 @@ public class LuckyRecipe implements ILuckyRecipe {
 
     @Override
     public boolean hasAccess(Player player) {
-        if (permission == null || player == null) return true;
+        if (permission == null || player == null) {
+            return true;
+        }
         return Misc.hasPermission(player, permission);
     }
 }

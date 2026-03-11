@@ -35,6 +35,7 @@ public class SchematicDrop implements CustomSaver, LuckyDrop {
     /**
      * @param file - Schematic file
      * @param b    - Place at block (true); Place at player (false)
+     * @param i    - Replace air (true); Don't replace air (false)
      */
     public SchematicDrop(File file, boolean b, boolean i) {
         this.b = b;

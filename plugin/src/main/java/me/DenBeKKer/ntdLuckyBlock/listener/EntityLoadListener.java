@@ -24,8 +24,9 @@ public class EntityLoadListener implements Listener {
     @SuppressWarnings({"unused"})
     @EventHandler
     public void onChunkLoad(ChunkLoadEvent event) {
-        if (event.isNewChunk())
+        if (event.isNewChunk()) {
             return;
+        }
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             updateChunks(event.getChunk());
         }, 10L);

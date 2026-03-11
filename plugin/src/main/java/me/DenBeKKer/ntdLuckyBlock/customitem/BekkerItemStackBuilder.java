@@ -2,6 +2,7 @@ package me.DenBeKKer.ntdLuckyBlock.customitem;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.api.model.Identifier;
@@ -37,18 +38,19 @@ public class BekkerItemStackBuilder {
     private HashMap<ItemEvent<?>, Consumer<Event>> events = new HashMap<>();
     @SerializedName(value = "data")
     private short data = -54;
+    @Getter
     @SerializedName(value = "identifier")
     private Identifier identifier;
     @SerializedName(value = "hide_enchantments")
-    private boolean he = false;
+    private boolean hideEnchantments = false;
 
     @SuppressWarnings("deprecation")
     public BekkerItemStackBuilder(ItemStack item) {
         this(item.getType());
         setName(item.getItemMeta().getDisplayName());
         setLore(item.getItemMeta().getLore());
-        he = item.getItemMeta().hasItemFlag(ItemFlag.HIDE_ENCHANTS);
-        this.enchantments = item.getEnchantments().entrySet().stream().map(n -> Pair.from(n)).collect(Collectors.toList());
+        hideEnchantments = item.getItemMeta().hasItemFlag(ItemFlag.HIDE_ENCHANTS);
+        this.enchantments = item.getEnchantments().entrySet().stream().map(Pair::from).collect(Collectors.toList());
         data = item.getDurability();
     }
 
@@ -57,7 +59,7 @@ public class BekkerItemStackBuilder {
     }
 
     public BekkerItemStackBuilder setName(String name) {
-        this.name = name == null ? null : name.replace("&", "\u00a7");
+        this.name = name == null ? null : name.replace("&", "§");
         return this;
     }
 
@@ -66,7 +68,8 @@ public class BekkerItemStackBuilder {
     }
 
     public BekkerItemStackBuilder setLore(List<String> lore) {
-        this.lore = lore == null ? new ArrayList<>() : lore.stream().map(n -> n.replace("&", "\u00a7")).collect(Collectors.toList());
+        this.lore = lore == null ? new ArrayList<>()
+                : lore.stream().map(n -> n.replace("&", "§")).collect(Collectors.toList());
         return this;
     }
 
@@ -87,58 +90,55 @@ public class BekkerItemStackBuilder {
     }
 
     public BekkerItemStackBuilder setIdentifier(Plugin plugin, String identifier) {
-        if (plugin instanceof LBMain)
+        if (plugin instanceof LBMain) {
             throw new UnsupportedOperationException("Cannot register items with LuckyBlock instance");
+        }
         this.identifier = new Identifier(plugin, identifier);
         return this;
     }
 
     public BekkerItemStackBuilder addUnsafeEnchantment(Enchantment e, int i) {
-        enchantments.add(new Pair<Enchantment, Integer>(e, i));
+        enchantments.add(new Pair<>(e, i));
         return this;
     }
 
     public ItemStack asItemStack() {
-
         try {
-
             @SuppressWarnings("deprecation")
             ItemStack item = data >= 0 ? new ItemStack(material, 1, data) : new ItemStack(material);
+
             ItemMeta meta = item.getItemMeta();
-            if (name != null)
+            if (name != null) {
                 meta.setDisplayName(name);
-            if (lore != null)
+            }
+            if (lore != null) {
                 meta.setLore(lore);
-            for (Pair<Enchantment, Integer> e : enchantments)
+            }
+            for (Pair<Enchantment, Integer> e : enchantments) {
                 meta.addEnchant(e.getKey(), e.getValue(), false);
-            if (he) meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            }
+            if (hideEnchantments) {
+                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            }
             item.setItemMeta(meta);
 
             return item;
-
         } catch (Throwable th) {
-//            LBMain.log(Level.WARNING, "Report this to author (danirod12):");
             th.printStackTrace();
             MvLogger.log(Level.WARNING, new Gson().toJson(this));
             return null;
         }
-
     }
 
     public BekkerItemStack build() {
-
-        if (identifier == null) return null;
+        if (identifier == null) {
+            return null;
+        }
         return new BekkerItemStack(identifier, asItemStack(), events);
-
     }
 
     public BekkerItemStackBuilder hideEnchantments() {
-        this.he = true;
+        this.hideEnchantments = true;
         return this;
     }
-
-    public Identifier getIdentifier() {
-        return identifier;
-    }
-
 }

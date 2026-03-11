@@ -29,16 +29,18 @@ public enum ColorData {
 
     public static ColorData parse(String name) {
         for (ColorData value : ColorData.values()) {
-            if (value.name().equalsIgnoreCase(name))
+            if (value.name().equalsIgnoreCase(name)) {
                 return value;
+            }
         }
         return null;
     }
 
     public static ColorData parse(byte data) {
         for (ColorData value : ColorData.values()) {
-            if (value.data == data)
+            if (value.data == data) {
                 return value;
+            }
         }
         return null;
     }

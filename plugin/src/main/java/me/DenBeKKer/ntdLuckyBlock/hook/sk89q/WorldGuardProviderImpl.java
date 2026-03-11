@@ -86,8 +86,9 @@ public class WorldGuardProviderImpl implements WorldGuardProvider {
         }
 
         for (ProtectedRegion entry : set) {
-            if (entry.getFlags().getOrDefault(breakFlag, StateFlag.State.ALLOW) == StateFlag.State.DENY)
+            if (entry.getFlags().getOrDefault(breakFlag, StateFlag.State.ALLOW) == StateFlag.State.DENY) {
                 return false;
+            }
         }
         return true;
     }

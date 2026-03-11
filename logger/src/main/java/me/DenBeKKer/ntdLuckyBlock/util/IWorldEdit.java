@@ -13,5 +13,4 @@ public interface IWorldEdit {
     }
 
     void paste(File file, Block obj, boolean activate, boolean ignoreAir, List<String> blacklist);
-
 }

@@ -69,7 +69,9 @@
         <module name="ModifierOrder"/>
 
         <!-- See https://checkstyle.org/config_blocks.html -->
-        <module name="AvoidNestedBlocks"/>
+        <module name="AvoidNestedBlocks">
+            <property name="allowInSwitchCase" value="true"/>
+        </module>
         <module name="LeftCurly">
         </module>
         <module name="RightCurly"/>

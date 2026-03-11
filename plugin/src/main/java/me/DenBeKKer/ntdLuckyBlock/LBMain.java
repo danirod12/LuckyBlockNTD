@@ -34,6 +34,8 @@ import me.DenBeKKer.ntdLuckyBlock.util.manager.LogChannel;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager;
 import me.DenBeKKer.ntdLuckyBlock.variables.PlayerHead;
 import me.DenBeKKer.ntdLuckyBlock.variables.world.WorldListDataHandler;
+import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.PluginCommand;
@@ -95,8 +97,8 @@ public class LBMain extends LBMainProvider {
     @Override
     public void onLoad() {
         // WorldGuard support should be injected on load stage
-        if (Misc.getClass("com.sk89q.worldguard.bukkit.WorldGuardPlugin") != null &&
-                Misc.getClass("com.sk89q.worldguard.protection.flags.Flag") != null) {
+        if (Misc.getClass("com.sk89q.worldguard.bukkit.WorldGuardPlugin") != null
+                && Misc.getClass("com.sk89q.worldguard.protection.flags.Flag") != null) {
             this.worldGuardProvider = new WorldGuardProviderImpl(getLogger());
         }
     }
@@ -137,10 +139,10 @@ public class LBMain extends LBMainProvider {
         // Updater & Metrics
         updater = new SpigotUpdater(this, 92026, "LuckyBlock");
         Metrics metrics = new Metrics(this, 17081);
-        metrics.addCustomChart(new Metrics.SimplePie("enabled_luckyblocks",
+        metrics.addCustomChart(new SimplePie("enabled_luckyblocks",
                 () -> String.valueOf(getEngine().getLoadedTypes().length)));
-        metrics.addCustomChart(new Metrics.SimplePie("version_type", Templates.VERSION::getSimpleName));
-        metrics.addCustomChart(new Metrics.SimplePie("language", () -> {
+        metrics.addCustomChart(new SimplePie("version_type", Templates.VERSION::getSimpleName));
+        metrics.addCustomChart(new SimplePie("language", () -> {
             final String language = MessagesManager.getLanguage();
             return language == null ? "undefined" : language;
         }));
@@ -151,7 +153,7 @@ public class LBMain extends LBMainProvider {
         luckyBlockEngine = new LuckyBlockEngine(this, logChannel, folder,
                 configHolder, versionControl, worldEditProvider);
         entityLoadListener = new EntityLoadListener(this, luckyBlockEngine);
-        LuckyBlockAPI.__injectAPI(this, luckyBlockEngine);
+        LuckyBlockAPI.injectAPI(this, luckyBlockEngine);
 
         // Loading config
         reloadConfig();
@@ -247,7 +249,9 @@ public class LBMain extends LBMainProvider {
         logChannel.info("Loading commands...");
         commandsManager = new CommandsManager(luckyBlockEngine, this);
         PluginCommand command = Bukkit.getPluginCommand("ntdluckyblock");
-        if (command == null) throw new UnsupportedOperationException("Command not found");
+        if (command == null) {
+            throw new UnsupportedOperationException("Command not found");
+        }
         command.setExecutor(commandsManager);
 //        command.setTabCompleter(commandsManager); TODO
 

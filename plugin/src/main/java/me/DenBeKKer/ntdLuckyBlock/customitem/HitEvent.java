@@ -1,31 +1,21 @@
 package me.DenBeKKer.ntdLuckyBlock.customitem;
 
+import lombok.Getter;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+@Getter
 public class HitEvent extends Event {
 
-    private Entity d;
-    private Entity v;
-    private Type type;
+    private final Entity damager;
+    private final Entity victim;
+    private final Type type;
 
     public HitEvent(Entity damager, Entity victim, Type type) {
-        this.d = damager;
-        this.v = victim;
+        this.damager = damager;
+        this.victim = victim;
         this.type = type;
-    }
-
-    public Entity getDamager() {
-        return d;
-    }
-
-    public Entity getVictim() {
-        return v;
-    }
-
-    public Type getType() {
-        return type;
     }
 
     public Entity getTrigger() {
@@ -40,5 +30,4 @@ public class HitEvent extends Event {
     public enum Type {
         DAMAGER, VICTIM;
     }
-
 }

@@ -32,7 +32,9 @@ public class StringMatcher<T> extends ArrayList<String> {
     }
 
     public boolean isEnabled(String element) {
-        if (element == null) return true;
+        if (element == null) {
+            return true;
+        }
         switch (type) {
             case WHITELIST:
                 return containsIgnoreCase(element);

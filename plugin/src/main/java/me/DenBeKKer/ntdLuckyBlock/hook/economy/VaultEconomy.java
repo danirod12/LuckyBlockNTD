@@ -18,7 +18,8 @@ public class VaultEconomy implements EconomyBridge {
     }
 
     public VaultEconomy() {
-        RegisteredServiceProvider<Economy> economyProvider = Bukkit.getServer().getServicesManager().getRegistration(Economy.class);
+        RegisteredServiceProvider<Economy> economyProvider
+                = Bukkit.getServer().getServicesManager().getRegistration(Economy.class);
         if (economyProvider != null && economyProvider.getProvider() != null) {
             this.eco = economyProvider.getProvider();
         } else {
@@ -39,10 +40,14 @@ public class VaultEconomy implements EconomyBridge {
 
     @Override
     public String format(int amount) {
-        String s = "";
-        if (eco != null) s = " " + eco.currencyNameSingular();
-        if (s.equalsIgnoreCase("  ") || s.equalsIgnoreCase(" ")) s = "";
-        return new DecimalFormat("#.##").format(amount) + s;
+        String currencyName = "";
+        if (eco != null) {
+            currencyName = " " + eco.currencyNameSingular();
+        }
+        if (currencyName.equalsIgnoreCase("  ") || currencyName.equalsIgnoreCase(" ")) {
+            currencyName = "";
+        }
+        return new DecimalFormat("#.##").format(amount) + currencyName;
     }
 
     @Override

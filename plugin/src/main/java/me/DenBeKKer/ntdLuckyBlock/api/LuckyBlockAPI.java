@@ -75,7 +75,7 @@ public class LuckyBlockAPI {
         return new Identifier(plugin, tagName, value).compare(stack);
     }
 
-    public static void __injectAPI(LBMainProvider provider, LuckyEngineProvider engine) {
+    public static void injectAPI(LBMainProvider provider, LuckyEngineProvider engine) {
         LuckyBlockAPI.provider = provider;
         luckyEngineProvider = engine;
     }

@@ -29,7 +29,8 @@ public class GetCustomItemCommand { //implements LBPlayerCommand {
 //                return CommandResponse.SUCCESS;
 //            }
 //            Misc.giveItemsOrDrop(sender, stack);
-//            sender.sendMessage(Message.CMD_CI_RECEIVED.getAsString(true).replace("%item%", stack.getIdentifier().getIdentifier()));
+//            sender.sendMessage(Message.CMD_CI_RECEIVED.getAsString(true).replace("%item%",
+//                                        stack.getIdentifier().getIdentifier()));
 //            return CommandResponse.SUCCESS;
 //
 //        }
@@ -46,5 +47,4 @@ public class GetCustomItemCommand { //implements LBPlayerCommand {
 //    public Message helpMessage() {
 //        return Message.CMD_CUSTOMITEMGET;
 //    }
-
 }

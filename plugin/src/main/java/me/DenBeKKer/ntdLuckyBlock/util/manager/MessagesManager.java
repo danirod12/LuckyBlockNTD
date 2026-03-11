@@ -15,54 +15,59 @@ import java.util.stream.Stream;
 // TODO rework. Remove static
 public class MessagesManager {
 
-    private static final Map<Message, Object> map = new HashMap<>();
-    private final static List<String> build_in_languages = Arrays.asList("en", "ru", "zh_cn", "de", "pl",
+    private static final Map<Message, Object> MAP = new HashMap<>();
+    private static final List<String> BUILD_IN_LANGUAGES = Arrays.asList("en", "ru", "zh_cn", "de", "pl",
             "pt_br", "tr", "es", "fr", "it");
-    public static File lang_folder = new File(LuckyBlockAPI.getInstance().getDataFolder() + File.separator + "lang");
+    public static File langFolder
+            = new File(LuckyBlockAPI.getInstance().getDataFolder() + File.separator + "lang");
     private static Config config = null;
 
-    /**
-     * @deprecated <p> Use {@link MessagesManager#getBuildInLanguages()} instead.
-     */
-    @Deprecated
-    public static Collection<String> getLanguages() {
-        return getBuildInLanguages();
-    }
-
     public static Collection<String> getBuildInLanguages() {
-        return build_in_languages;
+        return BUILD_IN_LANGUAGES;
     }
 
     public static Collection<String> getActualLanguages() {
-        if (!lang_folder.exists()) lang_folder.mkdirs();
-        return Stream.of(lang_folder.listFiles()).map(File::getName)
-                .filter(n -> n.endsWith(".yml")).map(n -> n.toLowerCase().substring(0, n.length() - 4)).collect(Collectors.toList());
+        if (!langFolder.exists()) {
+            langFolder.mkdirs();
+        }
+        return Stream.of(langFolder.listFiles())
+                .map(File::getName)
+                .filter(n -> n.endsWith(".yml"))
+                .map(n -> n.toLowerCase().substring(0, n.length() - 4))
+                .collect(Collectors.toList());
     }
 
     public static String getLanguage() {
-        if (config == null) return null;
+        if (config == null) {
+            return null;
+        }
         return config.getName().split("\\.")[0];
     }
 
     public static void reload(String lang) {
 
-        for (String language : build_in_languages)
-            new Config(LuckyBlockAPI.getInstance(), "configuration.lang", lang_folder, language + ".yml").copy(false);
-
-        if (lang == null) lang = "en";
-        File translation = new File(lang_folder + File.separator + lang + ".yml");
-        if (!translation.exists()) {
-            lang = "en";
-
-            translation = new File(lang_folder + File.separator + lang + ".yml");
-
+        for (String language : BUILD_IN_LANGUAGES) {
+            new Config(LuckyBlockAPI.getInstance(),
+                    "configuration.lang", langFolder, language + ".yml").copy(false);
         }
 
-        if (!lang.equalsIgnoreCase("en") && !lang.equalsIgnoreCase("ru"))
-            MvLogger.log(Level.WARNING, "Loading unverified language file! It may contains exceptions or illegal words. Check before using is recommended");
+        if (lang == null) {
+            lang = "en";
+        }
+        File translation = new File(langFolder + File.separator + lang + ".yml");
+        if (!translation.exists()) {
+            lang = "en";
+            translation = new File(langFolder + File.separator + lang + ".yml");
+        }
+
+        if (!lang.equalsIgnoreCase("en") && !lang.equalsIgnoreCase("ru")) {
+            MvLogger.log(Level.WARNING, "Loading unverified language file! " +
+                    "It may contains exceptions or illegal words. Check before using is recommended");
+        }
 
         if (translation.exists()) {
-            config = new Config(LuckyBlockAPI.getInstance(), "configuration.lang", lang_folder, lang + ".yml");
+            config = new Config(LuckyBlockAPI.getInstance(),
+                    "configuration.lang", langFolder, lang + ".yml");
             config.copy(true);
 
             if (config.get().getString("author") == null) {
@@ -70,24 +75,25 @@ public class MessagesManager {
                 config.save();
             }
 
-            MvLogger.log(Level.INFO, "Loading language file \"" + lang + "\" by " + config.get().getString("author"));
+            MvLogger.log(Level.INFO, "Loading language file \""
+                    + lang + "\" by " + config.get().getString("author"));
             Message.loadAll();
-        } else MvLogger.log(Level.SEVERE, "Reset translation config was not found!");
-
+        } else {
+            MvLogger.log(Level.SEVERE, "Reset translation config was not found!");
+        }
     }
 
     public static void updateLocalePath(Config config, String path) {
-
         FileConfiguration file = config.getName().contains("custom") ? null : config.getDefault();
         if (file != null && file.isSet(path)) {
             config.get().set(path, file.get(path));
         } else {
-            MvLogger.log(Level.WARNING, "Translation path <" + path + "> not found for language " + config.getName() + ", using english!");
-            config.get().set(path, new Config(LuckyBlockAPI.getInstance(), "configuration.lang", lang_folder, "en.yml").getDefault().get(path));
+            MvLogger.log(Level.WARNING, "Translation path <" + path
+                    + "> not found for language " + config.getName() + ", using english!");
+            config.get().set(path, new Config(LuckyBlockAPI.getInstance(),
+                    "configuration.lang", langFolder, "en.yml").getDefault().get(path));
         }
-
         config.save();
-
     }
 
     public enum Message {
@@ -153,15 +159,17 @@ public class MessagesManager {
         CMD_GENERATE_DESCRIPTION("system.cmd.generateFull"),
         CMD_DESTROYED_LB("system.cmd_destroyed_lb");
 
-        private String path;
+        private final String path;
 
         Message(String string) {
             this.path = string;
         }
 
         public static void loadAll() {
-            for (Message msg : Message.values()) msg.load();
-            config.gc(false, true);
+            for (Message msg : Message.values()) {
+                msg.load();
+            }
+            config.resetField(false, true);
         }
 
         @Deprecated
@@ -170,33 +178,33 @@ public class MessagesManager {
         }
 
         @Deprecated
-        public String get(boolean b) {
-            return getAsString(b);
+        public String get(boolean formatted) {
+            return getAsString(formatted);
         }
 
         public Object getAsObject() {
-            return map.containsKey(this) ? map.get(this) : "\u00a7c<<Translation for path \u00a7e<" + this.path + ">\u00a7c is missed>>";
+            return MAP.containsKey(this)
+                    ? MAP.get(this) : "§c<<Translation for path §e<" + this.path + ">§c is missed>>";
         }
 
         public String getAsString() {
             return getAsString(true);
         }
 
-        public String getAsString(boolean formated) {
-            return (map.containsKey(this) && map.get(this) != null) ? (formated ? Misc.setColors((String) map.get(this)) : (String) map.get(this))
-                    : "\u00a7c<<Translation for path \u00a7e<" + this.path + ">\u00a7c is missed>>";
+        public String getAsString(boolean formatted) {
+            return (MAP.containsKey(this) && MAP.get(this) != null)
+                    ? (formatted ? Misc.setColors((String) MAP.get(this)) : (String) MAP.get(this))
+                    : "§c<<Translation for path §e<" + this.path + ">§c is missed>>";
         }
 
-        private void load(boolean copy_path) {
+        private void load(boolean copyPath) {
+            MAP.put(this, config.get().get(this.path));
 
-            map.put(this, config.get().get(this.path));
-
-            if (copy_path && map.get(this) == null) {
+            if (copyPath && MAP.get(this) == null) {
                 MvLogger.log(Level.WARNING, "Translation for path <" + this.path + "> not found. Creating...");
                 updateLocalePath(config, path);
                 load(false);
             }
-
         }
 
         private void load() {
@@ -209,14 +217,14 @@ public class MessagesManager {
 
         @SuppressWarnings("unchecked")
         public List<String> getAsList() {
-            if (map.containsKey(this)) {
-                if (map.get(this) instanceof String)
-                    return Arrays.asList((String) map.get(this));
-                else return (List<String>) map.get(this);
+            if (MAP.containsKey(this)) {
+                if (MAP.get(this) instanceof String) {
+                    return Collections.singletonList((String) MAP.get(this));
+                } else {
+                    return (List<String>) MAP.get(this);
+                }
             }
-            return Arrays.asList("\u00a7c<<Translation for path \u00a7e<" + this.path + ">\u00a7c is missed>>");
+            return Collections.singletonList("§c<<Translation for path §e<" + this.path + ">§c is missed>>");
         }
-
     }
-
 }

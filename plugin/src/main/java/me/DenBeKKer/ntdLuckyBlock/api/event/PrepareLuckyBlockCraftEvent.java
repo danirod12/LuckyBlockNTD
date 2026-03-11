@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class PrepareLuckyBlockCraftEvent extends CancellableEvent {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList HANDLERS = new HandlerList();
     private final Player player;
     private final ItemStack[] matrix;
     private final int amount;
@@ -21,12 +21,12 @@ public class PrepareLuckyBlockCraftEvent extends CancellableEvent {
     }
 
     public static HandlerList getHandlerList() {
-        return handlers;
+        return HANDLERS;
     }
 
     @Override
     public HandlerList getHandlers() {
-        return handlers;
+        return HANDLERS;
     }
 
     public Player getPlayer() {

@@ -33,7 +33,8 @@ public class ListCustomItemsCommand { //implements LBCommand {
 //        else for (BekkerItemStack stack : collection) {
 //            final String plugin = stack.getIdentifier().getIdentifier().split("-")[0];
 //            sender.sendMessage("\u00a78 > \u00a7e" + stack.getIdentifier().getIdentifier()
-//                    + " \u00a77(" + (plugin.equalsIgnoreCase(LBMain.getInstance().getName()) ? "\u00a76" : "\u00a7e") + plugin + "\u00a77)");
+//                    + " \u00a77(" + (plugin.equalsIgnoreCase(LBMain.getInstance().getName())
+//                    ? "\u00a76" : "\u00a7e") + plugin + "\u00a77)");
 //        }
 //        return CommandResponse.SUCCESS;
 //
@@ -48,5 +49,4 @@ public class ListCustomItemsCommand { //implements LBCommand {
 //    public Message helpMessage() {
 //        return Message.CMD_CUSTOMITEMSLIST;
 //    }
-
 }

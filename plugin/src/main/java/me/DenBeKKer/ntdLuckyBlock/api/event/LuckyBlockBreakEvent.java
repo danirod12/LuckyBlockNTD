@@ -1,16 +1,20 @@
 package me.DenBeKKer.ntdLuckyBlock.api.event;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlock;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
+@Getter
 public class LuckyBlockBreakEvent extends CancellableEvent {
 
-    private static final HandlerList handlers = new HandlerList();
+    private static final HandlerList HANDLERS = new HandlerList();
     private final Block block;
     private final Player player;
     private final LuckyBlock luckyBlock;
+    @Setter
     private boolean drop = true;
 
     public LuckyBlockBreakEvent(Block block, Player player, LuckyBlock luckyBlock) {
@@ -24,36 +28,15 @@ public class LuckyBlockBreakEvent extends CancellableEvent {
     }
 
     public static HandlerList getHandlerList() {
-        return handlers;
+        return HANDLERS;
     }
 
     @Override
     public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public Block getBlock() {
-        return block;
+        return HANDLERS;
     }
 
     public boolean isPlayerInvolved() {
         return player != null;
     }
-
-    public Player getPlayer() {
-        return player;
-    }
-
-    public LuckyBlock getKey() {
-        return luckyBlock;
-    }
-
-    public boolean isDrop() {
-        return drop;
-    }
-
-    public void setDrop(boolean drop) {
-        this.drop = drop;
-    }
-
 }
