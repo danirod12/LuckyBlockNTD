@@ -3,7 +3,10 @@ package me.DenBeKKer.ntdLuckyBlock.customitem;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
+import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
+import me.DenBeKKer.ntdLuckyBlock.api.model.Identifier;
 import me.DenBeKKer.ntdLuckyBlock.api.util.Pair;
+import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.Event;
@@ -79,7 +82,7 @@ public class BekkerItemStackBuilder {
     }
 
     protected BekkerItemStackBuilder setSerialID(String identifier) {
-        this.identifier = new Identifier(LBMain.getInstance(), identifier);
+        this.identifier = new Identifier(LuckyBlockAPI.getInstance(), identifier);
         return this;
     }
 
@@ -114,9 +117,9 @@ public class BekkerItemStackBuilder {
             return item;
 
         } catch (Throwable th) {
-            LBMain.log(Level.WARNING, "Report this to author (danirod12):");
+//            LBMain.log(Level.WARNING, "Report this to author (danirod12):");
             th.printStackTrace();
-            LBMain.log(Level.WARNING, new Gson().toJson(this));
+            MvLogger.log(Level.WARNING, new Gson().toJson(this));
             return null;
         }
 

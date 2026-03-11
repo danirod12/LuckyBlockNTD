@@ -2,7 +2,6 @@ package me.DenBeKKer.ntdLuckyBlock.api.model;
 
 import me.DenBeKKer.ntdLuckyBlock.api.setup.ILuckyRecipe;
 import me.DenBeKKer.ntdLuckyBlock.api.setup.ItemsBag;
-import me.DenBeKKer.ntdLuckyBlock.customitem.Identifier;
 import me.DenBeKKer.ntdLuckyBlock.variables.setup.AnimationSetup;
 import me.DenBeKKer.ntdLuckyBlock.variables.setup.ShopSetup;
 import org.bukkit.block.Block;

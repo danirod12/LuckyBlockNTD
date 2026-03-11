@@ -1,12 +1,14 @@
-package me.DenBeKKer.ntdLuckyBlock.customitem;
+package me.DenBeKKer.ntdLuckyBlock.api.model;
 
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.nms.ItemTag;
+import lombok.Getter;
+import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
+import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import java.util.regex.Pattern;
 
+@Getter
 public class Identifier {
 
     private static final Pattern pattern = Pattern.compile("[a-z][a-z0-9_]{2,}[a-z0-9]");
@@ -40,14 +42,9 @@ public class Identifier {
         this.tagName = tagName.toLowerCase();
     }
 
+    @Deprecated
     public ItemStack apply(ItemStack origin) {
-        ItemTag adapter = LBMain.getInstance().getItemTagAdapter();
-        Object nmsItem = adapter.asNMSCopy(origin);
-        Object tag = adapter.getTag(nmsItem);
-        if (tag == null) tag = adapter.newTag();
-        adapter.setTagString(tag, tagName, identifier);
-        adapter.setTag(nmsItem, tag);
-        return adapter.asBukkitCopy(nmsItem);
+        return LuckyBlockAPI.getLuckyEngineProvider().getVersionControl().apply(origin, tagName, identifier);
     }
 
     @Override
@@ -57,14 +54,22 @@ public class Identifier {
 
     @Override
     public boolean equals(Object object) {
-        return object instanceof Identifier && object.toString().equals(toString());
+        if (object == null) return false;
+        if (object instanceof String) return compare((String) object);
+        if (object instanceof Identifier) return compare((Identifier) object);
+        if (object instanceof ItemStack) return compare((ItemStack) object);
+        else return false;
     }
 
-    public String getTagName() {
-        return tagName;
+    public boolean compare(ItemStack stack) {
+        return CustomItemFactory.compare(stack, tagName, identifier);
     }
 
-    public String getIdentifier() {
-        return identifier;
+    public boolean compare(Identifier identifier) {
+        return identifier.identifier.equalsIgnoreCase(this.identifier);
+    }
+
+    public boolean compare(String string) {
+        return string.equalsIgnoreCase(identifier);
     }
 }

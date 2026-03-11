@@ -1,7 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.customitem;
 
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
 import me.DenBeKKer.ntdLuckyBlock.api.event.CustomItemHandleEvent;
+import me.DenBeKKer.ntdLuckyBlock.api.model.Identifier;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
@@ -41,7 +41,7 @@ public class BekkerItemStack extends ItemStack {
 
     public void handle(Event event) {
 
-        LBMain.debug(event.getClass().getSimpleName() + " - " + identifier.getIdentifier());
+//        LBMain.debug(event.getClass().getSimpleName() + " - " + identifier.getIdentifier());
         for (Entry<ItemEvent<?>, Consumer<Event>> element : map.entrySet()) {
 
             if (element.getKey().getInstance().isAssignableFrom(event.getClass())) {

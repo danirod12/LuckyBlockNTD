@@ -1,5 +1,6 @@
 package me.DenBeKKer.ntdLuckyBlock.api.provider;
 
+import me.DenBeKKer.ntdLuckyBlock.api.model.Identifier;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
@@ -11,6 +12,8 @@ public interface VersionControl {
     boolean isModern();
 
     boolean isLegacy();
+
+    ItemStack apply(ItemStack origin, Identifier identifier);
 
     ItemStack apply(ItemStack origin, String tagName, String identifier);
 

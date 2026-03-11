@@ -2,12 +2,12 @@ package me.DenBeKKer.ntdLuckyBlock.api;
 
 import me.DenBeKKer.ntdLuckyBlock.api.exception.ApiNotInitializedException;
 import me.DenBeKKer.ntdLuckyBlock.api.exception.StaticMethodsOnlyException;
+import me.DenBeKKer.ntdLuckyBlock.api.model.Identifier;
 import me.DenBeKKer.ntdLuckyBlock.api.model.PluginVersion;
 import me.DenBeKKer.ntdLuckyBlock.api.provider.GenerationFactoryProvider;
 import me.DenBeKKer.ntdLuckyBlock.api.provider.LBMainProvider;
 import me.DenBeKKer.ntdLuckyBlock.api.provider.LuckyEngineProvider;
 import me.DenBeKKer.ntdLuckyBlock.api.provider.LuckyRecipeProvider;
-import me.DenBeKKer.ntdLuckyBlock.customitem.Identifier;
 import me.DenBeKKer.ntdLuckyBlock.util.Templates;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -59,7 +59,7 @@ public class LuckyBlockAPI {
      * @return Item copy with inserted tag
      */
     public static ItemStack insertTag(ItemStack stack, Plugin plugin, String tagName, String value) {
-        return new Identifier(plugin, tagName, value).apply(stack);
+        return luckyEngineProvider.getVersionControl().apply(stack, new Identifier(plugin, tagName, value));
     }
 
     /**

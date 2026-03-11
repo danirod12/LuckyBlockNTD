@@ -1,13 +1,14 @@
 package me.DenBeKKer.ntdLuckyBlock.customitem;
 
-import me.DenBeKKer.ntdLuckyBlock.LBMain;
+import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.api.event.CustomItemAddedEvent;
 import me.DenBeKKer.ntdLuckyBlock.api.event.CustomItemFactoryReloadEvent;
 import me.DenBeKKer.ntdLuckyBlock.nms.ItemTag;
+import me.DenBeKKer.ntdLuckyBlock.nms.VersionControlFactory;
 import me.DenBeKKer.ntdLuckyBlock.nms.material.IMat;
 import me.DenBeKKer.ntdLuckyBlock.nms.material.IMat.Mat;
-import me.DenBeKKer.ntdLuckyBlock.nms.material.Mat1_13;
 import me.DenBeKKer.ntdLuckyBlock.util.Config;
+import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 
+// TODO rework
 public class CustomItemFactory {
 
     public static final String TAG_IDENTIFIER_NAME = "bekker_item_identifier";
@@ -44,12 +46,12 @@ public class CustomItemFactory {
         if (origin != null)
             storage.remove(origin);
         storage.add(item);
-        LBMain.log(Level.INFO, "Registered a new custom item - " + item.getClass().getSimpleName() + " (" + item.getEvents().size() + " events)");
+        MvLogger.log(Level.INFO, "Registered a new custom item - " + item.getClass().getSimpleName() + " (" + item.getEvents().size() + " events)");
         Bukkit.getPluginManager().callEvent(new CustomItemAddedEvent(item));
     }
 
     private static void register(BekkerItemStackBuilder builder) {
-        if (!builder.getIdentifier().getIdentifier().split("-")[0].equalsIgnoreCase(LBMain.getInstance().getName())) {
+        if (!builder.getIdentifier().getIdentifier().split("-")[0].equalsIgnoreCase(LuckyBlockAPI.getInstance().getName())) {
             throw new UnsupportedOperationException("Only system items can be registered using this method.");
         }
         BekkerItemStack stack = builder.build();
@@ -66,7 +68,7 @@ public class CustomItemFactory {
 
         if (item == null || tag_name == null || identifier == null) return false;
 
-        ItemTag adapter = LBMain.getInstance().getItemTagAdapter();
+        ItemTag adapter = ((VersionControlFactory) LuckyBlockAPI.getLuckyEngineProvider().getVersionControl()).getItemTagAdapter();
         final Object tag = adapter.getTag(adapter.asNMSCopy(item));
         if (tag == null) return false;
 
@@ -77,7 +79,7 @@ public class CustomItemFactory {
 
     public static String parseValue(ItemStack item, String tag_name) {
 
-        ItemTag adapter = LBMain.getInstance().getItemTagAdapter();
+        ItemTag adapter = ((VersionControlFactory) LuckyBlockAPI.getLuckyEngineProvider().getVersionControl()).getItemTagAdapter();
         final Object tag = adapter.getTag(adapter.asNMSCopy(item));
         if (tag == null) return null;
 
@@ -88,7 +90,7 @@ public class CustomItemFactory {
 
     public static BekkerItemStack fetchCustomItem(ItemStack item) {
 
-        ItemTag adapter = LBMain.getInstance().getItemTagAdapter();
+        ItemTag adapter = ((VersionControlFactory) LuckyBlockAPI.getLuckyEngineProvider().getVersionControl()).getItemTagAdapter();
         final Object tag = adapter.getTag(adapter.asNMSCopy(item));
         if (tag == null) return null;
 
@@ -105,13 +107,13 @@ public class CustomItemFactory {
 
         storage.clear();
 
-        Config custom_items = new Config(LBMain.getInstance(), "configuration.other", null, "custom_items");
-        custom_items.copyMissedFields(added -> LBMain.log(Level.INFO, "A new custom item here (" + added + "). \u00a7aEnabling!"));
+        Config custom_items = new Config(LuckyBlockAPI.getInstance(), "configuration.other", null, "custom_items");
+        custom_items.copyMissedFields(added -> MvLogger.log(Level.INFO, "A new custom item here (" + added + "). \u00a7aEnabling!"));
 
         // check if new items is missed
         if (custom_items.getBoolean("magic_wool.enabled")) {
             try {
-                register(new BekkerItemStackBuilder(LBMain.getInstance().materialFactory.getItem(Mat.WHITE_WOOL, 1))
+                register(new BekkerItemStackBuilder(((VersionControlFactory) LuckyBlockAPI.getLuckyEngineProvider().getVersionControl()).getMat().getItem(Mat.WHITE_WOOL, 1))
                         .addUnsafeEnchantment(Enchantment.DURABILITY, 1).setSerialID("magic_wool")
                         .hideEnchantments().setName(Message.CI_MAGIC_WOOL.getAsString(true))
                         .registerEvent(ItemEvent.PLACE, n -> new BukkitRunnable() {
@@ -127,7 +129,7 @@ public class CustomItemFactory {
                                     return;
                                 }
 
-                                if (LBMain.getInstance().materialFactory instanceof Mat1_13)
+                                if (((VersionControlFactory) LuckyBlockAPI.getLuckyEngineProvider().getVersionControl()).isModern())
                                     block.setType(IMat.WOOLS.get(ThreadLocalRandom.current().nextInt(IMat.WOOLS.size())));
                                 else IMat.setData(block, (byte) ThreadLocalRandom.current().nextInt(16));
 
@@ -135,7 +137,7 @@ public class CustomItemFactory {
 
                             }
 
-                        }.runTaskTimer(LBMain.getInstance(), 2L, 5L)));
+                        }.runTaskTimer(LuckyBlockAPI.getInstance(), 2L, 5L)));
             } catch (Throwable th) {
                 th.printStackTrace();
             }
@@ -174,7 +176,7 @@ public class CustomItemFactory {
         }
         if (custom_items.getBoolean("mystery_meat.enabled")) {
             try {
-                register(new BekkerItemStackBuilder(LBMain.getInstance().materialFactory.getItem(Mat.BEEF, 1).getType())
+                register(new BekkerItemStackBuilder(((VersionControlFactory) LuckyBlockAPI.getLuckyEngineProvider().getVersionControl()).getMat().getItem(Mat.BEEF, 1).getType())
                         .addUnsafeEnchantment(Enchantment.DURABILITY, 1)
                         .hideEnchantments().setSerialID("mystery_meat").setName(Message.CI_MYSTERY_MEAT.getAsString(true))
                         .registerEvent(ItemEvent.CONSUME, n -> {
@@ -184,9 +186,8 @@ public class CustomItemFactory {
                             try {
                                 player.addPotionEffect(new PotionEffect(type, ThreadLocalRandom.current().nextInt(5, 45) * 20, 1));
                             } catch (Exception ex) {
-                                LBMain.log(Level.WARNING, "Report to author - " + LBMain.getDiscordURL());
-                                LBMain.log(Level.WARNING, " > PotionEffectType - " + type + ", " + ex.getLocalizedMessage());
-                                if (LBMain.isDebug()) ex.printStackTrace();
+                                MvLogger.log(Level.WARNING, " > PotionEffectType - " + type + ", " + ex.getLocalizedMessage());
+                                ex.printStackTrace();
                             }
 
                         }));
@@ -232,7 +233,7 @@ public class CustomItemFactory {
                 th.printStackTrace();
             }
         }
-        if (LBMain.getInstance().materialFactory instanceof Mat1_13 && custom_items.getBoolean("carrot_corrupter.enabled")) {
+        if (((VersionControlFactory) LuckyBlockAPI.getLuckyEngineProvider().getVersionControl()).isModern() && custom_items.getBoolean("carrot_corrupter.enabled")) {
             try {
                 register(new BekkerItemStackBuilder(Material.CARROT).addUnsafeEnchantment(Enchantment.DURABILITY, 1)
                         .hideEnchantments().setSerialID("carrot_corrupter").setName(Message.CI_CARROT_CORRUPTER.getAsString(true))
@@ -258,14 +259,14 @@ public class CustomItemFactory {
         }
 
         final int internal;
-        LBMain.log(Level.INFO, "Loaded " + (internal = storage.size()) + " internal custom items...");
+        MvLogger.log(Level.INFO, "Loaded " + (internal = storage.size()) + " internal custom items...");
         Bukkit.getPluginManager().callEvent(new CustomItemFactoryReloadEvent(new ArrayList<>(storage), CustomItemFactoryReloadEvent.Action.PRELOAD));
 
         if (storage.size() > internal)
-            LBMain.log(Level.INFO, "Loaded " + (storage.size() - internal) + " external custom items...");
+            MvLogger.log(Level.INFO, "Loaded " + (storage.size() - internal) + " external custom items...");
         Bukkit.getPluginManager().callEvent(new CustomItemFactoryReloadEvent(new ArrayList<>(storage), CustomItemFactoryReloadEvent.Action.LOADED));
 
-        LBMain.log(Level.INFO, "Loaded " + storage.size() + " custom items... (Total)");
+        MvLogger.log(Level.INFO, "Loaded " + storage.size() + " custom items... (Total)");
 
     }
 
@@ -291,12 +292,12 @@ public class CustomItemFactory {
 //	public static void reloadSystem() throws Throwable {
 //
 //		ItemTag adapter = LBMain.getItemTagAdapter();
-//		if(LBMain.getInstance().factory != null) {
+//		if(LuckyBlockAPI.getInstance().factory != null) {
 //
 //			new ArrayList<>(storage).stream().filter(item -> {
 //
 //				String identifier = adapter.getTagString(adapter.getTag(adapter.asNMSCopy(item)), CustomItemFactory.TAG_IDENTIFIER_NAME);
-//				return identifier.split("-")[0].equalsIgnoreCase(LBMain.getInstance().getName());
+//				return identifier.split("-")[0].equalsIgnoreCase(LuckyBlockAPI.getInstance().getName());
 //
 //			}).forEach(n -> storage.remove(n));
 //

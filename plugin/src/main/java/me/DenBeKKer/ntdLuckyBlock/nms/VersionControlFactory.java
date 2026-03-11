@@ -4,6 +4,7 @@ import com.github.danirod12.mcversion.MinecraftVersion;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.Getter;
+import me.DenBeKKer.ntdLuckyBlock.api.model.Identifier;
 import me.DenBeKKer.ntdLuckyBlock.api.provider.VersionControl;
 import me.DenBeKKer.ntdLuckyBlock.nms.material.IMat;
 import me.DenBeKKer.ntdLuckyBlock.nms.material.Mat1_12;
@@ -130,6 +131,11 @@ public class VersionControlFactory implements VersionControl {
 
     public Material getTintedMaterial() {
         return tinted;
+    }
+
+    @Override
+    public ItemStack apply(ItemStack origin, Identifier identifier) {
+        return apply(origin, identifier.getTagName(), identifier.getIdentifier());
     }
 
     @Override

@@ -1,7 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.api.event;
 
+import me.DenBeKKer.ntdLuckyBlock.api.model.Identifier;
 import me.DenBeKKer.ntdLuckyBlock.customitem.BekkerItemStack;
-import me.DenBeKKer.ntdLuckyBlock.customitem.Identifier;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
