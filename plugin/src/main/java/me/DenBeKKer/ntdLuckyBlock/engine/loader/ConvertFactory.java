@@ -1,6 +1,6 @@
 package me.DenBeKKer.ntdLuckyBlock.engine.loader;
 
-import me.DenBeKKer.ntdLuckyBlock.util.Config;
+import me.DenBeKKer.ntdLuckyBlock.api.util.Config;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,7 +1,7 @@
 package me.DenBeKKer.ntdLuckyBlock.engine.model;
 
-import me.DenBeKKer.ntdLuckyBlock.api.DropChance;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
+import me.DenBeKKer.ntdLuckyBlock.api.model.DropChance;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDrop;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyEntry;
 

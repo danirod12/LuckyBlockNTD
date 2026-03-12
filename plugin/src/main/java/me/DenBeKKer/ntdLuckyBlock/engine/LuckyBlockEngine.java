@@ -2,8 +2,8 @@ package me.DenBeKKer.ntdLuckyBlock.engine;
 
 import lombok.Getter;
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
-import me.DenBeKKer.ntdLuckyBlock.api.DropChance;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
+import me.DenBeKKer.ntdLuckyBlock.api.customitem.CustomItemFactory;
 import me.DenBeKKer.ntdLuckyBlock.api.event.LuckyDropEvent;
 import me.DenBeKKer.ntdLuckyBlock.api.exception.EntryFormatException;
 import me.DenBeKKer.ntdLuckyBlock.api.exception.PremiumVersionRequiredException;
@@ -13,8 +13,11 @@ import me.DenBeKKer.ntdLuckyBlock.api.model.*;
 import me.DenBeKKer.ntdLuckyBlock.api.provider.GenerationFactoryProvider;
 import me.DenBeKKer.ntdLuckyBlock.api.provider.LuckyEngineProvider;
 import me.DenBeKKer.ntdLuckyBlock.api.provider.LuckyRecipeProvider;
+import me.DenBeKKer.ntdLuckyBlock.api.setup.AnimationSetup;
+import me.DenBeKKer.ntdLuckyBlock.api.setup.ShopSetup;
+import me.DenBeKKer.ntdLuckyBlock.api.util.Config;
+import me.DenBeKKer.ntdLuckyBlock.api.util.LogChannel;
 import me.DenBeKKer.ntdLuckyBlock.api.util.Pair;
-import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
 import me.DenBeKKer.ntdLuckyBlock.engine.drop.EntityDrop;
 import me.DenBeKKer.ntdLuckyBlock.engine.drop.ItemDrop;
 import me.DenBeKKer.ntdLuckyBlock.engine.loader.ConvertFactory;
@@ -29,12 +32,8 @@ import me.DenBeKKer.ntdLuckyBlock.nms.VersionControlFactory;
 import me.DenBeKKer.ntdLuckyBlock.nms.material.IMat;
 import me.DenBeKKer.ntdLuckyBlock.recipe.LuckyRecipe;
 import me.DenBeKKer.ntdLuckyBlock.recipe.LuckyRecipeProviderImpl;
-import me.DenBeKKer.ntdLuckyBlock.util.Config;
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 import me.DenBeKKer.ntdLuckyBlock.util.config.ConfigHolder;
-import me.DenBeKKer.ntdLuckyBlock.util.manager.LogChannel;
-import me.DenBeKKer.ntdLuckyBlock.variables.setup.AnimationSetup;
-import me.DenBeKKer.ntdLuckyBlock.variables.setup.ShopSetup;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -138,8 +137,8 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
         LuckyBlockKey key = BaseDataGenerator.getKey(versionControl, type);
         Config config = getNewConfigInstance(type.name());
         if (!config.hasResource()) {
-            config.write();
-            config.reload();
+            config.createFile();
+            config.load();
             generationFactory.generateBaseData(config, key);
             LuckyEntry[] entries = generationFactory.generateLuckyEntries(150, 200);
             generationFactory.saveLuckyEntries(config, entries);
@@ -230,7 +229,7 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
     @Override
     public LuckyEntry loadLuckyEntry(Config config, String path)
             throws EntryFormatException, PremiumVersionRequiredException {
-        if (config == null || config.get() == null) {
+        if (config == null || !config.isLoaded()) {
             throw new IllegalArgumentException("Config is not loaded");
         }
 
@@ -251,7 +250,7 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
             ConfigurationSection section = config.getConfigurationSection(path + ".items");
             for (String key : section.getKeys(false)) {
                 try {
-                    LuckyDrop drop = this.pathLoader.load(config, path + ".items." + key);
+                    LuckyDrop drop = this.pathLoader.load(config.getConfigurationSection(path + ".items." + key));
                     if (drop != null) {
                         entry.add(drop);
                     }

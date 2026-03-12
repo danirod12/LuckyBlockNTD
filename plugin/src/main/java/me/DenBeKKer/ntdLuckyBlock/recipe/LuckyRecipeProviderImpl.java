@@ -72,8 +72,8 @@ public class LuckyRecipeProviderImpl implements LuckyRecipeProvider {
     }
 
     @Override
-    public List<LuckyRecipe> getDefaultCrafts(LuckyBlockKey key) {
-        List<LuckyRecipe> list = new ArrayList<>();
+    public List<ILuckyRecipe> getDefaultCrafts(LuckyBlockKey key) {
+        List<ILuckyRecipe> list = new ArrayList<>();
 
         if (!BaseDataGenerator.hasDefaultCrafts(key)) {
             return list;
@@ -93,7 +93,7 @@ public class LuckyRecipeProviderImpl implements LuckyRecipeProvider {
     }
 
     @Override
-    public List<LuckyRecipe> getCustomCrafts(LuckyBlockKey type) {
+    public List<ILuckyRecipe> getCustomCrafts(LuckyBlockKey type) {
         engine.getLogChannel().warning("Custom crafts feature available only for premium version");
         engine.getLogChannel().warning("Check out premium plugin version - https://www.spigotmc.org/resources/94872");
         return new ArrayList<>();

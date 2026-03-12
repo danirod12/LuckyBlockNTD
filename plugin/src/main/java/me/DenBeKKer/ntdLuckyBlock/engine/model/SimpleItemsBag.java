@@ -1,11 +1,13 @@
 package me.DenBeKKer.ntdLuckyBlock.engine.model;
 
+import me.DenBeKKer.ntdLuckyBlock.api.model.DropChance;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDrop;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyEntry;
 import me.DenBeKKer.ntdLuckyBlock.api.setup.ItemsBag;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
@@ -17,6 +19,13 @@ public class SimpleItemsBag implements ItemsBag {
     @Override
     public void add(LuckyEntry... entries) {
         items.addAll(Arrays.asList(entries));
+    }
+
+    @Override
+    public void add(DropChance chance, LuckyDrop... drops) {
+        LuckyEntryHolder holder = new LuckyEntryHolder(chance);
+        Collections.addAll(holder, drops);
+        this.add(holder);
     }
 
     @Override

@@ -1,18 +1,12 @@
 package me.DenBeKKer.ntdLuckyBlock;
 
 import lombok.Getter;
-import me.DenBeKKer.ntdLuckyBlock.api.DropChance;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
-import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlock;
-import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlockKey;
-import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlockType;
-import me.DenBeKKer.ntdLuckyBlock.api.model.PluginVersion;
+import me.DenBeKKer.ntdLuckyBlock.api.customitem.CustomItemFactory;
+import me.DenBeKKer.ntdLuckyBlock.api.model.*;
 import me.DenBeKKer.ntdLuckyBlock.api.provider.LBMainProvider;
-import me.DenBeKKer.ntdLuckyBlock.api.util.ColorData;
-import me.DenBeKKer.ntdLuckyBlock.api.util.ISpigotUpdater;
-import me.DenBeKKer.ntdLuckyBlock.api.util.Single;
+import me.DenBeKKer.ntdLuckyBlock.api.util.*;
 import me.DenBeKKer.ntdLuckyBlock.command.CommandsManager;
-import me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory;
 import me.DenBeKKer.ntdLuckyBlock.engine.LuckyBlockEngine;
 import me.DenBeKKer.ntdLuckyBlock.hook.Hook;
 import me.DenBeKKer.ntdLuckyBlock.hook.economy.EconomyBridge;
@@ -30,7 +24,6 @@ import me.DenBeKKer.ntdLuckyBlock.recipe.CraftListener;
 import me.DenBeKKer.ntdLuckyBlock.util.*;
 import me.DenBeKKer.ntdLuckyBlock.util.config.ConfigHolder;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.GuiManager;
-import me.DenBeKKer.ntdLuckyBlock.util.manager.LogChannel;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager;
 import me.DenBeKKer.ntdLuckyBlock.variables.PlayerHead;
 import me.DenBeKKer.ntdLuckyBlock.variables.world.WorldListDataHandler;
@@ -44,6 +37,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.HashMap;
 
 public class LBMain extends LBMainProvider {
 
@@ -74,16 +69,14 @@ public class LBMain extends LBMainProvider {
         return Templates.VERSION.isPremium();
     }
 
-    public static PluginVersion getVersionType() {
+    @Override
+    public PluginVersion getVersionType() {
         return Templates.VERSION;
     }
 
-    public static String getLastUpdate() {
+    @Override
+    public String getLastUpdate() {
         return Templates.COMPILE_DATE;
-    }
-
-    public static int getBuild() {
-        return Templates.BUILD;
     }
 
     public EconomyBridge getEconomyBridge() {
@@ -97,8 +90,8 @@ public class LBMain extends LBMainProvider {
     @Override
     public void onLoad() {
         // WorldGuard support should be injected on load stage
-        if (Misc.getClass("com.sk89q.worldguard.bukkit.WorldGuardPlugin") != null
-                && Misc.getClass("com.sk89q.worldguard.protection.flags.Flag") != null) {
+        if (JavaUtils.getClass("com.sk89q.worldguard.bukkit.WorldGuardPlugin") != null
+                && JavaUtils.getClass("com.sk89q.worldguard.protection.flags.Flag") != null) {
             this.worldGuardProvider = new WorldGuardProviderImpl(getLogger());
         }
     }
@@ -112,8 +105,8 @@ public class LBMain extends LBMainProvider {
         MvLogger.setInstance(this);
 
         // Plugin title
-        logChannel.info("§fStarting LuckyBlock (ntdLuckyBlock) v" + getVersion() + ", build " + getBuild()
-                + " (" + getLastUpdate() + "), " + getVersionType().getSimpleName());
+        logChannel.info("§fStarting LuckyBlock (ntdLuckyBlock) v" + getVersion() + " [" + Templates.GIT_BRANCH + "-"
+                + Templates.GIT_COMMIT_ID_ABBREV + "] (" + getLastUpdate() + "), " + getVersionType().getSimpleName());
         logChannel.info("§e  ╭╮╱╱╭╮╱╭┳━━━┳╮╭━┳╮╱╱╭┳━━╮╭╮╱╱╭━━━┳━━━┳╮╭━╮");
         logChannel.info("§e  ┃┃╱╱┃┃╱┃┃╭━╮┃┃┃╭┫╰╮╭╯┃╭╮┃┃┃╱╱┃╭━╮┃╭━╮┃┃┃╭╯");
         logChannel.info("§e  ┃┃╱╱┃┃╱┃┃┃╱╰┫╰╯╯╰╮╰╯╭┫╰╯╰┫┃╱╱┃┃╱┃┃┃╱╰┫╰╯╯");
@@ -384,7 +377,14 @@ public class LBMain extends LBMainProvider {
         logChannel.info("Loaded " + luckyBlockEngine.getLoadedTypes().length + " LuckyBlocks");
 
         try {
-            CustomItemFactory.loadSystem();
+            CustomItemFactory.loadSystem(new HashMap<String, String>() {
+                {
+                    Arrays.stream(MessagesManager.Message.values())
+                            .filter(msg -> msg.getPath().startsWith("custom_item."))
+                            .forEach(msg -> put(msg.getPath().substring(12),
+                                    msg.getAsString(true)));
+                }
+            });
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }

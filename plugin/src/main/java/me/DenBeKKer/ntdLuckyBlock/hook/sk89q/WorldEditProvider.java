@@ -1,8 +1,8 @@
 package me.DenBeKKer.ntdLuckyBlock.hook.sk89q;
 
 import lombok.Getter;
+import me.DenBeKKer.ntdLuckyBlock.api.util.JavaUtils;
 import me.DenBeKKer.ntdLuckyBlock.util.IWorldEdit;
-import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
@@ -24,10 +24,10 @@ public class WorldEditProvider {
         this.folder = folder;
         if (Bukkit.getPluginManager().isPluginEnabled("WorldEdit")
                 || Bukkit.getPluginManager().isPluginEnabled("FastAsyncWorldEdit")) {
-            fawe = Misc.getClass("com.fastasyncworldedit.bukkit.FaweBukkit") != null
-                    || Misc.getClass("com.boydti.fawe.Fawe") != null;
+            fawe = JavaUtils.getClass("com.fastasyncworldedit.bukkit.FaweBukkit") != null
+                    || JavaUtils.getClass("com.boydti.fawe.Fawe") != null;
             String pluginName = fawe ? "FastAsyncWorldEdit" : "WorldEdit";
-            if (Misc.getClass("com.sk89q.worldedit.math.Vector2") != null) {
+            if (JavaUtils.getClass("com.sk89q.worldedit.math.Vector2") != null) {
                 worldedit = new WorldEdit7();
                 logger.log(Level.INFO, "Using " + pluginName + " v6 (1.8-1.12) adapter");
             } else {

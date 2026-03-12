@@ -3,10 +3,10 @@ package me.DenBeKKer.ntdLuckyBlock.command.piece;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlock;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlockKey;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyEntry;
+import me.DenBeKKer.ntdLuckyBlock.api.util.Config;
 import me.DenBeKKer.ntdLuckyBlock.command.base.CommandResponse;
 import me.DenBeKKer.ntdLuckyBlock.command.base.LBCommand;
 import me.DenBeKKer.ntdLuckyBlock.engine.LuckyBlockEngine;
-import me.DenBeKKer.ntdLuckyBlock.util.Config;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import org.bukkit.command.CommandSender;
 

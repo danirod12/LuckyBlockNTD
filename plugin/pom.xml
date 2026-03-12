@@ -52,6 +52,18 @@
         </dependency>
 
         <dependency>
+            <groupId>com.github.danirod12.luckyblock</groupId>
+            <artifactId>api</artifactId>
+            <version>3.0.0-dev</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.danirod12.luckyblock</groupId>
+            <artifactId>luckyblock-nms-base</artifactId>
+            <version>nms</version>
+        </dependency>
+
+        <dependency>
             <artifactId>tokenmanager</artifactId>
             <groupId>tokenmanager</groupId>
             <version>tokenmanager</version>
@@ -135,80 +147,8 @@
         </dependency>
         <dependency>
             <groupId>com.github.danirod12.luckyblock</groupId>
-            <artifactId>luckyblock-nms-interfaces</artifactId>
-            <version>nms</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.danirod12.luckyblock</groupId>
-            <artifactId>luckyblock-nms-legacy</artifactId>
-            <version>nms</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.danirod12.luckyblock</groupId>
-            <artifactId>luckyblock-nms-v1_18_R1</artifactId>
-            <version>nms</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.danirod12.luckyblock</groupId>
-            <artifactId>luckyblock-nms-v1_18_R2</artifactId>
-            <version>nms</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.danirod12.luckyblock</groupId>
-            <artifactId>luckyblock-nms-v1_19_R1</artifactId>
-            <version>nms</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.danirod12.luckyblock</groupId>
-            <artifactId>luckyblock-nms-v1_19_R2</artifactId>
-            <version>nms</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.danirod12.luckyblock</groupId>
-            <artifactId>luckyblock-nms-v1_19_R3</artifactId>
-            <version>nms</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.danirod12.luckyblock</groupId>
-            <artifactId>luckyblock-nms-v1_20_R1</artifactId>
-            <version>nms</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>me.DenBeKKer.ntdLuckyBlock</groupId>
-            <artifactId>luckyblock-nms-v1_20_R2</artifactId>
-            <version>2.6.3</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>me.DenBeKKer.ntdLuckyBlock</groupId>
-            <artifactId>luckyblock-nms-v1_20_R3</artifactId>
-            <version>2.6.3</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>me.DenBeKKer.ntdLuckyBlock</groupId>
-            <artifactId>luckyblock-nms-v1_20_R4</artifactId>
-            <version>2.6.3</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>me.DenBeKKer.ntdLuckyBlock</groupId>
-            <artifactId>luckyblock-nms-v1_21_R1</artifactId>
-            <version>2.6.3</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>me.DenBeKKer.ntdLuckyBlock</groupId>
-            <artifactId>luckyblock-nms-v1_21_R2</artifactId>
-            <version>2.6.3</version>
+            <artifactId>customitem</artifactId>
+            <version>3.0.0-dev</version>
             <scope>compile</scope>
         </dependency>
 
@@ -217,6 +157,19 @@
     <build>
 
         <plugins>
+
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <version>4.0.4</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
             <plugin>
                 <groupId>com.github.wvengen</groupId>
@@ -254,7 +207,7 @@
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.PluginVersion { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.hook.Hook { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.api.** { &lt;methods&gt;; }</option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.api.DropChance { *; }</option>
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.api.model.DropChance { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.drop.** { &lt;methods&gt;; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.Lucky* { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.Templates { *; }</option>
@@ -267,7 +220,7 @@
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.particle.ParticleType { *; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.* { &lt;methods&gt;; }</option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.factory.LBFactory { *; }</option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.customitem.CustomItemFactory { ***
+                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.api.customitem.CustomItemFactory { ***
                             TAG_IDENTIFIER_NAME; }
                         </option>
                         <option>-keep class me.DenBeKKer.ntdLuckyBlock.customitem.** { &lt;methods&gt;; }</option>

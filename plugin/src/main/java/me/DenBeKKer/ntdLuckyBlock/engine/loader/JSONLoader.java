@@ -5,7 +5,7 @@ import me.DenBeKKer.ntdLuckyBlock.api.loader.PathLoader;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDrop;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyEntry;
 import me.DenBeKKer.ntdLuckyBlock.engine.LuckyBlockEngine;
-import me.DenBeKKer.ntdLuckyBlock.util.Config;
+import org.bukkit.configuration.ConfigurationSection;
 
 public class JSONLoader implements PathLoader {
 
@@ -28,12 +28,12 @@ public class JSONLoader implements PathLoader {
      */
 
     @Override
-    public LuckyDrop load(Config config, String path) throws Exception {
+    public LuckyDrop load(ConfigurationSection config) throws Exception {
         throw new PremiumVersionRequiredException("JSON loader");
     }
 
     @Override
-    public void save(Config config, String path, LuckyEntry entry) {
+    public void save(ConfigurationSection config, String path, LuckyEntry entry) {
         throw new PremiumVersionRequiredException("JSON loader");
     }
 }

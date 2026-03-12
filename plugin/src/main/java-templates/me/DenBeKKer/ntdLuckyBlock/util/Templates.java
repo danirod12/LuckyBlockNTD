@@ -1,5 +1,6 @@
 package me.DenBeKKer.ntdLuckyBlock.util;
 
+import com.github.danirod12.mcversion.MinecraftVersion;
 import me.DenBeKKer.ntdLuckyBlock.api.model.PluginVersion;
 
 public class Templates {
@@ -8,7 +9,10 @@ public class Templates {
     public static final String COMPILE_VERSION = "${project.version}";
 
     public static final String COMPILE_DATE = "${timestamp}";
-    public static final int BUILD = 133;
+
+    public static final String GIT_COMMIT_ID = "${git.commit.id}";
+    public static final String GIT_COMMIT_ID_ABBREV = "${git.commit.id.abbrev}";
+    public static final String GIT_BRANCH = "${git.branch}";
 
     public static final String DISCORD_URL = "https://discord.gg/vbYW3sperj";
     public static final String API_USAGE_URL = "https://clck.ru/34gZSd https://shorturl.at/gNOUX";
@@ -26,5 +30,10 @@ public class Templates {
                 "§8 > §6LuckyBlock setup §f- " + LUCKYBLOCK_SETUP_URL,
                 "§f=-= §6SUPPORT & BUG REPORTING & FEATURE REQUESTING §f=-="
         };
+    }
+
+    public static boolean hasFeatures(String version) {
+        return new MinecraftVersion.Version(COMPILE_VERSION.split("-")[0])
+                .isAtLeast(new MinecraftVersion.Version(version));
     }
 }

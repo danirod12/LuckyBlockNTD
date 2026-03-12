@@ -1,9 +1,9 @@
 package me.DenBeKKer.ntdLuckyBlock.command.piece;
 
+import me.DenBeKKer.ntdLuckyBlock.api.util.LogChannel;
 import me.DenBeKKer.ntdLuckyBlock.command.base.CommandResponse;
 import me.DenBeKKer.ntdLuckyBlock.command.base.LBCommand;
 import me.DenBeKKer.ntdLuckyBlock.util.Templates;
-import me.DenBeKKer.ntdLuckyBlock.util.manager.LogChannel;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

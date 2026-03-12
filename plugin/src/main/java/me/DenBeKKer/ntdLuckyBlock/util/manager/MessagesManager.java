@@ -1,7 +1,8 @@
 package me.DenBeKKer.ntdLuckyBlock.util.manager;
 
+import lombok.Getter;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
-import me.DenBeKKer.ntdLuckyBlock.util.Config;
+import me.DenBeKKer.ntdLuckyBlock.api.util.Config;
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
 import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -84,14 +85,14 @@ public class MessagesManager {
     }
 
     public static void updateLocalePath(Config config, String path) {
-        FileConfiguration file = config.getName().contains("custom") ? null : config.getDefault();
+        FileConfiguration file = config.getName().contains("custom") ? null : config.getResourceConf();
         if (file != null && file.isSet(path)) {
             config.get().set(path, file.get(path));
         } else {
             MvLogger.log(Level.WARNING, "Translation path <" + path
                     + "> not found for language " + config.getName() + ", using english!");
             config.get().set(path, new Config(LuckyBlockAPI.getInstance(),
-                    "configuration.lang", langFolder, "en.yml").getDefault().get(path));
+                    "configuration.lang", langFolder, "en.yml").getResourceConf().get(path));
         }
         config.save();
     }
@@ -159,6 +160,7 @@ public class MessagesManager {
         CMD_GENERATE_DESCRIPTION("system.cmd.generateFull"),
         CMD_DESTROYED_LB("system.cmd_destroyed_lb");
 
+        @Getter
         private final String path;
 
         Message(String string) {
@@ -169,7 +171,6 @@ public class MessagesManager {
             for (Message msg : Message.values()) {
                 msg.load();
             }
-            config.resetField(false, true);
         }
 
         @Deprecated

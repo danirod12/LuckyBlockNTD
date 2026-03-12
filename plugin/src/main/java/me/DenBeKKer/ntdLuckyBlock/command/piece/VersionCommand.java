@@ -25,7 +25,7 @@ public class VersionCommand extends LBCommand {
         sender.sendMessage("§8 • §fRunning version - §e" + LuckyBlockAPI.getVersion() + " §7(" +
                 LuckyBlockAPI.getVersionType().getColoredSimpleName() + "§7) " + (spigotUpdater.isNeedUpdate()
                 ? "§c§l[!] §cVersion " + spigotUpdater.getLatestVersion() + " available" : "§aLatest version"));
-        sender.sendMessage("§8 • §fBuild - §e" + LuckyBlockAPI.getBuild()
+        sender.sendMessage("§8 • §fGit ID - §e" + Templates.GIT_COMMIT_ID
                 + "§f, last update - §e" + LuckyBlockAPI.getLastUpdate());
         sender.sendMessage("§8 • §fPlugin author -§e danirod12 §7(aka Den Bekker)");
 

@@ -14,6 +14,8 @@
         <module>sk89q</module>
         <module>logger</module>
         <module>nms</module>
+        <module>api</module>
+        <module>customitem</module>
     </modules>
 
     <properties>
@@ -88,9 +90,9 @@
                             <addClasspath>false</addClasspath>
                         </manifest>
                     </archive>
-                    <excludes>
-                        <exclude>me/DenBeKKer/ntdLuckyBlock/variables/OldLuckyBlock.class</exclude>
-                    </excludes>
+                    <!--                    <excludes>-->
+                    <!--                        <exclude>me/DenBeKKer/ntdLuckyBlock/variables/OldLuckyBlock.class</exclude>-->
+                    <!--                    </excludes>-->
                 </configuration>
             </plugin>
 

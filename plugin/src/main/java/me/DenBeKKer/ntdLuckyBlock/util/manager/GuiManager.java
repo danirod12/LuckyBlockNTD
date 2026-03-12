@@ -1,14 +1,15 @@
 package me.DenBeKKer.ntdLuckyBlock.util.manager;
 
 import me.DenBeKKer.ntdLuckyBlock.LBMain;
+import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyBlock;
+import me.DenBeKKer.ntdLuckyBlock.api.setup.ShopSetup;
 import me.DenBeKKer.ntdLuckyBlock.hook.economy.EconomyBridge;
 import me.DenBeKKer.ntdLuckyBlock.nms.material.IMat.Mat;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager.Message;
 import me.DenBeKKer.ntdLuckyBlock.variables.PlayerHead;
 import me.DenBeKKer.ntdLuckyBlock.variables.gui.ConfirmEvent;
 import me.DenBeKKer.ntdLuckyBlock.variables.gui.CountGui;
-import me.DenBeKKer.ntdLuckyBlock.variables.setup.ShopSetup;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -161,7 +162,7 @@ public class GuiManager implements Listener {
                 assert meta != null;
                 meta.setLore(Arrays.asList("\u00a7f ", "\u00a7fRunning \u00a7eLuckyBlock NTD v"
                                 + this.instance.getVersion() + " \u00a77("
-                                + (LBMain.getVersionType().getColoredSimpleName()) + "\u00a77)",
+                                + (LuckyBlockAPI.getVersionType().getColoredSimpleName()) + "\u00a77)",
                         "\u00a7fby\u00a7a danirod12"));
                 grayPane.setItemMeta(meta);
             }

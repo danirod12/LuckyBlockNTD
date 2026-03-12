@@ -2,8 +2,8 @@ package me.DenBeKKer.ntdLuckyBlock.util.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.DenBeKKer.ntdLuckyBlock.api.util.Config;
 import me.DenBeKKer.ntdLuckyBlock.api.util.Single;
-import me.DenBeKKer.ntdLuckyBlock.util.Config;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
