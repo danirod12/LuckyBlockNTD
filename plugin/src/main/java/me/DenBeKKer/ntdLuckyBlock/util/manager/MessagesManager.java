@@ -4,7 +4,6 @@ import lombok.Getter;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.api.util.Config;
 import me.DenBeKKer.ntdLuckyBlock.util.Misc;
-import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
@@ -62,7 +61,7 @@ public class MessagesManager {
         }
 
         if (!lang.equalsIgnoreCase("en") && !lang.equalsIgnoreCase("ru")) {
-            MvLogger.log(Level.WARNING, "Loading unverified language file! " +
+            LuckyBlockAPI.getLogger().log(Level.WARNING, "Loading unverified language file! " +
                     "It may contains exceptions or illegal words. Check before using is recommended");
         }
 
@@ -76,11 +75,11 @@ public class MessagesManager {
                 config.save();
             }
 
-            MvLogger.log(Level.INFO, "Loading language file \""
+            LuckyBlockAPI.getLogger().log(Level.INFO, "Loading language file \""
                     + lang + "\" by " + config.get().getString("author"));
             Message.loadAll();
         } else {
-            MvLogger.log(Level.SEVERE, "Reset translation config was not found!");
+            LuckyBlockAPI.getLogger().log(Level.SEVERE, "Reset translation config was not found!");
         }
     }
 
@@ -89,7 +88,7 @@ public class MessagesManager {
         if (file != null && file.isSet(path)) {
             config.get().set(path, file.get(path));
         } else {
-            MvLogger.log(Level.WARNING, "Translation path <" + path
+            LuckyBlockAPI.getLogger().log(Level.WARNING, "Translation path <" + path
                     + "> not found for language " + config.getName() + ", using english!");
             config.get().set(path, new Config(LuckyBlockAPI.getInstance(),
                     "configuration.lang", langFolder, "en.yml").getResourceConf().get(path));
@@ -202,7 +201,8 @@ public class MessagesManager {
             MAP.put(this, config.get().get(this.path));
 
             if (copyPath && MAP.get(this) == null) {
-                MvLogger.log(Level.WARNING, "Translation for path <" + this.path + "> not found. Creating...");
+                LuckyBlockAPI.getLogger().log(Level.WARNING,
+                        "Translation for path <" + this.path + "> not found. Creating...");
                 updateLocalePath(config, path);
                 load(false);
             }

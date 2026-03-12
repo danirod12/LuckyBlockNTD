@@ -1,4 +1,4 @@
-package me.DenBeKKer.ntdLuckyBlock.util;
+package me.DenBeKKer.ntdLuckyBlock.api.model;
 
 import org.bukkit.block.Block;
 

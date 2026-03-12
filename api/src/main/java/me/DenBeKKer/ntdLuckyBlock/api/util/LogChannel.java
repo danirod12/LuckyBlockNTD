@@ -54,4 +54,8 @@ public class LogChannel {
     public void severe(String message, Throwable throwable) {
         this.logger.log(Level.SEVERE, message, throwable);
     }
+
+    public void log(Level level, String text) {
+        this.logger.log(level, text);
+    }
 }

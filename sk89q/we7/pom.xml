@@ -41,13 +41,12 @@
             <version>1.18-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>com.github.danirod12.luckyblock</groupId>
-            <artifactId>shared-logger</artifactId>
-            <version>logger</version>
-            <scope>compile</scope>
+            <artifactId>api</artifactId>
+            <version>3.0.0-dev</version>
         </dependency>
-
     </dependencies>
 
     <properties>

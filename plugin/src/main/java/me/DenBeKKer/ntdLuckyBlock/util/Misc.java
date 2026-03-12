@@ -146,7 +146,7 @@ public class Misc {
                     );
                 }
             } catch (NumberFormatException | IndexOutOfBoundsException exception) {
-                MvLogger.log(Level.WARNING, "An error occurred while parsing placeholder "
+                LuckyBlockAPI.getLogger().log(Level.WARNING, "An error occurred while parsing placeholder "
                         + origin.substring(matcher.start(), matcher.end()) + " at -> move_" + move);
                 exception.printStackTrace();
             }

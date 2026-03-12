@@ -8,7 +8,6 @@ import me.DenBeKKer.ntdLuckyBlock.api.loader.CustomSaver;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDrop;
 import me.DenBeKKer.ntdLuckyBlock.hook.Hook;
 import me.DenBeKKer.ntdLuckyBlock.hook.sk89q.WorldEditProvider;
-import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
 
 import java.io.File;
 import java.util.function.Supplier;
@@ -47,7 +46,7 @@ public class SchematicDrop implements CustomSaver, LuckyDrop {
     public static LuckyDrop load(String description) {
 
         if (!Hook.WorldEdit.isEnabled()) {
-            MvLogger.log(Level.WARNING, "WorldEdit was not found, lucky item \""
+            LuckyBlockAPI.getLogger().log(Level.WARNING, "WorldEdit was not found, lucky item \""
                     + description + "\" wont be loaded");
             throw new UnsupportedOperationException();
         }
@@ -63,7 +62,7 @@ public class SchematicDrop implements CustomSaver, LuckyDrop {
             file = new File(WE_PROVIDER.get().getFolder(), fileName);
 
             if (!file.exists()) {
-                MvLogger.log(Level.WARNING, "Schematic " + file.getPath() + " not found");
+                LuckyBlockAPI.getLogger().log(Level.WARNING, "Schematic " + file.getPath() + " not found");
                 return null;
             }
         }

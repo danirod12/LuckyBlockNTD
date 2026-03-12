@@ -1,9 +1,9 @@
 package me.DenBeKKer.ntdLuckyBlock.engine.drop;
 
 import com.google.gson.annotations.SerializedName;
+import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.api.event.ItemSpawnEvent;
 import me.DenBeKKer.ntdLuckyBlock.api.model.LuckyDrop;
-import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
@@ -34,7 +34,8 @@ public class ItemDrop implements LuckyDrop {
         // 1.8 fix
         if (drop.getItemStack().getType() != item.getType()) {
             drop.remove();
-            MvLogger.log(Level.WARNING, execution.getKey() + " have corrupted item " + item.getType()
+            LuckyBlockAPI.getLogger().log(Level.WARNING,
+                    execution.getKey() + " have corrupted item " + item.getType()
                     + ", remove it manually");
             execution.getKey().getSetup().ifPresent(instance -> {
                 instance.getItemsBag().remove(this);

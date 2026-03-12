@@ -8,6 +8,7 @@ import me.DenBeKKer.ntdLuckyBlock.api.provider.GenerationFactoryProvider;
 import me.DenBeKKer.ntdLuckyBlock.api.provider.LBMainProvider;
 import me.DenBeKKer.ntdLuckyBlock.api.provider.LuckyEngineProvider;
 import me.DenBeKKer.ntdLuckyBlock.api.provider.LuckyRecipeProvider;
+import me.DenBeKKer.ntdLuckyBlock.api.util.LogChannel;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,6 +47,10 @@ public class LuckyBlockAPI {
             throw new ApiNotInitializedException();
         }
         return luckyEngineProvider.getGenerationFactory();
+    }
+
+    public static LogChannel getLogger() {
+        return provider.getLogChannel();
     }
 
     /**

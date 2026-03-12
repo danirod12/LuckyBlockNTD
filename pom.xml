@@ -12,7 +12,6 @@
     <modules>
         <module>plugin</module>
         <module>sk89q</module>
-        <module>logger</module>
         <module>nms</module>
         <module>api</module>
         <module>customitem</module>

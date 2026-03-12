@@ -21,8 +21,8 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
-import me.DenBeKKer.ntdLuckyBlock.util.IWorldEdit;
-import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
+import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
+import me.DenBeKKer.ntdLuckyBlock.api.model.IWorldEdit;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -65,11 +65,13 @@ public class WorldEdit7 implements IWorldEdit {
             clipboard = reader.read();
         } catch (Exception e) {
             e.printStackTrace();
-            MvLogger.log(Level.SEVERE, "Schematic " + file.getPath() + " not found or something went wrong");
+            LuckyBlockAPI.getLogger().log(Level.SEVERE,
+                    "Schematic " + file.getPath() + " not found or something went wrong");
         }
 
         if (clipboard == null) {
-            MvLogger.log(Level.SEVERE, "Schematic " + file.getPath() + " not found or something went wrong");
+            LuckyBlockAPI.getLogger().log(Level.SEVERE,
+                    "Schematic " + file.getPath() + " not found or something went wrong");
             return;
         }
 
@@ -100,12 +102,13 @@ public class WorldEdit7 implements IWorldEdit {
                 Vector3 max = realTo.add(holder.getTransform().apply(region.getMaximumPoint()
                         .subtract(region.getMinimumPoint()).toVector3()));
 
-                Bukkit.getScheduler().runTaskLater(MvLogger.getInstance(), () -> formatPastedSchematic(obj.getWorld(),
-                        new CuboidRegion(realTo.toBlockPoint(), max.toBlockPoint()), a), 1);
+                Bukkit.getScheduler().runTaskLater(LuckyBlockAPI.getInstance(),
+                        () -> formatPastedSchematic(obj.getWorld(),
+                                new CuboidRegion(realTo.toBlockPoint(), max.toBlockPoint()), a), 1);
             }
         } catch (WorldEditException e) {
             e.printStackTrace();
-            MvLogger.log(Level.SEVERE, "Something went wrong");
+            LuckyBlockAPI.getLogger().log(Level.SEVERE, "Something went wrong");
         }
     }
 

@@ -8,7 +8,6 @@ import me.DenBeKKer.ntdLuckyBlock.nms.ItemTag;
 import me.DenBeKKer.ntdLuckyBlock.nms.VersionControlFactory;
 import me.DenBeKKer.ntdLuckyBlock.nms.material.IMat;
 import me.DenBeKKer.ntdLuckyBlock.nms.material.IMat.Mat;
-import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -47,8 +46,8 @@ public class CustomItemFactory {
             STORAGE.remove(origin);
         }
         STORAGE.add(item);
-        MvLogger.log(Level.INFO, "Registered a new custom item - " + item.getClass().getSimpleName()
-                + " (" + item.getEvents().size() + " events)");
+        LuckyBlockAPI.getLogger().log(Level.INFO, "Registered a new custom item - "
+                + item.getClass().getSimpleName() + " (" + item.getEvents().size() + " events)");
         Bukkit.getPluginManager().callEvent(new CustomItemAddedEvent(item));
     }
 
@@ -99,7 +98,7 @@ public class CustomItemFactory {
 
         Config customItems = new Config(LuckyBlockAPI.getInstance(),
                 "configuration.other", null, "custom_items");
-        customItems.copyMissedFields(added -> MvLogger.log(Level.INFO,
+        customItems.copyMissedFields(added -> LuckyBlockAPI.getLogger().log(Level.INFO,
                 "A new custom item here (" + added + "). §aEnabling!"));
 
         // check if new items is missed
@@ -191,7 +190,7 @@ public class CustomItemFactory {
                                 player.addPotionEffect(new PotionEffect(type, ThreadLocalRandom.current()
                                         .nextInt(5, 45) * 20, 1));
                             } catch (Exception ex) {
-                                MvLogger.log(Level.WARNING, " > PotionEffectType - "
+                                LuckyBlockAPI.getLogger().log(Level.WARNING, " > PotionEffectType - "
                                         + type + ", " + ex.getLocalizedMessage());
                                 ex.printStackTrace();
                             }
@@ -286,17 +285,19 @@ public class CustomItemFactory {
         }
 
         final int internal;
-        MvLogger.log(Level.INFO, "Loaded " + (internal = STORAGE.size()) + " internal custom items...");
+        LuckyBlockAPI.getLogger().log(Level.INFO,
+                "Loaded " + (internal = STORAGE.size()) + " internal custom items...");
         Bukkit.getPluginManager().callEvent(new CustomItemFactoryReloadEvent(new ArrayList<>(STORAGE),
                 CustomItemFactoryReloadEvent.Action.PRELOAD));
 
         if (STORAGE.size() > internal) {
-            MvLogger.log(Level.INFO, "Loaded " + (STORAGE.size() - internal) + " external custom items...");
+            LuckyBlockAPI.getLogger().log(Level.INFO,
+                    "Loaded " + (STORAGE.size() - internal) + " external custom items...");
         }
         Bukkit.getPluginManager().callEvent(new CustomItemFactoryReloadEvent(new ArrayList<>(STORAGE),
                 CustomItemFactoryReloadEvent.Action.LOADED));
 
-        MvLogger.log(Level.INFO, "Loaded " + STORAGE.size() + " custom items... (Total)");
+        LuckyBlockAPI.getLogger().log(Level.INFO, "Loaded " + STORAGE.size() + " custom items... (Total)");
     }
 
     public static void withdrawItem(Player damager) {

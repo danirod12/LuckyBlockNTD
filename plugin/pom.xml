@@ -115,13 +115,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.danirod12.luckyblock</groupId>
-            <artifactId>shared-logger</artifactId>
-            <version>logger</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
             <groupId>com.sk89q.worldguard</groupId>
             <artifactId>worldguard-bukkit</artifactId>
             <version>7.0.2-SNAPSHOT</version>

@@ -1,8 +1,8 @@
 package me.DenBeKKer.ntdLuckyBlock.hook.sk89q;
 
 import lombok.Getter;
+import me.DenBeKKer.ntdLuckyBlock.api.model.IWorldEdit;
 import me.DenBeKKer.ntdLuckyBlock.api.util.JavaUtils;
-import me.DenBeKKer.ntdLuckyBlock.util.IWorldEdit;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;

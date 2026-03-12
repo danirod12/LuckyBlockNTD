@@ -6,7 +6,6 @@ import lombok.Getter;
 import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
 import me.DenBeKKer.ntdLuckyBlock.api.model.Identifier;
 import me.DenBeKKer.ntdLuckyBlock.api.util.Pair;
-import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.Event;
@@ -125,7 +124,7 @@ public class BekkerItemStackBuilder {
             return item;
         } catch (Throwable th) {
             th.printStackTrace();
-            MvLogger.log(Level.WARNING, new Gson().toJson(this));
+            LuckyBlockAPI.getLogger().log(Level.WARNING, new Gson().toJson(this));
             return null;
         }
     }

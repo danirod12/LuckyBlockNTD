@@ -21,7 +21,10 @@ import me.DenBeKKer.ntdLuckyBlock.listener.CustomItemListener;
 import me.DenBeKKer.ntdLuckyBlock.listener.EntityLoadListener;
 import me.DenBeKKer.ntdLuckyBlock.nms.VersionControlFactory;
 import me.DenBeKKer.ntdLuckyBlock.recipe.CraftListener;
-import me.DenBeKKer.ntdLuckyBlock.util.*;
+import me.DenBeKKer.ntdLuckyBlock.util.Misc;
+import me.DenBeKKer.ntdLuckyBlock.util.SpigotUpdater;
+import me.DenBeKKer.ntdLuckyBlock.util.StringMatcher;
+import me.DenBeKKer.ntdLuckyBlock.util.Templates;
 import me.DenBeKKer.ntdLuckyBlock.util.config.ConfigHolder;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.GuiManager;
 import me.DenBeKKer.ntdLuckyBlock.util.manager.MessagesManager;
@@ -100,9 +103,6 @@ public class LBMain extends LBMainProvider {
     public void onEnable() {
         // some kind of timings ^_^
         long ms = System.currentTimeMillis();
-
-        // Init logger TODO remove ?
-        MvLogger.setInstance(this);
 
         // Plugin title
         logChannel.info("§fStarting LuckyBlock (ntdLuckyBlock) v" + getVersion() + " [" + Templates.GIT_BRANCH + "-"

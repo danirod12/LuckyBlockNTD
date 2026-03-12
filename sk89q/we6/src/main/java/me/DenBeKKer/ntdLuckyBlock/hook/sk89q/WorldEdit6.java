@@ -10,8 +10,8 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.mask.Masks;
 import com.sk89q.worldedit.schematic.MCEditSchematicFormat;
-import me.DenBeKKer.ntdLuckyBlock.util.IWorldEdit;
-import me.DenBeKKer.ntdLuckyBlock.util.MvLogger;
+import me.DenBeKKer.ntdLuckyBlock.api.LuckyBlockAPI;
+import me.DenBeKKer.ntdLuckyBlock.api.model.IWorldEdit;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 
@@ -45,7 +45,7 @@ public class WorldEdit6 implements IWorldEdit {
             clipboard.paste(session, new Vector(obj.getX(), obj.getY(), obj.getZ()), !air);
         } catch (Exception e) {
             e.printStackTrace();
-            MvLogger.log(Level.SEVERE, "Something went wrong");
+            LuckyBlockAPI.getLogger().log(Level.SEVERE, "Something went wrong");
         }
     }
 
