@@ -1,5 +1,5 @@
 name: ntdLuckyBlock
-main: me.DenBeKKer.ntdLuckyBlock.LBMain
+main: com.github.danirod12.luckyblock.LBMain
 version: ${project.parent.version}
 api-version: 1.13
 author: danirod12 # NTD STUDIOS

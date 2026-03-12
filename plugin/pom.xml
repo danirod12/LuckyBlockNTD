@@ -171,7 +171,9 @@
                 <executions>
                     <execution>
                         <phase>package</phase>
-                        <goals><goal>proguard</goal></goals>
+                        <goals>
+                            <goal>proguard</goal>
+                        </goals>
                     </execution>
                 </executions>
                 <configuration>
@@ -190,42 +192,44 @@
                         <option>-dontwarn</option>
                         <option>-ignorewarnings</option>
 
-                        <option>-keep enum me.DenBeKKer.ntdLuckyBlock.LBMain** { *; }</option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.LBMain { int build;
+                        <option>-keep enum com.github.danirod12.luckyblock.LBMain** { *; }</option>
+                        <option>-keep class com.github.danirod12.luckyblock.LBMain { int build;
                             java.lang.String user; java.lang.String resource; java.lang.String nonce;
                             *** get*(...); *** system_load(...); *** is*(...); }
                         </option>
 
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.PlayerHead { *; }</option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.PluginVersion { *; }</option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.hook.Hook { *; }</option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.api.** { &lt;methods&gt;; }</option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.api.model.DropChance { *; }</option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.drop.** { &lt;methods&gt;; }</option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.Lucky* { *; }</option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.Templates { *; }</option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.bstats.** { *; }</option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.ColorData { &lt;fields&gt;; }</option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.particle.ParticleManager { &lt;methods&gt;;
+                        <option>-keep class com.github.danirod12.luckyblock.variables.PlayerHead { *; }</option>
+                        <option>-keep class com.github.danirod12.luckyblock.variables.PluginVersion { *; }</option>
+                        <option>-keep class com.github.danirod12.luckyblock.hook.Hook { *; }</option>
+                        <option>-keep class com.github.danirod12.luckyblock.api.** { &lt;methods&gt;; }</option>
+                        <option>-keep class com.github.danirod12.luckyblock.api.model.DropChance { *; }</option>
+                        <option>-keep class com.github.danirod12.luckyblock.variables.drop.** { &lt;methods&gt;; }
+                        </option>
+                        <option>-keep class com.github.danirod12.luckyblock.variables.Lucky* { *; }</option>
+                        <option>-keep class com.github.danirod12.luckyblock.util.Templates { *; }</option>
+                        <option>-keep class com.github.danirod12.luckyblock.util.bstats.** { *; }</option>
+                        <option>-keep class com.github.danirod12.luckyblock.util.ColorData { &lt;fields&gt;; }</option>
+                        <option>-keep class com.github.danirod12.luckyblock.util.particle.ParticleManager { &lt;methods&gt;;
                             }
                         </option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.MinecraftVersion$NMSVersion { *; }</option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.particle.ParticleType { *; }</option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.* { &lt;methods&gt;; }</option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.factory.LBFactory { *; }</option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.api.customitem.CustomItemFactory { ***
+                        <option>-keep class com.github.danirod12.luckyblock.util.MinecraftVersion$NMSVersion { *; }
+                        </option>
+                        <option>-keep class com.github.danirod12.luckyblock.util.particle.ParticleType { *; }</option>
+                        <option>-keep class com.github.danirod12.luckyblock.util.* { &lt;methods&gt;; }</option>
+                        <option>-keep class com.github.danirod12.luckyblock.factory.LBFactory { *; }</option>
+                        <option>-keep class com.github.danirod12.luckyblock.api.customitem.CustomItemFactory { ***
                             TAG_IDENTIFIER_NAME; }
                         </option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.customitem.** { &lt;methods&gt;; }</option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.loader.ConvertManager { &lt;methods&gt;; }
+                        <option>-keep class com.github.danirod12.luckyblock.customitem.** { &lt;methods&gt;; }</option>
+                        <option>-keep class com.github.danirod12.luckyblock.loader.ConvertManager { &lt;methods&gt;; }
                         </option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop$* { *; }</option>
+                        <option>-keep class com.github.danirod12.luckyblock.variables.LuckyDrop$* { *; }</option>
 
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.util.CooldownStorage { static final &lt;fields&gt;;
+                        <option>-keep class com.github.danirod12.luckyblock.util.CooldownStorage { static final &lt;fields&gt;;
                             }
                         </option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.LuckyDrop$* { *; }</option>
-                        <option>-keep class me.DenBeKKer.ntdLuckyBlock.variables.setup.*Setup { &lt;methods&gt;; }
+                        <option>-keep class com.github.danirod12.luckyblock.variables.LuckyDrop$* { *; }</option>
+                        <option>-keep class com.github.danirod12.luckyblock.variables.setup.*Setup { &lt;methods&gt;; }
                         </option>
 
                     </options>

@@ -8,7 +8,7 @@ name: "&eYellow LuckyBlock"
 custom_name: "YELLOW"
 # Item lore
 lore:
-- "&7Place me :D"
+  - "&7Place me :D"
 
 eco: true
 shop: true

@@ -1,4 +1,3 @@
-
 # Translation configuration author
 author: PedroJs
 
@@ -63,7 +62,7 @@ system:
   cmd_no_perm: "&cDesculpe, mas você não tem permissão para executar esse sub comando"
   cmd_player_not_found: "&cPlayer &e%player%&c não encontrado :("
   cmd_no_perm_to_color: "&cSem permissão para a cor %lb%"
-  
+
 gui:
   exit: "&7[ &6Sair do GUI &7]"
   get:

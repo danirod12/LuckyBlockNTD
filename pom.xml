@@ -137,11 +137,11 @@
                     <relocations>
                         <relocation>
                             <pattern>com.github.danirod12.mcversion</pattern>
-                            <shadedPattern>me.DenBeKKer.ntdLuckyBlock.util</shadedPattern>
+                            <shadedPattern>com.github.danirod12.luckyblock.util</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>org.bstats</pattern>
-                            <shadedPattern>me.DenBeKKer.ntdLuckyBlock.util.bstats</shadedPattern>
+                            <shadedPattern>com.github.danirod12.luckyblock.util.bstats</shadedPattern>
                         </relocation>
                     </relocations>
                     <filters>

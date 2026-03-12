@@ -1,4 +1,3 @@
-
 # Translation configuration author
 author: Torwik
 
@@ -54,7 +53,7 @@ system:
   
   cmd_player_not_found: "&cNie znaleziono gracza &e%player%&c :("
   cmd_no_perm_to_color: "&cBrak uprawnień dla koloru %lb%"
-  
+
 gui:
   exit: "&7[ &6Wyjdź z MENU &7]"
   get:

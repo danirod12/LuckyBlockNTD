@@ -1,4 +1,3 @@
-
 # Translation configuration author
 author: Santos
 
@@ -75,7 +74,7 @@ system:
   cmd_player_not_found: "&cJugador &e%player%&c no encontrado :("
   cmd_no_perm_to_color: "&cSin permiso para el color %lb%"
   cmd_no_perm: "&cLo siento, pero no tiene permisos para ejecutar este subcomando"
-  
+
 gui:
   exit: "&7[ &6Salir de la GUI &7]"
   get:
@@ -129,4 +128,4 @@ gui:
       chance: "&7[ &eProbabilidad actual &6%chance% &7]"
       move-item-to-gui: "&aMueva cualquier item aquí para agregarlo a LuckyList"
       chance-change:
-      - "&fHaga click para cambiar la probabilidad"
+        - "&fHaga click para cambiar la probabilidad"

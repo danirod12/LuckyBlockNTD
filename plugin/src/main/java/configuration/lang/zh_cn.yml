@@ -1,4 +1,3 @@
-
 # Translation configuration author
 author: SnowCutieOwO
 
@@ -61,7 +60,7 @@ system:
   cmd_player_not_found: "&c玩家 &e%player%&c 未找到 :("
   cmd_no_perm_to_color: "&c颜色 %lb% 无权限"
   cmd_no_perm: "&c抱歉，但你无权限执行该子命令"
-  
+
 gui:
   exit: "&7[ &6离开菜单 &7]"
   get:

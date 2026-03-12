@@ -1,4 +1,3 @@
-
 # Translation configuration author
 author: danirod12
 
@@ -66,7 +65,7 @@ system:
 
   cmd_player_not_found: "&cИгрок &e%player%&c не найден :("
   cmd_no_perm_to_color: "&cНет прав для цвета %lb%"
-  
+
 gui:
   exit: "&7[ &6Покинуть меню &7]"
   get:

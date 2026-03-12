@@ -1,0 +1,161 @@
+package com.github.danirod12.luckyblock.util;
+
+import com.github.danirod12.luckyblock.api.util.ISpigotUpdater;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.logging.Level;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
+
+public class SpigotUpdater implements ISpigotUpdater {
+
+    private final int id;
+    private final URL url;
+    private final Plugin plugin;
+    private final String friendlyName;
+    private String version;
+    private boolean needUpdate = false;
+
+    public static final Pattern VERSION_PATTERN = Pattern.compile("[0-9.]*");
+
+    public SpigotUpdater(JavaPlugin plugin, int id) {
+        this(plugin, id, null);
+    }
+
+    public SpigotUpdater(JavaPlugin plugin, int id, String friendlyName) {
+        this.plugin = plugin;
+        this.friendlyName = friendlyName == null ? plugin.getDescription().getName() : friendlyName;
+        this.version = plugin.getDescription().getVersion();
+        this.id = id;
+        URL url = null;
+        try {
+            url = new URL("https://api.spigotmc.org/legacy/update.php?resource=" + id);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        this.url = url;
+    }
+
+    @Override
+    public int getProjectID() {
+        return id;
+    }
+
+    @Override
+    public Plugin getPlugin() {
+        return plugin;
+    }
+
+    @Override
+    public boolean checkForUpdates() throws Exception {
+        URLConnection con = url.openConnection();
+        this.version = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
+        needUpdate = isNewer(version, plugin.getDescription().getVersion());
+        return needUpdate;
+    }
+
+    @Override
+    public String getLatestVersion() {
+        return version;
+    }
+
+    @Override
+    public String getResourceURL() {
+        return "https://www.spigotmc.org/resources/" + id;
+    }
+
+    @Override
+    public boolean isNeedUpdate() {
+        return needUpdate;
+    }
+
+    @Override
+    public void sendUpdateMessage(CommandSender target) {
+        if (!needUpdate) {
+            return;
+        }
+        if (target == null) {
+            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                if (onlinePlayer.hasPermission(plugin.getName().toLowerCase() + ".update")) {
+                    notify(onlinePlayer);
+                }
+            }
+            notify(Bukkit.getConsoleSender());
+        } else {
+            notify(target);
+        }
+    }
+
+    private void notify(CommandSender sender) {
+        sender.sendMessage("§6╔");
+        sender.sendMessage("§6║   §c§l[!] §aNew plugin version for §e" + friendlyName + "§a has been released!");
+        sender.sendMessage("§6║ §aYour current version is §7" + plugin.getDescription().getVersion()
+                + "§a. New version is §c" + version);
+        sender.sendMessage("§6║ §aCheck §b" + getResourceURL() + "  §6§l^_^");
+        sender.sendMessage("§6╚");
+    }
+
+    @Override
+    public void checkForUpdates(boolean notifyWebIssue, boolean inform) {
+        try {
+            if (checkForUpdates() && inform) {
+                sendUpdateMessage(null);
+            }
+        } catch (Exception exception) {
+            if (notifyWebIssue) {
+                plugin.getLogger().log(Level.WARNING, "SpigotMC servers is unavailable... " +
+                        "Check plugin page for updates " + getResourceURL());
+                exception.printStackTrace();
+            }
+        }
+    }
+
+    // Static methods
+    private boolean isNewer(String version, String origin) {
+        return compareVersions(version, origin) > 0;
+    }
+
+    private int compareVersions(String version, String origin) {
+        final int[] versionPart = prepare(version), originPart = prepare(origin);
+
+        int versionId = 0, originId = 0;
+        for (int i = 0; i < versionPart.length || i < originPart.length; i++) {
+            int length = String.valueOf(Math.max(i < versionPart.length
+                    ? versionPart[i] : 1, i < originPart.length ? originPart[i] : 1)).length();
+            for (int j = 1; j < length; j++) {
+                versionId *= 10;
+                originId *= 10;
+            }
+
+            if (i < versionPart.length) {
+                versionId += versionPart[i];
+            }
+            if (i < originPart.length) {
+                originId += originPart[i];
+            }
+            versionId *= 10;
+            originId *= 10;
+        }
+        return versionId - originId;
+    }
+
+    private int[] prepare(String version) {
+        if (version.contains("-")) {
+            version = version.split("-")[0];
+        }
+        version = version.replace("_", ".");
+        if (!SpigotUpdater.VERSION_PATTERN.matcher(version).matches()) {
+            return new int[0];
+        }
+        return Stream.of(version.split("\\.")).mapToInt(Integer::valueOf).toArray();
+    }
+}
