@@ -83,8 +83,8 @@ public class BekkerItemStackBuilder {
     }
 
     protected BekkerItemStackBuilder setSerialID(String identifier) {
-        this.identifier = new Identifier(LuckyBlockAPI.getInstance(),
-                CustomItemFactory.TAG_IDENTIFIER_NAME, identifier);
+        this.identifier = new Identifier(CustomItemFactory.TAG_IDENTIFIER_NAME,
+                LuckyBlockAPI.getInstance(), identifier);
         return this;
     }
 
@@ -92,7 +92,7 @@ public class BekkerItemStackBuilder {
         if (LuckyBlockAPI.getInstance().getName().equalsIgnoreCase(plugin.getName())) {
             throw new UnsupportedOperationException("Cannot register items with LuckyBlock instance");
         }
-        this.identifier = new Identifier(plugin, CustomItemFactory.TAG_IDENTIFIER_NAME, identifier);
+        this.identifier = new Identifier(CustomItemFactory.TAG_IDENTIFIER_NAME, plugin, identifier);
         return this;
     }
 

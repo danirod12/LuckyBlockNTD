@@ -1,6 +1,5 @@
 package com.github.danirod12.luckyblock.nms;
 
-import com.github.danirod12.luckyblock.api.LuckyBlockAPI;
 import com.github.danirod12.luckyblock.api.model.Identifier;
 import com.github.danirod12.luckyblock.api.provider.VersionControl;
 import com.github.danirod12.luckyblock.api.util.JavaUtils;
@@ -168,8 +167,7 @@ public class VersionControlFactory implements VersionControl {
                 ? new Mat1_12() : new Mat1_13();
         logChannel.info("Loaded " + materialFactory.build() + " material version");
 
-        Material tinted = JavaUtils.getEnum(Material.class, "TINTED_GLASS");
-        this.tinted = tinted == null || !LuckyBlockAPI.getVersionType().isPremium() ? null : tinted;
+        this.tinted = JavaUtils.getEnum(Material.class, "TINTED_GLASS");
     }
 
     @Override
@@ -197,24 +195,24 @@ public class VersionControlFactory implements VersionControl {
 
     @Override
     public ItemStack apply(ItemStack origin, Identifier identifier) {
-        return apply(origin, identifier.getTagName(), identifier.getIdentifier());
+        return apply(origin, identifier.getTagName(), identifier.getTagValue());
     }
 
     @Override
-    public ItemStack apply(ItemStack origin, String tagName, String identifier) {
+    public ItemStack apply(ItemStack origin, String tagName, String tagValue) {
         Object nmsItem = itemTagAdapter.asNMSCopy(origin);
         Object tag = itemTagAdapter.getTag(nmsItem);
         if (tag == null) {
             tag = itemTagAdapter.newTag();
         }
-        itemTagAdapter.setTagString(tag, tagName, identifier);
+        itemTagAdapter.setTagString(tag, tagName, tagValue);
         itemTagAdapter.setTag(nmsItem, tag);
         return itemTagAdapter.asBukkitCopy(nmsItem);
     }
 
     @Override
     public String getValue(ItemStack origin, Identifier identifier) {
-        return getValue(origin, identifier.getIdentifier());
+        return getValue(origin, identifier.getTagValue());
     }
 
     @Override

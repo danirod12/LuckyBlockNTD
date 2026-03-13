@@ -125,6 +125,8 @@ public class CoreListener implements Listener {
                 }
             }
 
+            // TODO check if there is already a slab and move up or cancel event
+
             LuckyBlockPlaceEvent luckyBlockPlaceEvent = new LuckyBlockPlaceEvent(event,
                     event.getBlock(), event.getPlayer(), block.getKey());
             Bukkit.getPluginManager().callEvent(luckyBlockPlaceEvent);

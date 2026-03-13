@@ -12,33 +12,20 @@ public class Identifier {
 
     private static final Pattern PATTERN = Pattern.compile("[a-z][a-z0-9_]{2,}[a-z0-9]");
 
-    private final String identifier, tagName;
+    private final String tagName, tagValue;
 
-    /**
-     * Custom tags with plugin
-     *
-     * @param plugin     Plugin instance
-     * @param identifier Identifier
-     * @param tagName    Tag key
-     */
-    public Identifier(Plugin plugin, String identifier, String tagName) {
-        if (!PATTERN.matcher(identifier).matches()) {
+    public Identifier(String tagName, Plugin plugin, String tagValue) {
+        if (!PATTERN.matcher(tagValue).matches()) {
             throw new UnsupportedOperationException("Identifier should be from pattern \"" + PATTERN.pattern() + "\"");
         }
 
-        this.identifier = plugin.getName().toLowerCase() + "-" + identifier.toLowerCase();
         this.tagName = tagName.toLowerCase();
+        this.tagValue = plugin.getName().toLowerCase() + "-" + tagValue.toLowerCase();
     }
 
-    /**
-     * Custom tags without plugin
-     *
-     * @param identifier Identifier
-     * @param tagName    Tag key
-     */
-    public Identifier(String identifier, String tagName) {
-        this.identifier = identifier.toLowerCase();
+    public Identifier(String tagName, String tagValue) {
         this.tagName = tagName.toLowerCase();
+        this.tagValue = tagValue.toLowerCase();
     }
 
     public ItemStack apply(ItemStack origin) {
@@ -47,7 +34,7 @@ public class Identifier {
 
     @Override
     public String toString() {
-        return identifier + ":" + tagName;
+        return tagValue + ":" + tagName;
     }
 
     @Override
@@ -72,10 +59,10 @@ public class Identifier {
     }
 
     public boolean isItem(Identifier identifier) {
-        return identifier.identifier.equalsIgnoreCase(this.identifier);
+        return identifier.tagValue.equalsIgnoreCase(this.tagValue);
     }
 
     public boolean isItem(String string) {
-        return string.equalsIgnoreCase(identifier);
+        return string.equalsIgnoreCase(tagValue);
     }
 }

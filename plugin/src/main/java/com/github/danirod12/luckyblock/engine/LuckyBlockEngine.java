@@ -295,7 +295,7 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
 
     @Override
     public Optional<LuckyBlockKey> parseLuckyBlock(ItemStack stack) {
-        String type = CustomItemFactory.parseValue(stack, CustomItemFactory.TAG_LUCKYBLOCK_TYPE);
+        String type = this.versionControl.getValue(stack, CustomItemFactory.TAG_LUCKYBLOCK_TYPE);
         if (type == null) {
             return Optional.empty();
         }

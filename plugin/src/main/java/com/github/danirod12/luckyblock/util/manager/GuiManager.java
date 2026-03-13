@@ -80,6 +80,10 @@ public class GuiManager implements Listener {
             }
 
             ShopSetup shopSetup = block.getShopSetup();
+            if (shopSetup == null || !shopSetup.isEnabled()) {
+                // should not happen
+                return;
+            }
             boolean economy = this.instance.getEconomyBridge() != null && this.instance.getEconomyBridge().enabled();
             map.put(player, new CountGui(player, 1, 64, 1, (new ConfirmEvent() {
 
@@ -145,7 +149,8 @@ public class GuiManager implements Listener {
 
         List<LuckyBlock> types = instance.getEngine().mapCopy().entrySet().stream()
                 .sorted(Comparator.comparingInt(entry -> entry.getKey().getColorData().getData()))
-                .map(Map.Entry::getValue).filter(block -> block.getShopSetup().isEnabled())
+                .map(Map.Entry::getValue)
+                .filter(block -> block.getShopSetup() != null && block.getShopSetup().isEnabled())
                 .collect(Collectors.toList());
 //        LBMain.debug("[GUIMANAGER] Found " + types.size() + " types");
 

@@ -15,7 +15,7 @@ public interface VersionControl {
 
     ItemStack apply(ItemStack origin, Identifier identifier);
 
-    ItemStack apply(ItemStack origin, String tagName, String identifier);
+    ItemStack apply(ItemStack origin, String tagName, String tagValue);
 
     String getValue(ItemStack item, Identifier identifier);
 

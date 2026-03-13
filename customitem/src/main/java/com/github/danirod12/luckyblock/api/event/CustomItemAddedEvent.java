@@ -39,7 +39,7 @@ public class CustomItemAddedEvent extends Event {
     }
 
     public Plugin getPlugin() {
-        final String name = item.getIdentifier().getIdentifier().split("-")[0];
+        final String name = item.getIdentifier().getTagValue().split("-")[0];
         for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
             if (plugin.getName().equalsIgnoreCase(name)) {
                 return plugin;

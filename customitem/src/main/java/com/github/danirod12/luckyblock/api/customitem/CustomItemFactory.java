@@ -52,7 +52,7 @@ public class CustomItemFactory {
     }
 
     private static void register(BekkerItemStackBuilder builder) {
-        if (!builder.getIdentifier().getIdentifier().split("-")[0]
+        if (!builder.getIdentifier().getTagValue().split("-")[0]
                 .equalsIgnoreCase(LuckyBlockAPI.getInstance().getName())) {
             throw new UnsupportedOperationException("Only system items can be registered using this method.");
         }
