@@ -20,6 +20,10 @@
             <id>github</id>
             <url>https://maven.pkg.github.com/danirod12/MinecraftVersion</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -40,8 +44,8 @@
         <!-- MINECRAFT VERSION LIBRARY -->
         <dependency>
             <groupId>com.github.danirod12</groupId>
-            <artifactId>mc-version</artifactId>
-            <version>1.2.2</version>
+            <artifactId>MinecraftVersion</artifactId>
+            <version>1.2.7</version>
             <scope>compile</scope>
         </dependency>
 
