@@ -7,6 +7,7 @@ import com.github.danirod12.luckyblock.api.provider.LBMainProvider;
 import com.github.danirod12.luckyblock.api.util.*;
 import com.github.danirod12.luckyblock.command.CommandsManager;
 import com.github.danirod12.luckyblock.engine.LuckyBlockEngine;
+import com.github.danirod12.luckyblock.engine.drop.LuckyItemDrop;
 import com.github.danirod12.luckyblock.hook.Hook;
 import com.github.danirod12.luckyblock.hook.economy.EconomyBridge;
 import com.github.danirod12.luckyblock.hook.economy.TokenManagerEconomy;
@@ -34,6 +35,7 @@ import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -105,18 +107,20 @@ public class LBMain extends LBMainProvider {
         long ms = System.currentTimeMillis();
 
         // Plugin title
-        logChannel.info("§fStarting LuckyBlock (ntdLuckyBlock) v" + getVersion() + " [" + Templates.GIT_BRANCH + "-"
-                + Templates.GIT_COMMIT_ID_ABBREV + "] (" + getLastUpdate() + "), " + getVersionType().getSimpleName());
-        logChannel.info("§e  ╭╮╱╱╭╮╱╭┳━━━┳╮╭━┳╮╱╱╭┳━━╮╭╮╱╱╭━━━┳━━━┳╮╭━╮");
-        logChannel.info("§e  ┃┃╱╱┃┃╱┃┃╭━╮┃┃┃╭┫╰╮╭╯┃╭╮┃┃┃╱╱┃╭━╮┃╭━╮┃┃┃╭╯");
-        logChannel.info("§e  ┃┃╱╱┃┃╱┃┃┃╱╰┫╰╯╯╰╮╰╯╭┫╰╯╰┫┃╱╱┃┃╱┃┃┃╱╰┫╰╯╯");
-        logChannel.info("§e  ┃┃╱╭┫┃╱┃┃┃╱╭┫╭╮┃╱╰╮╭╯┃╭━╮┃┃╱╭┫┃╱┃┃┃╱╭┫╭╮┃");
-        logChannel.info("§e  ┃╰━╯┃╰━╯┃╰━╯┃┃┃╰╮╱┃┃╱┃╰━╯┃╰━╯┃╰━╯┃╰━╯┃┃┃╰╮");
-        logChannel.info("§e  ╰━━━┻━━━┻━━━┻╯╰━╯╱╰╯╱╰━━━┻━━━┻━━━┻━━━┻╯╰━╯ NTD");
-        logChannel.info("§f          Made with " + "§clove " + "§fby §a" + "danirod12");
-        logChannel.info("");
+        CommandSender sender = Bukkit.getConsoleSender();
+        sender.sendMessage("§fStarting LuckyBlock (ntdLuckyBlock) v" + getVersion()
+                + " [" + Templates.GIT_BRANCH + "-" + Templates.GIT_COMMIT_ID_ABBREV
+                + "] (" + getLastUpdate() + "), " + getVersionType().getSimpleName());
+        sender.sendMessage("§e  ╭╮╱╱╭╮╱╭┳━━━┳╮╭━┳╮╱╱╭┳━━╮╭╮╱╱╭━━━┳━━━┳╮╭━╮");
+        sender.sendMessage("§e  ┃┃╱╱┃┃╱┃┃╭━╮┃┃┃╭┫╰╮╭╯┃╭╮┃┃┃╱╱┃╭━╮┃╭━╮┃┃┃╭╯");
+        sender.sendMessage("§e  ┃┃╱╱┃┃╱┃┃┃╱╰┫╰╯╯╰╮╰╯╭┫╰╯╰┫┃╱╱┃┃╱┃┃┃╱╰┫╰╯╯");
+        sender.sendMessage("§e  ┃┃╱╭┫┃╱┃┃┃╱╭┫╭╮┃╱╰╮╭╯┃╭━╮┃┃╱╭┫┃╱┃┃┃╱╭┫╭╮┃");
+        sender.sendMessage("§e  ┃╰━╯┃╰━╯┃╰━╯┃┃┃╰╮╱┃┃╱┃╰━╯┃╰━╯┃╰━╯┃╰━╯┃┃┃╰╮");
+        sender.sendMessage("§e  ╰━━━┻━━━┻━━━┻╯╰━╯╱╰╯╱╰━━━┻━━━┻━━━┻━━━┻╯╰━╯ NTD");
+        sender.sendMessage("§f          Made with " + "§clove " + "§fby §a" + "danirod12");
+        sender.sendMessage("");
         for (String entry : Templates.SUPPORT_INFO) {
-            logChannel.info(entry);
+            sender.sendMessage(entry);
         }
 
         // NMS & items
@@ -258,36 +262,50 @@ public class LBMain extends LBMainProvider {
 
         // TODO remove all below (tests)
 
-        luckyBlockEngine.register(luckyBlockEngine.loadFromConfig(
-                luckyBlockEngine.newLuckyBlockHolder(new LuckyBlockKey("danirod12",
-                        ColorData.YELLOW, Material.HONEY_BLOCK, false)),
-                new Config(new File(getDataFolder(), "luckyblocks"), "danirod12.yml").load()));
+        LuckyBlock luckyBlock;
+        ItemStack stack;
+        ItemMeta meta;
 
-        LuckyBlock lb = luckyBlockEngine.loadFromConfig(
-                luckyBlockEngine.newLuckyBlockHolder(new LuckyBlockKey("slime",
-                        ColorData.GREEN, Material.SLIME_BLOCK, false)),
-                new Config(new File(getDataFolder(), "luckyblocks"), "danirod12.yml").load());
-        ItemStack stack = new ItemStack(Material.HONEY_BLOCK);
-        ItemMeta meta = stack.getItemMeta();
+        // danirod12 skin LuckyBlock
+
+        luckyBlock = luckyBlockEngine.newLuckyBlock(new LuckyBlockKey("danirod12",
+                ColorData.YELLOW, Material.HONEY_BLOCK, false));
+        luckyBlock.setItemAndIcon(
+                this.versionControl.getPlayerHead(
+                        "62e964f46cc23947d6db48334e42cfab7093184e4ae7d27f68c8e7079b3d21dc",
+                        "danirod12", null, null
+                )
+        );
+        luckyBlock.setCustomName("§6DANIROD12 SKIN");
+        luckyBlock.getItemsBag().add(luckyBlockEngine.newLuckyEntry(new LuckyItemDrop(luckyBlock.getKey(), 1)));
+        luckyBlockEngine.register(luckyBlock);
+
+        // honey LuckyBlock
+
+        luckyBlock = luckyBlockEngine.newLuckyBlock(new LuckyBlockKey("slime",
+                ColorData.GREEN, Material.SLIME_BLOCK, false));
+        stack = new ItemStack(Material.HONEY_BLOCK);
+        meta = stack.getItemMeta();
         assert meta != null;
         meta.setDisplayName("§6§lHoney LuckyBlock");
         stack.setItemMeta(meta);
-        lb.setIcon(stack);
-        lb.setItem(stack);
-        luckyBlockEngine.register(lb);
+        luckyBlock.setItemAndIcon(stack);
+        luckyBlock.getItemsBag().add(luckyBlockEngine.newLuckyEntry(new LuckyItemDrop(luckyBlock.getKey(), 1)));
+        luckyBlockEngine.register(luckyBlock);
 
-        lb = luckyBlockEngine.loadFromConfig(
-                luckyBlockEngine.newLuckyBlockHolder(new LuckyBlockKey("slab",
-                        ColorData.WHITE, Material.END_STONE_BRICK_SLAB, false)),
-                new Config(new File(getDataFolder(), "luckyblocks"), "danirod12.yml").load());
+        // ender LuckyBlock with slab and scaffolding
+
+        luckyBlock = luckyBlockEngine.newLuckyBlock(new LuckyBlockKey("slab",
+                ColorData.WHITE, Material.END_STONE_BRICK_SLAB, false));
         stack = new ItemStack(Material.END_STONE_BRICK_SLAB);
         meta = stack.getItemMeta();
         assert meta != null;
         meta.setDisplayName("§6§lStrange LuckyBlock");
         stack.setItemMeta(meta);
-        lb.setIcon(new ItemStack(Material.SCAFFOLDING));
-        lb.setItem(stack);
-        luckyBlockEngine.register(lb);
+        luckyBlock.setIcon(new ItemStack(Material.SCAFFOLDING));
+        luckyBlock.setItem(stack);
+        luckyBlock.getItemsBag().add(luckyBlockEngine.newLuckyEntry(new LuckyItemDrop(luckyBlock.getKey(), 1)));
+        luckyBlockEngine.register(luckyBlock);
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.github.danirod12.luckyblock.api.model.LuckyDrop;
 import com.github.danirod12.luckyblock.api.model.LuckyEntry;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class LuckyEntryHolder extends ArrayList<LuckyDrop> implements LuckyEntry {
 
@@ -14,8 +15,9 @@ public class LuckyEntryHolder extends ArrayList<LuckyDrop> implements LuckyEntry
     public LuckyEntryHolder() {
     }
 
-    public LuckyEntryHolder(DropChance dropChance) {
+    public LuckyEntryHolder(DropChance dropChance, LuckyDrop... drops) {
         setDropChance(dropChance);
+        this.addAll(Arrays.asList(drops));
     }
 
     @Override

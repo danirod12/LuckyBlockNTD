@@ -13,6 +13,7 @@ import com.github.danirod12.luckyblock.api.provider.GenerationFactoryProvider;
 import com.github.danirod12.luckyblock.api.provider.LuckyEngineProvider;
 import com.github.danirod12.luckyblock.api.provider.LuckyRecipeProvider;
 import com.github.danirod12.luckyblock.api.setup.AnimationSetup;
+import com.github.danirod12.luckyblock.api.setup.ILuckyRecipe;
 import com.github.danirod12.luckyblock.api.setup.ShopSetup;
 import com.github.danirod12.luckyblock.api.util.Config;
 import com.github.danirod12.luckyblock.api.util.LogChannel;
@@ -29,7 +30,6 @@ import com.github.danirod12.luckyblock.engine.model.LuckyEntryHolder;
 import com.github.danirod12.luckyblock.hook.sk89q.WorldEditProvider;
 import com.github.danirod12.luckyblock.nms.VersionControlFactory;
 import com.github.danirod12.luckyblock.nms.material.IMat;
-import com.github.danirod12.luckyblock.recipe.LuckyRecipe;
 import com.github.danirod12.luckyblock.recipe.LuckyRecipeProviderImpl;
 import com.github.danirod12.luckyblock.util.Misc;
 import com.github.danirod12.luckyblock.util.config.ConfigHolder;
@@ -124,6 +124,7 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
 
     @Override
     public void load(LuckyBlockType type) {
+        // TODO remove all restrictions here?
         if ((type == LuckyBlockType.ICED || type == LuckyBlockType.TINTED)
                 && !LuckyBlockAPI.getVersionType().isPremium()) {
             logChannel.warning("LuckyBlock type " + type.name() + " cannot be loaded (Premium version is required)");
@@ -145,7 +146,7 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
             config.save();
         }
         config.copy(true);
-        register(loadFromConfig(newLuckyBlockHolder(key), config));
+        register(loadFromConfig(newLuckyBlock(key), config));
     }
 
     @Override
@@ -186,14 +187,14 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
         luckyBlock.setAnimationSetup(new AnimationSetup(animationEnabled, effect));
 
         // Load custom name from config and then apply it to holder
-        luckyBlock.setCustomName(this.getConfigField(config, "custom_name", String.class, type::getDefaultCustomName));
+        luckyBlock.setCustomName(this.getConfigField(config, "name", String.class, type::getDefaultCustomName));
 
         // Load default and custom crafts if possible
         if (this.getConfigField(config, "craft.default", Boolean.class, () -> true)) {
-            luckyBlock.addRecipes(this.recipeProvider.getDefaultCrafts(type).toArray(new LuckyRecipe[0]));
+            luckyBlock.addRecipes(this.recipeProvider.getDefaultCrafts(type).toArray(new ILuckyRecipe[0]));
         }
         if (this.getConfigField(config, "craft.custom", Boolean.class, () -> false)) {
-            luckyBlock.addRecipes(this.recipeProvider.getCustomCrafts(type).toArray(new LuckyRecipe[0]));
+            luckyBlock.addRecipes(this.recipeProvider.getCustomCrafts(type).toArray(new ILuckyRecipe[0]));
         }
 
         // Add all configured LuckyEntries
@@ -352,8 +353,13 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
     }
 
     @Override
-    public LuckyBlock newLuckyBlockHolder(LuckyBlockKey type) {
+    public LuckyBlock newLuckyBlock(LuckyBlockKey type) {
         return new LuckyBlockHolder(this, type);
+    }
+
+    @Override
+    public LuckyEntry newLuckyEntry(DropChance chance, LuckyDrop... drops) {
+        return new LuckyEntryHolder(chance, drops);
     }
 
     @Override
@@ -383,7 +389,7 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
         }
         try {
             if (config.isSet(path)) {
-                return clazz.cast(config.get().get(path));
+                return clazz.cast(config.get(path));
             }
         } catch (ClassCastException ignored) {
         }

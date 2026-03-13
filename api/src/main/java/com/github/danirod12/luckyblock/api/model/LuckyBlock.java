@@ -18,6 +18,11 @@ public interface LuckyBlock {
 
     void setIcon(ItemStack itemStack);
 
+    default void setItemAndIcon(ItemStack itemStack) {
+        setItem(itemStack);
+        setIcon(itemStack);
+    }
+
     void removeRecipes(Predicate<ILuckyRecipe> predicate);
 
     void addRecipes(ILuckyRecipe... recipes);

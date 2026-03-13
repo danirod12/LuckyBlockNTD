@@ -50,7 +50,13 @@ public interface LuckyEngineProvider {
 
     void unregister(LuckyBlockKey type);
 
-    LuckyBlock newLuckyBlockHolder(LuckyBlockKey type);
+    LuckyBlock newLuckyBlock(LuckyBlockKey type);
+
+    default LuckyEntry newLuckyEntry(LuckyDrop... drops) {
+        return this.newLuckyEntry(DropChance.MEDIUM, drops);
+    }
+
+    LuckyEntry newLuckyEntry(DropChance chance, LuckyDrop... drops);
 
     LuckyBlockKey[] getLoadedTypes();
 

@@ -55,9 +55,6 @@ public class LuckyBlockHolder implements LuckyBlock {
 
     public void verifyDataOrThrowException() {
         Objects.requireNonNull(this.item, "Executing item is not set");
-        Objects.requireNonNull(this.customName, "Custom name is not set");
-        Objects.requireNonNull(this.animationSetup, "AnimationSetup is not set");
-        Objects.requireNonNull(this.shopSetup, "ShopSetup is not set");
     }
 
     // SETTERS
@@ -160,7 +157,7 @@ public class LuckyBlockHolder implements LuckyBlock {
 
     @Override
     public String getCustomName() {
-        return this.customName;
+        return this.customName == null ? this.getKey().getDefaultCustomName() : this.customName;
     }
 
     // LOGIC METHODS
@@ -186,7 +183,7 @@ public class LuckyBlockHolder implements LuckyBlock {
             return false;
         }
 
-        if (this.animationSetup.isEnabled()) {
+        if (this.animationSetup != null && this.animationSetup.isEnabled()) {
             block.getWorld().playEffect(block.getLocation().add(0.5, 0.5, 0.5),
                     this.animationSetup.getEffect(), 10);
         }
