@@ -1,8 +1,8 @@
 package com.github.danirod12.luckyblock.api.model;
 
+import com.github.danirod12.luckyblock.api.model.random.LuckyCollection;
 import com.github.danirod12.luckyblock.api.setup.AnimationSetup;
 import com.github.danirod12.luckyblock.api.setup.ILuckyRecipe;
-import com.github.danirod12.luckyblock.api.setup.ItemsBag;
 import com.github.danirod12.luckyblock.api.setup.ShopSetup;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;

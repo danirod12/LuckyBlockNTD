@@ -196,7 +196,6 @@
 
                         <option>-keep class com.github.danirod12.luckyblock.hook.Hook { *; }</option>
                         <option>-keep class com.github.danirod12.luckyblock.api.** { &lt;methods&gt;; }</option>
-                        <option>-keep class com.github.danirod12.luckyblock.api.model.DropChance { *; }</option>
                         <option>-keep class com.github.danirod12.luckyblock.api.model.*Type { *; }</option>
                         <option>-keep class com.github.danirod12.luckyblock.engine.drop.** { &lt;methods&gt;; }
                         </option>

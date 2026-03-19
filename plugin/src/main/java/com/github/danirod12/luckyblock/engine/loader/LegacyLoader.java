@@ -11,7 +11,6 @@ import com.github.danirod12.luckyblock.engine.LuckyBlockEngine;
 import com.github.danirod12.luckyblock.engine.drop.*;
 import com.github.danirod12.luckyblock.engine.drop.special.*;
 import com.github.danirod12.luckyblock.hook.Hook;
-import com.github.danirod12.luckyblock.hook.sk89q.WorldEditProvider;
 import com.github.danirod12.luckyblock.util.Misc;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -27,11 +26,11 @@ import java.util.Map;
 public class LegacyLoader implements StringLoader {
 
     private final LuckyBlockEngine engine;
-    private final WorldEditProvider worldEditProvider;
+    private final File schematicsFolder;
 
-    public LegacyLoader(LuckyBlockEngine engine, WorldEditProvider worldEditProvider) {
+    public LegacyLoader(LuckyBlockEngine engine, File schematicsFolder) {
         this.engine = engine;
-        this.worldEditProvider = worldEditProvider;
+        this.schematicsFolder = schematicsFolder;
     }
 
     // TODO forward down?
@@ -159,10 +158,10 @@ public class LegacyLoader implements StringLoader {
     private File getSchematicFile(String[] baseData) {
         String fileName = baseData[1].endsWith(".schem") ? baseData[1] : baseData[1] + ".schem";
 
-        File file = new File(this.worldEditProvider.getFolder(), fileName);
+        File file = new File(this.schematicsFolder, fileName);
         if (!file.exists()) {
             fileName = baseData[1].endsWith(".schematic") ? baseData[1] : baseData[1] + ".schematic";
-            file = new File(this.worldEditProvider.getFolder(), fileName);
+            file = new File(this.schematicsFolder, fileName);
 
             if (!file.exists()) {
                 throw new IllegalArgumentException("Schematic " + file.getPath() + " not found");

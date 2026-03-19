@@ -9,10 +9,7 @@ import com.github.danirod12.luckyblock.engine.LuckyBlockEngine;
 import com.github.danirod12.luckyblock.util.manager.MessagesManager.Message;
 import org.bukkit.command.CommandSender;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class ListCommand extends LBCommand {
 
@@ -52,7 +49,8 @@ public class ListCommand extends LBCommand {
             builder.append(" §cNot loaded");
         } else {
             builder.append(" §aEnabled §7(Entries: ").append(block.getItemsBag().size());
-            builder.append(", Drops: ").append(block.getItemsBag().getTotalDropsAmount()).append(")");
+            builder.append(", Drops: ").append(block.getItemsBag().stream()
+                    .mapToInt(Collection::size).sum()).append(")");
         }
         sender.sendMessage(builder.toString());
     }

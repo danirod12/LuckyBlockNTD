@@ -1,36 +1,41 @@
-package com.github.danirod12.luckyblock.engine.manager;
+package com.github.danirod12.luckyblock.engine.generator;
 
-import com.github.danirod12.luckyblock.api.model.*;
+import com.github.danirod12.luckyblock.api.model.ItemsBag;
+import com.github.danirod12.luckyblock.api.model.LuckyBlockKey;
+import com.github.danirod12.luckyblock.api.model.LuckyDrop;
+import com.github.danirod12.luckyblock.api.model.SpecialDropType;
 import com.github.danirod12.luckyblock.api.provider.GenerationFactoryProvider;
 import com.github.danirod12.luckyblock.api.util.Config;
-import com.github.danirod12.luckyblock.engine.LuckyBlockEngine;
 import com.github.danirod12.luckyblock.engine.drop.EntityDrop;
 import com.github.danirod12.luckyblock.engine.drop.ItemDrop;
-import com.github.danirod12.luckyblock.engine.drop.LuckyItemDrop;
-import com.github.danirod12.luckyblock.engine.drop.RandomLuckyItemDrop;
 import com.github.danirod12.luckyblock.engine.drop.special.*;
-import com.github.danirod12.luckyblock.engine.model.LuckyEntryHolder;
-import com.github.danirod12.luckyblock.util.Templates;
+import com.github.danirod12.luckyblock.engine.model.ItemsBagImpl;
+import com.github.danirod12.luckyblock.util.random.WeightListAmount;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
+// TODO remove this class, make new architecture for generation without static of course
+@Deprecated
 public class GenerationFactory implements GenerationFactoryProvider {
 
-    private final LuckyBlockEngine engine;
+//    private final LuckyBlockEngine engine;
+//
+//    public GenerationFactory(LuckyBlockEngine engine) {
+//        this.engine = engine;
+//    }
+//
 
-    public GenerationFactory(LuckyBlockEngine engine) {
-        this.engine = engine;
-    }
-
-    @Override
-    public void generateBaseData(Config config, LuckyBlockKey type) {
-        engine.getLogChannel().info("§fGenerating §" + type.getColorData().asColorCode() + type.getKey()
+    public static void generateBaseData(Config config, LuckyBlockKey type) {
+        Bukkit.getLogger().info("§fGenerating §" + type.getColorData().asColorCode() + type.getKey()
                 + " LuckyBlock§f configuration §6(LBF version: 3)");
         FileConfiguration file = config.get();
         file.set("texture", BaseDataGenerator.getTexture(type));
@@ -44,37 +49,36 @@ public class GenerationFactory implements GenerationFactoryProvider {
         file.set("craft.custom", false);
     }
 
-    @Override
-    public void saveLuckyEntries(Config config, LuckyEntry... entries) {
-        config.set("drop", null);
-        for (int i = 0; i < entries.length; i++) {
-            saveUsingLoader(config, "drop." + i, entries[i]);
-        }
-    }
+//
+//    @Override
+//    public void saveLuckyEntries(Config config, LuckyEntry... entries) {
+//        config.set("drop", null);
+//        for (int i = 0; i < entries.length; i++) {
+//            saveUsingLoader(config, "drop." + i, entries[i]);
+//        }
+//    }
+//
+//    @Override
+//    public void saveUsingLoader(Config config, String path, LuckyEntry entry) {
+//        if (Templates.VERSION.hasJSONLoader()) {
+//            engine.getPathLoader().save(config, path, entry);
+//        } else {
+//            config.set(path, entry.stream().map(engine.getStringLoader()::serialize)
+//                    .filter(Objects::nonNull).collect(Collectors.toList()));
+//        }
+//    }
 
-    @Override
-    public void saveUsingLoader(Config config, String path, LuckyEntry entry) {
-        if (Templates.VERSION.hasJSONLoader()) {
-            engine.getPathLoader().save(config, path, entry);
-        } else {
-            config.set(path, entry.stream().map(engine.getStringLoader()::serialize)
-                    .filter(Objects::nonNull).collect(Collectors.toList()));
-        }
-    }
-
-    @Override
-    public LuckyEntry[] generateLuckyEntries(int min, int max) {
-        List<LuckyEntry> list = new ArrayList<>();
+    public static ItemsBag generateLuckyEntries(int min, int max) {
+        ItemsBag list = new ItemsBagImpl();
         int limit = ThreadLocalRandom.current().nextInt(min, max + 1);
         for (int i = 0; i < limit; i++) {
             list.add(generateLuckyEntry());
         }
-        return list.toArray(new LuckyEntry[0]);
+        return list;
     }
 
-    @Override
-    public LuckyEntry generateLuckyEntry() {
-        LuckyEntry entry = new LuckyEntryHolder(DropChance.random());
+    public static WeightListAmount<LuckyDrop> generateLuckyEntry() {
+        WeightListAmount<LuckyDrop> entry = new WeightListAmount<>();
         for (int i = 0; i < ThreadLocalRandom.current().nextInt(1, 5); i++) {
             LuckyDrop drop = generateLuckyDrop();
             if (drop == null) {
@@ -85,38 +89,35 @@ public class GenerationFactory implements GenerationFactoryProvider {
         return entry;
     }
 
-    @Override
-    public LuckyDrop generateLuckyDrop() {
+    public static LuckyDrop generateLuckyDrop() {
         int number = ThreadLocalRandom.current().nextInt(100) + 1;
         if (number <= 50) {
             return generateItem();
         } else if (number <= 80) {
             return generateEntity();
-        } else if (number <= 90) {
-            return generateSpecial();
         } else {
-            return generateLuckyBlock();
+            return generateSpecial();
         }
     }
 
-    public LuckyDrop generateLuckyBlock() {
-        LuckyBlockKey[] blockKeys = engine.getLoadedTypes();
-        int index = ThreadLocalRandom.current().nextInt(blockKeys.length + 2);
-        int amount = ThreadLocalRandom.current().nextInt(1, 5);
-        if (index >= blockKeys.length) {
-            return new RandomLuckyItemDrop(amount);
-        }
-        return new LuckyItemDrop(blockKeys[index], amount);
-    }
+//    public static LuckyDrop generateLuckyBlock() {
+//        LuckyBlockKey[] blockKeys = engine.getLoadedTypes();
+//        int index = ThreadLocalRandom.current().nextInt(blockKeys.length + 2);
+//        int amount = ThreadLocalRandom.current().nextInt(1, 5);
+//        if (index >= blockKeys.length) {
+//            return new RandomLuckyItemDrop(amount);
+//        }
+//        return new LuckyItemDrop(blockKeys[index], amount);
+//    }
 
-    public LuckyDrop generateEntity() {
+    public static LuckyDrop generateEntity() {
         List<EntityType> list = Arrays.stream(EntityType.values())
                 .filter(EntityType::isSpawnable).collect(Collectors.toList());
         int amount = ThreadLocalRandom.current().nextInt(1, 5);
         return new EntityDrop(list.get(ThreadLocalRandom.current().nextInt(list.size())), amount);
     }
 
-    public LuckyDrop generateSpecial() {
+    public static LuckyDrop generateSpecial() {
         switch (ThreadLocalRandom.current().nextInt(6)) {
             case 0:
                 return new WaterBucketSpecial(SpecialDropType.WATER_BUCKET.defaultValue());
@@ -136,7 +137,7 @@ public class GenerationFactory implements GenerationFactoryProvider {
         return null;
     }
 
-    public LuckyDrop generateItem() {
+    public static LuckyDrop generateItem() {
         List<Material> materials = Arrays.stream(Material.values())
                 .filter(material -> {
                     try {
@@ -150,9 +151,9 @@ public class GenerationFactory implements GenerationFactoryProvider {
                 .unordered().collect(Collectors.toList());
         Material material = materials.get(ThreadLocalRandom.current().nextInt(materials.size()));
 
-        if (engine.getVersionControl().asNMSCopy(new ItemStack(material)) == null) {
-            return generateItem();
-        }
+//        if (engine.getVersionControl().asNMSCopy(new ItemStack(material)) == null) {
+//            return generateItem();
+//        }
 
         if (material.isBlock()) {
             int amount;

@@ -3,7 +3,7 @@ package com.github.danirod12.luckyblock.engine.loader;
 import com.github.danirod12.luckyblock.api.exception.PremiumVersionRequiredException;
 import com.github.danirod12.luckyblock.api.loader.PathLoader;
 import com.github.danirod12.luckyblock.api.model.LuckyDrop;
-import com.github.danirod12.luckyblock.api.model.LuckyEntry;
+import com.github.danirod12.luckyblock.api.model.random.LuckyCollection;
 import com.github.danirod12.luckyblock.engine.LuckyBlockEngine;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -33,7 +33,7 @@ public class JSONLoader implements PathLoader {
     }
 
     @Override
-    public void save(ConfigurationSection config, String path, LuckyEntry entry) {
+    public void save(ConfigurationSection config, String path, LuckyCollection<LuckyDrop> entry) {
         throw new PremiumVersionRequiredException("JSON loader");
     }
 }

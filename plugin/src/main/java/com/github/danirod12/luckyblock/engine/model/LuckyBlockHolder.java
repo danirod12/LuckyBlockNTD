@@ -1,15 +1,11 @@
 package com.github.danirod12.luckyblock.engine.model;
 
-import com.github.danirod12.luckyblock.api.LuckyBlockAPI;
 import com.github.danirod12.luckyblock.api.customitem.CustomItemFactory;
 import com.github.danirod12.luckyblock.api.event.LuckyBlockBreakEvent;
-import com.github.danirod12.luckyblock.api.model.Identifier;
-import com.github.danirod12.luckyblock.api.model.LuckyBlock;
-import com.github.danirod12.luckyblock.api.model.LuckyBlockKey;
-import com.github.danirod12.luckyblock.api.model.LuckyDrop;
+import com.github.danirod12.luckyblock.api.model.*;
+import com.github.danirod12.luckyblock.api.model.random.LuckyCollection;
 import com.github.danirod12.luckyblock.api.setup.AnimationSetup;
 import com.github.danirod12.luckyblock.api.setup.ILuckyRecipe;
-import com.github.danirod12.luckyblock.api.setup.ItemsBag;
 import com.github.danirod12.luckyblock.api.setup.ShopSetup;
 import com.github.danirod12.luckyblock.engine.LuckyBlockEngine;
 import com.github.danirod12.luckyblock.util.Misc;
@@ -33,23 +29,22 @@ public class LuckyBlockHolder implements LuckyBlock {
 
     private final LuckyBlockKey type;
     private final Identifier identifier;
+
+    private final ItemsBag itemsBag = new ItemsBagImpl();
     private final List<ILuckyRecipe> recipes = new ArrayList<>();
-    private final ItemsBag itemsBag;
+
     private AnimationSetup animationSetup;
     private ShopSetup shopSetup;
+
     private ItemStack item;
     private ItemStack icon;
+
     private String customName;
 
     public LuckyBlockHolder(LuckyBlockEngine luckyBlockEngine, LuckyBlockKey type) {
         this.engine = luckyBlockEngine;
         this.type = type;
         this.identifier = new Identifier(CustomItemFactory.TAG_LUCKYBLOCK_TYPE, type.getKey());
-        if (LuckyBlockAPI.getVersionType().isPremium()) {
-            throw new UnsupportedOperationException("Not implemented");
-        } else {
-            this.itemsBag = new SimpleItemsBag();
-        }
         this.gson = new Gson();
     }
 
@@ -192,20 +187,23 @@ public class LuckyBlockHolder implements LuckyBlock {
             engine.getLogChannel().debug("LuckyBlock drop is cancelled by an event");
             return true;
         }
-        if (this.itemsBag.size() <= 0) {
+        if (this.itemsBag.isEmpty()) {
             engine.getLogChannel().debug("LuckyBlock has no items");
             return true;
         }
-        for (LuckyDrop luckyDrop : new ArrayList<>(this.itemsBag.getEntry())) {
-            if (engine.getLogChannel().isDebug()) {
-                try {
-                    engine.getLogChannel().debug(this.gson.toJson(luckyDrop));
-                } catch (Exception exception) {
-                    engine.getLogChannel().debug("Cannot debug " + luckyDrop.getClass().getName() + ":");
-                    exception.printStackTrace();
+
+        for (LuckyCollection<LuckyDrop> entries : this.itemsBag.getAll()) {
+            for (LuckyDrop drop : entries.getAll()) {
+                if (engine.getLogChannel().isDebug()) {
+                    try {
+                        engine.getLogChannel().debug(this.gson.toJson(drop));
+                    } catch (Exception exception) {
+                        engine.getLogChannel().debug("Cannot debug " + drop.getClass().getName() + ":");
+                        exception.printStackTrace();
+                    }
                 }
+                engine.executeDrop(instance, drop, this.type, block, target);
             }
-            engine.executeDrop(instance, luckyDrop, this.type, block, target);
         }
         return true;
     }

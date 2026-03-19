@@ -1,4 +1,4 @@
-package com.github.danirod12.luckyblock.engine.manager;
+package com.github.danirod12.luckyblock.engine.generator;
 
 import com.github.danirod12.luckyblock.api.exception.StaticMethodsOnlyException;
 import com.github.danirod12.luckyblock.api.model.LuckyBlockKey;

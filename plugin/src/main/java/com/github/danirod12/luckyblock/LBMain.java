@@ -148,7 +148,7 @@ public class LBMain extends LBMainProvider {
         guiManager = new GuiManager(this);
         File folder = new File(getDataFolder() + File.separator + "luckyblocks");
         luckyBlockEngine = new LuckyBlockEngine(this, logChannel, folder,
-                configHolder, versionControl, worldEditProvider);
+                configHolder, versionControl, worldEditProvider.getFolder());
         entityLoadListener = new EntityLoadListener(this, luckyBlockEngine);
         LuckyBlockAPI.injectAPI(this, luckyBlockEngine);
 
@@ -348,14 +348,14 @@ public class LBMain extends LBMainProvider {
         }
 
         ConfigurationSection section = this.configHolder.getConfig().getConfigurationSection("chances");
-        assert section != null;
-        for (String key : section.getKeys(false)) {
-            DropChance chance = DropChance.parse(key);
-            if (chance == null) {
-                continue;
-            }
-            chance.setWeight(section.getInt(key));
-        }
+//        assert section != null; TODO rework, pass to configuration loader
+//        for (String key : section.getKeys(false)) {
+//            com.github.danirod12.luckyblock.api.model.random.DropChance chance = DropChance.parse(key);
+//            if (chance == null) {
+//                continue;
+//            }
+//            chance.setWeight(section.getInt(key));
+//        }
 
         MessagesManager.reload(this.configHolder.getConfig().getString("language"));
 

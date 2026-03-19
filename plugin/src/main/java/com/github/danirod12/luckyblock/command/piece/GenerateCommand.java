@@ -1,9 +1,6 @@
 package com.github.danirod12.luckyblock.command.piece;
 
-import com.github.danirod12.luckyblock.api.model.LuckyBlock;
 import com.github.danirod12.luckyblock.api.model.LuckyBlockKey;
-import com.github.danirod12.luckyblock.api.model.LuckyEntry;
-import com.github.danirod12.luckyblock.api.util.Config;
 import com.github.danirod12.luckyblock.command.base.CommandResponse;
 import com.github.danirod12.luckyblock.command.base.LBCommand;
 import com.github.danirod12.luckyblock.engine.LuckyBlockEngine;
@@ -47,22 +44,25 @@ public class GenerateCommand extends LBCommand {
             return CommandResponse.SUCCESS;
         }
 
-        long ms = System.currentTimeMillis();
-        LuckyBlock luckyBlock = engine.get(key.get()).orElseThrow(RuntimeException::new);
-        luckyBlock.getItemsBag().reset();
-        luckyBlock.getItemsBag().add(engine.getGenerationFactory().generateLuckyEntries(min, max));
-        Config config = engine.getNewConfigInstance(luckyBlock.getKey().getKey());
-        if (config.getFile().exists()) {
-            config.load();
-            engine.getGenerationFactory().saveLuckyEntries(config,
-                    luckyBlock.getItemsBag().getEntries().toArray(new LuckyEntry[0]));
-            config.save();
-            // TODO translate?
-            sender.sendMessage("§cNo configuration associated with LuckyBlock, changes will be unsaved");
-        }
-        // TODO translate?
-        sender.sendMessage("§aSuccessfully generated config for " + key
-                + " (in " + (System.currentTimeMillis() - ms) + " ms)");
+        // TODO
+        sender.sendMessage("§cCommand not implemented yet");
+
+//        long ms = System.currentTimeMillis();
+//        LuckyBlock luckyBlock = engine.get(key.get()).orElseThrow(RuntimeException::new);
+//        luckyBlock.getItemsBag().reset();
+//        luckyBlock.getItemsBag().add(engine.getGenerationFactory().generateLuckyEntries(min, max));
+//        Config config = engine.getNewConfigInstance(luckyBlock.getKey().getKey());
+//        if (config.getFile().exists()) {
+//            config.load();
+//            engine.getGenerationFactory().saveLuckyEntries(config,
+//                    luckyBlock.getItemsBag().getEntries().toArray(new LuckyEntry[0]));
+//            config.save();
+//            // TODO translate?
+//            sender.sendMessage("§cNo configuration associated with LuckyBlock, changes will be unsaved");
+//        }
+//        // TODO translate?
+//        sender.sendMessage("§aSuccessfully generated config for " + key
+//                + " (in " + (System.currentTimeMillis() - ms) + " ms)");
         return CommandResponse.SUCCESS;
     }
 }

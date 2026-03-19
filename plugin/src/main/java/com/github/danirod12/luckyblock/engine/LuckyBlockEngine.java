@@ -9,7 +9,7 @@ import com.github.danirod12.luckyblock.api.exception.PremiumVersionRequiredExcep
 import com.github.danirod12.luckyblock.api.loader.PathLoader;
 import com.github.danirod12.luckyblock.api.loader.StringLoader;
 import com.github.danirod12.luckyblock.api.model.*;
-import com.github.danirod12.luckyblock.api.provider.GenerationFactoryProvider;
+import com.github.danirod12.luckyblock.api.model.random.LuckyCollection;
 import com.github.danirod12.luckyblock.api.provider.LuckyEngineProvider;
 import com.github.danirod12.luckyblock.api.provider.LuckyRecipeProvider;
 import com.github.danirod12.luckyblock.api.setup.AnimationSetup;
@@ -23,16 +23,15 @@ import com.github.danirod12.luckyblock.engine.drop.ItemDrop;
 import com.github.danirod12.luckyblock.engine.loader.ConvertFactory;
 import com.github.danirod12.luckyblock.engine.loader.JSONLoader;
 import com.github.danirod12.luckyblock.engine.loader.LegacyLoader;
-import com.github.danirod12.luckyblock.engine.manager.BaseDataGenerator;
-import com.github.danirod12.luckyblock.engine.manager.GenerationFactory;
+import com.github.danirod12.luckyblock.engine.generator.BaseDataGenerator;
+import com.github.danirod12.luckyblock.engine.generator.GenerationFactory;
 import com.github.danirod12.luckyblock.engine.model.LuckyBlockHolder;
-import com.github.danirod12.luckyblock.engine.model.LuckyEntryHolder;
-import com.github.danirod12.luckyblock.hook.sk89q.WorldEditProvider;
 import com.github.danirod12.luckyblock.nms.VersionControlFactory;
 import com.github.danirod12.luckyblock.nms.material.IMat;
 import com.github.danirod12.luckyblock.recipe.LuckyRecipeProviderImpl;
 import com.github.danirod12.luckyblock.util.Misc;
 import com.github.danirod12.luckyblock.util.config.ConfigHolder;
+import com.github.danirod12.luckyblock.util.random.WeightListAmount;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -40,7 +39,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -73,22 +71,20 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
     private final StringLoader stringLoader;
     private final PathLoader pathLoader;
     private final LuckyRecipeProvider recipeProvider;
-    private final GenerationFactoryProvider generationFactory;
 
     private final Map<LuckyBlockKey, LuckyBlock> map = new HashMap<>();
     private final Set<Material> materialsRegistry = new HashSet<>();
 
     public LuckyBlockEngine(Plugin plugin, LogChannel logChannel, File folder, ConfigHolder configHolder,
-                            VersionControlFactory versionControl, WorldEditProvider worldEditProvider) {
+                            VersionControlFactory versionControl, File schematicsFolder) {
         this.plugin = plugin;
         this.logChannel = logChannel;
         this.folder = folder;
         this.configHolder = configHolder;
         this.versionControl = versionControl;
-        this.stringLoader = new LegacyLoader(this, worldEditProvider);
+        this.stringLoader = new LegacyLoader(this, schematicsFolder);
         this.pathLoader = new JSONLoader(this);
         this.recipeProvider = new LuckyRecipeProviderImpl(this);
-        this.generationFactory = new GenerationFactory(this);
         this.convertFactory = new ConvertFactory();
     }
 
@@ -100,11 +96,6 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
     @Override
     public LuckyRecipeProvider getRecipeProvider() {
         return recipeProvider;
-    }
-
-    @Override
-    public GenerationFactoryProvider getGenerationFactory() {
-        return generationFactory;
     }
 
     @Override
@@ -140,9 +131,22 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
         if (!config.hasResource()) {
             config.createFile();
             config.load();
-            generationFactory.generateBaseData(config, key);
-            LuckyEntry[] entries = generationFactory.generateLuckyEntries(150, 200);
-            generationFactory.saveLuckyEntries(config, entries);
+
+            // TODO rework
+            GenerationFactory.generateBaseData(config, key);
+            ItemsBag entries = GenerationFactory.generateLuckyEntries(150, 200);
+
+            config.set("drop", null);
+
+            int i = 0;
+            for (LuckyCollection<LuckyDrop> entry : entries) {
+                List<String> nodes = new ArrayList<>();
+                for (LuckyDrop luckyDrop : entry) {
+                    nodes.add(this.stringLoader.serialize(luckyDrop));
+                }
+                config.set("drop." + i++, nodes);
+            }
+
             config.save();
         }
         config.copy(true);
@@ -198,6 +202,25 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
         }
 
         // Add all configured LuckyEntries
+
+        /*
+        TODO configuration format:
+        entries-mode: "ALL",number,number-number (default 1)
+        entries:
+          'id':
+            chance: "AUTO"/LEVEL/weight (optional, default AUTO)
+            mode: "ALL",number,number-number (optional, default ALL)
+            permission: "NONE",node (optional, default NONE)
+            drops: (list-like)
+            - "item : nbt/data" (example)
+            - "other : other : other..."
+            drops: (id-like)
+              'id':
+                chance: "AUTO"/LEVEL/weight (optional, default AUTO)
+                permission: "NONE",node (optional, default NONE)
+                node: "item : nbt/data"/"other : other : other..."
+         */
+
         int skippedPremium = 0;
         int skippedEntries = 0;
         for (String str : config.getConfigurationSection("drop").getKeys(false)) {
@@ -228,13 +251,13 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
     }
 
     @Override
-    public LuckyEntry loadLuckyEntry(Config config, String path)
+    public WeightListAmount<LuckyDrop> loadLuckyEntry(Config config, String path)
             throws EntryFormatException, PremiumVersionRequiredException {
         if (config == null || !config.isLoaded()) {
             throw new IllegalArgumentException("Config is not loaded");
         }
 
-        LuckyEntry entry = null;
+        WeightListAmount<LuckyDrop> entry = null;
         // If path contains items field, we are dealing with modern JSON loader
         if (config.isSet(path + ".items")) {
             // I am so sorry, but we hate hackers. I do not know why someone run free after premium
@@ -242,25 +265,27 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
                 throw new PremiumVersionRequiredException("JSON loader");
             }
 
-            DropChance chance = DropChance.MEDIUM;
-            try {
-                chance = DropChance.valueOf(config.getString(path + ".chance").toUpperCase());
-            } catch (Exception ignored) {
-            }
-            entry = new LuckyEntryHolder(chance);
-            ConfigurationSection section = config.getConfigurationSection(path + ".items");
-            for (String key : section.getKeys(false)) {
-                try {
-                    LuckyDrop drop = this.pathLoader.load(config.getConfigurationSection(path + ".items." + key));
-                    if (drop != null) {
-                        entry.add(drop);
-                    }
-                } catch (Throwable throwable) {
-                    notifyMisconfiguration(config.getName(), path, "json", throwable);
-                }
-            }
+            // TODO make a convert factory vP2 -> vF3
+
+//            DropChance chance = DropChance.MEDIUM;
+//            try {
+//                chance = DropChance.valueOf(config.getString(path + ".chance").toUpperCase());
+//            } catch (Exception ignored) {
+//            }
+//            entry = new LuckyEntryHolder();
+//            ConfigurationSection section = config.getConfigurationSection(path + ".items");
+//            for (String key : section.getKeys(false)) {
+//                try {
+//                    LuckyDrop drop = this.pathLoader.load(config.getConfigurationSection(path + ".items." + key));
+//                    if (drop != null) {
+//                        entry.add(drop);
+//                    }
+//                } catch (Throwable throwable) {
+//                    notifyMisconfiguration(config.getName(), path, "json", throwable);
+//                }
+//            }
         } else if (config.isSet(path)) {
-            entry = new LuckyEntryHolder();
+            entry = new WeightListAmount<>();
             List<String> list = config.getStringList(path);
             for (String dropData : list) {
                 try {
@@ -358,8 +383,11 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
     }
 
     @Override
-    public LuckyEntry newLuckyEntry(DropChance chance, LuckyDrop... drops) {
-        return new LuckyEntryHolder(chance, drops);
+    public WeightListAmount<LuckyDrop> newLuckyEntry(String permission, LuckyDrop... drops) {
+        WeightListAmount<LuckyDrop> list = new WeightListAmount<>();
+        list.setPermission(permission);
+        list.addAll(Arrays.asList(drops));
+        return list;
     }
 
     @Override

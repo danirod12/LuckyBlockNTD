@@ -5,7 +5,7 @@ import com.github.danirod12.luckyblock.api.provider.LuckyRecipeProvider;
 import com.github.danirod12.luckyblock.api.setup.ILuckyRecipe;
 import com.github.danirod12.luckyblock.api.setup.ILuckyRecipeItem;
 import com.github.danirod12.luckyblock.engine.LuckyBlockEngine;
-import com.github.danirod12.luckyblock.engine.manager.BaseDataGenerator;
+import com.github.danirod12.luckyblock.engine.generator.BaseDataGenerator;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

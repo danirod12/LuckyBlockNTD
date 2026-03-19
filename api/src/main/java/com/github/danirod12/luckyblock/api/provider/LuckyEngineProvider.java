@@ -4,7 +4,11 @@ import com.github.danirod12.luckyblock.api.exception.EntryFormatException;
 import com.github.danirod12.luckyblock.api.exception.PremiumVersionRequiredException;
 import com.github.danirod12.luckyblock.api.loader.PathLoader;
 import com.github.danirod12.luckyblock.api.loader.StringLoader;
-import com.github.danirod12.luckyblock.api.model.*;
+import com.github.danirod12.luckyblock.api.model.LuckyBlock;
+import com.github.danirod12.luckyblock.api.model.LuckyBlockKey;
+import com.github.danirod12.luckyblock.api.model.LuckyBlockType;
+import com.github.danirod12.luckyblock.api.model.LuckyDrop;
+import com.github.danirod12.luckyblock.api.model.random.LuckyCollection;
 import com.github.danirod12.luckyblock.api.util.Config;
 import com.github.danirod12.luckyblock.api.util.Pair;
 import org.bukkit.Location;
@@ -31,7 +35,7 @@ public interface LuckyEngineProvider {
 
     LuckyBlock loadFromConfig(LuckyBlock luckyBlock, Config config);
 
-    LuckyEntry loadLuckyEntry(Config config, String path)
+    LuckyCollection<LuckyDrop> loadLuckyEntry(Config config, String path)
             throws EntryFormatException, PremiumVersionRequiredException;
 
     boolean isLuckyBlock(ItemStack stack);
@@ -52,11 +56,11 @@ public interface LuckyEngineProvider {
 
     LuckyBlock newLuckyBlock(LuckyBlockKey type);
 
-    default LuckyEntry newLuckyEntry(LuckyDrop... drops) {
-        return this.newLuckyEntry(DropChance.MEDIUM, drops);
+    default LuckyCollection<LuckyDrop> newLuckyEntry(LuckyDrop... drops) {
+        return this.newLuckyEntry(null, drops);
     }
 
-    LuckyEntry newLuckyEntry(DropChance chance, LuckyDrop... drops);
+    LuckyCollection<LuckyDrop> newLuckyEntry(String permission, LuckyDrop... drops);
 
     LuckyBlockKey[] getLoadedTypes();
 
@@ -71,8 +75,6 @@ public interface LuckyEngineProvider {
     VersionControl getVersionControl();
 
     LuckyRecipeProvider getRecipeProvider();
-
-    GenerationFactoryProvider getGenerationFactory();
 
     boolean isLightSource();
 

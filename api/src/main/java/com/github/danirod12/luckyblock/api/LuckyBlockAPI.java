@@ -4,7 +4,6 @@ import com.github.danirod12.luckyblock.api.exception.ApiNotInitializedException;
 import com.github.danirod12.luckyblock.api.exception.StaticMethodsOnlyException;
 import com.github.danirod12.luckyblock.api.model.Identifier;
 import com.github.danirod12.luckyblock.api.model.PluginVersion;
-import com.github.danirod12.luckyblock.api.provider.GenerationFactoryProvider;
 import com.github.danirod12.luckyblock.api.provider.LBMainProvider;
 import com.github.danirod12.luckyblock.api.provider.LuckyEngineProvider;
 import com.github.danirod12.luckyblock.api.provider.LuckyRecipeProvider;
@@ -40,13 +39,6 @@ public class LuckyBlockAPI {
             throw new ApiNotInitializedException();
         }
         return luckyEngineProvider.getRecipeProvider();
-    }
-
-    public static GenerationFactoryProvider getGenerationFactoryProvider() {
-        if (luckyEngineProvider == null) {
-            throw new ApiNotInitializedException();
-        }
-        return luckyEngineProvider.getGenerationFactory();
     }
 
     public static LogChannel getLogger() {
