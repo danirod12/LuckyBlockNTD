@@ -8,6 +8,7 @@ import com.github.danirod12.luckyblock.api.util.*;
 import com.github.danirod12.luckyblock.command.CommandsManager;
 import com.github.danirod12.luckyblock.engine.LuckyBlockEngine;
 import com.github.danirod12.luckyblock.engine.drop.LuckyItemDrop;
+import com.github.danirod12.luckyblock.engine.generator.AdvancedLootDatabase;
 import com.github.danirod12.luckyblock.hook.Hook;
 import com.github.danirod12.luckyblock.hook.economy.EconomyBridge;
 import com.github.danirod12.luckyblock.hook.economy.TokenManagerEconomy;
@@ -42,6 +43,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -64,6 +68,8 @@ public class LBMain extends LBMainProvider {
     @Getter
     private CommandsManager commandsManager;
     private EntityLoadListener entityLoadListener;
+    @Getter
+    private AdvancedLootDatabase advancedLootDatabase;
 
     @Getter
     private final ConfigHolder configHolder = new ConfigHolder();
@@ -148,12 +154,32 @@ public class LBMain extends LBMainProvider {
         guiManager = new GuiManager(this);
         File folder = new File(getDataFolder() + File.separator + "luckyblocks");
         luckyBlockEngine = new LuckyBlockEngine(this, logChannel, folder,
-                configHolder, versionControl, worldEditProvider.getFolder());
+                configHolder, versionControl, worldEditProvider == null ? null : worldEditProvider.getFolder());
         entityLoadListener = new EntityLoadListener(this, luckyBlockEngine);
         LuckyBlockAPI.injectAPI(this, luckyBlockEngine);
 
         // Loading config
         reloadConfig();
+
+        // ============================================
+        logChannel.info("Loading Advanced Loot Database...");
+        advancedLootDatabase = new AdvancedLootDatabase();
+        try {
+            InputStream in = getResource("materials_tagged_v2.json");
+            if (in == null) {
+                logChannel.severe("Could not find materials_tagged_v2.json in plugin resources");
+            } else {
+                try (Reader reader = new InputStreamReader(in,
+                        java.nio.charset.StandardCharsets.UTF_8)) {
+                    advancedLootDatabase.load(reader);
+                    logChannel.info("Advanced Loot Database loaded successfully.");
+                }
+            }
+        } catch (Exception e) {
+            logChannel.severe("Failed to load Advanced Loot Database");
+        }
+        // ============================================
+
         if (this.configHolder.getConfig().getBoolean("scheduled-update-check")) {
             logChannel.debug("Loading Bukkit scheduler thread for delayed update check");
             Bukkit.getScheduler().runTaskTimerAsynchronously(this,
@@ -277,7 +303,25 @@ public class LBMain extends LBMainProvider {
                 )
         );
         luckyBlock.setCustomName("§6DANIROD12 SKIN");
-        luckyBlock.getItemsBag().add(luckyBlockEngine.newLuckyEntry(new LuckyItemDrop(luckyBlock.getKey(), 1)));
+        // TEST!!! (taking danirod12 block for testing)
+        for (int i = 0; i < 30; i++) {
+            com.github.danirod12.luckyblock.api.model.ItemsBag generatedBag =
+                    com.github.danirod12.luckyblock.engine.generator.AdvancedLootGenerator.builder(luckyBlockEngine,
+                                    advancedLootDatabase)
+                            .minItems(2)
+                            .maxItems(4)
+                            .mode(com.github.danirod12.luckyblock.engine.generator.SynergyMode.STRICT)
+                            .build()
+                            .generate();
+
+            for (com.github.danirod12.luckyblock.api.model.random
+                    .LuckyCollection<com.github.danirod12.luckyblock.api.model.LuckyDrop>
+                    entry : generatedBag.getAll()) {
+                luckyBlock.getItemsBag().add(entry);
+            }
+        }
+        // ------------------------------------
+
         luckyBlockEngine.register(luckyBlock);
 
         // honey LuckyBlock
