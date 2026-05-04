@@ -14,6 +14,8 @@
   "NETHER_PORTAL",
   "END_PORTAL",
   "FILLED_MAP",
+  "VOID_AIR",
   "*_SPAWN_EGG",
-  "INFESTED_*"
+  "INFESTED_*",
+  "POTTED_*"
 ]
