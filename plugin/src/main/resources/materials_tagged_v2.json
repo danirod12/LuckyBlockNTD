@@ -3,6 +3,9 @@
         "single_only": [
             "axe",
             "sword",
+            "hoe",
+            "pickaxe",
+            "boat",
             "weapon_ranged",
             "armor_head",
             "armor_chest",
@@ -4486,6 +4489,7 @@
             "explore_loot",
             "non_stackable",
             "upgrade_material",
+            "enchanted_book",
             "stackable_16"
         ],
         "ENCHANTED_GOLDEN_APPLE": [
