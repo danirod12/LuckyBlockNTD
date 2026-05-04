@@ -158,7 +158,7 @@ public class LBMain extends LBMainProvider {
         guiManager = new GuiManager(this);
         File folder = new File(getDataFolder() + File.separator + "luckyblocks");
         luckyBlockEngine = new LuckyBlockEngine(this, logChannel, folder,
-                configHolder, versionControl, worldEditProvider == null ? null : worldEditProvider.getFolder());
+                configHolder, versionControl, new File(getDataFolder(), "schematics"));
         entityLoadListener = new EntityLoadListener(this, luckyBlockEngine);
         LuckyBlockAPI.injectAPI(this, luckyBlockEngine);
 
