@@ -65,12 +65,12 @@ public class WeightListB<T, B> implements WeightCollection<T> {
 
     private int genIndex(List<WeightPair> weightPairs) {
         double target = ThreadLocalRandom.current()
-                .nextDouble(weightPairs.stream().mapToDouble(WeightPair::getWeight).sum()) + 1;
+                .nextDouble(weightPairs.stream().mapToDouble(WeightPair::getWeight).sum());
         int index = 0;
         do {
             target -= weightPairs.get(index).weight;
             index++;
-        } while (target > 0);
+        } while (target > 0 && index < weightPairs.size());
         return index - 1;
     }
 
