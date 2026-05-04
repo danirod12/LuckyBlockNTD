@@ -168,10 +168,22 @@ public class LBMain extends LBMainProvider {
         // ============================================
         logChannel.info("Loading Advanced Loot Database...");
         advancedLootDatabase = new AdvancedLootDatabase();
+
+        try {
+            InputStream weightsIn = getResource("rarity_weights.json");
+            if (weightsIn != null) {
+                try (Reader r = new InputStreamReader(weightsIn, StandardCharsets.UTF_8)) {
+                    advancedLootDatabase.loadWeights(r);
+                }
+            }
+        } catch (Exception e) {
+            logChannel.warning("Failed to load weights_config.json, using defaults.");
+        }
+
         try {
             InputStream bannedIn = getResource("banned_materials.json");
             if (bannedIn != null) {
-                try (java.io.Reader bannedReader = new InputStreamReader(bannedIn, StandardCharsets.UTF_8)) {
+                try (Reader bannedReader = new InputStreamReader(bannedIn, StandardCharsets.UTF_8)) {
                     advancedLootDatabase.loadBanned(bannedReader);
                 }
             }

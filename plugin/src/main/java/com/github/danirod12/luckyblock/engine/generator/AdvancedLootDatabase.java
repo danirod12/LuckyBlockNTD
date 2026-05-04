@@ -1,6 +1,7 @@
 package com.github.danirod12.luckyblock.engine.generator;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import org.bukkit.Material;
@@ -12,11 +13,19 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 
 public class AdvancedLootDatabase {
+    private int defaultBaseWeight = 10;
+    private int defaultTier = 1;
+
     private final Map<Material, CoreItem> cache = new HashMap<>();
-    private final List<Material> availableCores = new ArrayList<>();
+
+    private final NavigableMap<Integer, Material> weightedCores = new TreeMap<>();
+    private int totalCoreWeight = 0;
+
     private final List<String> singleOnlyTags = new ArrayList<>();
     private final Set<String> allUniqueTags = new HashSet<>();
     private final Set<Material> bannedItems = new HashSet<>();
+    private final Map<String, Integer> tagModifiers = new HashMap<>();
+    private final Map<Integer, Double> tierMultipliers = new HashMap<>();
 
     private final Map<Material, int[]> vectors = new HashMap<>();
 
@@ -63,12 +72,16 @@ public class AdvancedLootDatabase {
         for (Material coreMat : parsedItems.keySet()) {
             List<SynergyItem> synergies = calculateSynergiesFor(coreMat, parsedItems, 0.7f);
 
-            // TODO(zhabka_zhaba): Implement rarity functionality
-            int fakeTier = 1;
+            int itemTier = defaultTier; //TODO(zhabka_zhaba): Proper JSON tiers + parsing
 
-            CoreItem coreItem = new CoreItem(coreMat, fakeTier, synergies, SynergyMode.STRICT);
+            CoreItem coreItem = new CoreItem(coreMat, itemTier, synergies, SynergyMode.STRICT);
             cache.put(coreMat, coreItem);
-            availableCores.add(coreMat);
+
+            int weight = calculateCoreWeight(parsedItems.get(coreMat), itemTier);
+            if (weight > 0) {
+                totalCoreWeight += weight;
+                weightedCores.put(totalCoreWeight, coreMat);
+            }
         }
     }
 
@@ -94,6 +107,31 @@ public class AdvancedLootDatabase {
                         bannedItems.add(mat);
                     }
                 }
+            }
+        }
+    }
+
+    public void loadWeights(Reader reader) {
+        Gson gson = new Gson();
+        JsonObject root = gson.fromJson(reader, JsonObject.class);
+
+        if (root.has("settings")) {
+            JsonObject settings = root.getAsJsonObject("settings");
+            defaultBaseWeight = settings.get("default_base_weight").getAsInt();
+            defaultTier = settings.get("default_tier").getAsInt();
+        }
+
+        if (root.has("tag_modifiers")) {
+            JsonObject modifiers = root.getAsJsonObject("tag_modifiers");
+            for (Map.Entry<String, JsonElement> entry : modifiers.entrySet()) {
+                tagModifiers.put(entry.getKey(), entry.getValue().getAsInt());
+            }
+        }
+
+        if (root.has("tier_multipliers")) {
+            JsonObject multipliers = root.getAsJsonObject("tier_multipliers");
+            for (Map.Entry<String, JsonElement> entry : multipliers.entrySet()) {
+                tierMultipliers.put(Integer.parseInt(entry.getKey()), entry.getValue().getAsDouble());
             }
         }
     }
@@ -138,11 +176,21 @@ public class AdvancedLootDatabase {
 
         result.sort((a, b) -> Float.compare(b.getSynweight(), a.getSynweight()));
 
-        // TODO
         return result.size() > 10 ? result.subList(0, 10) : result;
     }
 
-    // Using cosine similarity to check similar items
+    private int calculateCoreWeight(List<String> tags, int tier) {
+        int weight = defaultBaseWeight;
+
+        for (String tag : tags) {
+            weight += tagModifiers.getOrDefault(tag, 0);
+        }
+
+        double multiplier = tierMultipliers.getOrDefault(tier, 1.0);
+
+        return (int) Math.max(1, weight * multiplier);
+    }
+
     private float cosineSimilarity(int[] vec1, int[] vec2) {
         int dotProduct = 0, mag1 = 0, mag2 = 0;
         for (int i = 0; i < vec1.length; i++) {
@@ -161,10 +209,11 @@ public class AdvancedLootDatabase {
     }
 
     public Material getRandomCore() {
-        if (availableCores.isEmpty()) {
+        if (weightedCores.isEmpty()) {
             return Material.CARROT;
         }
-        return availableCores.get(ThreadLocalRandom.current().nextInt(availableCores.size()));
+        int roll = ThreadLocalRandom.current().nextInt(totalCoreWeight) + 1;
+        return weightedCores.ceilingEntry(roll).getValue();
     }
 
     public boolean isEmpty() {

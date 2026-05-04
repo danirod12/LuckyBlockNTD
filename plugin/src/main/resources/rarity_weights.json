@@ -1,0 +1,17 @@
+{
+  "settings": {
+    "default_base_weight": 10,
+    "default_tier": 1
+  },
+  "tag_modifiers": {
+    "weapon_melee": 5,
+    "weapon_ranged": 5,
+    "enchanted_book": 5
+  },
+  "tier_multipliers": {
+    "1": 1.0,
+    "2": 1.0,
+    "3": 0.5,
+    "4": 0.25
+  }
+}
