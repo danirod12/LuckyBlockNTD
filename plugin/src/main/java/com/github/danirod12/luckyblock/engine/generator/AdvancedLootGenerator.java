@@ -1,10 +1,10 @@
 package com.github.danirod12.luckyblock.engine.generator;
 
-import com.github.danirod12.luckyblock.api.model.ItemsBag;
 import com.github.danirod12.luckyblock.api.model.LuckyDrop;
 import com.github.danirod12.luckyblock.engine.LuckyBlockEngine;
 import com.github.danirod12.luckyblock.engine.drop.ItemDrop;
-import com.github.danirod12.luckyblock.engine.model.ItemsBagImpl;
+import com.github.danirod12.luckyblock.api.model.random.Amount;
+import com.github.danirod12.luckyblock.util.random.WeightListAmount;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -16,7 +16,7 @@ public final class AdvancedLootGenerator {
 
     private final int minItems;
     private final int maxItems;
-    private final SynergyMode mode; //TODO(zhabka_zhaba): Implement mode functionality
+    private final SynergyMode mode; //TODO(zhabka_zhaba): Implement proper  mode functionality
     private final Material forcedCore;
 
     private AdvancedLootGenerator(Builder builder) {
@@ -32,15 +32,13 @@ public final class AdvancedLootGenerator {
         return new Builder(engine, db);
     }
 
-    public ItemsBag generate() {
-        ItemsBag bag = new ItemsBagImpl();
-        bag.add(generateLuckyEntry());
-        return bag;
+    // Теперь мы возвращаем саму запись напрямую, без лишних оберток
+    public WeightListAmount<LuckyDrop> generate() {
+        return generateLuckyEntry();
     }
 
-    private com.github.danirod12.luckyblock.util.random.WeightListAmount<LuckyDrop> generateLuckyEntry() {
-        com.github.danirod12.luckyblock.util.random.WeightListAmount<LuckyDrop> entry =
-                new com.github.danirod12.luckyblock.util.random.WeightListAmount<>();
+    private WeightListAmount<LuckyDrop> generateLuckyEntry() {
+        WeightListAmount<LuckyDrop> entry = new WeightListAmount<>();
 
         Material coreItem = (forcedCore != null) ? forcedCore : db.getRandomCore();
         entry.add(new ItemDrop(new ItemStack(coreItem, calculateAmount(coreItem))));
@@ -50,6 +48,7 @@ public final class AdvancedLootGenerator {
 
         CoreItem coreData = db.get(coreItem);
         if (coreData == null) {
+
             org.bukkit.Bukkit.getLogger().info("[DEBUG] Error - no core item");
             return entry;
         }
@@ -84,7 +83,7 @@ public final class AdvancedLootGenerator {
             }
         }
 
-        entry.setAmount(new com.github.danirod12.luckyblock.api.model.random.Amount(addedCount));
+        entry.setAmount(new Amount(addedCount));
 
         return entry;
     }

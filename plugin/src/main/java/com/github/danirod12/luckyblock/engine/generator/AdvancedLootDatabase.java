@@ -15,6 +15,7 @@ public class AdvancedLootDatabase {
     private final List<Material> availableCores = new ArrayList<>();
     private final List<String> singleOnlyTags = new ArrayList<>();
     private final Set<String> allUniqueTags = new HashSet<>();
+    private final Set<Material> bannedItems = new HashSet<>();
 
     private final Map<Material, int[]> vectors = new HashMap<>();
 
@@ -39,7 +40,7 @@ public class AdvancedLootDatabase {
 
         for (Map.Entry<String, List<String>> entry : rawItems.entrySet()) {
             Material mat = Material.matchMaterial(entry.getKey());
-            if (mat != null) {
+            if (mat != null && !bannedItems.contains(mat)) {
                 parsedItems.put(mat, entry.getValue());
                 allUniqueTags.addAll(entry.getValue());
             }
@@ -67,6 +68,21 @@ public class AdvancedLootDatabase {
             CoreItem coreItem = new CoreItem(coreMat, fakeTier, synergies, SynergyMode.STRICT);
             cache.put(coreMat, coreItem);
             availableCores.add(coreMat);
+        }
+    }
+
+    public void loadBanned(Reader reader) {
+        Gson gson = new Gson();
+        Type listType = new TypeToken<List<String>>() { }.getType();
+        List<String> bannedList = gson.fromJson(reader, listType);
+
+        if (bannedList != null) {
+            for (String matName : bannedList) {
+                Material mat = Material.matchMaterial(matName);
+                if (mat != null) {
+                    bannedItems.add(mat);
+                }
+            }
         }
     }
 
