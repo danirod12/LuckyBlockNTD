@@ -8,7 +8,11 @@
             "armor_chest",
             "armor_legs",
             "armor_feet",
-            "tool_mining"
+            "tool_mining",
+            "boots",
+            "chestplate",
+            "helmet",
+            "leggings"
         ]
     },
     "items": {
