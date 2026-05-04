@@ -9,6 +9,7 @@ import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.regex.Pattern;
 
 public class AdvancedLootDatabase {
     private final Map<Material, CoreItem> cache = new HashMap<>();
@@ -77,10 +78,21 @@ public class AdvancedLootDatabase {
         List<String> bannedList = gson.fromJson(reader, listType);
 
         if (bannedList != null) {
-            for (String matName : bannedList) {
-                Material mat = Material.matchMaterial(matName);
-                if (mat != null) {
-                    bannedItems.add(mat);
+            for (String patternStr : bannedList) {
+                if (patternStr.contains("*")) {
+                    String regex = "^" + patternStr.replace("*", ".*") + "$";
+                    Pattern pattern = Pattern.compile(regex);
+
+                    for (Material mat : Material.values()) {
+                        if (pattern.matcher(mat.name()).matches()) {
+                            bannedItems.add(mat);
+                        }
+                    }
+                } else {
+                    Material mat = Material.matchMaterial(patternStr);
+                    if (mat != null) {
+                        bannedItems.add(mat);
+                    }
                 }
             }
         }

@@ -32,7 +32,6 @@ public final class AdvancedLootGenerator {
         return new Builder(engine, db);
     }
 
-    // Теперь мы возвращаем саму запись напрямую, без лишних оберток
     public WeightListAmount<LuckyDrop> generate() {
         return generateLuckyEntry();
     }
@@ -100,7 +99,7 @@ public final class AdvancedLootGenerator {
 
         //TODO(zhabka_zhaba): Implement rarity dependence
         if (material.isBlock()) {
-            int[] sizes = {8, 16, 32, 64};
+            int[] sizes = {8, 16, 32}; //TODO(zhabka_zhaba): Implement non-linear size distribution?
             int amount = sizes[ThreadLocalRandom.current().nextInt(sizes.length)];
             return Math.min(amount, maxStack);
         }

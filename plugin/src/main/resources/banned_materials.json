@@ -12,5 +12,8 @@
   "WATER",
   "JIGSAW",
   "NETHER_PORTAL",
-  "END_PORTAL"
+  "END_PORTAL",
+  "FILLED_MAP",
+  "*_SPAWN_EGG",
+  "INFESTED_*"
 ]
