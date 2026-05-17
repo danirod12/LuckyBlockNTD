@@ -1,7 +1,6 @@
 package com.github.danirod12.luckyblock.engine.drop.special;
 
 import com.github.danirod12.luckyblock.api.event.EntitySpawnEvent;
-import com.github.danirod12.luckyblock.api.model.LuckyDrop;
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -14,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class PigSpecial implements LuckyDrop {
+public class PigSpecial implements SpecialLuckyDrop {
 
     @SerializedName(value = "amount")
     private final int amount;

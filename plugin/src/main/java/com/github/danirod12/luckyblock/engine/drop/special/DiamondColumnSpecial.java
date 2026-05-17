@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class DiamondColumnSpecial implements LuckyDrop {
+public class DiamondColumnSpecial implements SpecialLuckyDrop {
 
     @SerializedName(value = "materials")
     private final List<Material> materials;

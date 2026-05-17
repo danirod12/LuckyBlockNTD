@@ -4,6 +4,7 @@ import com.github.danirod12.luckyblock.api.LuckyBlockAPI;
 import com.github.danirod12.luckyblock.api.event.ItemSpawnEvent;
 import com.github.danirod12.luckyblock.api.model.LuckyDrop;
 import com.google.gson.annotations.SerializedName;
+import de.tr7zw.nbtapi.NBT;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
@@ -38,11 +39,23 @@ public class ItemDrop implements LuckyDrop {
                     execution.getKey() + " have corrupted item " + item.getType()
                             + ", remove it manually");
             execution.getKey().getSetup().ifPresent(instance -> {
-                instance.getItemsBag().remove(this);
-                // TODO auto-remove?
+                instance.getItemsBag().removeIf(collection -> {
+                    collection.removeIf(luckyDrop -> luckyDrop instanceof ItemDrop
+                            && ((ItemDrop) luckyDrop).item.equals(item));
+                    return collection.isEmpty();
+                });
+                // TODO auto-remove? ( save ? )
             });
             return;
         }
         Bukkit.getPluginManager().callEvent(new ItemSpawnEvent(execution, drop));
+    }
+
+    public static LuckyDrop deserialize(String[] data) {
+        return new ItemDrop(NBT.itemStackFromNBT(NBT.parseNBT(data[0])));
+    }
+
+    public static String[] serialize(ItemDrop drop) {
+        return new String[] {NBT.itemStackToNBT(drop.item).toString()};
     }
 }

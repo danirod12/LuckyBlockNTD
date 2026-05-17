@@ -1,11 +1,16 @@
 name: ntdLuckyBlock
+description: Cool revamped LuckyBlock & API. Say goodbye to the sponge and resourcepacks!
+
 main: com.github.danirod12.luckyblock.LBMain
+
 version: ${project.parent.version}
 api-version: 1.13
+
 author: danirod12 # NTD STUDIOS
+website: https://discord.gg/vbYW3sperj # vk.com/danirodplay
+
+depend: [ NBTAPI ]
 softdepend: [ Slimefun, TokenManager, Vault, WorldEdit, FastAsyncWorldEdit, WorldGuard ]
-description: Cool revamped LuckyBlock & API. Say goodbye to the sponge and resourcepacks!
-website: https://discord.gg/vbYW3sperj
 
 commands:
   ntdluckyblock:

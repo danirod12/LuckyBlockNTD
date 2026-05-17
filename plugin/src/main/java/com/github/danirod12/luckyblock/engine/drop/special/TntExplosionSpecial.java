@@ -1,13 +1,13 @@
 package com.github.danirod12.luckyblock.engine.drop.special;
 
-import com.github.danirod12.luckyblock.api.model.LuckyDrop;
+import com.github.danirod12.luckyblock.util.bukkit.ItemsExplosion;
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 
 @Getter
-public class TntExplosionSpecial extends ExplosionableItems implements LuckyDrop {
+public class TntExplosionSpecial extends ItemsExplosion implements SpecialLuckyDrop {
 
     @SerializedName(value = "amount")
     private final int amount;

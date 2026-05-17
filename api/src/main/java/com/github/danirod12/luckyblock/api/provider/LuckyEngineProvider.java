@@ -1,9 +1,5 @@
 package com.github.danirod12.luckyblock.api.provider;
 
-import com.github.danirod12.luckyblock.api.exception.EntryFormatException;
-import com.github.danirod12.luckyblock.api.exception.PremiumVersionRequiredException;
-import com.github.danirod12.luckyblock.api.loader.PathLoader;
-import com.github.danirod12.luckyblock.api.loader.StringLoader;
 import com.github.danirod12.luckyblock.api.model.LuckyBlock;
 import com.github.danirod12.luckyblock.api.model.LuckyBlockKey;
 import com.github.danirod12.luckyblock.api.model.LuckyBlockType;
@@ -25,18 +21,11 @@ import java.util.*;
 
 public interface LuckyEngineProvider {
 
-    StringLoader getStringLoader();
-
-    PathLoader getPathLoader();
-
     void load(LuckyBlockType type);
 
     Config getNewConfigInstance(String typeName);
 
     LuckyBlock loadFromConfig(LuckyBlock luckyBlock, Config config);
-
-    LuckyCollection<LuckyDrop> loadLuckyEntry(Config config, String path)
-            throws EntryFormatException, PremiumVersionRequiredException;
 
     boolean isLuckyBlock(ItemStack stack);
 
@@ -56,11 +45,7 @@ public interface LuckyEngineProvider {
 
     LuckyBlock newLuckyBlock(LuckyBlockKey type);
 
-    default LuckyCollection<LuckyDrop> newLuckyEntry(LuckyDrop... drops) {
-        return this.newLuckyEntry(null, drops);
-    }
-
-    LuckyCollection<LuckyDrop> newLuckyEntry(String permission, LuckyDrop... drops);
+    LuckyCollection<LuckyDrop> newLuckyEntry(LuckyDrop... drops);
 
     LuckyBlockKey[] getLoadedTypes();
 

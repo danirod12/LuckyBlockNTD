@@ -37,7 +37,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -148,7 +147,7 @@ public class LBMain extends LBMainProvider {
         guiManager = new GuiManager(this);
         File folder = new File(getDataFolder() + File.separator + "luckyblocks");
         luckyBlockEngine = new LuckyBlockEngine(this, logChannel, folder,
-                configHolder, versionControl, worldEditProvider.getFolder());
+                configHolder, versionControl);
         entityLoadListener = new EntityLoadListener(this, luckyBlockEngine);
         LuckyBlockAPI.injectAPI(this, luckyBlockEngine);
 
@@ -325,6 +324,8 @@ public class LBMain extends LBMainProvider {
         boolean prevLightSource = this.configHolder.lightSource;
         this.configHolder.dirtyPickUp();
 
+        this.luckyBlockEngine.updateChanceLevels();
+
         if (this.versionControl.isLegacy() && !this.configHolder.lightSource) {
             this.logChannel.warning("Light source cannot be disabled on 1.8 - 1.12 " +
                     "due vanilla texture glitch (Texture is blacked out)");
@@ -346,16 +347,6 @@ public class LBMain extends LBMainProvider {
                     "and player data, you should install version 2.8.8 or older in order to avoid issues");
             logChannel.info("To remove this message remove config fields `place.*`");
         }
-
-        ConfigurationSection section = this.configHolder.getConfig().getConfigurationSection("chances");
-//        assert section != null; TODO rework, pass to configuration loader
-//        for (String key : section.getKeys(false)) {
-//            com.github.danirod12.luckyblock.api.model.random.DropChance chance = DropChance.parse(key);
-//            if (chance == null) {
-//                continue;
-//            }
-//            chance.setWeight(section.getInt(key));
-//        }
 
         MessagesManager.reload(this.configHolder.getConfig().getString("language"));
 

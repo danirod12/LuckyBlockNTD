@@ -7,6 +7,7 @@ import com.github.danirod12.luckyblock.api.model.random.LuckyCollection;
 import com.github.danirod12.luckyblock.engine.LuckyBlockEngine;
 import org.bukkit.configuration.ConfigurationSection;
 
+@Deprecated // V2p loader
 public class JSONLoader implements PathLoader {
 
     public JSONLoader(LuckyBlockEngine engine) {

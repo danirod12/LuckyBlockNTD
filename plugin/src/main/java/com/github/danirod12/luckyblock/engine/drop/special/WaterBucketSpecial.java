@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 @Getter
-public class WaterBucketSpecial implements LuckyDrop {
+public class WaterBucketSpecial implements SpecialLuckyDrop {
 
     @SerializedName(value = "height")
     private final int height;

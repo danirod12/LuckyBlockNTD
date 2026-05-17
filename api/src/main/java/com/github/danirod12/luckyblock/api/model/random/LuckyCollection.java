@@ -10,11 +10,5 @@ public interface LuckyCollection<T> extends WeightCollection<T> {
 
     void setAmount(@NotNull Amount amount);
 
-    String getPermission();
-
-    void setPermission(String permission);
-
-    boolean hasPermission(Player player);
-
-    Set<T> getAll();
+    Set<T> rollItems(Player player);
 }

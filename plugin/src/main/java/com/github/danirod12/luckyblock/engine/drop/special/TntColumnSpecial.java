@@ -1,6 +1,5 @@
 package com.github.danirod12.luckyblock.engine.drop.special;
 
-import com.github.danirod12.luckyblock.api.model.LuckyDrop;
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import org.bukkit.Location;
@@ -8,7 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.scheduler.BukkitRunnable;
 
 @Getter
-public class TntColumnSpecial implements LuckyDrop {
+public class TntColumnSpecial implements SpecialLuckyDrop {
 
     @SerializedName(value = "amount")
     private final int amount;

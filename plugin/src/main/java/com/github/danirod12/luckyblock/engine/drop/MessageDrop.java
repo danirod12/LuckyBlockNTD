@@ -28,4 +28,12 @@ public class MessageDrop implements LuckyDrop {
         target.sendMessage(Misc.setColors(message.replace("%player%", target.getName())
                 .replace("%world%", execution.getBlock().getWorld().getName())));
     }
+
+    public static LuckyDrop deserialize(String[] data) {
+        return new MessageDrop(data.length < 1 ? "" : data[0]);
+    }
+
+    public static String[] serialize(MessageDrop drop) {
+        return new String[]{drop.message};
+    }
 }
