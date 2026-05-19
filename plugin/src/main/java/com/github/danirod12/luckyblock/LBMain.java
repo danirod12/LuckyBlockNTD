@@ -8,6 +8,9 @@ import com.github.danirod12.luckyblock.api.util.*;
 import com.github.danirod12.luckyblock.command.CommandsManager;
 import com.github.danirod12.luckyblock.engine.LuckyBlockEngine;
 import com.github.danirod12.luckyblock.engine.drop.LuckyItemDrop;
+import com.github.danirod12.luckyblock.engine.generator.AdvancedLootDatabase;
+import com.github.danirod12.luckyblock.engine.generator.AdvancedLootGenerator;
+import com.github.danirod12.luckyblock.engine.generator.SynergyMode;
 import com.github.danirod12.luckyblock.hook.Hook;
 import com.github.danirod12.luckyblock.hook.economy.EconomyBridge;
 import com.github.danirod12.luckyblock.hook.economy.TokenManagerEconomy;
@@ -28,6 +31,7 @@ import com.github.danirod12.luckyblock.util.Templates;
 import com.github.danirod12.luckyblock.util.config.ConfigHolder;
 import com.github.danirod12.luckyblock.util.manager.GuiManager;
 import com.github.danirod12.luckyblock.util.manager.MessagesManager;
+import com.github.danirod12.luckyblock.util.random.WeightListAmount;
 import com.github.danirod12.luckyblock.variables.PlayerHead;
 import com.github.danirod12.luckyblock.variables.world.WorldListDataHandler;
 import lombok.Getter;
@@ -41,6 +45,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -63,6 +71,8 @@ public class LBMain extends LBMainProvider {
     @Getter
     private CommandsManager commandsManager;
     private EntityLoadListener entityLoadListener;
+    @Getter
+    private AdvancedLootDatabase advancedLootDatabase;
 
     @Getter
     private final ConfigHolder configHolder = new ConfigHolder();
@@ -153,6 +163,48 @@ public class LBMain extends LBMainProvider {
 
         // Loading config
         reloadConfig();
+
+        // ============================================
+        logChannel.info("Loading Advanced Loot Database...");
+        advancedLootDatabase = new AdvancedLootDatabase();
+
+        try {
+            InputStream weightsIn = getResource("rarity_weights.json");
+            if (weightsIn != null) {
+                try (Reader r = new InputStreamReader(weightsIn, StandardCharsets.UTF_8)) {
+                    advancedLootDatabase.loadWeights(r);
+                }
+            }
+        } catch (Exception e) {
+            logChannel.warning("Failed to load weights_config.json, using defaults.");
+        }
+
+        try {
+            InputStream bannedIn = getResource("banned_materials.json");
+            if (bannedIn != null) {
+                try (Reader bannedReader = new InputStreamReader(bannedIn, StandardCharsets.UTF_8)) {
+                    advancedLootDatabase.loadBanned(bannedReader);
+                }
+            }
+        } catch (Exception e) {
+            logChannel.warning("Failed to load banned_items.json! Continuing without blacklist.");
+        }
+
+        try {
+            InputStream in = getResource("materials_tagged_v2.json");
+            if (in == null) {
+                logChannel.severe("Could not find materials_tagged_v2.json in plugin resources");
+            } else {
+                try (Reader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
+                    advancedLootDatabase.load(reader);
+                    logChannel.info("Advanced Loot Database loaded successfully.");
+                }
+            }
+        } catch (Exception e) {
+            logChannel.severe("Failed to load Advanced Loot Database");
+        }
+        // ============================================
+
         if (this.configHolder.getConfig().getBoolean("scheduled-update-check")) {
             logChannel.debug("Loading Bukkit scheduler thread for delayed update check");
             Bukkit.getScheduler().runTaskTimerAsynchronously(this,
@@ -276,7 +328,20 @@ public class LBMain extends LBMainProvider {
                 )
         );
         luckyBlock.setCustomName("§6DANIROD12 SKIN");
-        luckyBlock.getItemsBag().add(luckyBlockEngine.newLuckyEntry(new LuckyItemDrop(luckyBlock.getKey(), 1)));
+        // TEST!!! (taking danirod12 block for testing)
+        for (int i = 0; i < 502; i++) {
+            WeightListAmount<LuckyDrop> entry =
+                    AdvancedLootGenerator.builder(luckyBlockEngine, advancedLootDatabase)
+                            .minItems(2)
+                            .maxItems(3)
+                            .mode(SynergyMode.STRICT)
+                            .build()
+                            .generate();
+
+            luckyBlock.getItemsBag().add(entry);
+        }
+        // ------------------------------------
+
         luckyBlockEngine.register(luckyBlock);
 
         // honey LuckyBlock
