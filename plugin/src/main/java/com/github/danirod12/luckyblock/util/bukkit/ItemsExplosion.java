@@ -1,4 +1,4 @@
-package com.github.danirod12.luckyblock.engine.drop.special;
+package com.github.danirod12.luckyblock.util.bukkit;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class ExplosionableItems {
+public class ItemsExplosion {
 
     protected void throwExplosion(Entity... collection) {
         for (Entity entity : collection) {

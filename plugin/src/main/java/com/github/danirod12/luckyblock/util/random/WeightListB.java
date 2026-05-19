@@ -1,11 +1,13 @@
 package com.github.danirod12.luckyblock.util.random;
 
 import com.github.danirod12.luckyblock.api.model.random.WeightCollection;
+import com.github.danirod12.luckyblock.api.util.Pair;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
 public class WeightListB<T, B> implements WeightCollection<T> {
@@ -17,8 +19,8 @@ public class WeightListB<T, B> implements WeightCollection<T> {
     }
 
     public void add(T t, double weight, B bind) {
-        if (weight <= 0 || t == null) {
-            throw new IllegalArgumentException();
+        if (weight <= 0 || t == null || Double.isNaN(weight)) {
+            throw new IllegalArgumentException("Bad weight " + weight + " or type " + t);
         }
         list.add(new WeightPair(weight, t, bind));
     }
@@ -41,6 +43,23 @@ public class WeightListB<T, B> implements WeightCollection<T> {
         return map;
     }
 
+    @Override
+    public Map<T, Double> toWeightMap() {
+        Map<T, Double> map = new HashMap<>();
+        for (WeightPair tWeightPair : this.list) {
+            map.put(tWeightPair.t, tWeightPair.weight);
+        }
+        return map;
+    }
+
+    public Map<T, Pair<Double, B>> toWeightBindMap() {
+        Map<T, Pair<Double, B>> map = new HashMap<>();
+        for (WeightPair tWeightPair : this.list) {
+            map.put(tWeightPair.t, new Pair<>(tWeightPair.weight, tWeightPair.bind));
+        }
+        return map;
+    }
+
     public T get() {
         if (this.list.isEmpty()) {
             throw new UnsupportedOperationException();
@@ -48,11 +67,15 @@ public class WeightListB<T, B> implements WeightCollection<T> {
         return this.list.get(this.genIndex(this.list)).t;
     }
 
-    public List<T> get(int size) {
-        if (size >= this.list.size()) {
-            return this.toObjects();
+    public List<T> get(int size, final BiPredicate<T, B> filter) {
+        List<WeightPair> clone = filter == null ? new ArrayList<>(this.list)
+                : this.list.stream()
+                .filter(pair -> filter.test(pair.t, pair.bind))
+                .collect(Collectors.toList());
+
+        if (size >= clone.size()) {
+            return clone.stream().map(pair -> pair.t).collect(Collectors.toList());
         }
-        List<WeightPair> clone = new ArrayList<>(this.list);
         List<T> list = new ArrayList<>();
         while (size > 0) {
             size--;

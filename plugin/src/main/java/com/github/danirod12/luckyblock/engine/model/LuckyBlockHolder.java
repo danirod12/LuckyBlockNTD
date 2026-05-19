@@ -10,6 +10,8 @@ import com.github.danirod12.luckyblock.api.setup.ShopSetup;
 import com.github.danirod12.luckyblock.engine.LuckyBlockEngine;
 import com.github.danirod12.luckyblock.util.Misc;
 import com.google.gson.Gson;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -30,8 +32,11 @@ public class LuckyBlockHolder implements LuckyBlock {
     private final LuckyBlockKey type;
     private final Identifier identifier;
 
-    private final ItemsBag itemsBag = new ItemsBagImpl();
     private final List<ILuckyRecipe> recipes = new ArrayList<>();
+
+    @Getter
+    @Setter
+    private ItemsBag itemsBag = new ItemsBagImpl();
 
     private AnimationSetup animationSetup;
     private ShopSetup shopSetup;
@@ -136,11 +141,6 @@ public class LuckyBlockHolder implements LuckyBlock {
     }
 
     @Override
-    public ItemsBag getItemsBag() {
-        return this.itemsBag;
-    }
-
-    @Override
     public ShopSetup getShopSetup() {
         return this.shopSetup;
     }
@@ -192,8 +192,8 @@ public class LuckyBlockHolder implements LuckyBlock {
             return true;
         }
 
-        for (LuckyCollection<LuckyDrop> entries : this.itemsBag.getAll()) {
-            for (LuckyDrop drop : entries.getAll()) {
+        for (LuckyCollection<LuckyDrop> entries : this.itemsBag.rollItems(target)) {
+            for (LuckyDrop drop : entries.rollItems(target)) {
                 if (engine.getLogChannel().isDebug()) {
                     try {
                         engine.getLogChannel().debug(this.gson.toJson(drop));

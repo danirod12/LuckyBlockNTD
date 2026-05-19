@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 @Getter
-public class LightningSpecial implements LuckyDrop {
+public class LightningSpecial implements SpecialLuckyDrop {
 
     @SerializedName(value = "amount")
     private final int amount;

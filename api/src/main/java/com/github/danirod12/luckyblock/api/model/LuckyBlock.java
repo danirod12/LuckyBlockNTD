@@ -1,6 +1,5 @@
 package com.github.danirod12.luckyblock.api.model;
 
-// import com.github.danirod12.luckyblock.api.model.random.LuckyCollection;
 import com.github.danirod12.luckyblock.api.setup.AnimationSetup;
 import com.github.danirod12.luckyblock.api.setup.ILuckyRecipe;
 import com.github.danirod12.luckyblock.api.setup.ShopSetup;
@@ -59,6 +58,8 @@ public interface LuckyBlock {
     List<ILuckyRecipe> getRecipes();
 
     ItemsBag getItemsBag();
+
+    void setItemsBag(ItemsBag bag);
 
     ShopSetup getShopSetup();
 

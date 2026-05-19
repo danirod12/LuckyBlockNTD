@@ -26,4 +26,12 @@ public class OppedDrop implements LuckyDrop {
         Misc.performCommand(this.command, execution.getBlock(),
                 execution.getPlayer(), Misc.PerformCommandAs.OPPED_PLAYER);
     }
+
+    public static LuckyDrop deserialize(String[] data) {
+        return new MessageDrop(data.length < 1 ? "" : data[0]);
+    }
+
+    public static String[] serialize(OppedDrop drop) {
+        return new String[]{drop.command};
+    }
 }

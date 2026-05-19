@@ -1,41 +1,49 @@
 package com.github.danirod12.luckyblock.util.random;
 
+import com.github.danirod12.luckyblock.api.util.Pair;
 import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WeightListBuilder<T> {
+public class WeightListBuilder<T, B> {
     private final List<WeightPair> list = new ArrayList<>();
-    private final List<T> auto = new ArrayList<>();
+    private final List<Pair<T, B>> auto = new ArrayList<>();
 
-    public void add(T type, int weight) {
-        list.add(new WeightPair(type, weight));
+    /**
+     * Adds an element to the list with the specified weight.
+     *
+     * @param type   the element to add
+     * @param weight the weight of the element, if 0 or less, it will be added to the auto list
+     * @param bind   the bind of the element, can be null
+     */
+    public void add(T type, double weight, B bind) {
+        if (weight <= 0) {
+            this.addAuto(type, bind);
+            return;
+        }
+        list.add(new WeightPair(type, weight, bind));
     }
 
-    public void addAuto(T type) {
-        auto.add(type);
+    public void addAuto(T type, B bind) {
+        auto.add(new Pair<>(type, bind));
     }
 
-    public WeightList<T> build() {
-        return append(new WeightList<>());
-    }
-
-    public WeightList<T> append(WeightList<T> weightList) {
+    public void append(WeightListB<T, B> weightList) {
         for (WeightPair pair : list) {
-            weightList.add(pair.type, pair.weight);
+            weightList.add(pair.type, pair.weight, pair.bind);
         }
 
-        double weight = weightList.getTotalWeight() / weightList.size();
-        for (T type : auto) {
-            weightList.add(type, weight);
+        double weight = weightList.isEmpty() ? 50 : Math.max(0.000001, weightList.getTotalWeight() / weightList.size());
+        for (Pair<T, B> type : auto) {
+            weightList.add(type.getA(), weight, type.getB());
         }
-        return weightList;
     }
 
     @AllArgsConstructor
     private class WeightPair {
         public final T type;
-        public final int weight;
+        public final double weight;
+        public final B bind;
     }
 }

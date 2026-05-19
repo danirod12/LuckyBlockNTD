@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Deprecated // V2f -> V2p conversion, not used anymore
 public class ConvertFactory {
 
     private final Map<Config, List<String>> map = new HashMap<>();

@@ -1,11 +1,9 @@
 package com.github.danirod12.luckyblock.engine.loader;
 
-import com.github.danirod12.luckyblock.api.customitem.BekkerItemStack;
-import com.github.danirod12.luckyblock.api.customitem.CustomItemFactory;
 import com.github.danirod12.luckyblock.api.exception.DependencyNotFoundException;
 import com.github.danirod12.luckyblock.api.loader.StringLoader;
 import com.github.danirod12.luckyblock.api.model.LuckyDrop;
-import com.github.danirod12.luckyblock.api.model.LuckyDropType;
+import com.github.danirod12.luckyblock.engine.drop.LuckyDropType;
 import com.github.danirod12.luckyblock.api.model.SpecialDropType;
 import com.github.danirod12.luckyblock.engine.LuckyBlockEngine;
 import com.github.danirod12.luckyblock.engine.drop.*;
@@ -23,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Deprecated // V2f loader
 public class LegacyLoader implements StringLoader {
 
     private final LuckyBlockEngine engine;
@@ -90,24 +89,24 @@ public class LegacyLoader implements StringLoader {
                 }
                 return new LuckyItemDrop(engine.get(baseData[1]), amount);
             }
-            case CUSTOM_ITEM: {
-                int amount = 1;
-                try {
-                    amount = Integer.parseInt(baseData[2]);
-                } catch (Exception ignored) {
-                }
-                if (amount < 1) {
-                    amount = 1;
-                }
-                BekkerItemStack item = CustomItemFactory.fetchCustomItem(baseData[1].contains("-")
-                        ? baseData[1] : "ntdluckyblock-" + baseData[1]);
-                if (item == null) {
-                    throw new IllegalArgumentException("BekkerItemStack for name " + baseData[1] + " was not found");
-                }
-                ItemStack stack = item.clone();
-                stack.setAmount(amount);
-                return new ItemDrop(stack);
-            }
+//            case CUSTOM_ITEM: {
+//                int amount = 1;
+//                try {
+//                    amount = Integer.parseInt(baseData[2]);
+//                } catch (Exception ignored) {
+//                }
+//                if (amount < 1) {
+//                    amount = 1;
+//                }
+//                BekkerItemStack item = CustomItemFactory.fetchCustomItem(baseData[1].contains("-")
+//                        ? baseData[1] : "ntdluckyblock-" + baseData[1]);
+//                if (item == null) {
+//                    throw new IllegalArgumentException("BekkerItemStack for name " + baseData[1] + " was not found");
+//                }
+//                ItemStack stack = item.clone();
+//                stack.setAmount(amount);
+//                return new ItemDrop(stack);
+//            }
             case SCHEMATIC: {
                 if (!Hook.WorldEdit.isEnabled()) {
                     throw new DependencyNotFoundException("WorldEdit");

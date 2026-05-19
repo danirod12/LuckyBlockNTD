@@ -41,7 +41,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -158,7 +157,7 @@ public class LBMain extends LBMainProvider {
         guiManager = new GuiManager(this);
         File folder = new File(getDataFolder() + File.separator + "luckyblocks");
         luckyBlockEngine = new LuckyBlockEngine(this, logChannel, folder,
-                configHolder, versionControl, new File(getDataFolder(), "schematics"));
+                configHolder, versionControl);
         entityLoadListener = new EntityLoadListener(this, luckyBlockEngine);
         LuckyBlockAPI.injectAPI(this, luckyBlockEngine);
 
@@ -245,24 +244,24 @@ public class LBMain extends LBMainProvider {
         // Schematics support via WorldEdit
         if (Hook.WorldEdit.isEnabled()) {
             logChannel.debug("Loading WorldEdit provider...");
-            this.worldEditProvider = new WorldEditProvider(this, new File(getDataFolder(), "schematics"), getLogger());
+            this.worldEditProvider = new WorldEditProvider(this, this.luckyBlockEngine);
 
             if (!this.worldEditProvider.isPlatformAvailable()) {
                 Hook.WorldEdit.disable("unsupported version");
             } else {
-                boolean legacy = this.versionControl.isLegacy();
-                File schematicsFolder = this.worldEditProvider.getFolder();
-                if (!this.worldEditProvider.getFolder().exists()) {
-                    schematicsFolder.mkdirs();
-                    new Config(this, "configuration.schematics." + this.versionControl.getMat().build(),
-                            schematicsFolder, "cage_lava.schem" + (legacy ? "atic" : "")).copy(false);
-                    new Config(this, "configuration.schematics.main", schematicsFolder,
-                            "bedrock_problem.schematic").copy(false);
-                    if (!legacy) {
-                        new Config(this, "configuration.schematics.main", schematicsFolder,
-                                "small_temple.schem").copy(false);
-                    }
-                }
+//                boolean legacy = this.versionControl.isLegacy();
+//                File schematicsFolder = this.worldEditProvider.getFolder();
+//                if (!this.worldEditProvider.getFolder().exists()) {
+//                    schematicsFolder.mkdirs();
+//                    new Config(this, "configuration.schematics." + this.versionControl.getMat().build(),
+//                            schematicsFolder, "cage_lava.schem" + (legacy ? "atic" : "")).copy(false);
+//                    new Config(this, "configuration.schematics.main", schematicsFolder,
+//                            "bedrock_problem.schematic").copy(false);
+//                    if (!legacy) {
+//                        new Config(this, "configuration.schematics.main", schematicsFolder,
+//                                "small_temple.schem").copy(false);
+//                    }
+//                } TODO copy all schematics into folder
             }
         }
 
@@ -390,6 +389,8 @@ public class LBMain extends LBMainProvider {
         boolean prevLightSource = this.configHolder.lightSource;
         this.configHolder.dirtyPickUp();
 
+        this.luckyBlockEngine.updateChanceLevels();
+
         if (this.versionControl.isLegacy() && !this.configHolder.lightSource) {
             this.logChannel.warning("Light source cannot be disabled on 1.8 - 1.12 " +
                     "due vanilla texture glitch (Texture is blacked out)");
@@ -411,16 +412,6 @@ public class LBMain extends LBMainProvider {
                     "and player data, you should install version 2.8.8 or older in order to avoid issues");
             logChannel.info("To remove this message remove config fields `place.*`");
         }
-
-        ConfigurationSection section = this.configHolder.getConfig().getConfigurationSection("chances");
-//        assert section != null; TODO rework, pass to configuration loader
-//        for (String key : section.getKeys(false)) {
-//            com.github.danirod12.luckyblock.api.model.random.DropChance chance = DropChance.parse(key);
-//            if (chance == null) {
-//                continue;
-//            }
-//            chance.setWeight(section.getInt(key));
-//        }
 
         MessagesManager.reload(this.configHolder.getConfig().getString("language"));
 
