@@ -7,10 +7,8 @@ import com.github.danirod12.luckyblock.api.provider.LBMainProvider;
 import com.github.danirod12.luckyblock.api.util.*;
 import com.github.danirod12.luckyblock.command.CommandsManager;
 import com.github.danirod12.luckyblock.engine.LuckyBlockEngine;
-import com.github.danirod12.luckyblock.engine.drop.LuckyItemDrop;
+import com.github.danirod12.luckyblock.engine.drop.SchematicList;
 import com.github.danirod12.luckyblock.engine.generator.AdvancedLootDatabase;
-import com.github.danirod12.luckyblock.engine.generator.AdvancedLootGenerator;
-import com.github.danirod12.luckyblock.engine.generator.SynergyMode;
 import com.github.danirod12.luckyblock.hook.Hook;
 import com.github.danirod12.luckyblock.hook.economy.EconomyBridge;
 import com.github.danirod12.luckyblock.hook.economy.TokenManagerEconomy;
@@ -31,18 +29,14 @@ import com.github.danirod12.luckyblock.util.Templates;
 import com.github.danirod12.luckyblock.util.config.ConfigHolder;
 import com.github.danirod12.luckyblock.util.manager.GuiManager;
 import com.github.danirod12.luckyblock.util.manager.MessagesManager;
-import com.github.danirod12.luckyblock.util.random.WeightListAmount;
 import com.github.danirod12.luckyblock.variables.PlayerHead;
 import com.github.danirod12.luckyblock.variables.world.WorldListDataHandler;
 import lombok.Getter;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.File;
 import java.io.InputStream;
@@ -249,19 +243,7 @@ public class LBMain extends LBMainProvider {
             if (!this.worldEditProvider.isPlatformAvailable()) {
                 Hook.WorldEdit.disable("unsupported version");
             } else {
-//                boolean legacy = this.versionControl.isLegacy();
-//                File schematicsFolder = this.worldEditProvider.getFolder();
-//                if (!this.worldEditProvider.getFolder().exists()) {
-//                    schematicsFolder.mkdirs();
-//                    new Config(this, "configuration.schematics." + this.versionControl.getMat().build(),
-//                            schematicsFolder, "cage_lava.schem" + (legacy ? "atic" : "")).copy(false);
-//                    new Config(this, "configuration.schematics.main", schematicsFolder,
-//                            "bedrock_problem.schematic").copy(false);
-//                    if (!legacy) {
-//                        new Config(this, "configuration.schematics.main", schematicsFolder,
-//                                "small_temple.schem").copy(false);
-//                    }
-//                } TODO copy all schematics into folder
+                SchematicList.copyDefaults(this);
             }
         }
 
@@ -313,63 +295,63 @@ public class LBMain extends LBMainProvider {
 
         // TODO remove all below (tests)
 
-        LuckyBlock luckyBlock;
-        ItemStack stack;
-        ItemMeta meta;
+//        LuckyBlock luckyBlock;
+//        ItemStack stack;
+//        ItemMeta meta;
+//
+//        // danirod12 skin LuckyBlock
+//
+//        luckyBlock = luckyBlockEngine.newLuckyBlock(new LuckyBlockKey("danirod12",
+//                ColorData.YELLOW, Material.HONEY_BLOCK, false));
+//        luckyBlock.setItemAndIcon(
+//                this.versionControl.getPlayerHead(
+//                        "62e964f46cc23947d6db48334e42cfab7093184e4ae7d27f68c8e7079b3d21dc",
+//                        "danirod12", null, null
+//                )
+//        );
+//        luckyBlock.setCustomName("§6DANIROD12 SKIN");
+//        // TEST!!! (taking danirod12 block for testing)
+//        for (int i = 0; i < 502; i++) {
+//            WeightListAmount<LuckyDrop> entry =
+//                    AdvancedLootGenerator.builder(luckyBlockEngine, advancedLootDatabase)
+//                            .minItems(2)
+//                            .maxItems(3)
+//                            .mode(SynergyMode.STRICT)
+//                            .build()
+//                            .generate();
+//
+//            luckyBlock.getItemsBag().add(entry);
+//        }
+//        // ------------------------------------
+//
+//        luckyBlockEngine.register(luckyBlock);
 
-        // danirod12 skin LuckyBlock
-
-        luckyBlock = luckyBlockEngine.newLuckyBlock(new LuckyBlockKey("danirod12",
-                ColorData.YELLOW, Material.HONEY_BLOCK, false));
-        luckyBlock.setItemAndIcon(
-                this.versionControl.getPlayerHead(
-                        "62e964f46cc23947d6db48334e42cfab7093184e4ae7d27f68c8e7079b3d21dc",
-                        "danirod12", null, null
-                )
-        );
-        luckyBlock.setCustomName("§6DANIROD12 SKIN");
-        // TEST!!! (taking danirod12 block for testing)
-        for (int i = 0; i < 502; i++) {
-            WeightListAmount<LuckyDrop> entry =
-                    AdvancedLootGenerator.builder(luckyBlockEngine, advancedLootDatabase)
-                            .minItems(2)
-                            .maxItems(3)
-                            .mode(SynergyMode.STRICT)
-                            .build()
-                            .generate();
-
-            luckyBlock.getItemsBag().add(entry);
-        }
-        // ------------------------------------
-
-        luckyBlockEngine.register(luckyBlock);
-
-        // honey LuckyBlock
-
-        luckyBlock = luckyBlockEngine.newLuckyBlock(new LuckyBlockKey("slime",
-                ColorData.GREEN, Material.SLIME_BLOCK, false));
-        stack = new ItemStack(Material.HONEY_BLOCK);
-        meta = stack.getItemMeta();
-        assert meta != null;
-        meta.setDisplayName("§6§lHoney LuckyBlock");
-        stack.setItemMeta(meta);
-        luckyBlock.setItemAndIcon(stack);
-        luckyBlock.getItemsBag().add(luckyBlockEngine.newLuckyEntry(new LuckyItemDrop(luckyBlock.getKey(), 1)));
-        luckyBlockEngine.register(luckyBlock);
-
-        // ender LuckyBlock with slab and scaffolding
-
-        luckyBlock = luckyBlockEngine.newLuckyBlock(new LuckyBlockKey("slab",
-                ColorData.WHITE, Material.END_STONE_BRICK_SLAB, false));
-        stack = new ItemStack(Material.END_STONE_BRICK_SLAB);
-        meta = stack.getItemMeta();
-        assert meta != null;
-        meta.setDisplayName("§6§lStrange LuckyBlock");
-        stack.setItemMeta(meta);
-        luckyBlock.setIcon(new ItemStack(Material.SCAFFOLDING));
-        luckyBlock.setItem(stack);
-        luckyBlock.getItemsBag().add(luckyBlockEngine.newLuckyEntry(new LuckyItemDrop(luckyBlock.getKey(), 1)));
-        luckyBlockEngine.register(luckyBlock);
+//        // honey LuckyBlock
+//
+//        luckyBlock = luckyBlockEngine.newLuckyBlock(new LuckyBlockKey("slime",
+//                ColorData.GREEN, Material.SLIME_BLOCK, false));
+//        stack = new ItemStack(Material.HONEY_BLOCK);
+//        meta = stack.getItemMeta();
+//        assert meta != null;
+//        meta.setDisplayName("§6§lHoney LuckyBlock");
+//        stack.setItemMeta(meta);
+//        luckyBlock.setItemAndIcon(stack);
+//        luckyBlock.getItemsBag().add(luckyBlockEngine.newLuckyEntry(new LuckyItemDrop(luckyBlock.getKey(), 1)));
+//        luckyBlockEngine.register(luckyBlock);
+//
+//        // ender LuckyBlock with slab and scaffolding
+//
+//        luckyBlock = luckyBlockEngine.newLuckyBlock(new LuckyBlockKey("slab",
+//                ColorData.WHITE, Material.END_STONE_BRICK_SLAB, false));
+//        stack = new ItemStack(Material.END_STONE_BRICK_SLAB);
+//        meta = stack.getItemMeta();
+//        assert meta != null;
+//        meta.setDisplayName("§6§lStrange LuckyBlock");
+//        stack.setItemMeta(meta);
+//        luckyBlock.setIcon(new ItemStack(Material.SCAFFOLDING));
+//        luckyBlock.setItem(stack);
+//        luckyBlock.getItemsBag().add(luckyBlockEngine.newLuckyEntry(new LuckyItemDrop(luckyBlock.getKey(), 1)));
+//        luckyBlockEngine.register(luckyBlock);
     }
 
     @Override

@@ -1,14 +1,29 @@
 package com.github.danirod12.luckyblock.engine.generator;
 
+import com.github.danirod12.luckyblock.LBMain;
 import com.github.danirod12.luckyblock.api.model.LuckyDrop;
+import com.github.danirod12.luckyblock.api.model.SpecialDropType;
 import com.github.danirod12.luckyblock.engine.LuckyBlockEngine;
+import com.github.danirod12.luckyblock.engine.drop.EntityDrop;
 import com.github.danirod12.luckyblock.engine.drop.ItemDrop;
 import com.github.danirod12.luckyblock.api.model.random.Amount;
+import com.github.danirod12.luckyblock.engine.drop.SchematicDrop;
+import com.github.danirod12.luckyblock.engine.drop.SchematicList;
+import com.github.danirod12.luckyblock.engine.drop.special.*;
 import com.github.danirod12.luckyblock.util.random.WeightListAmount;
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 public final class AdvancedLootGenerator {
     private final LuckyBlockEngine engine;
@@ -18,6 +33,19 @@ public final class AdvancedLootGenerator {
     private final int maxItems;
     private final SynergyMode mode; //TODO(zhabka_zhaba): Implement proper  mode functionality
     private final Material forcedCore;
+    private final boolean generateSchematics;
+    private static final List<EntityType> SAFE_ENTITIES;
+
+    static {
+        Set<EntityType> blacklist = EnumSet.of(
+                EntityType.ENDER_DRAGON, EntityType.WITHER
+        ); // TODO add json blacklist?
+
+        SAFE_ENTITIES = Arrays.stream(EntityType.values())
+                .filter(EntityType::isSpawnable)
+                .filter(type -> !blacklist.contains(type))
+                .collect(Collectors.toList());
+    }
 
     private AdvancedLootGenerator(Builder builder) {
         this.engine = builder.engine;
@@ -26,6 +54,7 @@ public final class AdvancedLootGenerator {
         this.maxItems = builder.maxItems;
         this.mode = builder.mode;
         this.forcedCore = builder.forcedCore;
+        this.generateSchematics = builder.generateSchematics;
     }
 
     public static Builder builder(LuckyBlockEngine engine, AdvancedLootDatabase db) {
@@ -41,8 +70,8 @@ public final class AdvancedLootGenerator {
 
         Material coreItem = (forcedCore != null) ? forcedCore : db.getRandomCore();
 
-        org.bukkit.Bukkit.getLogger().info("[DEBUG] Starting new drop");
-        org.bukkit.Bukkit.getLogger().info("[DEBUG] Core item: " + coreItem.name());
+//        org.bukkit.Bukkit.getLogger().info("[DEBUG] Starting new drop");
+//        org.bukkit.Bukkit.getLogger().info("[DEBUG] Core item: " + coreItem.name());
 
         entry.add(new ItemDrop(new ItemStack(coreItem, calculateAmount(coreItem))), 100.0, null);
 
@@ -53,12 +82,12 @@ public final class AdvancedLootGenerator {
         }
 
         if (coreData.getSynergies() == null || coreData.getSynergies().isEmpty()) {
-            org.bukkit.Bukkit.getLogger().info("[DEBUG] Item " + coreItem.name() + " has no synergies");
+//            org.bukkit.Bukkit.getLogger().info("[DEBUG] Item " + coreItem.name() + " has no synergies");
             return entry;
         }
 
         int limit = ThreadLocalRandom.current().nextInt(minItems, maxItems + 1);
-        org.bukkit.Bukkit.getLogger().info("[DEBUG] Bundle mode: " + limit);
+//        org.bukkit.Bukkit.getLogger().info("[DEBUG] Bundle mode: " + limit);
 
         for (SynergyItem synItem : coreData.getSynergies()) {
             int amount = calculateAmount(synItem.getMaterial());
@@ -66,8 +95,33 @@ public final class AdvancedLootGenerator {
 
             entry.add(new ItemDrop(new ItemStack(synItem.getMaterial(), amount)), chance, null);
 
-            org.bukkit.Bukkit.getLogger().info("[DEBUG] Synergy registered: "
-                    + synItem.getMaterial().name() + " | Chance: " + chance + "%");
+//            org.bukkit.Bukkit.getLogger().info("[DEBUG] Synergy registered: "
+//                    + synItem.getMaterial().name() + " | Chance: " + chance + "%");
+        }
+
+        if (ThreadLocalRandom.current().nextDouble() < 0.1) { // TODO шансы в json??
+            entry.add(generateEntity(), 30.0, null);
+        }
+
+        if (ThreadLocalRandom.current().nextDouble() < 0.1) {
+            LuckyDrop special = generateSpecial();
+            if (special != null) {
+                entry.add(special, 25.0, null);
+            }
+        }
+
+        if (generateSchematics && ThreadLocalRandom.current().nextDouble() < 0.1) {
+            SchematicList.SchematicData sData = SchematicList.getRandomSchematic();
+
+            if (sData != null) {
+                Plugin plugin = JavaPlugin.getPlugin(LBMain.class);
+                File schemFolder = new File(plugin.getDataFolder(), "schematics");
+                File schemFile = new File(schemFolder, sData.fileName);
+
+                if (schemFile.exists()) {
+                    entry.add(new SchematicDrop(schemFile, sData.type, sData.ignoreAir), 10.0, null);
+                }
+            }
         }
 
         entry.setAmount(Amount.of(String.valueOf(limit)));
@@ -75,8 +129,28 @@ public final class AdvancedLootGenerator {
         return entry;
     }
 
+    public static LuckyDrop generateEntity() {
+        int amount = ThreadLocalRandom.current().nextInt(1, 4);
+        EntityType type = SAFE_ENTITIES.get(ThreadLocalRandom.current().nextInt(SAFE_ENTITIES.size()));
+        return new EntityDrop(type, amount);
+    }
+
+    public static LuckyDrop generateSpecial() {
+        switch (ThreadLocalRandom.current().nextInt(6)) {
+            case 0: return new WaterBucketSpecial(SpecialDropType.WATER_BUCKET.defaultValue());
+            case 1: return new TntExplosionSpecial(SpecialDropType.TNT_EXPLOSION.defaultValue());
+            case 2: return new TntColumnSpecial(SpecialDropType.TNT_COLUMN.defaultValue());
+            case 3:
+                int amount = ThreadLocalRandom.current().nextBoolean() ? 0 : ThreadLocalRandom.current().nextInt(20);
+                return new PigSpecial(SpecialDropType.PIG.defaultValue() + amount);
+            case 4: return new LightningSpecial(SpecialDropType.LIGHTNING.defaultValue());
+            case 5: return new ExperienceExplosionSpecial(SpecialDropType.EXPERIENCE_EXPLOSION.defaultValue());
+            default: return null;
+        }
+    }
+
     private int calculateAmount(Material material) {
-        if (!material.isItem()) {
+        if (!isItemSafe(material)) {
             return 1;
         }
 
@@ -95,6 +169,14 @@ public final class AdvancedLootGenerator {
         return ThreadLocalRandom.current().nextInt(1, Math.max(2, maxStack / 3));
     }
 
+    private static boolean isItemSafe(Material material) {
+        try {
+            return material.isItem();
+        } catch (NoSuchMethodError e) {
+            return !material.name().contains("AIR");
+        }
+    }
+
     public static class Builder {
         private final LuckyBlockEngine engine;
         private final AdvancedLootDatabase db;
@@ -102,6 +184,7 @@ public final class AdvancedLootGenerator {
         private int maxItems = 5;
         private SynergyMode mode = SynergyMode.STRICT;
         private Material forcedCore = null;
+        private boolean generateSchematics = false;
 
         public Builder(LuckyBlockEngine engine, AdvancedLootDatabase db) {
             this.engine = engine;
@@ -125,6 +208,11 @@ public final class AdvancedLootGenerator {
 
         public Builder forceCoreItem(Material material) {
             this.forcedCore = material;
+            return this;
+        }
+
+        public Builder enableSchematics(boolean enable) {
+            this.generateSchematics = enable;
             return this;
         }
 

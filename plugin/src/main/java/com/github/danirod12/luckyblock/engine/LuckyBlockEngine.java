@@ -139,6 +139,7 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
                                 .minItems(2)
                                 .maxItems(3)
                                 .mode(SynergyMode.STRICT)
+                                .enableSchematics(true)
                                 .build()
                                 .generate();
 
