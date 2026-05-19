@@ -39,7 +39,7 @@ public class SchematicDrop implements LuckyDrop {
         ;
 
         public static SchematicType parse(String type) {
-            return type.contains("player") || type.equalsIgnoreCase("false")
+            return type != null && (type.contains("player") || type.equalsIgnoreCase("false"))
                     ? PLAYER_RELATIVE : BLOCK_RELATIVE;
         }
 
@@ -112,5 +112,10 @@ public class SchematicDrop implements LuckyDrop {
 
     public static String[] serialize(SchematicDrop drop) {
         return new String[]{drop.file.getName(), drop.type.toString(), Boolean.toString(drop.ignoreAir)};
+    }
+
+    @Deprecated
+    public boolean atBlock() {
+        return this.type.toString().contains("BLOCK");
     }
 }

@@ -1,6 +1,7 @@
 package com.github.danirod12.luckyblock.engine.loader;
 
 import com.github.danirod12.luckyblock.api.exception.DependencyNotFoundException;
+import com.github.danirod12.luckyblock.engine.drop.SchematicDrop;
 import com.github.danirod12.luckyblock.api.loader.StringLoader;
 import com.github.danirod12.luckyblock.api.model.LuckyDrop;
 import com.github.danirod12.luckyblock.engine.drop.LuckyDropType;
@@ -120,7 +121,8 @@ public class LegacyLoader implements StringLoader {
                 } else {
                     throw new IllegalArgumentException("Schematic format allow only player and block arguments");
                 }
-                return new SchematicDrop(getSchematicFile(baseData), setAsBlock,
+                return new SchematicDrop(getSchematicFile(baseData), setAsBlock
+                        ? SchematicDrop.SchematicType.BLOCK_RELATIVE : SchematicDrop.SchematicType.PLAYER_RELATIVE,
                         baseData.length > 3 && baseData[3].equalsIgnoreCase("true"));
             }
             case SPECIAL: {
