@@ -70,7 +70,7 @@ public class AdvancedLootDatabase {
         }
 
         for (Material coreMat : parsedItems.keySet()) {
-            List<SynergyItem> synergies = calculateSynergiesFor(coreMat, parsedItems, 0.7f);
+            List<SynergyItem> synergies = calculateSynergiesFor(coreMat, parsedItems, 0.7f, 10); //TODO
 
             int itemTier = defaultTier; //TODO(zhabka_zhaba): Proper JSON tiers + parsing
 
@@ -137,21 +137,11 @@ public class AdvancedLootDatabase {
     }
 
     private List<SynergyItem> calculateSynergiesFor(Material anchor, Map<Material,
-            List<String>> allItems, float maxSim) {
-        List<SynergyItem> result = new ArrayList<>();
+            List<String>> allItems, float maxSim, int topNum) {
+
         int[] anchorVec = vectors.get(anchor);
         List<String> anchorTags = allItems.get(anchor);
-
-        // single_only tags search
-        boolean hasExclusive = anchorTags.stream().anyMatch(singleOnlyTags::contains);
-        List<String> anchorExclusives = new ArrayList<>();
-        if (hasExclusive) {
-            for (String tag : anchorTags) {
-                if (singleOnlyTags.contains(tag)) {
-                    anchorExclusives.add(tag);
-                }
-            }
-        }
+        List<SynergyItem> rawCandidates = new ArrayList<>();
 
         for (Map.Entry<Material, List<String>> candidate : allItems.entrySet()) {
             Material candMat = candidate.getKey();
@@ -159,24 +149,57 @@ public class AdvancedLootDatabase {
                 continue;
             }
 
-            if (hasExclusive) {
-                boolean conflict = candidate.getValue().stream().anyMatch(anchorExclusives::contains);
-                if (conflict) {
-                    continue;
-                }
-            }
-
             int[] candVec = vectors.get(candMat);
             float sim = cosineSimilarity(anchorVec, candVec);
 
             if (sim > 0 && sim < maxSim) {
-                result.add(new SynergyItem(candMat, sim * 100));
+                int candTier = defaultTier;
+                int candWeight = calculateCoreWeight(candidate.getValue(), candTier);
+
+                float weightMultiplier = (float) candWeight / defaultBaseWeight;
+                float finalChance = (sim * 100) * weightMultiplier;
+                finalChance = Math.min(finalChance, 100.0f);
+
+                rawCandidates.add(new SynergyItem(candMat, finalChance));
             }
         }
 
-        result.sort((a, b) -> Float.compare(b.getSynweight(), a.getSynweight()));
+        rawCandidates.sort((a, b) -> Float.compare(b.getSynweight(), a.getSynweight()));
 
-        return result.size() > 10 ? result.subList(0, 10) : result;
+        List<SynergyItem> result = new ArrayList<>();
+        Set<String> activeExclusives = new HashSet<>();
+
+        for (String tag : anchorTags) {
+            if (singleOnlyTags.contains(tag)) {
+                activeExclusives.add(tag);
+            }
+        }
+
+        for (SynergyItem cand : rawCandidates) {
+            List<String> candTags = allItems.get(cand.getMaterial());
+            boolean conflict = false;
+
+            for (String tag : candTags) {
+                if (activeExclusives.contains(tag)) {
+                    conflict = true;
+                    break;
+                }
+            }
+
+            if (!conflict) {
+                result.add(cand);
+                for (String tag : candTags) {
+                    if (singleOnlyTags.contains(tag)) {
+                        activeExclusives.add(tag);
+                    }
+                }
+                if (result.size() >= topNum) {
+                    break;
+                }
+            }
+        }
+
+        return result;
     }
 
     private int calculateCoreWeight(List<String> tags, int tier) {
@@ -206,6 +229,10 @@ public class AdvancedLootDatabase {
 
     public CoreItem get(Material material) {
         return cache.get(material);
+    }
+
+    public Set<Material> getLoadedMaterials() {
+        return cache.keySet();
     }
 
     public Material getRandomCore() {

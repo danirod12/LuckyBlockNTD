@@ -1,9 +1,11 @@
 package com.github.danirod12.luckyblock.engine;
 
+import com.github.danirod12.luckyblock.LBMain;
 import com.github.danirod12.luckyblock.api.LuckyBlockAPI;
 import com.github.danirod12.luckyblock.api.customitem.CustomItemFactory;
 import com.github.danirod12.luckyblock.api.event.LuckyDropEvent;
 import com.github.danirod12.luckyblock.api.model.*;
+import com.github.danirod12.luckyblock.api.model.random.Amount;
 import com.github.danirod12.luckyblock.api.provider.LuckyEngineProvider;
 import com.github.danirod12.luckyblock.api.provider.LuckyRecipeProvider;
 import com.github.danirod12.luckyblock.api.setup.AnimationSetup;
@@ -14,10 +16,10 @@ import com.github.danirod12.luckyblock.api.util.LogChannel;
 import com.github.danirod12.luckyblock.api.util.Pair;
 import com.github.danirod12.luckyblock.engine.drop.EntityDrop;
 import com.github.danirod12.luckyblock.engine.drop.ItemDrop;
-import com.github.danirod12.luckyblock.engine.generator.BaseDataGenerator;
-import com.github.danirod12.luckyblock.engine.generator.GenerationFactory;
+import com.github.danirod12.luckyblock.engine.generator.*;
 import com.github.danirod12.luckyblock.engine.loader.ConvertFactory;
 import com.github.danirod12.luckyblock.engine.loader.ItemBagLoader;
+import com.github.danirod12.luckyblock.engine.model.ItemsBagImpl;
 import com.github.danirod12.luckyblock.engine.model.LuckyBlockHolder;
 import com.github.danirod12.luckyblock.nms.VersionControlFactory;
 import com.github.danirod12.luckyblock.nms.material.IMat;
@@ -40,6 +42,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.*;
@@ -125,9 +128,22 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
             config.createFile();
             config.load();
 
-            // TODO rework
-            GenerationFactory.generateBaseData(config, key);
-            ItemsBag entries = GenerationFactory.generateLuckyEntries(150, 200);
+            ItemsBagImpl entries = new ItemsBagImpl();
+            entries.setAmount(Amount.of("1"));
+            int entriesCount = ThreadLocalRandom.current().nextInt(150, 200);
+            AdvancedLootDatabase db = JavaPlugin.getPlugin(LBMain.class).getAdvancedLootDatabase();
+
+            for (int i = 0; i < entriesCount; i++) {
+                WeightListAmount<LuckyDrop> entry =
+                        AdvancedLootGenerator.builder(this, db)
+                                .minItems(2)
+                                .maxItems(3)
+                                .mode(SynergyMode.STRICT)
+                                .build()
+                                .generate();
+
+                entries.add(entry);
+            }
 
             this.itemBagLoader.write(config, entries);
             config.save();
