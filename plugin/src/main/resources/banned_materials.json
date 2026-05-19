@@ -10,6 +10,7 @@
   "STRUCTURE_BLOCK",
   "STRUCTURE_VOID",
   "WATER",
+  "LAVA",
   "JIGSAW",
   "NETHER_PORTAL",
   "END_PORTAL",
@@ -17,5 +18,18 @@
   "VOID_AIR",
   "*_SPAWN_EGG",
   "INFESTED_*",
-  "POTTED_*"
+  "POTTED_*",
+  "CAVE_AIR",
+  "*_STEM",
+  "*_CANDLE_CAKE",
+  "*_WALL_SIGN",
+  "*_WALL_HANGING_SIGN",
+  "*_WALL_HEAD",
+  "BEETROOTS",
+  "CARROTS",
+  "POTATOES",
+  "*_CROP",
+  "FROSTED_ICE",
+  "POWDER_SNOW",
+  "*_WALL_FAN"
 ]
