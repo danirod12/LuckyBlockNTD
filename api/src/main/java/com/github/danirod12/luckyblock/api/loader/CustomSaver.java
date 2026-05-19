@@ -2,6 +2,7 @@ package com.github.danirod12.luckyblock.api.loader;
 
 import com.github.danirod12.luckyblock.api.model.LuckyDrop;
 
+@Deprecated
 public interface CustomSaver {
 
     static LuckyDrop load(String description) {

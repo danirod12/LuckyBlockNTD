@@ -192,24 +192,24 @@ public class LBMain extends LBMainProvider {
         // Schematics support via WorldEdit
         if (Hook.WorldEdit.isEnabled()) {
             logChannel.debug("Loading WorldEdit provider...");
-            this.worldEditProvider = new WorldEditProvider(this, new File(getDataFolder(), "schematics"), getLogger());
+            this.worldEditProvider = new WorldEditProvider(this, this.luckyBlockEngine);
 
             if (!this.worldEditProvider.isPlatformAvailable()) {
                 Hook.WorldEdit.disable("unsupported version");
             } else {
-                boolean legacy = this.versionControl.isLegacy();
-                File schematicsFolder = this.worldEditProvider.getFolder();
-                if (!this.worldEditProvider.getFolder().exists()) {
-                    schematicsFolder.mkdirs();
-                    new Config(this, "configuration.schematics." + this.versionControl.getMat().build(),
-                            schematicsFolder, "cage_lava.schem" + (legacy ? "atic" : "")).copy(false);
-                    new Config(this, "configuration.schematics.main", schematicsFolder,
-                            "bedrock_problem.schematic").copy(false);
-                    if (!legacy) {
-                        new Config(this, "configuration.schematics.main", schematicsFolder,
-                                "small_temple.schem").copy(false);
-                    }
-                }
+//                boolean legacy = this.versionControl.isLegacy();
+//                File schematicsFolder = this.worldEditProvider.getFolder();
+//                if (!this.worldEditProvider.getFolder().exists()) {
+//                    schematicsFolder.mkdirs();
+//                    new Config(this, "configuration.schematics." + this.versionControl.getMat().build(),
+//                            schematicsFolder, "cage_lava.schem" + (legacy ? "atic" : "")).copy(false);
+//                    new Config(this, "configuration.schematics.main", schematicsFolder,
+//                            "bedrock_problem.schematic").copy(false);
+//                    if (!legacy) {
+//                        new Config(this, "configuration.schematics.main", schematicsFolder,
+//                                "small_temple.schem").copy(false);
+//                    }
+//                } TODO copy all schematics into folder
             }
         }
 

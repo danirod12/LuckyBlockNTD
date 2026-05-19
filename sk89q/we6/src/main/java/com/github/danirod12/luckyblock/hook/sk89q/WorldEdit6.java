@@ -1,6 +1,5 @@
 package com.github.danirod12.luckyblock.hook.sk89q;
 
-import com.github.danirod12.luckyblock.api.LuckyBlockAPI;
 import com.github.danirod12.luckyblock.api.model.IWorldEdit;
 import com.sk89q.worldedit.CuboidClipboard;
 import com.sk89q.worldedit.EditSession;
@@ -17,7 +16,6 @@ import org.bukkit.block.Block;
 
 import java.io.File;
 import java.util.List;
-import java.util.logging.Level;
 
 @SuppressWarnings("deprecation")
 public class WorldEdit6 implements IWorldEdit {
@@ -25,7 +23,7 @@ public class WorldEdit6 implements IWorldEdit {
     private final WorldEditPlugin worldedit = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 
     @Override
-    public void paste(File file, Block obj, boolean a, boolean air, List<String> blacklist) {
+    public void paste(File file, Block obj, boolean air, List<String> blacklist) {
 
         try {
             CuboidClipboard clipboard = MCEditSchematicFormat.getFormat(file).load(file);
@@ -43,9 +41,10 @@ public class WorldEdit6 implements IWorldEdit {
                 session.setMask(Masks.negate(blockMask));
             }
             clipboard.paste(session, new Vector(obj.getX(), obj.getY(), obj.getZ()), !air);
+
+            // TODO add entity clean-up & sign resolve
         } catch (Exception e) {
             e.printStackTrace();
-            LuckyBlockAPI.getLogger().log(Level.SEVERE, "Something went wrong");
         }
     }
 

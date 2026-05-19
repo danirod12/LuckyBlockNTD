@@ -1,42 +1,38 @@
 package com.github.danirod12.luckyblock.hook.sk89q;
 
 import com.github.danirod12.luckyblock.api.model.IWorldEdit;
+import com.github.danirod12.luckyblock.api.provider.LuckyEngineProvider;
 import com.github.danirod12.luckyblock.api.util.JavaUtils;
-import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class WorldEditProvider {
 
     private final Plugin plugin;
-    @Getter
-    private final File folder;
     private final IWorldEdit worldedit;
-    private final boolean fawe;
+    private final boolean fastAsyncWorldEdit;
 
-    public WorldEditProvider(Plugin plugin, File folder, Logger logger) {
+    public WorldEditProvider(Plugin plugin, LuckyEngineProvider provider) {
         this.plugin = plugin;
-        this.folder = folder;
         if (Bukkit.getPluginManager().isPluginEnabled("WorldEdit")
                 || Bukkit.getPluginManager().isPluginEnabled("FastAsyncWorldEdit")) {
-            fawe = JavaUtils.getClass("com.fastasyncworldedit.bukkit.FaweBukkit") != null
+            fastAsyncWorldEdit = JavaUtils.getClass("com.fastasyncworldedit.bukkit.FaweBukkit") != null
                     || JavaUtils.getClass("com.boydti.fawe.Fawe") != null;
-            String pluginName = fawe ? "FastAsyncWorldEdit" : "WorldEdit";
+            String pluginName = fastAsyncWorldEdit ? "FastAsyncWorldEdit" : "WorldEdit";
             if (JavaUtils.getClass("com.sk89q.worldedit.math.Vector2") != null) {
-                worldedit = new WorldEdit7();
-                logger.log(Level.INFO, "Using " + pluginName + " v6 (1.8-1.12) adapter");
+                worldedit = new WorldEdit7(this.plugin, provider);
+                Bukkit.getLogger().log(Level.INFO, "[ntdLuckyBlock] Using " + pluginName + " v6 (1.8-1.12) adapter");
             } else {
                 worldedit = new WorldEdit6();
-                logger.log(Level.INFO, "Using " + pluginName + " v7 (1.13+) adapter");
+                Bukkit.getLogger().log(Level.INFO, "[ntdLuckyBlock] Using " + pluginName + " v7 (1.13+) adapter");
             }
         } else {
             worldedit = null;
-            fawe = false;
+            fastAsyncWorldEdit = false;
         }
     }
 
@@ -44,19 +40,15 @@ public class WorldEditProvider {
         return worldedit != null;
     }
 
-    public IWorldEdit getPlatform() {
-        return worldedit;
-    }
-
     public void paste(File file, Block target, boolean ignoreAir) {
         if (worldedit == null) {
             return;
         }
-        if (fawe) {
+        if (fastAsyncWorldEdit) {
             Bukkit.getScheduler().runTaskLater(plugin,
-                    () -> worldedit.paste(file, target, true, ignoreAir), 1);
+                    () -> worldedit.paste(file, target, /*true, */ignoreAir), 1);
         } else {
-            worldedit.paste(file, target, false, ignoreAir);
+            worldedit.paste(file, target, /*false, */ignoreAir);
         }
     }
 }

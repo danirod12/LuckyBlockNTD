@@ -1,7 +1,9 @@
 package com.github.danirod12.luckyblock.hook.sk89q;
 
-import com.github.danirod12.luckyblock.api.LuckyBlockAPI;
 import com.github.danirod12.luckyblock.api.model.IWorldEdit;
+import com.github.danirod12.luckyblock.api.model.LuckyBlockKey;
+import com.github.danirod12.luckyblock.api.provider.LuckyEngineProvider;
+import com.github.danirod12.luckyblock.api.util.Pair;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
@@ -23,60 +25,44 @@ import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import lombok.AllArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+@AllArgsConstructor
 public class WorldEdit7 implements IWorldEdit {
+    private final Plugin plugin;
+    private final LuckyEngineProvider provider;
 
-    private static final Method RESOLVE_SIGN, DESTROY_ENTITY;
-
-    static {
-        Method method0, method1;
-        try {
-            Class<?> clazz = Class.forName("com.github.danirod12.luckyblock.api.LuckyBlockAPI");
-            method0 = clazz.getDeclaredMethod("resolveSign", Block.class, boolean.class);
-            method1 = clazz.getDeclaredMethod("destroyEntity", Entity[].class, boolean.class);
-        } catch (Throwable e) {
-            e.printStackTrace();
-            method0 = method1 = null;
-        }
-
-        RESOLVE_SIGN = method0;
-        DESTROY_ENTITY = method1;
-    }
-
-    public void paste(File file, Block obj, boolean a, boolean ignoreAir, List<String> blacklist) {
-
+    public void paste(File file, Block obj, boolean ignoreAir, List<String> blacklist) {
         Clipboard clipboard = null;
-
         ClipboardFormat format = ClipboardFormats.findByFile(file);
         try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
             clipboard = reader.read();
         } catch (Exception e) {
             e.printStackTrace();
-            LuckyBlockAPI.getLogger().log(Level.SEVERE,
-                    "Schematic " + file.getPath() + " not found or something went wrong");
         }
 
         if (clipboard == null) {
-            LuckyBlockAPI.getLogger().log(Level.SEVERE,
+            this.plugin.getLogger().log(Level.SEVERE,
                     "Schematic " + file.getPath() + " not found or something went wrong");
             return;
         }
 
         try (EditSession editSession = createEditSession(obj.getWorld())) {
-            if (blacklist.size() > 0) {
+            if (!blacklist.isEmpty()) {
                 BlockTypeMask blockMask = new BlockTypeMask(editSession);
                 for (String block : blacklist) {
                     BlockType type = BlockTypes.get(block.toLowerCase());
@@ -92,7 +78,7 @@ public class WorldEdit7 implements IWorldEdit {
                     .ignoreAirBlocks(ignoreAir)
                     .to(BukkitAdapter.asBlockVector(obj.getLocation()))
                     .build();
-            Operations.complete(operation);
+            Operations.complete(operation); // TODO pass here something about FAWE and activate physics? To be checked
 
             if (clipboard instanceof BlockArrayClipboard) {
                 Region region = clipboard.getRegion();
@@ -102,17 +88,15 @@ public class WorldEdit7 implements IWorldEdit {
                 Vector3 max = realTo.add(holder.getTransform().apply(region.getMaximumPoint()
                         .subtract(region.getMinimumPoint()).toVector3()));
 
-                Bukkit.getScheduler().runTaskLater(LuckyBlockAPI.getInstance(),
-                        () -> formatPastedSchematic(obj.getWorld(),
-                                new CuboidRegion(realTo.toBlockPoint(), max.toBlockPoint()), a), 1);
+                Bukkit.getScheduler().runTaskLater(this.plugin, () -> formatPastedSchematic(obj.getWorld(),
+                        new CuboidRegion(realTo.toBlockPoint(), max.toBlockPoint())), 1);
             }
         } catch (WorldEditException e) {
             e.printStackTrace();
-            LuckyBlockAPI.getLogger().log(Level.SEVERE, "Something went wrong");
         }
     }
 
-    private void formatPastedSchematic(World world, CuboidRegion region, boolean a) {
+    private void formatPastedSchematic(World world, CuboidRegion region) {
         try {
             List<Entity> list = new ArrayList<>();
 
@@ -129,11 +113,13 @@ public class WorldEdit7 implements IWorldEdit {
                     }
                 }
             }
-            DESTROY_ENTITY.invoke(null, list.toArray(new Entity[0]), true);
+            for (Pair<LuckyBlockKey, ArmorStand> entity : this.provider.searchByEntities(list)) {
+                entity.getValue().remove();
+            }
 
             for (BlockVector3 vector : region) {
                 Block block = world.getBlockAt(vector.getX(), vector.getY(), vector.getZ());
-                RESOLVE_SIGN.invoke(null, block, a);
+                this.provider.resolveSign(block);
             }
         } catch (Exception exception) {
             exception.printStackTrace();
