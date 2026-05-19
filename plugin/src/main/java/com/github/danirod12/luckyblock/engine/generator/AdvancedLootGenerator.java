@@ -40,49 +40,37 @@ public final class AdvancedLootGenerator {
         WeightListAmount<LuckyDrop> entry = new WeightListAmount<>();
 
         Material coreItem = (forcedCore != null) ? forcedCore : db.getRandomCore();
-        entry.add(new ItemDrop(new ItemStack(coreItem, calculateAmount(coreItem))));
 
         org.bukkit.Bukkit.getLogger().info("[DEBUG] Starting new drop");
         org.bukkit.Bukkit.getLogger().info("[DEBUG] Core item: " + coreItem.name());
 
+        entry.add(new ItemDrop(new ItemStack(coreItem, calculateAmount(coreItem))), 100.0, null);
+
         CoreItem coreData = db.get(coreItem);
         if (coreData == null) {
-
             org.bukkit.Bukkit.getLogger().info("[DEBUG] Error - no core item");
             return entry;
         }
 
         if (coreData.getSynergies() == null || coreData.getSynergies().isEmpty()) {
-            org.bukkit.Bukkit.getLogger().info("[DEBUG] Item " +
-                    coreItem.name() + " has no synergies");
+            org.bukkit.Bukkit.getLogger().info("[DEBUG] Item " + coreItem.name() + " has no synergies");
             return entry;
         }
 
-        int addedCount = 1;
         int limit = ThreadLocalRandom.current().nextInt(minItems, maxItems + 1);
-        org.bukkit.Bukkit.getLogger().info("[DEBUG] Bundle limit: " + limit);
+        org.bukkit.Bukkit.getLogger().info("[DEBUG] Bundle mode: " + limit);
 
         for (SynergyItem synItem : coreData.getSynergies()) {
-            if (addedCount >= limit) {
-                org.bukkit.Bukkit.getLogger().info("[DEBUG] Bundle limit reached");
-                break;
-            }
+            int amount = calculateAmount(synItem.getMaterial());
+            double chance = (double) synItem.getSynweight();
 
-            float roll = ThreadLocalRandom.current().nextFloat() * 100;
-            org.bukkit.Bukkit.getLogger().info("[DEBUG] Synergy check: "
-                    + synItem.getMaterial().name() + " | Chance: " + synItem.getSynweight() + "% | Rolled: " + roll);
+            entry.add(new ItemDrop(new ItemStack(synItem.getMaterial(), amount)), chance, null);
 
-            if (roll <= synItem.getSynweight()) {
-                int amount = calculateAmount(synItem.getMaterial());
-                entry.add(new ItemDrop(new ItemStack(synItem.getMaterial(), amount)));
-                addedCount++;
-                org.bukkit.Bukkit.getLogger().info("[DEBUG]   -> ADDED (" + amount + " pcs.)");
-            } else {
-                org.bukkit.Bukkit.getLogger().info("[DEBUG]   -> NOT ADDED");
-            }
+            org.bukkit.Bukkit.getLogger().info("[DEBUG] Synergy registered: "
+                    + synItem.getMaterial().name() + " | Chance: " + chance + "%");
         }
 
-        entry.setAmount(new Amount(addedCount));
+        entry.setAmount(Amount.of(String.valueOf(limit)));
 
         return entry;
     }
