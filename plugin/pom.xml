@@ -37,6 +37,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.github.cryptomorin</groupId>
+            <artifactId>XSeries</artifactId>
+            <version>13.7.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
             <version>1.20.2-R0.1-SNAPSHOT</version>
@@ -229,6 +234,7 @@
                         </option>
                         <option>-keep class com.github.danirod12.luckyblock.util.Templates { *; }</option>
                         <option>-keep class com.github.danirod12.luckyblock.util.bstats.** { *; }</option>
+                        <option>-keep class com.github.danirod12.luckyblock.util.xseries.** { *; }</option>
                         <option>-keep class com.github.danirod12.luckyblock.util.MinecraftVersion$NMSVersion { *; }
                         </option>
                         <option>-keep class com.github.danirod12.luckyblock.util.* { &lt;methods&gt;; }</option>

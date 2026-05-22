@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import org.bukkit.Material;
+import com.cryptomorin.xseries.XMaterial;
 
 import java.io.Reader;
 import java.lang.reflect.Type;
@@ -15,19 +15,17 @@ import java.util.regex.Pattern;
 public class AdvancedLootDatabase {
     private int defaultBaseWeight = 10;
     private int defaultTier = 1;
-
-    private final Map<Material, CoreItem> cache = new HashMap<>();
-
-    private final NavigableMap<Integer, Material> weightedCores = new TreeMap<>();
+    private final Map<XMaterial, CoreItem> cache = new HashMap<>();
+    private final NavigableMap<Integer, XMaterial> weightedCores = new TreeMap<>();
     private int totalCoreWeight = 0;
 
     private final List<String> singleOnlyTags = new ArrayList<>();
     private final Set<String> allUniqueTags = new HashSet<>();
-    private final Set<Material> bannedItems = new HashSet<>();
+    private final Set<XMaterial> bannedItems = new HashSet<>();
     private final Map<String, Integer> tagModifiers = new HashMap<>();
     private final Map<Integer, Double> tierMultipliers = new HashMap<>();
 
-    private final Map<Material, int[]> vectors = new HashMap<>();
+    private final Map<XMaterial, int[]> vectors = new HashMap<>();
 
     public void load(Reader reader) {
         Gson gson = new Gson();
@@ -46,20 +44,19 @@ public class AdvancedLootDatabase {
         Type itemsType = new TypeToken<Map<String, List<String>>>() { }.getType();
         Map<String, List<String>> rawItems = gson.fromJson(root.get("items"), itemsType);
 
-        Map<Material, List<String>> parsedItems = new HashMap<>();
+        Map<XMaterial, List<String>> parsedItems = new HashMap<>();
 
         for (Map.Entry<String, List<String>> entry : rawItems.entrySet()) {
-            Material mat = Material.matchMaterial(entry.getKey());
-            if (mat != null && !bannedItems.contains(mat)) {
-                parsedItems.put(mat, entry.getValue());
+            Optional<XMaterial> xMat = XMaterial.matchXMaterial(entry.getKey());
+            if (xMat.isPresent() && !bannedItems.contains(xMat.get())) {
+                parsedItems.put(xMat.get(), entry.getValue());
                 allUniqueTags.addAll(entry.getValue());
             }
         }
 
         List<String> tagsIndex = new ArrayList<>(allUniqueTags);
 
-        // Vectors for cos_sim
-        for (Map.Entry<Material, List<String>> entry : parsedItems.entrySet()) {
+        for (Map.Entry<XMaterial, List<String>> entry : parsedItems.entrySet()) {
             int[] vec = new int[tagsIndex.size()];
             for (int i = 0; i < tagsIndex.size(); i++) {
                 if (entry.getValue().contains(tagsIndex.get(i))) {
@@ -69,8 +66,8 @@ public class AdvancedLootDatabase {
             vectors.put(entry.getKey(), vec);
         }
 
-        for (Material coreMat : parsedItems.keySet()) {
-            List<SynergyItem> synergies = calculateSynergiesFor(coreMat, parsedItems, 0.7f, 10); //TODO
+        for (XMaterial coreMat : parsedItems.keySet()) {
+            List<SynergyItem> synergies = calculateSynergiesFor(coreMat, parsedItems, 0.7f, 10);
 
             int itemTier = defaultTier; //TODO(zhabka_zhaba): Proper JSON tiers + parsing
 
@@ -96,16 +93,14 @@ public class AdvancedLootDatabase {
                     String regex = "^" + patternStr.replace("*", ".*") + "$";
                     Pattern pattern = Pattern.compile(regex);
 
-                    for (Material mat : Material.values()) {
+                    for (XMaterial mat : XMaterial.values()) {
                         if (pattern.matcher(mat.name()).matches()) {
                             bannedItems.add(mat);
                         }
                     }
                 } else {
-                    Material mat = Material.matchMaterial(patternStr);
-                    if (mat != null) {
-                        bannedItems.add(mat);
-                    }
+                    Optional<XMaterial> mat = XMaterial.matchXMaterial(patternStr);
+                    mat.ifPresent(bannedItems::add);
                 }
             }
         }
@@ -136,15 +131,15 @@ public class AdvancedLootDatabase {
         }
     }
 
-    private List<SynergyItem> calculateSynergiesFor(Material anchor, Map<Material,
+    private List<SynergyItem> calculateSynergiesFor(XMaterial anchor, Map<XMaterial,
             List<String>> allItems, float maxSim, int topNum) {
 
         int[] anchorVec = vectors.get(anchor);
         List<String> anchorTags = allItems.get(anchor);
         List<SynergyItem> rawCandidates = new ArrayList<>();
 
-        for (Map.Entry<Material, List<String>> candidate : allItems.entrySet()) {
-            Material candMat = candidate.getKey();
+        for (Map.Entry<XMaterial, List<String>> candidate : allItems.entrySet()) {
+            XMaterial candMat = candidate.getKey();
             if (candMat == anchor) {
                 continue;
             }
@@ -227,17 +222,17 @@ public class AdvancedLootDatabase {
         return (float) (dotProduct / (Math.sqrt(mag1) * Math.sqrt(mag2)));
     }
 
-    public CoreItem get(Material material) {
+    public CoreItem get(XMaterial material) {
         return cache.get(material);
     }
 
-    public Set<Material> getLoadedMaterials() {
+    public Set<XMaterial> getLoadedMaterials() {
         return cache.keySet();
     }
 
-    public Material getRandomCore() {
+    public XMaterial getRandomCore() {
         if (weightedCores.isEmpty()) {
-            return Material.CARROT;
+            return XMaterial.CARROT;
         }
         int roll = ThreadLocalRandom.current().nextInt(totalCoreWeight) + 1;
         return weightedCores.ceilingEntry(roll).getValue();

@@ -16,6 +16,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import com.cryptomorin.xseries.XMaterial;
 
 import java.io.File;
 import java.util.Arrays;
@@ -62,41 +63,74 @@ public final class AdvancedLootGenerator {
     }
 
     public WeightListAmount<LuckyDrop> generate() {
-        return generateLuckyEntry();
+        WeightListAmount<LuckyDrop> entry = generateLuckyEntry();
+        int attempts = 0;
+
+        while (entry.isEmpty() && attempts < 15) {
+            entry = generateLuckyEntry();
+            attempts++;
+        }
+
+        if (entry.isEmpty()) {
+            entry.add(new ItemDrop(new ItemStack(Material.STONE)), 100.0, null);
+            entry.setAmount(Amount.of("1"));
+        }
+
+        return entry;
     }
 
     private WeightListAmount<LuckyDrop> generateLuckyEntry() {
         WeightListAmount<LuckyDrop> entry = new WeightListAmount<>();
 
-        Material coreItem = (forcedCore != null) ? forcedCore : db.getRandomCore();
+        XMaterial coreItemX = (forcedCore != null) ? XMaterial.matchXMaterial(forcedCore) : db.getRandomCore();
 
-//        org.bukkit.Bukkit.getLogger().info("[DEBUG] Starting new drop");
-//        org.bukkit.Bukkit.getLogger().info("[DEBUG] Core item: " + coreItem.name());
+        ItemStack coreStack = coreItemX.parseItem();
+        if (coreStack == null) {
+            org.bukkit.Bukkit.getLogger().info("[DEBUG] XMaterial failed to parse: " + coreItemX.name());
+            return entry;
+        }
 
-        entry.add(new ItemDrop(new ItemStack(coreItem, calculateAmount(coreItem))), 100.0, null);
+        coreStack.setAmount(calculateAmount(coreStack));
 
-        CoreItem coreData = db.get(coreItem);
+        try {
+            de.tr7zw.nbtapi.NBT.itemStackToNBT(coreStack);
+        } catch (Exception e) {
+            org.bukkit.Bukkit.getLogger().info("[DEBUG] Core item is unserializable on this version: "
+                    + coreItemX.name());
+            return entry;
+        }
+
+        entry.add(new ItemDrop(coreStack), 100.0, null);
+
+        CoreItem coreData = db.get(coreItemX);
         if (coreData == null) {
-            org.bukkit.Bukkit.getLogger().info("[DEBUG] Error - no core item");
             return entry;
         }
 
         if (coreData.getSynergies() == null || coreData.getSynergies().isEmpty()) {
-//            org.bukkit.Bukkit.getLogger().info("[DEBUG] Item " + coreItem.name() + " has no synergies");
             return entry;
         }
 
         int limit = ThreadLocalRandom.current().nextInt(minItems, maxItems + 1);
-//        org.bukkit.Bukkit.getLogger().info("[DEBUG] Bundle mode: " + limit);
 
         for (SynergyItem synItem : coreData.getSynergies()) {
-            int amount = calculateAmount(synItem.getMaterial());
+            ItemStack synStack = synItem.getMaterial().parseItem();
+            if (synStack == null) {
+                continue;
+            }
+
+            synStack.setAmount(calculateAmount(synStack));
+
+            try {
+                de.tr7zw.nbtapi.NBT.itemStackToNBT(synStack);
+            } catch (Exception e) {
+                org.bukkit.Bukkit.getLogger().info("[DEBUG] Synergy skipped (unserializable): "
+                        + synItem.getMaterial().name());
+                continue;
+            }
+
             double chance = (double) synItem.getSynweight();
-
-            entry.add(new ItemDrop(new ItemStack(synItem.getMaterial(), amount)), chance, null);
-
-//            org.bukkit.Bukkit.getLogger().info("[DEBUG] Synergy registered: "
-//                    + synItem.getMaterial().name() + " | Chance: " + chance + "%");
+            entry.add(new ItemDrop(synStack), chance, null);
         }
 
         if (ThreadLocalRandom.current().nextDouble() < 0.1) { // TODO шансы в json??
@@ -149,7 +183,10 @@ public final class AdvancedLootGenerator {
         }
     }
 
-    private int calculateAmount(Material material) {
+
+    private int calculateAmount(ItemStack stack) {
+        Material material = stack.getType();
+
         if (!isItemSafe(material)) {
             return 1;
         }
