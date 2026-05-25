@@ -4,10 +4,10 @@ import com.github.danirod12.luckyblock.api.LuckyBlockAPI;
 import com.github.danirod12.luckyblock.api.event.CustomItemAddedEvent;
 import com.github.danirod12.luckyblock.api.event.CustomItemFactoryReloadEvent;
 import com.github.danirod12.luckyblock.api.util.Config;
-import com.github.danirod12.luckyblock.nms.ItemTag;
 import com.github.danirod12.luckyblock.nms.VersionControlFactory;
 import com.github.danirod12.luckyblock.nms.material.IMat;
 import com.github.danirod12.luckyblock.nms.material.IMat.Mat;
+import de.tr7zw.nbtapi.NBT;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -72,17 +72,19 @@ public class CustomItemFactory {
     }
 
     public static String parseValue(ItemStack item, String tagName) {
-        return getFactory().getValue(item, tagName);
+        //TODO wrapper
+        if (item == null) {
+            return null;
+        }
+        if (!NBT.get(item, nbt -> (Boolean) nbt.hasTag(tagName))) {
+            return null;
+        }
+        return NBT.get(item, nbt -> (String) nbt.getString(tagName));
     }
 
     public static BekkerItemStack fetchCustomItem(ItemStack item) {
-        ItemTag adapter = getFactory().getItemTagAdapter();
-        final Object tag = adapter.getTag(adapter.asNMSCopy(item));
-        if (tag == null) {
-            return null;
-        }
-
-        final String identifier = adapter.getTagString(tag, CustomItemFactory.TAG_IDENTIFIER_NAME);
+        //TODO wrapper
+        String identifier = parseValue(item, CustomItemFactory.TAG_IDENTIFIER_NAME);
         if (identifier == null) {
             return null;
         }

@@ -1,6 +1,6 @@
 package com.github.danirod12.luckyblock.api.model;
 
-import com.github.danirod12.luckyblock.api.LuckyBlockAPI;
+import de.tr7zw.nbtapi.NBT;
 import lombok.Getter;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -29,7 +29,10 @@ public class Identifier {
     }
 
     public ItemStack apply(ItemStack origin) {
-        return LuckyBlockAPI.insertTag(origin, this);
+        NBT.modify(origin, nbt -> {
+            nbt.setString(this.tagName, this.tagValue);
+        });
+        return origin;
     }
 
     @Override
@@ -55,7 +58,10 @@ public class Identifier {
     }
 
     public boolean isItem(ItemStack stack) {
-        return LuckyBlockAPI.checkTag(stack, this, null);
+        String foundValue = NBT.get(stack, nbt -> {
+            return nbt.getString(this.tagName);
+        });
+        return this.tagValue.equalsIgnoreCase(foundValue);
     }
 
     public boolean isItem(Identifier identifier) {
