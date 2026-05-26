@@ -27,6 +27,7 @@ import com.github.danirod12.luckyblock.recipe.LuckyRecipeProviderImpl;
 import com.github.danirod12.luckyblock.util.Misc;
 import com.github.danirod12.luckyblock.util.config.ConfigHolder;
 import com.github.danirod12.luckyblock.util.random.WeightListAmount;
+import de.tr7zw.nbtapi.NBT;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -228,8 +229,15 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
 
     @Override
     public Optional<LuckyBlockKey> parseLuckyBlock(ItemStack stack) {
-        String type = this.versionControl.getValue(stack, CustomItemFactory.TAG_LUCKYBLOCK_TYPE);
-        if (type == null) {
+        if (stack == null || stack.getType().name().contains("AIR")) {
+            return Optional.empty();
+        }
+
+        String type = NBT.get(stack, nbt -> {
+            return nbt.getString(CustomItemFactory.TAG_LUCKYBLOCK_TYPE);
+        });
+
+        if (type == null || type.isEmpty()) {
             return Optional.empty();
         }
         return Optional.of(get(type));

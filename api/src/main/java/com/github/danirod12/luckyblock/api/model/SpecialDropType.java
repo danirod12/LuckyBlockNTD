@@ -7,7 +7,13 @@ public enum SpecialDropType {
     DIAMOND_COLUMN(-1),
     TNT_COLUMN(5),
     TNT_EXPLOSION(20),
-    EXPERIENCE_EXPLOSION(45);
+    EXPERIENCE_EXPLOSION(45),
+    JEB(5),
+    CREEPY_MUSIC(0),
+    CHICKEN_RAIN(15),
+    PARANOIA(0),
+    ANNOYING_BABY(3),
+    HOTBAR_SWAP(0);
 
     private final int defaultValue;
 

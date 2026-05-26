@@ -170,7 +170,7 @@ public final class AdvancedLootGenerator {
     }
 
     public static LuckyDrop generateSpecial() {
-        switch (ThreadLocalRandom.current().nextInt(6)) {
+        switch (ThreadLocalRandom.current().nextInt(12)) {
             case 0: return new WaterBucketSpecial(SpecialDropType.WATER_BUCKET.defaultValue());
             case 1: return new TntExplosionSpecial(SpecialDropType.TNT_EXPLOSION.defaultValue());
             case 2: return new TntColumnSpecial(SpecialDropType.TNT_COLUMN.defaultValue());
@@ -179,6 +179,12 @@ public final class AdvancedLootGenerator {
                 return new PigSpecial(SpecialDropType.PIG.defaultValue() + amount);
             case 4: return new LightningSpecial(SpecialDropType.LIGHTNING.defaultValue());
             case 5: return new ExperienceExplosionSpecial(SpecialDropType.EXPERIENCE_EXPLOSION.defaultValue());
+            case 6: return new JebSpecial(ThreadLocalRandom.current().nextInt(3, 8));
+            case 7: return new CreepyMusicSpecial();
+            case 8: return new ChickenRainSpecial(ThreadLocalRandom.current().nextInt(10, 20));
+            case 9: return new ParanoiaSpecial();
+            case 10: return new AnnoyingBabySpecial(ThreadLocalRandom.current().nextInt(2, 6));
+            case 11: return new HotbarSwapSpecial();
             default: return null;
         }
     }

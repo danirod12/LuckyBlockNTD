@@ -147,6 +147,18 @@ public class LegacyLoader implements StringLoader {
                         return new TntExplosionSpecial(apply(special, baseData[2]));
                     case TNT_COLUMN:
                         return new TntColumnSpecial(apply(special, baseData[2]));
+                    case JEB:
+                        return new JebSpecial(apply(special, baseData.length > 2 ? baseData[2] : ""));
+                    case CREEPY_MUSIC:
+                        return new CreepyMusicSpecial();
+                    case CHICKEN_RAIN:
+                        return new ChickenRainSpecial(apply(special, baseData.length > 2 ? baseData[2] : ""));
+                    case PARANOIA:
+                        return new ParanoiaSpecial();
+                    case ANNOYING_BABY:
+                        return new AnnoyingBabySpecial(apply(special, baseData.length > 2 ? baseData[2] : ""));
+                    case HOTBAR_SWAP:
+                        return new HotbarSwapSpecial();
                     default:
                         throw new RuntimeException(special.name() + " not implemented");
                 }
@@ -229,6 +241,18 @@ public class LegacyLoader implements StringLoader {
             return "SPECIAL : LIGHTNING : " + ((LightningSpecial) drop).getAmount();
         } else if (drop instanceof ExperienceExplosionSpecial) {
             return "SPECIAL : EXPERIENCE_EXPLOSION : " + ((ExperienceExplosionSpecial) drop).getAmount();
+        } else if (drop instanceof JebSpecial) {
+            return "SPECIAL : JEB : " + ((JebSpecial) drop).getAmount();
+        } else if (drop instanceof CreepyMusicSpecial) {
+            return "SPECIAL : CREEPY_MUSIC";
+        } else if (drop instanceof ChickenRainSpecial) {
+            return "SPECIAL : CHICKEN_RAIN : " + ((ChickenRainSpecial) drop).getAmount();
+        } else if (drop instanceof ParanoiaSpecial) {
+            return "SPECIAL : PARANOIA";
+        } else if (drop instanceof AnnoyingBabySpecial) {
+            return "SPECIAL : ANNOYING_BABY : " + ((AnnoyingBabySpecial) drop).getAmount();
+        } else if (drop instanceof HotbarSwapSpecial) {
+            return "SPECIAL : HOTBAR_SWAP";
         }
         throw new RuntimeException(drop.getClass().getName() + " legacy save logic not implemented");
     }
