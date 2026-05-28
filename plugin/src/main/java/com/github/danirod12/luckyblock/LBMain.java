@@ -152,7 +152,7 @@ public class LBMain extends LBMainProvider {
         advancedLootDatabase = new AdvancedLootDatabase();
 
         try {
-            InputStream weightsIn = getResource("rarity_weights.json");
+            InputStream weightsIn = getResource("generator/rarity_weights.json");
             if (weightsIn != null) {
                 try (Reader r = new InputStreamReader(weightsIn, StandardCharsets.UTF_8)) {
                     advancedLootDatabase.loadWeights(r);
@@ -163,7 +163,7 @@ public class LBMain extends LBMainProvider {
         }
 
         try {
-            InputStream bannedIn = getResource("banned_materials.json");
+            InputStream bannedIn = getResource("generator/banned_materials.json");
             if (bannedIn != null) {
                 try (Reader bannedReader = new InputStreamReader(bannedIn, StandardCharsets.UTF_8)) {
                     advancedLootDatabase.loadBanned(bannedReader);
@@ -174,7 +174,7 @@ public class LBMain extends LBMainProvider {
         }
 
         try {
-            InputStream in = getResource("materials_tagged_v2.json");
+            InputStream in = getResource("generator/materials_tagged_v2.json");
             if (in == null) {
                 logChannel.severe("Could not find materials_tagged_v2.json in plugin resources");
             } else {
