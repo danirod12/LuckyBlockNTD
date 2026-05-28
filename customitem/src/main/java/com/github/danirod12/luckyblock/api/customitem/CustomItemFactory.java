@@ -74,7 +74,7 @@ public class CustomItemFactory {
 
     public static String parseValue(ItemStack item, String tagName) {
         //TODO wrapper
-        if (item == null) {
+        if (item == null || item.getType().name().contains("AIR") || item.getAmount() == 0) {
             return null;
         }
         if (!NBT.get(item, nbt -> (Boolean) nbt.hasTag(tagName))) {
