@@ -5,18 +5,17 @@ import com.github.danirod12.luckyblock.api.util.ISpigotUpdater;
 import com.github.danirod12.luckyblock.command.base.CommandResponse;
 import com.github.danirod12.luckyblock.command.base.LBCommand;
 import com.github.danirod12.luckyblock.util.Templates;
+import de.tr7zw.nbtapi.utils.MinecraftVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 public class VersionCommand extends LBCommand {
 
     private final ISpigotUpdater spigotUpdater;
-    private final String nmsVersion;
 
-    public VersionCommand(ISpigotUpdater spigotUpdater, String nmsVersion) {
+    public VersionCommand(ISpigotUpdater spigotUpdater) {
         super(false, null, "version", "ver", "v", "build", "debug", "about", "info");
         this.spigotUpdater = spigotUpdater;
-        this.nmsVersion = nmsVersion;
     }
 
     @Override
@@ -32,7 +31,8 @@ public class VersionCommand extends LBCommand {
         for (String arg : args) {
             if (arg.equals("-full") || arg.equals("-f")) {
                 // premium download info
-                sender.sendMessage("§8 • §fPlatform - §e" + Bukkit.getVersion() + " §7(" + nmsVersion + ")");
+                sender.sendMessage("§8 • §fPlatform - §e" + Bukkit.getVersion()
+                        + " §7(" + MinecraftVersion.getVersion().getPackageName() + ")");
             }
         }
 

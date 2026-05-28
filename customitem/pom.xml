@@ -37,6 +37,13 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.github.cryptomorin</groupId>
+            <artifactId>XSeries</artifactId>
+            <version>13.7.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
             <version>1.13.2-R0.1-SNAPSHOT</version>
@@ -52,8 +59,8 @@
 
         <dependency>
             <groupId>com.github.danirod12.luckyblock</groupId>
-            <artifactId>luckyblock-nms-base</artifactId>
-            <version>nms</version>
+            <artifactId>api</artifactId>
+            <version>3.0.0-dev</version>
         </dependency>
     </dependencies>
     <build>

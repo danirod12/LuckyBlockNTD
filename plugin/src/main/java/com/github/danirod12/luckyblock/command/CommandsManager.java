@@ -48,8 +48,8 @@ public class CommandsManager implements CommandExecutor, /* TODO TabCompleter, *
 //        register(new ItemInfoCommand());
 
         // Other
-        register(new VersionCommand(provider.getSpigotUpdater(), engine.getVersionControl().getNmsVersion()));
-        register(new ConvertCommand(engine.getConvertFactory()));
+        register(new VersionCommand(provider.getSpigotUpdater()));
+//        register(new ConvertCommand(engine.getConvertFactory()));
         register(new GenerateCommand(engine));
 
         // Redirections

@@ -1,7 +1,6 @@
 package com.github.danirod12.luckyblock.util;
 
 import com.github.danirod12.luckyblock.api.model.PluginVersion;
-import com.github.danirod12.mcversion.MinecraftVersion;
 
 public class Templates {
 
@@ -30,10 +29,5 @@ public class Templates {
                 "§8 > §6LuckyBlock setup §f- " + LUCKYBLOCK_SETUP_URL,
                 "§f=-= §6SUPPORT & BUG REPORTING & FEATURE REQUESTING §f=-="
         };
-    }
-
-    public static boolean hasFeatures(String version) {
-        return new MinecraftVersion.Version(COMPILE_VERSION.split("-")[0])
-                .isAtLeast(new MinecraftVersion.Version(version));
     }
 }

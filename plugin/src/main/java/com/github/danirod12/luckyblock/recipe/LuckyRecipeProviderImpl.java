@@ -6,6 +6,7 @@ import com.github.danirod12.luckyblock.api.setup.ILuckyRecipe;
 import com.github.danirod12.luckyblock.api.setup.ILuckyRecipeItem;
 import com.github.danirod12.luckyblock.engine.LuckyBlockEngine;
 import com.github.danirod12.luckyblock.engine.generator.BaseDataGenerator;
+import de.tr7zw.nbtapi.utils.MinecraftVersion;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -31,7 +32,7 @@ public class LuckyRecipeProviderImpl implements LuckyRecipeProvider {
 
     @Override
     public ILuckyRecipeItem createItem(DyeColor color) {
-        if (engine.getVersionControl().isModern()) {
+        if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1)) {
             return createItem(Material.valueOf(color.name() + "_DYE"));
         }
         return new LuckyRecipeItem(engine, ILuckyRecipeItem.Type.DYE, color);
@@ -46,7 +47,7 @@ public class LuckyRecipeProviderImpl implements LuckyRecipeProvider {
     public ILuckyRecipeItem createItem(ItemStack itemStack) {
         Objects.requireNonNull(itemStack);
         if (itemStack.getType().name().contains("DYE")) {
-            if (engine.getVersionControl().isModern()) {
+            if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1)) {
                 return createItem(itemStack.getType());
             }
             //noinspection all
