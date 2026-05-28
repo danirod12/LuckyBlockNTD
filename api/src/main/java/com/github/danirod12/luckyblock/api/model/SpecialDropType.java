@@ -13,7 +13,13 @@ public enum SpecialDropType {
     CHICKEN_RAIN(15),
     PARANOIA(0),
     ANNOYING_BABY(3),
-    HOTBAR_SWAP(0);
+    HOTBAR_SWAP(0),
+    BLACK_HOLE(0),
+    GHOST_MODE(0),
+    MOON_GRAVITY(0),
+    RANDOM_TELEPORT(0),
+    SLIPPERY_FINGERS(0),
+    TIME_LOOP(0);
 
     private final int defaultValue;
 

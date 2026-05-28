@@ -1,6 +1,7 @@
 package com.github.danirod12.luckyblock.engine.drop.special;
 
 import com.cryptomorin.xseries.XSound;
+import com.cryptomorin.xseries.messages.Titles;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -14,6 +15,8 @@ public class ParanoiaSpecial implements SpecialLuckyDrop {
         if (player == null) {
             return;
         }
+
+        Titles.sendTitle(player, 10, 40, 10, "§4HIDE", "");
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 120, 0));
 

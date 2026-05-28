@@ -159,6 +159,19 @@ public class LegacyLoader implements StringLoader {
                         return new AnnoyingBabySpecial(apply(special, baseData.length > 2 ? baseData[2] : ""));
                     case HOTBAR_SWAP:
                         return new HotbarSwapSpecial();
+                    case BLACK_HOLE:
+                        return new BlackHoleSpecial();
+                    case GHOST_MODE:
+                        return new GhostModeSpecial();
+                    case MOON_GRAVITY:
+                        return new MoonGravitySpecial();
+                    case RANDOM_TELEPORT:
+                        return new RandomTeleportSpecial();
+                    case SLIPPERY_FINGERS:
+                        return new SlipperyFingersSpecial();
+                    case TIME_LOOP:
+                        return new TimeLoopSpecial();
+
                     default:
                         throw new RuntimeException(special.name() + " not implemented");
                 }
@@ -253,6 +266,18 @@ public class LegacyLoader implements StringLoader {
             return "SPECIAL : ANNOYING_BABY : " + ((AnnoyingBabySpecial) drop).getAmount();
         } else if (drop instanceof HotbarSwapSpecial) {
             return "SPECIAL : HOTBAR_SWAP";
+        } else if (drop instanceof BlackHoleSpecial) {
+            return "SPECIAL : BLACK_HOLE";
+        } else if (drop instanceof GhostModeSpecial) {
+            return "SPECIAL : GHOST_MODE";
+        } else if (drop instanceof MoonGravitySpecial) {
+            return "SPECIAL : MOON_GRAVITY";
+        } else if (drop instanceof RandomTeleportSpecial) {
+            return "SPECIAL : RANDOM_TELEPORT";
+        } else if (drop instanceof SlipperyFingersSpecial) {
+            return "SPECIAL : SLIPPERY_FINGERS";
+        } else if (drop instanceof TimeLoopSpecial) {
+            return "SPECIAL : TIME_LOOP";
         }
         throw new RuntimeException(drop.getClass().getName() + " legacy save logic not implemented");
     }
