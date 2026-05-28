@@ -1,8 +1,7 @@
 package com.github.danirod12.luckyblock.variables;
 
-import com.github.danirod12.luckyblock.api.LuckyBlockAPI;
-import com.github.danirod12.luckyblock.api.provider.VersionControl;
 import com.github.danirod12.luckyblock.util.Misc;
+import com.github.danirod12.luckyblock.util.PlayerHeadUtils;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -28,14 +27,14 @@ public enum PlayerHead {
         this.url = "http://textures.minecraft.net/texture/" + url;
     }
 
-    public static void loadAll(VersionControl versionControl) {
+    public static void loadAll() {
         for (PlayerHead value : PlayerHead.values()) {
-            value.loadHead(versionControl);
+            value.loadHead();
         }
     }
 
-    public void loadHead(VersionControl versionControl) {
-        stack = versionControl.getPlayerHead(url, "name", new ArrayList<>(), null);
+    public void loadHead() {
+        stack = PlayerHeadUtils.getPlayerHead(url, "name", new ArrayList<>(), null);
     }
 
     public String getURL() {
@@ -44,7 +43,7 @@ public enum PlayerHead {
 
     public ItemStack getHead(String name, List<String> lore) {
         if (stack == null) {
-            loadHead(LuckyBlockAPI.getLuckyEngineProvider().getVersionControl());
+            loadHead();
         }
         ItemStack item = stack.clone();
 

@@ -20,7 +20,6 @@ import com.github.danirod12.luckyblock.hook.thebusybiscuit.SlimeFunListener;
 import com.github.danirod12.luckyblock.listener.CoreListener;
 import com.github.danirod12.luckyblock.listener.CustomItemListener;
 import com.github.danirod12.luckyblock.listener.EntityLoadListener;
-import com.github.danirod12.luckyblock.nms.VersionControlFactory;
 import com.github.danirod12.luckyblock.recipe.CraftListener;
 import com.github.danirod12.luckyblock.util.Misc;
 import com.github.danirod12.luckyblock.util.SpigotUpdater;
@@ -31,6 +30,7 @@ import com.github.danirod12.luckyblock.util.manager.GuiManager;
 import com.github.danirod12.luckyblock.util.manager.MessagesManager;
 import com.github.danirod12.luckyblock.variables.PlayerHead;
 import com.github.danirod12.luckyblock.variables.world.WorldListDataHandler;
+import de.tr7zw.nbtapi.utils.MinecraftVersion;
 import lombok.Getter;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
@@ -56,8 +56,6 @@ public class LBMain extends LBMainProvider {
     public Single<StringMatcher<WorldListDataHandler>> worldsFilter = new Single<>();
 
     // Managers
-    @Getter
-    private VersionControlFactory versionControl;
     private LuckyBlockEngine luckyBlockEngine;
     private EconomyBridge economy;
     @Getter
@@ -126,14 +124,6 @@ public class LBMain extends LBMainProvider {
             sender.sendMessage(entry);
         }
 
-        // NMS & items
-        try {
-            this.versionControl = new VersionControlFactory(this.logChannel);
-        } catch (RuntimeException exception) {
-            exception.printStackTrace();
-            Bukkit.getPluginManager().disablePlugin(this);
-            return;
-        }
         // At this stage we are sure that our plugin may run on current server
 
         // Updater & Metrics
@@ -150,8 +140,7 @@ public class LBMain extends LBMainProvider {
         // Before config
         guiManager = new GuiManager(this);
         File folder = new File(getDataFolder() + File.separator + "luckyblocks");
-        luckyBlockEngine = new LuckyBlockEngine(this, logChannel, folder,
-                configHolder, versionControl);
+        luckyBlockEngine = new LuckyBlockEngine(this, logChannel, folder, configHolder);
         entityLoadListener = new EntityLoadListener(this, luckyBlockEngine);
         LuckyBlockAPI.injectAPI(this, luckyBlockEngine);
 
@@ -214,7 +203,7 @@ public class LBMain extends LBMainProvider {
         }
 
         // Init caches for textures player heads
-        PlayerHead.loadAll(this.versionControl);
+        PlayerHead.loadAll();
         // Check all hooks if related plugins exists
         Hook.loadAll();
 
@@ -373,7 +362,7 @@ public class LBMain extends LBMainProvider {
 
         this.luckyBlockEngine.updateChanceLevels();
 
-        if (this.versionControl.isLegacy() && !this.configHolder.lightSource) {
+        if (!MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1) && !this.configHolder.lightSource) {
             this.logChannel.warning("Light source cannot be disabled on 1.8 - 1.12 " +
                     "due vanilla texture glitch (Texture is blacked out)");
             this.configHolder.lightSource = true;

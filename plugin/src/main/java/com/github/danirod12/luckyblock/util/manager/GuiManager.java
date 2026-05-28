@@ -1,11 +1,11 @@
 package com.github.danirod12.luckyblock.util.manager;
 
+import com.cryptomorin.xseries.XMaterial;
 import com.github.danirod12.luckyblock.LBMain;
 import com.github.danirod12.luckyblock.api.LuckyBlockAPI;
 import com.github.danirod12.luckyblock.api.model.LuckyBlock;
 import com.github.danirod12.luckyblock.api.setup.ShopSetup;
 import com.github.danirod12.luckyblock.hook.economy.EconomyBridge;
-import com.github.danirod12.luckyblock.nms.material.IMat.Mat;
 import com.github.danirod12.luckyblock.util.manager.MessagesManager.Message;
 import com.github.danirod12.luckyblock.variables.PlayerHead;
 import com.github.danirod12.luckyblock.variables.gui.ConfirmEvent;
@@ -25,6 +25,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.*;
 import java.util.stream.Collectors;
 
+// TODO rework all
 public class GuiManager implements Listener {
 
     private final LBMain instance;
@@ -156,7 +157,7 @@ public class GuiManager implements Listener {
 
         int rows = types.size() == 0 ? 3 : (int) Math.ceil(((double) types.size()) / 5);
         get = Bukkit.createInventory(null, (2 + rows) * 9, Message.GUI_GET_TITLE.getAsString(true));
-        ItemStack grayPane = this.instance.getEngine().getVersionControl().getMat().getItem(Mat.GRAY_PANE, 1);
+        ItemStack grayPane = XMaterial.GRAY_STAINED_GLASS_PANE.parseItem();
 
         for (int row = 0; row < rows + 2; row++) {
             get.setItem(row * 9, grayPane);
@@ -174,7 +175,7 @@ public class GuiManager implements Listener {
             get.setItem(row * 9 + 8, grayPane);
         }
 
-        grayPane = this.instance.getEngine().getVersionControl().getMat().getItem(Mat.BLACK_PANE, 1);
+        grayPane = XMaterial.BLACK_STAINED_GLASS_PANE.parseItem();
 
         int amount = 0, slot = 11;
         for (LuckyBlock block : types) {

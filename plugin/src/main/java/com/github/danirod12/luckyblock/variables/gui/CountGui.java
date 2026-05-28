@@ -1,8 +1,8 @@
 package com.github.danirod12.luckyblock.variables.gui;
 
+import com.cryptomorin.xseries.XMaterial;
 import com.github.danirod12.luckyblock.LBMain;
 import com.github.danirod12.luckyblock.api.LuckyBlockAPI;
-import com.github.danirod12.luckyblock.nms.VersionControlFactory;
 import com.github.danirod12.luckyblock.util.manager.MessagesManager.Message;
 import com.github.danirod12.luckyblock.variables.PlayerHead;
 import org.bukkit.Bukkit;
@@ -98,8 +98,7 @@ public class CountGui implements Listener {
 
             event.setCancelled(true);
             ItemStack item = event.getInventory().getItem(event.getSlot());
-            if (item == null || !((VersionControlFactory)
-                    LuckyBlockAPI.getLuckyEngineProvider().getVersionControl()).getMat().isSkull(item)) {
+            if (item == null || XMaterial.matchXMaterial(item) != XMaterial.PLAYER_HEAD) {
                 return;
             }
 

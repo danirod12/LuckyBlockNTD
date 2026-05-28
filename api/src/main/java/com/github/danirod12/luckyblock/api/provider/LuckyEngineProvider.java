@@ -57,8 +57,6 @@ public interface LuckyEngineProvider {
 
     File getFolder();
 
-    VersionControl getVersionControl();
-
     LuckyRecipeProvider getRecipeProvider();
 
     boolean isLightSource();

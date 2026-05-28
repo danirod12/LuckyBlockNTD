@@ -1,14 +1,11 @@
 package com.github.danirod12.luckyblock.listener;
 
-import com.github.danirod12.luckyblock.api.LuckyBlockAPI;
 import com.github.danirod12.luckyblock.api.event.LuckyBlockPlaceEvent;
 import com.github.danirod12.luckyblock.api.model.LuckyBlock;
 import com.github.danirod12.luckyblock.api.model.LuckyBlockKey;
-import com.github.danirod12.luckyblock.api.util.Config;
 import com.github.danirod12.luckyblock.api.util.Pair;
 import com.github.danirod12.luckyblock.api.util.Single;
 import com.github.danirod12.luckyblock.engine.LuckyBlockEngine;
-import com.github.danirod12.luckyblock.engine.loader.ConvertFactory;
 import com.github.danirod12.luckyblock.hook.Hook;
 import com.github.danirod12.luckyblock.hook.sk89q.WorldGuardProvider;
 import com.github.danirod12.luckyblock.util.Misc;
@@ -19,6 +16,7 @@ import com.github.danirod12.luckyblock.util.manager.MessagesManager;
 import com.github.danirod12.luckyblock.variables.world.WorldListDataHandler;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import de.tr7zw.nbtapi.utils.MinecraftVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -39,8 +37,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings({"unused"})
@@ -60,7 +56,7 @@ public class CoreListener implements Listener {
         this.worldGuardProvider = worldGuardProvider;
         this.worldsFilter = worldsFilter;
         this.config = config;
-        switch (engine.getVersionControl().getNmsVersion()) {
+        switch (MinecraftVersion.getVersion().getPackageName()) {
             case "v1_19_R1":
             case "v1_19_R2":
                 this.cache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build();
@@ -271,31 +267,32 @@ public class CoreListener implements Listener {
             }, 40L);
         }
 
-        if (!engine.getConfigHolder().disableJsonConvertCheck && player.hasPermission("luckyblock.convert")) {
-            ConvertFactory factory = engine.getConvertFactory();
-            int convert = factory.getRequests();
-            if (convert > 0) {
-                if (LuckyBlockAPI.getVersionType().isPremium()) {
-                    player.sendMessage("§7[§eLuckyBlock§7] §fNew LuckyBlock configuration " +
-                            "update available! Now my plugin can store almost any item from any plugin and you can " +
-                            "set drop chances for each lucky entry. You can convert §c" + convert + "§f" +
-                            "entry drops to new JSON store format. §bPerform - §l/luckyblock convert");
-                    player.sendMessage("§4[*] §cTo prevent loss of configuration in case of error, make " +
-                            "backup of some files first");
-                    for (Map.Entry<Config, List<String>> entry : factory.getRequestMap().entrySet()) {
-                        player.sendMessage("§4 - §c" + entry.getKey().getName() + " §7(Have " +
-                                entry.getValue().size() + " unconverted items)");
-                    }
-                } else {
-                    player.sendMessage("§7[§eLuckyBlock§7] §fNew LuckyBlock configuration update available! Now " +
-                            "my plugin can store almost any item from any plugin and you can set drop chances for " +
-                            "each lucky entry. This cool feature available in§b premium version§f! You can convert " +
-                            "§c" + convert + "§f entry drops to new JSON store format. §bCheck out - " +
-                            "https://www.spigotmc.org/resources/94872/");
-                    player.sendMessage("§eNote:§7 You can disable this message in configuration");
-                }
-            }
-        }
+        // No convertion at all on V3 ?
+//        if (!engine.getConfigHolder().disableJsonConvertCheck && player.hasPermission("luckyblock.convert")) {
+//            ConvertFactory factory = engine.getConvertFactory();
+//            int convert = factory.getRequests();
+//            if (convert > 0) {
+//                if (LuckyBlockAPI.getVersionType().isPremium()) {
+//                    player.sendMessage("§7[§eLuckyBlock§7] §fNew LuckyBlock configuration " +
+//                            "update available! Now my plugin can store almost any item from any plugin and you can " +
+//                            "set drop chances for each lucky entry. You can convert §c" + convert + "§f" +
+//                            "entry drops to new JSON store format. §bPerform - §l/luckyblock convert");
+//                    player.sendMessage("§4[*] §cTo prevent loss of configuration in case of error, make " +
+//                            "backup of some files first");
+//                    for (Map.Entry<Config, List<String>> entry : factory.getRequestMap().entrySet()) {
+//                        player.sendMessage("§4 - §c" + entry.getKey().getName() + " §7(Have " +
+//                                entry.getValue().size() + " unconverted items)");
+//                    }
+//                } else {
+//                    player.sendMessage("§7[§eLuckyBlock§7] §fNew LuckyBlock configuration update available! Now " +
+//                            "my plugin can store almost any item from any plugin and you can set drop chances for " +
+//                            "each lucky entry. This cool feature available in§b premium version§f! You can convert " +
+//                            "§c" + convert + "§f entry drops to new JSON store format. §bCheck out - " +
+//                            "https://www.spigotmc.org/resources/94872/");
+//                    player.sendMessage("§eNote:§7 You can disable this message in configuration");
+//                }
+//            }
+//        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
