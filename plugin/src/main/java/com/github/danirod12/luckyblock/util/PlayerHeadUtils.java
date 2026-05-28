@@ -2,6 +2,7 @@ package com.github.danirod12.luckyblock.util;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -25,6 +26,7 @@ public class PlayerHeadUtils {
     private static final String PROFILE_NAME;
     private static final ItemStack SKULL_EXAMPLE;
     private static final Function<SkullMeta, UUID> UUID_RETRIEVER;
+    private static final Function<GameProfile, PropertyMap> PROPERTY_MAP_RETRIEVER;
 
     static {
         String profileName;
@@ -62,7 +64,7 @@ public class PlayerHeadUtils {
                     }
                 };
             } else if (field.getType().getSimpleName().contains("Profile" /* ResolvableProfile */)) {
-                // 1.12.1>
+                // 1.21.1>
                 Class<?> resolvableProfileClazz = field.getType();
                 for (Method method : resolvableProfileClazz.getMethods()) {
                     if (method.getReturnType() == GameProfile.class) {
@@ -92,6 +94,28 @@ public class PlayerHeadUtils {
             GameProfile profile = retriever.apply(meta);
             return profile == null ? null : profile.getId();
         };
+
+        Function<GameProfile, PropertyMap> propertyMapRetriever;
+        try {
+            GameProfile.class.getMethod("getProperties");
+            propertyMapRetriever = GameProfile::getProperties;
+        } catch (NoSuchMethodException recordLike) {
+            // record-like
+            try {
+                final Method method = GameProfile.class.getMethod("properties");
+                propertyMapRetriever = profile -> {
+                    try {
+                        return (PropertyMap) method.invoke(profile);
+                    } catch (IllegalAccessException | InvocationTargetException exception) {
+                        exception.printStackTrace();
+                        return null;
+                    }
+                };
+            } catch (NoSuchMethodException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        PROPERTY_MAP_RETRIEVER = propertyMapRetriever;
     }
 
     public PlayerHeadUtils() {
@@ -112,7 +136,7 @@ public class PlayerHeadUtils {
         assert headMeta != null;
 
         GameProfile profile = new GameProfile(uuid == null ? UUID.randomUUID() : uuid, PROFILE_NAME);
-        profile.getProperties().put("textures", new Property("textures",
+        PROPERTY_MAP_RETRIEVER.apply(profile).put("textures", new Property("textures",
                 new String(Base64.getEncoder().encode(("{textures:{SKIN:{url:\"" + url + "\"}}}").getBytes()))));
 
         try {
