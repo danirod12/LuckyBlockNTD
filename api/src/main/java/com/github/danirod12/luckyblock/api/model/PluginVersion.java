@@ -1,9 +1,14 @@
 package com.github.danirod12.luckyblock.api.model;
 
+/**
+ * Represents the version of the plugin, which can be either free or premium (V2).
+ */
 public enum PluginVersion {
 
     FREE,
-    PREMIUM;
+    PREMIUM,
+
+    ;
 
     public boolean isPremium() {
         return this != FREE;
@@ -25,6 +30,7 @@ public enum PluginVersion {
         return (this == FREE ? "§a" : "§d") + this.getSimpleName();
     }
 
+    @Deprecated
     public boolean hasJSONLoader() {
         return this == PREMIUM;
     }

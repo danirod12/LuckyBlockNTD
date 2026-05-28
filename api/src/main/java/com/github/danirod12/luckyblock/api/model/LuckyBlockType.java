@@ -1,7 +1,11 @@
 package com.github.danirod12.luckyblock.api.model;
 
 import com.github.danirod12.luckyblock.api.util.ColorData;
+import lombok.Getter;
 
+/**
+ * Represents the type of a lucky block, which determines its color and appearance.
+ */
 public enum LuckyBlockType {
 
     BLACK(ColorData.BLACK),
@@ -24,6 +28,7 @@ public enum LuckyBlockType {
     TINTED(ColorData.BLACK),
     ICED(ColorData.CYAN);
 
+    @Getter
     private final ColorData colorData;
 
     LuckyBlockType(ColorData colorData) {
@@ -37,9 +42,5 @@ public enum LuckyBlockType {
             }
         }
         return null;
-    }
-
-    public ColorData getColorData() {
-        return this.colorData;
     }
 }

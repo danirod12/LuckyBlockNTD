@@ -1,35 +1,27 @@
 package com.github.danirod12.luckyblock.api.util;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Map;
 
+/**
+ * A simple generic class that holds a pair of values.
+ *
+ * @param <A> the type of the first value
+ * @param <B> the type of the second value
+ */
+@Getter
+@Setter
+@AllArgsConstructor
 public class Pair<A, B> {
 
     private A a;
     private B b;
 
-    public Pair(A a, B b) {
-        this.a = a;
-        this.b = b;
-    }
-
     public static <A, B> Pair<A, B> from(Map.Entry<A, B> entry) {
         return new Pair<>(entry.getKey(), entry.getValue());
-    }
-
-    public A getA() {
-        return a;
-    }
-
-    public void setA(A a) {
-        this.a = a;
-    }
-
-    public B getB() {
-        return b;
-    }
-
-    public void setB(B b) {
-        this.b = b;
     }
 
     public A getKey() {
