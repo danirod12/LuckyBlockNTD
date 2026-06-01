@@ -23,6 +23,8 @@ public class AdvancedLootDatabase {
     private double entityDropWeight = 30.0;
     private double specialSpawnChance = 0.1;
     private double specialDropWeight = 25.0;
+    private double schematicSpawnChance = 0.1;
+    private double schematicDropWeight = 20.0;
     private double maxSimilarity = 0.7;
     private int topSimilar = 10;
 
@@ -180,6 +182,12 @@ public class AdvancedLootDatabase {
             }
             if (settings.has("special_drop_weight")) {
                 specialDropWeight = settings.get("special_drop_weight").getAsDouble();
+            }
+            if (settings.has("schematic_spawn_chance")) {
+                schematicSpawnChance = settings.get("schematic_spawn_chance").getAsDouble();
+            }
+            if (settings.has("schematic_drop_weight")) {
+                schematicDropWeight = settings.get("schematic_drop_weight").getAsDouble();
             }
             if (settings.has("max_similarity")) {
                 maxSimilarity = settings.get("max_similarity").getAsDouble();

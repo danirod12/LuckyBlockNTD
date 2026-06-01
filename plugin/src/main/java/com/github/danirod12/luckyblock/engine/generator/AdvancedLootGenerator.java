@@ -151,7 +151,7 @@ public final class AdvancedLootGenerator {
             }
         }
 
-        if (generateSchematics && ThreadLocalRandom.current().nextDouble() < 0.1) {
+        if (generateSchematics && ThreadLocalRandom.current().nextDouble() < db.getSchematicSpawnChance()) {
             SchematicList.SchematicData sData = SchematicList.getRandomSchematic();
 
             if (sData != null) {
@@ -160,7 +160,7 @@ public final class AdvancedLootGenerator {
                 File schemFile = new File(schemFolder, sData.fileName);
 
                 if (schemFile.exists()) {
-                    entry.add(new SchematicDrop(schemFile, sData.type, sData.ignoreAir), 10.0, null);
+                    entry.add(new SchematicDrop(schemFile, sData.type, sData.ignoreAir), db.getSchematicDropWeight(), null);
                 }
             }
         }

@@ -7,6 +7,8 @@
     "entity_drop_weight": 40.0,
     "special_spawn_chance": 0.1,
     "special_drop_weight": 35.0,
+    "schematic_spawn_chance": 0.1,
+    "schematic_drop_weight": 20.0,
     "max_similarity": 0.7,
     "top_similar": 10,
     "semistrict_mode_weight": 10.0,
