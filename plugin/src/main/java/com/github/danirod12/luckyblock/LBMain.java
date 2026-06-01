@@ -152,33 +152,44 @@ public class LBMain extends LBMainProvider {
         advancedLootDatabase = new AdvancedLootDatabase();
 
         try {
-            InputStream weightsIn = getResource("generator/rarity_weights.json");
-            if (weightsIn != null) {
-                try (Reader r = new InputStreamReader(weightsIn, StandardCharsets.UTF_8)) {
+            InputStream generatorConfigIn = getResource("generator/config.json");
+            if (generatorConfigIn != null) {
+                try (Reader r = new InputStreamReader(generatorConfigIn, StandardCharsets.UTF_8)) {
                     advancedLootDatabase.loadWeights(r);
                 }
             }
         } catch (Exception e) {
-            logChannel.warning("Failed to load weights_config.json, using defaults.");
+            logChannel.warning("Failed to load config.json, using defaults.");
         }
 
         try {
-            InputStream bannedIn = getResource("generator/banned_materials.json");
-            if (bannedIn != null) {
-                try (Reader bannedReader = new InputStreamReader(bannedIn, StandardCharsets.UTF_8)) {
+            InputStream bannedMaterialsIn = getResource("generator/banned_materials.json");
+            if (bannedMaterialsIn != null) {
+                try (Reader bannedReader = new InputStreamReader(bannedMaterialsIn, StandardCharsets.UTF_8)) {
                     advancedLootDatabase.loadBanned(bannedReader);
                 }
             }
         } catch (Exception e) {
-            logChannel.warning("Failed to load banned_items.json! Continuing without blacklist.");
+            logChannel.warning("Failed to load banned_materials.json! Continuing without blacklist.");
         }
 
         try {
-            InputStream in = getResource("generator/materials_tagged_v2.json");
-            if (in == null) {
+            InputStream bannedEntitiesIn = getResource("generator/banned_entities.json");
+            if (bannedEntitiesIn != null) {
+                try (Reader bannedReader = new InputStreamReader(bannedEntitiesIn, StandardCharsets.UTF_8)) {
+                    advancedLootDatabase.loadBannedEntities(bannedReader);
+                }
+            }
+        } catch (Exception e) {
+            logChannel.warning("Failed to load banned_entities.json! Continuing without blacklist.");
+        }
+
+        try {
+            InputStream materialTagsIn = getResource("generator/materials_tagged_v2.json");
+            if (materialTagsIn == null) {
                 logChannel.severe("Could not find materials_tagged_v2.json in plugin resources");
             } else {
-                try (Reader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
+                try (Reader reader = new InputStreamReader(materialTagsIn, StandardCharsets.UTF_8)) {
                     advancedLootDatabase.load(reader);
                     logChannel.info("Advanced Loot Database loaded successfully.");
                 }

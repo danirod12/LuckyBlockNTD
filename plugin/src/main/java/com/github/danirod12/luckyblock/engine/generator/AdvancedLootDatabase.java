@@ -5,6 +5,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.cryptomorin.xseries.XMaterial;
+import lombok.Getter;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.EntityType;
 
 import java.io.Reader;
 import java.lang.reflect.Type;
@@ -12,9 +15,17 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 
+@Getter
 public class AdvancedLootDatabase {
     private int defaultBaseWeight = 10;
     private int defaultTier = 1;
+    private double entitySpawnChance = 0.1;
+    private double entityDropWeight = 30.0;
+    private double specialSpawnChance = 0.1;
+    private double specialDropWeight = 25.0;
+    private double maxSimilarity = 0.7;
+    private int topSimilar = 10;
+
     private final Map<XMaterial, CoreItem> cache = new HashMap<>();
     private final NavigableMap<Integer, XMaterial> weightedCores = new TreeMap<>();
     private int totalCoreWeight = 0;
@@ -22,6 +33,7 @@ public class AdvancedLootDatabase {
     private final List<String> singleOnlyTags = new ArrayList<>();
     private final Set<String> allUniqueTags = new HashSet<>();
     private final Set<XMaterial> bannedItems = new HashSet<>();
+    private final Set<EntityType> bannedEntities = new HashSet<>();
     private final Map<String, Integer> tagModifiers = new HashMap<>();
     private final Map<Integer, Double> tierMultipliers = new HashMap<>();
 
@@ -67,7 +79,7 @@ public class AdvancedLootDatabase {
         }
 
         for (XMaterial coreMat : parsedItems.keySet()) {
-            List<SynergyItem> synergies = calculateSynergiesFor(coreMat, parsedItems, 0.7f, 10);
+            List<SynergyItem> synergies = calculateSynergiesFor(coreMat, parsedItems, maxSimilarity, topSimilar);
 
             int itemTier = defaultTier; //TODO(zhabka_zhaba): Proper JSON tiers + parsing
 
@@ -106,14 +118,52 @@ public class AdvancedLootDatabase {
         }
     }
 
+    public void loadBannedEntities(Reader reader) {
+        Gson gson = new Gson();
+        Type listType = new TypeToken<List<String>>() { }.getType();
+        List<String> bannedList = gson.fromJson(reader, listType);
+
+        if (bannedList != null) {
+            for (String typeStr : bannedList) {
+                try {
+                    bannedEntities.add(EntityType.valueOf(typeStr.toUpperCase()));
+                } catch (IllegalArgumentException e) {
+                    Bukkit.getLogger().warning("Unknown entity type in banned_entities: " + typeStr);
+                }
+            }
+        }
+    }
+
     public void loadWeights(Reader reader) {
         Gson gson = new Gson();
         JsonObject root = gson.fromJson(reader, JsonObject.class);
 
         if (root.has("settings")) {
             JsonObject settings = root.getAsJsonObject("settings");
-            defaultBaseWeight = settings.get("default_base_weight").getAsInt();
-            defaultTier = settings.get("default_tier").getAsInt();
+            if (settings.has("default_base_weight")) {
+                defaultBaseWeight = settings.get("default_base_weight").getAsInt();
+            }
+            if (settings.has("default_tier")) {
+                defaultTier = settings.get("default_tier").getAsInt();
+            }
+            if (settings.has("entity_spawn_chance")) {
+                entitySpawnChance = settings.get("entity_spawn_chance").getAsDouble();
+            }
+            if (settings.has("entity_drop_weight")) {
+                entityDropWeight = settings.get("entity_drop_weight").getAsDouble();
+            }
+            if (settings.has("special_spawn_chance")) {
+                specialSpawnChance = settings.get("special_spawn_chance").getAsDouble();
+            }
+            if (settings.has("special_drop_weight")) {
+                specialDropWeight = settings.get("special_drop_weight").getAsDouble();
+            }
+            if (settings.has("max_similarity")) {
+                maxSimilarity = settings.get("max_similarity").getAsDouble();
+            }
+            if (settings.has("top_similar")) {
+                topSimilar = settings.get("top_similar").getAsInt();
+            }
         }
 
         if (root.has("tag_modifiers")) {
@@ -132,7 +182,7 @@ public class AdvancedLootDatabase {
     }
 
     private List<SynergyItem> calculateSynergiesFor(XMaterial anchor, Map<XMaterial,
-            List<String>> allItems, float maxSim, int topNum) {
+            List<String>> allItems, double maxSimilarity, int topSimilar) {
 
         int[] anchorVec = vectors.get(anchor);
         List<String> anchorTags = allItems.get(anchor);
@@ -147,7 +197,7 @@ public class AdvancedLootDatabase {
             int[] candVec = vectors.get(candMat);
             float sim = cosineSimilarity(anchorVec, candVec);
 
-            if (sim > 0 && sim < maxSim) {
+            if (sim > 0 && sim < maxSimilarity) {
                 int candTier = defaultTier;
                 int candWeight = calculateCoreWeight(candidate.getValue(), candTier);
 
@@ -188,7 +238,7 @@ public class AdvancedLootDatabase {
                         activeExclusives.add(tag);
                     }
                 }
-                if (result.size() >= topNum) {
+                if (result.size() >= topSimilar) {
                     break;
                 }
             }

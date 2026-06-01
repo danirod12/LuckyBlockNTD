@@ -20,9 +20,7 @@ import com.cryptomorin.xseries.XMaterial;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -35,18 +33,7 @@ public final class AdvancedLootGenerator {
     private final SynergyMode mode; //TODO(zhabka_zhaba): Implement proper  mode functionality
     private final Material forcedCore;
     private final boolean generateSchematics;
-    private static final List<EntityType> SAFE_ENTITIES;
-
-    static {
-        Set<EntityType> blacklist = EnumSet.of(
-                EntityType.ENDER_DRAGON, EntityType.WITHER
-        ); // TODO add json blacklist?
-
-        SAFE_ENTITIES = Arrays.stream(EntityType.values())
-                .filter(EntityType::isSpawnable)
-                .filter(type -> !blacklist.contains(type))
-                .collect(Collectors.toList());
-    }
+    private final List<EntityType> safeEntities;
 
     private AdvancedLootGenerator(Builder builder) {
         this.engine = builder.engine;
@@ -56,6 +43,11 @@ public final class AdvancedLootGenerator {
         this.mode = builder.mode;
         this.forcedCore = builder.forcedCore;
         this.generateSchematics = builder.generateSchematics;
+
+        this.safeEntities = Arrays.stream(EntityType.values())
+                .filter(EntityType::isSpawnable)
+                .filter(type -> !db.getBannedEntities().contains(type))
+                .collect(Collectors.toList());
     }
 
     public static Builder builder(LuckyBlockEngine engine, AdvancedLootDatabase db) {
@@ -133,14 +125,14 @@ public final class AdvancedLootGenerator {
             entry.add(new ItemDrop(synStack), chance, null);
         }
 
-        if (ThreadLocalRandom.current().nextDouble() < 0.1) { // TODO шансы в json??
-            entry.add(generateEntity(), 30.0, null);
+        if (ThreadLocalRandom.current().nextDouble() < db.getEntitySpawnChance()) {
+            entry.add(generateEntity(), db.getEntityDropWeight(), null);
         }
 
-        if (ThreadLocalRandom.current().nextDouble() < 0.1) {
+        if (ThreadLocalRandom.current().nextDouble() < db.getSpecialSpawnChance()) {
             LuckyDrop special = generateSpecial();
             if (special != null) {
-                entry.add(special, 25.0, null);
+                entry.add(special, db.getSpecialDropWeight(), null);
             }
         }
 
@@ -163,9 +155,9 @@ public final class AdvancedLootGenerator {
         return entry;
     }
 
-    public static LuckyDrop generateEntity() {
+    public LuckyDrop generateEntity() {
         int amount = ThreadLocalRandom.current().nextInt(1, 4);
-        EntityType type = SAFE_ENTITIES.get(ThreadLocalRandom.current().nextInt(SAFE_ENTITIES.size()));
+        EntityType type = safeEntities.get(ThreadLocalRandom.current().nextInt(safeEntities.size()));
         return new EntityDrop(type, amount);
     }
 
