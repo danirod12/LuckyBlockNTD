@@ -11,6 +11,8 @@ import com.github.danirod12.luckyblock.engine.drop.SchematicDrop;
 import com.github.danirod12.luckyblock.engine.drop.SchematicList;
 import com.github.danirod12.luckyblock.engine.drop.special.*;
 import com.github.danirod12.luckyblock.util.random.WeightListAmount;
+import de.tr7zw.nbtapi.NBT;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
@@ -30,10 +32,11 @@ public final class AdvancedLootGenerator {
 
     private final int minItems;
     private final int maxItems;
-    private final SynergyMode mode; //TODO(zhabka_zhaba): Implement proper  mode functionality
+    private final SynergyMode mode;
     private final Material forcedCore;
     private final boolean generateSchematics;
     private final List<EntityType> safeEntities;
+    private final List<XMaterial> v2MaterialPool;
 
     private AdvancedLootGenerator(Builder builder) {
         this.engine = builder.engine;
@@ -47,6 +50,14 @@ public final class AdvancedLootGenerator {
         this.safeEntities = Arrays.stream(EntityType.values())
                 .filter(EntityType::isSpawnable)
                 .filter(type -> !db.getBannedEntities().contains(type))
+                .collect(Collectors.toList());
+
+        this.v2MaterialPool = Arrays.stream(XMaterial.values())
+                .filter(mat -> !mat.name().contains("AIR") && !mat.name().startsWith("LEGACY"))
+                .filter(mat -> {
+                    Material bukkitMat = mat.parseMaterial();
+                    return bukkitMat != null && isItemSafe(bukkitMat);
+                })
                 .collect(Collectors.toList());
     }
 
@@ -78,51 +89,55 @@ public final class AdvancedLootGenerator {
 
         ItemStack coreStack = coreItemX.parseItem();
         if (coreStack == null) {
-            org.bukkit.Bukkit.getLogger().info("[DEBUG] XMaterial failed to parse: " + coreItemX.name());
+            Bukkit.getLogger().info("[DEBUG] XMaterial failed to parse: " + coreItemX.name());
             return entry;
         }
 
         coreStack.setAmount(calculateAmount(coreStack));
 
         try {
-            de.tr7zw.nbtapi.NBT.itemStackToNBT(coreStack);
+            NBT.itemStackToNBT(coreStack);
         } catch (Exception e) {
-            org.bukkit.Bukkit.getLogger().info("[DEBUG] Core item is unserializable on this version: "
+            Bukkit.getLogger().info("[DEBUG] Core item is unserializable on this version: "
                     + coreItemX.name());
             return entry;
         }
 
         entry.add(new ItemDrop(coreStack), 100.0, null);
 
-        CoreItem coreData = db.get(coreItemX);
-        if (coreData == null) {
-            return entry;
-        }
-
-        if (coreData.getSynergies() == null || coreData.getSynergies().isEmpty()) {
-            return entry;
-        }
-
         int limit = ThreadLocalRandom.current().nextInt(minItems, maxItems + 1);
 
-        for (SynergyItem synItem : coreData.getSynergies()) {
-            ItemStack synStack = synItem.getMaterial().parseItem();
-            if (synStack == null) {
-                continue;
-            }
+        switch (this.mode) {
+            case V2:
+                addRandomChaosItems(entry, limit * 2, db.getV2ModeWeight());
+                break;
 
-            synStack.setAmount(calculateAmount(synStack));
+            case STRICT:
+            case SEMISTRICT:
+                CoreItem coreData = db.get(coreItemX);
+                if (coreData != null && coreData.getSynergies() != null && !coreData.getSynergies().isEmpty()) {
+                    for (SynergyItem synItem : coreData.getSynergies()) {
+                        ItemStack synStack = synItem.getMaterial().parseItem();
+                        if (synStack == null) {
+                            continue;
+                        }
 
-            try {
-                de.tr7zw.nbtapi.NBT.itemStackToNBT(synStack);
-            } catch (Exception e) {
-                org.bukkit.Bukkit.getLogger().info("[DEBUG] Synergy skipped (unserializable): "
-                        + synItem.getMaterial().name());
-                continue;
-            }
+                        synStack.setAmount(calculateAmount(synStack));
 
-            double chance = (double) synItem.getSynweight();
-            entry.add(new ItemDrop(synStack), chance, null);
+                        try {
+                            NBT.itemStackToNBT(synStack);
+                        } catch (Exception e) {
+                            continue;
+                        }
+
+                        entry.add(new ItemDrop(synStack), synItem.getSynweight(), null);
+                    }
+                }
+
+                if (this.mode == SynergyMode.SEMISTRICT) {
+                    addRandomChaosItems(entry, limit, db.getSemistrictModeWeight());
+                }
+                break;
         }
 
         if (ThreadLocalRandom.current().nextDouble() < db.getEntitySpawnChance()) {
@@ -153,6 +168,26 @@ public final class AdvancedLootGenerator {
         entry.setAmount(Amount.of(String.valueOf(limit)));
 
         return entry;
+    }
+
+    private void addRandomChaosItems(WeightListAmount<LuckyDrop> entry, int count, double weight) {
+        if (v2MaterialPool.isEmpty()) {
+            return;
+        }
+
+        for (int i = 0; i < count; i++) {
+            XMaterial randomMat = v2MaterialPool.get(ThreadLocalRandom.current().nextInt(v2MaterialPool.size()));
+            ItemStack stack = randomMat.parseItem();
+            if (stack == null) {
+                continue;
+            }
+
+            stack.setAmount(calculateAmount(stack));
+            try {
+                NBT.itemStackToNBT(stack);
+                entry.add(new ItemDrop(stack), weight, null);
+            } catch (Exception ignored) { }
+        }
     }
 
     public LuckyDrop generateEntity() {

@@ -26,6 +26,10 @@ public class AdvancedLootDatabase {
     private double maxSimilarity = 0.7;
     private int topSimilar = 10;
 
+    private SynergyMode defaultMode = SynergyMode.STRICT;
+    private double semistrictModeWeight = 10.0;
+    private double v2ModeWeight = 50.0;
+
     private final Map<XMaterial, CoreItem> cache = new HashMap<>();
     private final NavigableMap<Integer, XMaterial> weightedCores = new TreeMap<>();
     private int totalCoreWeight = 0;
@@ -134,7 +138,7 @@ public class AdvancedLootDatabase {
         }
     }
 
-    public void loadWeights(Reader reader) {
+    public void loadConfig(Reader reader) {
         Gson gson = new Gson();
         JsonObject root = gson.fromJson(reader, JsonObject.class);
 
@@ -163,6 +167,21 @@ public class AdvancedLootDatabase {
             }
             if (settings.has("top_similar")) {
                 topSimilar = settings.get("top_similar").getAsInt();
+            }
+            if (settings.has("semistrict_mode_weight")) {
+                semistrictModeWeight = settings.get("semistrict_mode_weight").getAsDouble();
+            }
+            if (settings.has("v2_mode_weight")) {
+                v2ModeWeight = settings.get("v2_mode_weight").getAsDouble();
+            }
+        }
+
+        if (root.has("mode")) {
+            String modeStr = root.get("mode").getAsString().toUpperCase();
+            try {
+                this.defaultMode = SynergyMode.valueOf(modeStr);
+            } catch (IllegalArgumentException e) {
+                Bukkit.getLogger().warning("Unknown synergy mode in config: " + modeStr + ". Using STRICT.");
             }
         }
 

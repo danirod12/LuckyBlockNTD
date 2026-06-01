@@ -155,7 +155,7 @@ public class LBMain extends LBMainProvider {
             InputStream generatorConfigIn = getResource("generator/config.json");
             if (generatorConfigIn != null) {
                 try (Reader r = new InputStreamReader(generatorConfigIn, StandardCharsets.UTF_8)) {
-                    advancedLootDatabase.loadWeights(r);
+                    advancedLootDatabase.loadConfig(r);
                 }
             }
         } catch (Exception e) {

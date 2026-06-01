@@ -58,5 +58,6 @@
   "MOVING_PISTON",
   "SOUL_FIRE",
   "KELP_PLANT",
-  "*_WALL_BANNER"
+  "*_WALL_BANNER",
+  "FARMLAND"
 ]
