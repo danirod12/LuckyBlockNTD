@@ -42,6 +42,7 @@ public class AdvancedLootDatabase {
     private final Map<Integer, Double> tierMultipliers = new HashMap<>();
 
     private final Map<XMaterial, int[]> vectors = new HashMap<>();
+    private final Map<XMaterial, Integer> materialTiers = new HashMap<>();
 
     public void load(Reader reader) {
         Gson gson = new Gson();
@@ -57,16 +58,35 @@ public class AdvancedLootDatabase {
         }
 
         // Item data
-        Type itemsType = new TypeToken<Map<String, List<String>>>() { }.getType();
-        Map<String, List<String>> rawItems = gson.fromJson(root.get("items"), itemsType);
+        Type itemsType = new TypeToken<Map<String, JsonElement>>() { }.getType();
+        Map<String, JsonElement> rawItems = gson.fromJson(root.get("items"), itemsType);
 
         Map<XMaterial, List<String>> parsedItems = new HashMap<>();
 
-        for (Map.Entry<String, List<String>> entry : rawItems.entrySet()) {
+        for (Map.Entry<String, JsonElement> entry : rawItems.entrySet()) {
             Optional<XMaterial> xMat = XMaterial.matchXMaterial(entry.getKey());
             if (xMat.isPresent() && !bannedItems.contains(xMat.get())) {
-                parsedItems.put(xMat.get(), entry.getValue());
-                allUniqueTags.addAll(entry.getValue());
+                XMaterial mat = xMat.get();
+                JsonElement el = entry.getValue();
+
+                int tier = defaultTier;
+                List<String> tags = new ArrayList<>();
+
+                if (el.isJsonArray()) { // no-tier item
+                    tags = gson.fromJson(el, new TypeToken<List<String>>() { }.getType());
+                } else if (el.isJsonObject()) { // tier item
+                    JsonObject obj = el.getAsJsonObject();
+                    if (obj.has("tier")) {
+                        tier = obj.get("tier").getAsInt();
+                    }
+                    if (obj.has("tags")) {
+                        tags = gson.fromJson(obj.get("tags"), new TypeToken<List<String>>() { }.getType());
+                    }
+                }
+
+                parsedItems.put(mat, tags);
+                materialTiers.put(mat, tier);
+                allUniqueTags.addAll(tags);
             }
         }
 
@@ -84,8 +104,7 @@ public class AdvancedLootDatabase {
 
         for (XMaterial coreMat : parsedItems.keySet()) {
             List<SynergyItem> synergies = calculateSynergiesFor(coreMat, parsedItems, maxSimilarity, topSimilar);
-
-            int itemTier = defaultTier; //TODO(zhabka_zhaba): Proper JSON tiers + parsing
+            int itemTier = materialTiers.getOrDefault(coreMat, defaultTier);
 
             CoreItem coreItem = new CoreItem(coreMat, itemTier, synergies, SynergyMode.STRICT);
             cache.put(coreMat, coreItem);
@@ -309,5 +328,9 @@ public class AdvancedLootDatabase {
 
     public boolean isEmpty() {
         return cache.isEmpty();
+    }
+
+    public int getTier(XMaterial material) {
+        return materialTiers.getOrDefault(material, defaultTier);
     }
 }

@@ -93,7 +93,7 @@ public final class AdvancedLootGenerator {
             return entry;
         }
 
-        coreStack.setAmount(calculateAmount(coreStack));
+        coreStack.setAmount(calculateAmount(coreItemX, coreStack));
 
         try {
             NBT.itemStackToNBT(coreStack);
@@ -122,7 +122,7 @@ public final class AdvancedLootGenerator {
                             continue;
                         }
 
-                        synStack.setAmount(calculateAmount(synStack));
+                        synStack.setAmount(calculateAmount(synItem.getMaterial(), synStack));
 
                         try {
                             NBT.itemStackToNBT(synStack);
@@ -182,7 +182,7 @@ public final class AdvancedLootGenerator {
                 continue;
             }
 
-            stack.setAmount(calculateAmount(stack));
+            stack.setAmount(calculateAmount(randomMat, stack));
             try {
                 NBT.itemStackToNBT(stack);
                 entry.add(new ItemDrop(stack), weight, null);
@@ -223,7 +223,7 @@ public final class AdvancedLootGenerator {
     }
 
 
-    private int calculateAmount(ItemStack stack) {
+    private int calculateAmount(XMaterial xMat, ItemStack stack) {
         Material material = stack.getType();
 
         if (!isItemSafe(material)) {
@@ -235,14 +235,29 @@ public final class AdvancedLootGenerator {
             return 1;
         }
 
-        //TODO(zhabka_zhaba): Implement rarity dependence
-        if (material.isBlock()) {
-            int[] sizes = {8, 16, 32}; //TODO(zhabka_zhaba): Implement non-linear size distribution?
-            int amount = sizes[ThreadLocalRandom.current().nextInt(sizes.length)];
-            return Math.min(amount, maxStack);
+        int tier = db.getTier(xMat);
+        boolean isBlock = material.isBlock();
+        int[] amounts;
+
+        switch (tier) {
+            case 1: amounts = isBlock ? new int[]{16, 32, 64} : new int[]{8, 16, 32}; break;
+            case 2: amounts = isBlock ? new int[]{8, 16, 32} : new int[]{4, 8, 16}; break;
+            case 3: amounts = isBlock ? new int[]{4, 8, 16} : new int[]{2, 4, 8}; break;
+            default: amounts = isBlock ? new int[]{1, 2, 4} : new int[]{1, 2, 3}; break;
         }
 
-        return ThreadLocalRandom.current().nextInt(1, Math.max(2, maxStack / 3));
+        double roll = ThreadLocalRandom.current().nextDouble();
+        int chosen;
+
+        if (roll < 0.50) {
+            chosen = amounts[0];
+        } else if (roll < 0.85) {
+            chosen = amounts[1];
+        } else {
+            chosen = amounts[2];
+        }
+
+        return Math.min(chosen, maxStack);
     }
 
     private static boolean isItemSafe(Material material) {
