@@ -160,7 +160,8 @@ public final class AdvancedLootGenerator {
                 File schemFile = new File(schemFolder, sData.fileName);
 
                 if (schemFile.exists()) {
-                    entry.add(new SchematicDrop(schemFile, sData.type, sData.ignoreAir), db.getSchematicDropWeight(), null);
+                    entry.add(new SchematicDrop(schemFile, sData.type, sData.ignoreAir),
+                            db.getSchematicDropWeight(), null);
                 }
             }
         }
