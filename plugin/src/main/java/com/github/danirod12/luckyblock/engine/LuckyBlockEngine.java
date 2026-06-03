@@ -70,6 +70,7 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
     @Getter
     private final ConfigHolder configHolder;
 
+    @Getter
     private final ItemBagLoader itemBagLoader;
     private final LuckyRecipeProvider recipeProvider;
 

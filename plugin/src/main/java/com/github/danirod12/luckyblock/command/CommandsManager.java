@@ -8,6 +8,7 @@ import com.github.danirod12.luckyblock.command.base.CommandResponse;
 import com.github.danirod12.luckyblock.command.base.LBCommand;
 import com.github.danirod12.luckyblock.command.piece.*;
 import com.github.danirod12.luckyblock.engine.LuckyBlockEngine;
+import com.github.danirod12.luckyblock.engine.generator.AdvancedLootDatabase;
 import com.github.danirod12.luckyblock.util.Misc;
 import com.github.danirod12.luckyblock.util.manager.MessagesManager.Message;
 import org.bukkit.Bukkit;
@@ -25,9 +26,11 @@ public class CommandsManager implements CommandExecutor, /* TODO TabCompleter, *
     private final LuckyBlockEngine engine;
     private final List<LBCommand> commands = new ArrayList<>();
     private final List<BaseAlias> aliases = new ArrayList<>();
+    AdvancedLootDatabase db;
 
-    public CommandsManager(LuckyBlockEngine engine, LBMainProvider provider) {
+    public CommandsManager(LuckyBlockEngine engine, LBMainProvider provider, AdvancedLootDatabase db) {
         this.engine = engine;
+        this.db = db;
 
         // Basic
         register(new GetCommand(engine));
@@ -50,7 +53,7 @@ public class CommandsManager implements CommandExecutor, /* TODO TabCompleter, *
         // Other
         register(new VersionCommand(provider.getSpigotUpdater()));
 //        register(new ConvertCommand(engine.getConvertFactory()));
-        register(new GenerateCommand(engine));
+        register(new GenerateCommand(engine, db));
 
         // Redirections
         register(BaseAlias.build("shop", "gui get"));

@@ -277,7 +277,7 @@ public class LBMain extends LBMainProvider {
         }
 
         logChannel.info("Loading commands...");
-        commandsManager = new CommandsManager(luckyBlockEngine, this);
+        commandsManager = new CommandsManager(luckyBlockEngine, this, advancedLootDatabase);
         PluginCommand command = Bukkit.getPluginCommand("ntdluckyblock");
         if (command == null) {
             throw new UnsupportedOperationException("Command not found");
