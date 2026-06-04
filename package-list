@@ -1,0 +1,9 @@
+com.github.danirod12.luckyblock.api
+com.github.danirod12.luckyblock.api.event
+com.github.danirod12.luckyblock.api.exception
+com.github.danirod12.luckyblock.api.loader
+com.github.danirod12.luckyblock.api.model
+com.github.danirod12.luckyblock.api.model.random
+com.github.danirod12.luckyblock.api.provider
+com.github.danirod12.luckyblock.api.setup
+com.github.danirod12.luckyblock.api.util
