@@ -26,7 +26,7 @@ public class CommandsManager implements CommandExecutor, /* TODO TabCompleter, *
     private final LuckyBlockEngine engine;
     private final List<LBCommand> commands = new ArrayList<>();
     private final List<BaseAlias> aliases = new ArrayList<>();
-    AdvancedLootDatabase db;
+    private final AdvancedLootDatabase db;
 
     public CommandsManager(LuckyBlockEngine engine, LBMainProvider provider, AdvancedLootDatabase db) {
         this.engine = engine;
