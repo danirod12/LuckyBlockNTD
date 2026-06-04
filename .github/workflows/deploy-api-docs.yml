@@ -1,0 +1,38 @@
+name: Deploy Public API Javadoc to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+
+      - name: Generate Public API Javadoc
+        run: |
+          mkdir -p target/site/apidocs
+          javadoc -d target/site/apidocs \
+            -sourcepath "api/src/main/java" \
+            -subpackages "com.github.danirod12.luckyblock" \
+            -public \
+            -Xdoclint:none \
+            -quiet
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: target/site/apidocs
+          branch: gh-pages

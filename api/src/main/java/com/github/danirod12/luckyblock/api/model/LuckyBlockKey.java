@@ -34,7 +34,7 @@ public class LuckyBlockKey {
      *                                 and can be applied to the block if applyColorDataToBlock is true.
      * @param material                 the material of the LuckyBlock. It must be a solid block.
      * @param applyColorDataToBlock    whether to apply the color data to the block.
-     *                                 If true, the block will have a colored texture based on the color data (1.12<).
+     *                                 If true, the block will have a colored texture based on the color data (1.12-).
      * @throws IllegalArgumentException if any of the parameters are invalid.
      */
     public LuckyBlockKey(String key, ColorData colorData, Material material, boolean applyColorDataToBlock) {
