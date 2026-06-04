@@ -1,17 +1,15 @@
 package com.github.danirod12.luckyblock.engine.loader;
 
-import com.github.danirod12.luckyblock.api.customitem.BekkerItemStack;
-import com.github.danirod12.luckyblock.api.customitem.CustomItemFactory;
 import com.github.danirod12.luckyblock.api.exception.DependencyNotFoundException;
+import com.github.danirod12.luckyblock.engine.drop.SchematicDrop;
 import com.github.danirod12.luckyblock.api.loader.StringLoader;
 import com.github.danirod12.luckyblock.api.model.LuckyDrop;
-import com.github.danirod12.luckyblock.api.model.LuckyDropType;
+import com.github.danirod12.luckyblock.engine.drop.LuckyDropType;
 import com.github.danirod12.luckyblock.api.model.SpecialDropType;
 import com.github.danirod12.luckyblock.engine.LuckyBlockEngine;
 import com.github.danirod12.luckyblock.engine.drop.*;
 import com.github.danirod12.luckyblock.engine.drop.special.*;
 import com.github.danirod12.luckyblock.hook.Hook;
-import com.github.danirod12.luckyblock.hook.sk89q.WorldEditProvider;
 import com.github.danirod12.luckyblock.util.Misc;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -24,14 +22,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Deprecated // V2f loader
 public class LegacyLoader implements StringLoader {
 
     private final LuckyBlockEngine engine;
-    private final WorldEditProvider worldEditProvider;
+    private final File schematicsFolder;
 
-    public LegacyLoader(LuckyBlockEngine engine, WorldEditProvider worldEditProvider) {
+    public LegacyLoader(LuckyBlockEngine engine, File schematicsFolder) {
         this.engine = engine;
-        this.worldEditProvider = worldEditProvider;
+        this.schematicsFolder = schematicsFolder;
     }
 
     // TODO forward down?
@@ -91,24 +90,24 @@ public class LegacyLoader implements StringLoader {
                 }
                 return new LuckyItemDrop(engine.get(baseData[1]), amount);
             }
-            case CUSTOM_ITEM: {
-                int amount = 1;
-                try {
-                    amount = Integer.parseInt(baseData[2]);
-                } catch (Exception ignored) {
-                }
-                if (amount < 1) {
-                    amount = 1;
-                }
-                BekkerItemStack item = CustomItemFactory.fetchCustomItem(baseData[1].contains("-")
-                        ? baseData[1] : "ntdluckyblock-" + baseData[1]);
-                if (item == null) {
-                    throw new IllegalArgumentException("BekkerItemStack for name " + baseData[1] + " was not found");
-                }
-                ItemStack stack = item.clone();
-                stack.setAmount(amount);
-                return new ItemDrop(stack);
-            }
+//            case CUSTOM_ITEM: {
+//                int amount = 1;
+//                try {
+//                    amount = Integer.parseInt(baseData[2]);
+//                } catch (Exception ignored) {
+//                }
+//                if (amount < 1) {
+//                    amount = 1;
+//                }
+//                BekkerItemStack item = CustomItemFactory.fetchCustomItem(baseData[1].contains("-")
+//                        ? baseData[1] : "ntdluckyblock-" + baseData[1]);
+//                if (item == null) {
+//                    throw new IllegalArgumentException("BekkerItemStack for name " + baseData[1] + " was not found");
+//                }
+//                ItemStack stack = item.clone();
+//                stack.setAmount(amount);
+//                return new ItemDrop(stack);
+//            }
             case SCHEMATIC: {
                 if (!Hook.WorldEdit.isEnabled()) {
                     throw new DependencyNotFoundException("WorldEdit");
@@ -122,7 +121,8 @@ public class LegacyLoader implements StringLoader {
                 } else {
                     throw new IllegalArgumentException("Schematic format allow only player and block arguments");
                 }
-                return new SchematicDrop(getSchematicFile(baseData), setAsBlock,
+                return new SchematicDrop(getSchematicFile(baseData), setAsBlock
+                        ? SchematicDrop.SchematicType.BLOCK_RELATIVE : SchematicDrop.SchematicType.PLAYER_RELATIVE,
                         baseData.length > 3 && baseData[3].equalsIgnoreCase("true"));
             }
             case SPECIAL: {
@@ -147,6 +147,31 @@ public class LegacyLoader implements StringLoader {
                         return new TntExplosionSpecial(apply(special, baseData[2]));
                     case TNT_COLUMN:
                         return new TntColumnSpecial(apply(special, baseData[2]));
+                    case JEB:
+                        return new JebSpecial(apply(special, baseData.length > 2 ? baseData[2] : ""));
+                    case CREEPY_MUSIC:
+                        return new CreepyMusicSpecial();
+                    case CHICKEN_RAIN:
+                        return new ChickenRainSpecial(apply(special, baseData.length > 2 ? baseData[2] : ""));
+                    case PARANOIA:
+                        return new ParanoiaSpecial();
+                    case ANNOYING_BABY:
+                        return new AnnoyingBabySpecial(apply(special, baseData.length > 2 ? baseData[2] : ""));
+                    case HOTBAR_SWAP:
+                        return new HotbarSwapSpecial();
+                    case BLACK_HOLE:
+                        return new BlackHoleSpecial();
+                    case GHOST_MODE:
+                        return new GhostModeSpecial();
+                    case MOON_GRAVITY:
+                        return new MoonGravitySpecial();
+                    case RANDOM_TELEPORT:
+                        return new RandomTeleportSpecial();
+                    case SLIPPERY_FINGERS:
+                        return new SlipperyFingersSpecial();
+                    case TIME_LOOP:
+                        return new TimeLoopSpecial();
+
                     default:
                         throw new RuntimeException(special.name() + " not implemented");
                 }
@@ -159,10 +184,10 @@ public class LegacyLoader implements StringLoader {
     private File getSchematicFile(String[] baseData) {
         String fileName = baseData[1].endsWith(".schem") ? baseData[1] : baseData[1] + ".schem";
 
-        File file = new File(this.worldEditProvider.getFolder(), fileName);
+        File file = new File(this.schematicsFolder, fileName);
         if (!file.exists()) {
             fileName = baseData[1].endsWith(".schematic") ? baseData[1] : baseData[1] + ".schematic";
-            file = new File(this.worldEditProvider.getFolder(), fileName);
+            file = new File(this.schematicsFolder, fileName);
 
             if (!file.exists()) {
                 throw new IllegalArgumentException("Schematic " + file.getPath() + " not found");
@@ -229,6 +254,30 @@ public class LegacyLoader implements StringLoader {
             return "SPECIAL : LIGHTNING : " + ((LightningSpecial) drop).getAmount();
         } else if (drop instanceof ExperienceExplosionSpecial) {
             return "SPECIAL : EXPERIENCE_EXPLOSION : " + ((ExperienceExplosionSpecial) drop).getAmount();
+        } else if (drop instanceof JebSpecial) {
+            return "SPECIAL : JEB : " + ((JebSpecial) drop).getAmount();
+        } else if (drop instanceof CreepyMusicSpecial) {
+            return "SPECIAL : CREEPY_MUSIC";
+        } else if (drop instanceof ChickenRainSpecial) {
+            return "SPECIAL : CHICKEN_RAIN : " + ((ChickenRainSpecial) drop).getAmount();
+        } else if (drop instanceof ParanoiaSpecial) {
+            return "SPECIAL : PARANOIA";
+        } else if (drop instanceof AnnoyingBabySpecial) {
+            return "SPECIAL : ANNOYING_BABY : " + ((AnnoyingBabySpecial) drop).getAmount();
+        } else if (drop instanceof HotbarSwapSpecial) {
+            return "SPECIAL : HOTBAR_SWAP";
+        } else if (drop instanceof BlackHoleSpecial) {
+            return "SPECIAL : BLACK_HOLE";
+        } else if (drop instanceof GhostModeSpecial) {
+            return "SPECIAL : GHOST_MODE";
+        } else if (drop instanceof MoonGravitySpecial) {
+            return "SPECIAL : MOON_GRAVITY";
+        } else if (drop instanceof RandomTeleportSpecial) {
+            return "SPECIAL : RANDOM_TELEPORT";
+        } else if (drop instanceof SlipperyFingersSpecial) {
+            return "SPECIAL : SLIPPERY_FINGERS";
+        } else if (drop instanceof TimeLoopSpecial) {
+            return "SPECIAL : TIME_LOOP";
         }
         throw new RuntimeException(drop.getClass().getName() + " legacy save logic not implemented");
     }

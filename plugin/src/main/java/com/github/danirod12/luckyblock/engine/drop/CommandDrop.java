@@ -22,4 +22,12 @@ public class CommandDrop implements LuckyDrop {
     public void execute(LuckyDrop.Execution execution) {
         Misc.performCommand(this.command, execution.getBlock(), execution.getPlayer(), Misc.PerformCommandAs.PLAYER);
     }
+
+    public static LuckyDrop deserialize(String[] data) {
+        return new MessageDrop(data.length < 1 ? "" : data[0]);
+    }
+
+    public static String[] serialize(CommandDrop drop) {
+        return new String[]{drop.command};
+    }
 }

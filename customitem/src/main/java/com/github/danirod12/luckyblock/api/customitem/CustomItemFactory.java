@@ -1,13 +1,13 @@
 package com.github.danirod12.luckyblock.api.customitem;
 
+import com.cryptomorin.xseries.XBlock;
+import com.cryptomorin.xseries.XMaterial;
 import com.github.danirod12.luckyblock.api.LuckyBlockAPI;
 import com.github.danirod12.luckyblock.api.event.CustomItemAddedEvent;
 import com.github.danirod12.luckyblock.api.event.CustomItemFactoryReloadEvent;
 import com.github.danirod12.luckyblock.api.util.Config;
-import com.github.danirod12.luckyblock.nms.ItemTag;
-import com.github.danirod12.luckyblock.nms.VersionControlFactory;
-import com.github.danirod12.luckyblock.nms.material.IMat;
-import com.github.danirod12.luckyblock.nms.material.IMat.Mat;
+import de.tr7zw.nbtapi.NBT;
+import de.tr7zw.nbtapi.utils.MinecraftVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
+import java.util.stream.Stream;
 
 // TODO rework
 public class CustomItemFactory {
@@ -72,25 +73,23 @@ public class CustomItemFactory {
     }
 
     public static String parseValue(ItemStack item, String tagName) {
-        return getFactory().getValue(item, tagName);
+        //TODO wrapper
+        if (item == null || item.getType().name().contains("AIR") || item.getAmount() == 0) {
+            return null;
+        }
+        if (!NBT.get(item, nbt -> (Boolean) nbt.hasTag(tagName))) {
+            return null;
+        }
+        return NBT.get(item, nbt -> (String) nbt.getString(tagName));
     }
 
     public static BekkerItemStack fetchCustomItem(ItemStack item) {
-        ItemTag adapter = getFactory().getItemTagAdapter();
-        final Object tag = adapter.getTag(adapter.asNMSCopy(item));
-        if (tag == null) {
-            return null;
-        }
-
-        final String identifier = adapter.getTagString(tag, CustomItemFactory.TAG_IDENTIFIER_NAME);
+        //TODO wrapper
+        String identifier = parseValue(item, CustomItemFactory.TAG_IDENTIFIER_NAME);
         if (identifier == null) {
             return null;
         }
         return fetchCustomItem(identifier);
-    }
-
-    private static VersionControlFactory getFactory() {
-        return (VersionControlFactory) LuckyBlockAPI.getLuckyEngineProvider().getVersionControl();
     }
 
     public static void loadSystem(Map<String, String> messages) {
@@ -104,14 +103,15 @@ public class CustomItemFactory {
         // check if new items is missed
         if (customItems.getBoolean("magic_wool.enabled")) {
             try {
-                register(new BekkerItemStackBuilder(((VersionControlFactory) LuckyBlockAPI.getLuckyEngineProvider()
-                        .getVersionControl()).getMat().getItem(Mat.WHITE_WOOL, 1))
+                register(new BekkerItemStackBuilder(XMaterial.WHITE_WOOL.parseItem())
                         .addUnsafeEnchantment(Enchantment.DURABILITY, 1).setSerialID("magic_wool")
                         .hideEnchantments()
                         .setName(messages.get("magic_wool"))
                         .registerEvent(ItemEvent.PLACE, n -> new BukkitRunnable() {
                             final Block block = n.getBlock();
                             int rounds = ThreadLocalRandom.current().nextInt(5, 15);
+                            final XMaterial[] materials = Stream.of(XMaterial.values())
+                                    .filter(xm -> xm.name().endsWith("_WOOL")).toArray(XMaterial[]::new);
 
                             @Override
                             public void run() {
@@ -120,13 +120,7 @@ public class CustomItemFactory {
                                     return;
                                 }
 
-                                if (LuckyBlockAPI.getLuckyEngineProvider().getVersionControl().isModern()) {
-                                    block.setType(IMat.WOOLS
-                                            .get(ThreadLocalRandom.current().nextInt(IMat.WOOLS.size())));
-                                } else {
-                                    IMat.setData(block, (byte) ThreadLocalRandom.current().nextInt(16));
-                                }
-
+                                XBlock.setType(block, materials[ThreadLocalRandom.current().nextInt(materials.length)]);
                                 rounds--;
                             }
                         }.runTaskTimer(LuckyBlockAPI.getInstance(), 2L, 5L)));
@@ -176,8 +170,7 @@ public class CustomItemFactory {
         }
         if (customItems.getBoolean("mystery_meat.enabled")) {
             try {
-                register(new BekkerItemStackBuilder(((VersionControlFactory) LuckyBlockAPI.getLuckyEngineProvider()
-                        .getVersionControl()).getMat().getItem(Mat.BEEF, 1).getType())
+                register(new BekkerItemStackBuilder(XMaterial.BEEF.parseItem())
                         .addUnsafeEnchantment(Enchantment.DURABILITY, 1)
                         .hideEnchantments().setSerialID("mystery_meat")
                         .setName(messages.get("mystery_meat"))
@@ -247,7 +240,7 @@ public class CustomItemFactory {
                 th.printStackTrace();
             }
         }
-        if (LuckyBlockAPI.getLuckyEngineProvider().getVersionControl().isModern()
+        if (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1)
                 && customItems.getBoolean("carrot_corrupter.enabled")) {
             try {
                 register(new BekkerItemStackBuilder(Material.CARROT).addUnsafeEnchantment(Enchantment.DURABILITY, 1)

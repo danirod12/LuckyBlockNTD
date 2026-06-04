@@ -6,7 +6,6 @@ import org.bukkit.inventory.ItemStack;
 
 public interface ILuckyRecipe {
 
-
     int verify(ItemStack[] origin);
 
     LuckyBlockKey getType();

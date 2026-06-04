@@ -70,7 +70,7 @@ public class ConfigHolder {
                         field.set(this, config.getBoolean(path));
                     } else if (field.getType() == Single.class) {
                         if (field.getGenericType() == boolean.class) {
-                            Single.class.getMethod("set", Object.class).invoke(field, config.get().get(path));
+                            Single.class.getMethod("set", Object.class).invoke(field, config.get(path));
                         }
                     } else if (field.getType() == List.class && field.getGenericType() instanceof ParameterizedType) {
                         Type[] generics = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();

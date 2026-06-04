@@ -7,7 +7,8 @@ import com.github.danirod12.luckyblock.api.provider.LBMainProvider;
 import com.github.danirod12.luckyblock.api.util.*;
 import com.github.danirod12.luckyblock.command.CommandsManager;
 import com.github.danirod12.luckyblock.engine.LuckyBlockEngine;
-import com.github.danirod12.luckyblock.engine.drop.LuckyItemDrop;
+import com.github.danirod12.luckyblock.engine.drop.SchematicList;
+import com.github.danirod12.luckyblock.engine.generator.AdvancedLootDatabase;
 import com.github.danirod12.luckyblock.hook.Hook;
 import com.github.danirod12.luckyblock.hook.economy.EconomyBridge;
 import com.github.danirod12.luckyblock.hook.economy.TokenManagerEconomy;
@@ -19,7 +20,6 @@ import com.github.danirod12.luckyblock.hook.thebusybiscuit.SlimeFunListener;
 import com.github.danirod12.luckyblock.listener.CoreListener;
 import com.github.danirod12.luckyblock.listener.CustomItemListener;
 import com.github.danirod12.luckyblock.listener.EntityLoadListener;
-import com.github.danirod12.luckyblock.nms.VersionControlFactory;
 import com.github.danirod12.luckyblock.recipe.CraftListener;
 import com.github.danirod12.luckyblock.util.Misc;
 import com.github.danirod12.luckyblock.util.SpigotUpdater;
@@ -30,18 +30,19 @@ import com.github.danirod12.luckyblock.util.manager.GuiManager;
 import com.github.danirod12.luckyblock.util.manager.MessagesManager;
 import com.github.danirod12.luckyblock.variables.PlayerHead;
 import com.github.danirod12.luckyblock.variables.world.WorldListDataHandler;
+import de.tr7zw.nbtapi.utils.MinecraftVersion;
 import lombok.Getter;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -55,8 +56,6 @@ public class LBMain extends LBMainProvider {
     public Single<StringMatcher<WorldListDataHandler>> worldsFilter = new Single<>();
 
     // Managers
-    @Getter
-    private VersionControlFactory versionControl;
     private LuckyBlockEngine luckyBlockEngine;
     private EconomyBridge economy;
     @Getter
@@ -64,6 +63,8 @@ public class LBMain extends LBMainProvider {
     @Getter
     private CommandsManager commandsManager;
     private EntityLoadListener entityLoadListener;
+    @Getter
+    private AdvancedLootDatabase advancedLootDatabase;
 
     @Getter
     private final ConfigHolder configHolder = new ConfigHolder();
@@ -123,14 +124,6 @@ public class LBMain extends LBMainProvider {
             sender.sendMessage(entry);
         }
 
-        // NMS & items
-        try {
-            this.versionControl = new VersionControlFactory(this.logChannel);
-        } catch (RuntimeException exception) {
-            exception.printStackTrace();
-            Bukkit.getPluginManager().disablePlugin(this);
-            return;
-        }
         // At this stage we are sure that our plugin may run on current server
 
         // Updater & Metrics
@@ -147,13 +140,65 @@ public class LBMain extends LBMainProvider {
         // Before config
         guiManager = new GuiManager(this);
         File folder = new File(getDataFolder() + File.separator + "luckyblocks");
-        luckyBlockEngine = new LuckyBlockEngine(this, logChannel, folder,
-                configHolder, versionControl, worldEditProvider);
+        luckyBlockEngine = new LuckyBlockEngine(this, logChannel, folder, configHolder);
         entityLoadListener = new EntityLoadListener(this, luckyBlockEngine);
         LuckyBlockAPI.injectAPI(this, luckyBlockEngine);
 
         // Loading config
         reloadConfig();
+
+        // ============================================
+        logChannel.info("Loading Advanced Loot Database...");
+        advancedLootDatabase = new AdvancedLootDatabase();
+
+        try {
+            InputStream generatorConfigIn = getResource("generator/config.json");
+            if (generatorConfigIn != null) {
+                try (Reader r = new InputStreamReader(generatorConfigIn, StandardCharsets.UTF_8)) {
+                    advancedLootDatabase.loadConfig(r);
+                }
+            }
+        } catch (Exception e) {
+            logChannel.warning("Failed to load config.json, using defaults.");
+        }
+
+        try {
+            InputStream bannedMaterialsIn = getResource("generator/banned_materials.json");
+            if (bannedMaterialsIn != null) {
+                try (Reader bannedReader = new InputStreamReader(bannedMaterialsIn, StandardCharsets.UTF_8)) {
+                    advancedLootDatabase.loadBanned(bannedReader);
+                }
+            }
+        } catch (Exception e) {
+            logChannel.warning("Failed to load banned_materials.json! Continuing without blacklist.");
+        }
+
+        try {
+            InputStream bannedEntitiesIn = getResource("generator/banned_entities.json");
+            if (bannedEntitiesIn != null) {
+                try (Reader bannedReader = new InputStreamReader(bannedEntitiesIn, StandardCharsets.UTF_8)) {
+                    advancedLootDatabase.loadBannedEntities(bannedReader);
+                }
+            }
+        } catch (Exception e) {
+            logChannel.warning("Failed to load banned_entities.json! Continuing without blacklist.");
+        }
+
+        try {
+            InputStream materialTagsIn = getResource("generator/materials_tagged_v2.json");
+            if (materialTagsIn == null) {
+                logChannel.severe("Could not find materials_tagged_v2.json in plugin resources");
+            } else {
+                try (Reader reader = new InputStreamReader(materialTagsIn, StandardCharsets.UTF_8)) {
+                    advancedLootDatabase.load(reader);
+                    logChannel.info("Advanced Loot Database loaded successfully.");
+                }
+            }
+        } catch (Exception e) {
+            logChannel.severe("Failed to load Advanced Loot Database");
+        }
+        // ============================================
+
         if (this.configHolder.getConfig().getBoolean("scheduled-update-check")) {
             logChannel.debug("Loading Bukkit scheduler thread for delayed update check");
             Bukkit.getScheduler().runTaskTimerAsynchronously(this,
@@ -169,7 +214,7 @@ public class LBMain extends LBMainProvider {
         }
 
         // Init caches for textures player heads
-        PlayerHead.loadAll(this.versionControl);
+        PlayerHead.loadAll();
         // Check all hooks if related plugins exists
         Hook.loadAll();
 
@@ -193,24 +238,12 @@ public class LBMain extends LBMainProvider {
         // Schematics support via WorldEdit
         if (Hook.WorldEdit.isEnabled()) {
             logChannel.debug("Loading WorldEdit provider...");
-            this.worldEditProvider = new WorldEditProvider(this, new File(getDataFolder(), "schematics"), getLogger());
+            this.worldEditProvider = new WorldEditProvider(this, this.luckyBlockEngine);
 
             if (!this.worldEditProvider.isPlatformAvailable()) {
                 Hook.WorldEdit.disable("unsupported version");
             } else {
-                boolean legacy = this.versionControl.isLegacy();
-                File schematicsFolder = this.worldEditProvider.getFolder();
-                if (!this.worldEditProvider.getFolder().exists()) {
-                    schematicsFolder.mkdirs();
-                    new Config(this, "configuration.schematics." + this.versionControl.getMat().build(),
-                            schematicsFolder, "cage_lava.schem" + (legacy ? "atic" : "")).copy(false);
-                    new Config(this, "configuration.schematics.main", schematicsFolder,
-                            "bedrock_problem.schematic").copy(false);
-                    if (!legacy) {
-                        new Config(this, "configuration.schematics.main", schematicsFolder,
-                                "small_temple.schem").copy(false);
-                    }
-                }
+                SchematicList.copyDefaults(this);
             }
         }
 
@@ -244,7 +277,7 @@ public class LBMain extends LBMainProvider {
         }
 
         logChannel.info("Loading commands...");
-        commandsManager = new CommandsManager(luckyBlockEngine, this);
+        commandsManager = new CommandsManager(luckyBlockEngine, this, advancedLootDatabase);
         PluginCommand command = Bukkit.getPluginCommand("ntdluckyblock");
         if (command == null) {
             throw new UnsupportedOperationException("Command not found");
@@ -262,50 +295,63 @@ public class LBMain extends LBMainProvider {
 
         // TODO remove all below (tests)
 
-        LuckyBlock luckyBlock;
-        ItemStack stack;
-        ItemMeta meta;
+//        LuckyBlock luckyBlock;
+//        ItemStack stack;
+//        ItemMeta meta;
+//
+//        // danirod12 skin LuckyBlock
+//
+//        luckyBlock = luckyBlockEngine.newLuckyBlock(new LuckyBlockKey("danirod12",
+//                ColorData.YELLOW, Material.HONEY_BLOCK, false));
+//        luckyBlock.setItemAndIcon(
+//                this.versionControl.getPlayerHead(
+//                        "62e964f46cc23947d6db48334e42cfab7093184e4ae7d27f68c8e7079b3d21dc",
+//                        "danirod12", null, null
+//                )
+//        );
+//        luckyBlock.setCustomName("§6DANIROD12 SKIN");
+//        // TEST!!! (taking danirod12 block for testing)
+//        for (int i = 0; i < 502; i++) {
+//            WeightListAmount<LuckyDrop> entry =
+//                    AdvancedLootGenerator.builder(luckyBlockEngine, advancedLootDatabase)
+//                            .minItems(2)
+//                            .maxItems(3)
+//                            .mode(SynergyMode.STRICT)
+//                            .build()
+//                            .generate();
+//
+//            luckyBlock.getItemsBag().add(entry);
+//        }
+//        // ------------------------------------
+//
+//        luckyBlockEngine.register(luckyBlock);
 
-        // danirod12 skin LuckyBlock
-
-        luckyBlock = luckyBlockEngine.newLuckyBlock(new LuckyBlockKey("danirod12",
-                ColorData.YELLOW, Material.HONEY_BLOCK, false));
-        luckyBlock.setItemAndIcon(
-                this.versionControl.getPlayerHead(
-                        "62e964f46cc23947d6db48334e42cfab7093184e4ae7d27f68c8e7079b3d21dc",
-                        "danirod12", null, null
-                )
-        );
-        luckyBlock.setCustomName("§6DANIROD12 SKIN");
-        luckyBlock.getItemsBag().add(luckyBlockEngine.newLuckyEntry(new LuckyItemDrop(luckyBlock.getKey(), 1)));
-        luckyBlockEngine.register(luckyBlock);
-
-        // honey LuckyBlock
-
-        luckyBlock = luckyBlockEngine.newLuckyBlock(new LuckyBlockKey("slime",
-                ColorData.GREEN, Material.SLIME_BLOCK, false));
-        stack = new ItemStack(Material.HONEY_BLOCK);
-        meta = stack.getItemMeta();
-        assert meta != null;
-        meta.setDisplayName("§6§lHoney LuckyBlock");
-        stack.setItemMeta(meta);
-        luckyBlock.setItemAndIcon(stack);
-        luckyBlock.getItemsBag().add(luckyBlockEngine.newLuckyEntry(new LuckyItemDrop(luckyBlock.getKey(), 1)));
-        luckyBlockEngine.register(luckyBlock);
-
-        // ender LuckyBlock with slab and scaffolding
-
-        luckyBlock = luckyBlockEngine.newLuckyBlock(new LuckyBlockKey("slab",
-                ColorData.WHITE, Material.END_STONE_BRICK_SLAB, false));
-        stack = new ItemStack(Material.END_STONE_BRICK_SLAB);
-        meta = stack.getItemMeta();
-        assert meta != null;
-        meta.setDisplayName("§6§lStrange LuckyBlock");
-        stack.setItemMeta(meta);
-        luckyBlock.setIcon(new ItemStack(Material.SCAFFOLDING));
-        luckyBlock.setItem(stack);
-        luckyBlock.getItemsBag().add(luckyBlockEngine.newLuckyEntry(new LuckyItemDrop(luckyBlock.getKey(), 1)));
-        luckyBlockEngine.register(luckyBlock);
+//        // honey LuckyBlock
+//
+//        luckyBlock = luckyBlockEngine.newLuckyBlock(new LuckyBlockKey("slime",
+//                ColorData.GREEN, Material.SLIME_BLOCK, false));
+//        stack = new ItemStack(Material.HONEY_BLOCK);
+//        meta = stack.getItemMeta();
+//        assert meta != null;
+//        meta.setDisplayName("§6§lHoney LuckyBlock");
+//        stack.setItemMeta(meta);
+//        luckyBlock.setItemAndIcon(stack);
+//        luckyBlock.getItemsBag().add(luckyBlockEngine.newLuckyEntry(new LuckyItemDrop(luckyBlock.getKey(), 1)));
+//        luckyBlockEngine.register(luckyBlock);
+//
+//        // ender LuckyBlock with slab and scaffolding
+//
+//        luckyBlock = luckyBlockEngine.newLuckyBlock(new LuckyBlockKey("slab",
+//                ColorData.WHITE, Material.END_STONE_BRICK_SLAB, false));
+//        stack = new ItemStack(Material.END_STONE_BRICK_SLAB);
+//        meta = stack.getItemMeta();
+//        assert meta != null;
+//        meta.setDisplayName("§6§lStrange LuckyBlock");
+//        stack.setItemMeta(meta);
+//        luckyBlock.setIcon(new ItemStack(Material.SCAFFOLDING));
+//        luckyBlock.setItem(stack);
+//        luckyBlock.getItemsBag().add(luckyBlockEngine.newLuckyEntry(new LuckyItemDrop(luckyBlock.getKey(), 1)));
+//        luckyBlockEngine.register(luckyBlock);
     }
 
     @Override
@@ -325,7 +371,9 @@ public class LBMain extends LBMainProvider {
         boolean prevLightSource = this.configHolder.lightSource;
         this.configHolder.dirtyPickUp();
 
-        if (this.versionControl.isLegacy() && !this.configHolder.lightSource) {
+        this.luckyBlockEngine.updateChanceLevels();
+
+        if (!MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1) && !this.configHolder.lightSource) {
             this.logChannel.warning("Light source cannot be disabled on 1.8 - 1.12 " +
                     "due vanilla texture glitch (Texture is blacked out)");
             this.configHolder.lightSource = true;
@@ -345,16 +393,6 @@ public class LBMain extends LBMainProvider {
                     "from 2021 year! If you are using plugin as long and have not dropped your map " +
                     "and player data, you should install version 2.8.8 or older in order to avoid issues");
             logChannel.info("To remove this message remove config fields `place.*`");
-        }
-
-        ConfigurationSection section = this.configHolder.getConfig().getConfigurationSection("chances");
-        assert section != null;
-        for (String key : section.getKeys(false)) {
-            DropChance chance = DropChance.parse(key);
-            if (chance == null) {
-                continue;
-            }
-            chance.setWeight(section.getInt(key));
         }
 
         MessagesManager.reload(this.configHolder.getConfig().getString("language"));

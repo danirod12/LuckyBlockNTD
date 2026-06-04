@@ -1,15 +1,15 @@
 package com.github.danirod12.luckyblock.engine;
 
+import com.cryptomorin.xseries.XMaterial;
 import com.github.danirod12.luckyblock.LBMain;
 import com.github.danirod12.luckyblock.api.LuckyBlockAPI;
 import com.github.danirod12.luckyblock.api.customitem.CustomItemFactory;
 import com.github.danirod12.luckyblock.api.event.LuckyDropEvent;
-import com.github.danirod12.luckyblock.api.exception.EntryFormatException;
-import com.github.danirod12.luckyblock.api.exception.PremiumVersionRequiredException;
-import com.github.danirod12.luckyblock.api.loader.PathLoader;
-import com.github.danirod12.luckyblock.api.loader.StringLoader;
-import com.github.danirod12.luckyblock.api.model.*;
-import com.github.danirod12.luckyblock.api.provider.GenerationFactoryProvider;
+import com.github.danirod12.luckyblock.api.model.LuckyBlock;
+import com.github.danirod12.luckyblock.api.model.LuckyBlockKey;
+import com.github.danirod12.luckyblock.api.model.LuckyBlockType;
+import com.github.danirod12.luckyblock.api.model.LuckyDrop;
+import com.github.danirod12.luckyblock.api.model.random.Amount;
 import com.github.danirod12.luckyblock.api.provider.LuckyEngineProvider;
 import com.github.danirod12.luckyblock.api.provider.LuckyRecipeProvider;
 import com.github.danirod12.luckyblock.api.setup.AnimationSetup;
@@ -20,25 +20,27 @@ import com.github.danirod12.luckyblock.api.util.LogChannel;
 import com.github.danirod12.luckyblock.api.util.Pair;
 import com.github.danirod12.luckyblock.engine.drop.EntityDrop;
 import com.github.danirod12.luckyblock.engine.drop.ItemDrop;
-import com.github.danirod12.luckyblock.engine.loader.ConvertFactory;
-import com.github.danirod12.luckyblock.engine.loader.JSONLoader;
-import com.github.danirod12.luckyblock.engine.loader.LegacyLoader;
-import com.github.danirod12.luckyblock.engine.manager.BaseDataGenerator;
-import com.github.danirod12.luckyblock.engine.manager.GenerationFactory;
+import com.github.danirod12.luckyblock.engine.generator.AdvancedLootDatabase;
+import com.github.danirod12.luckyblock.engine.generator.AdvancedLootGenerator;
+import com.github.danirod12.luckyblock.engine.generator.BaseDataGenerator;
+import com.github.danirod12.luckyblock.engine.generator.SynergyMode;
+import com.github.danirod12.luckyblock.engine.loader.ItemBagLoader;
+import com.github.danirod12.luckyblock.engine.model.ItemsBagImpl;
 import com.github.danirod12.luckyblock.engine.model.LuckyBlockHolder;
-import com.github.danirod12.luckyblock.engine.model.LuckyEntryHolder;
-import com.github.danirod12.luckyblock.hook.sk89q.WorldEditProvider;
-import com.github.danirod12.luckyblock.nms.VersionControlFactory;
-import com.github.danirod12.luckyblock.nms.material.IMat;
 import com.github.danirod12.luckyblock.recipe.LuckyRecipeProviderImpl;
 import com.github.danirod12.luckyblock.util.Misc;
+import com.github.danirod12.luckyblock.util.PlayerHeadUtils;
 import com.github.danirod12.luckyblock.util.config.ConfigHolder;
+import com.github.danirod12.luckyblock.util.random.WeightListAmount;
+import de.tr7zw.nbtapi.NBT;
+import de.tr7zw.nbtapi.utils.MinecraftVersion;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.ArmorStand;
@@ -48,6 +50,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.*;
@@ -66,35 +69,32 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
     private final File folder;
     @Getter
     private final ConfigHolder configHolder;
-    private final VersionControlFactory versionControl;
-    @Getter
-    private final ConvertFactory convertFactory;
 
-    private final StringLoader stringLoader;
-    private final PathLoader pathLoader;
+    @Getter
+    private final ItemBagLoader itemBagLoader;
     private final LuckyRecipeProvider recipeProvider;
-    private final GenerationFactoryProvider generationFactory;
 
     private final Map<LuckyBlockKey, LuckyBlock> map = new HashMap<>();
     private final Set<Material> materialsRegistry = new HashSet<>();
 
-    public LuckyBlockEngine(Plugin plugin, LogChannel logChannel, File folder, ConfigHolder configHolder,
-                            VersionControlFactory versionControl, WorldEditProvider worldEditProvider) {
+    public LuckyBlockEngine(Plugin plugin, LogChannel logChannel, File folder, ConfigHolder configHolder) {
         this.plugin = plugin;
         this.logChannel = logChannel;
         this.folder = folder;
         this.configHolder = configHolder;
-        this.versionControl = versionControl;
-        this.stringLoader = new LegacyLoader(this, worldEditProvider);
-        this.pathLoader = new JSONLoader(this);
+        this.itemBagLoader = new ItemBagLoader();
+
         this.recipeProvider = new LuckyRecipeProviderImpl(this);
-        this.generationFactory = new GenerationFactory(this);
-        this.convertFactory = new ConvertFactory();
     }
 
-    @Override
-    public VersionControlFactory getVersionControl() {
-        return versionControl;
+    public void updateChanceLevels() {
+        Map<String, Double> weights = new HashMap<>();
+        ConfigurationSection section = configHolder.getConfig().getConfigurationSection("chances");
+        for (String chances : section.getKeys(false)) {
+            double weight = section.getDouble(chances);
+            weights.put(chances, weight);
+        }
+        this.itemBagLoader.setChanceLevels(weights);
     }
 
     @Override
@@ -103,23 +103,8 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
     }
 
     @Override
-    public GenerationFactoryProvider getGenerationFactory() {
-        return generationFactory;
-    }
-
-    @Override
     public boolean isLightSource() {
         return this.configHolder.lightSource;
-    }
-
-    @Override
-    public StringLoader getStringLoader() {
-        return stringLoader;
-    }
-
-    @Override
-    public PathLoader getPathLoader() {
-        return pathLoader;
     }
 
     @Override
@@ -130,19 +115,36 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
             logChannel.warning("LuckyBlock type " + type.name() + " cannot be loaded (Premium version is required)");
             return;
         }
-        if (type == LuckyBlockType.TINTED && this.versionControl.getTintedMaterial() == null) {
+        if (type == LuckyBlockType.TINTED && XMaterial.TINTED_GLASS.get() == null) {
             logChannel.warning("LuckyBlock type TINTED cannot be loaded (MC 1.17+ is required)");
             return;
         }
 
-        LuckyBlockKey key = BaseDataGenerator.getKey(versionControl, type);
+        LuckyBlockKey key = BaseDataGenerator.getKey(type);
         Config config = getNewConfigInstance(type.name());
         if (!config.hasResource()) {
             config.createFile();
             config.load();
-            generationFactory.generateBaseData(config, key);
-            LuckyEntry[] entries = generationFactory.generateLuckyEntries(150, 200);
-            generationFactory.saveLuckyEntries(config, entries);
+
+            ItemsBagImpl entries = new ItemsBagImpl();
+            entries.setAmount(Amount.of("1"));
+            int entriesCount = ThreadLocalRandom.current().nextInt(150, 200);
+            AdvancedLootDatabase db = JavaPlugin.getPlugin(LBMain.class).getAdvancedLootDatabase();
+
+            for (int i = 0; i < entriesCount; i++) {
+                WeightListAmount<LuckyDrop> entry =
+                        AdvancedLootGenerator.builder(this, db)
+                                .minItems(2)
+                                .maxItems(3)
+                                .mode(SynergyMode.STRICT)
+                                .enableSchematics(true)
+                                .build()
+                                .generate();
+
+                entries.add(entry);
+            }
+
+            this.itemBagLoader.write(config, entries);
             config.save();
         }
         config.copy(true);
@@ -151,7 +153,8 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
 
     @Override
     public Config getNewConfigInstance(String typeName) {
-        return new Config(plugin, "configuration.luckyblocks." + versionControl.getMat().build(),
+        return new Config(plugin, "configuration.luckyblocks."
+                + (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1) ? "main" : "old"),
                 folder, typeName.toLowerCase() + ".yml");
     }
 
@@ -166,7 +169,7 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
         if (config.isSet("lore")) {
             lore.addAll(config.getStringList("lore").stream().map(Misc::setColors).collect(Collectors.toList()));
         }
-        luckyBlock.setItem(this.versionControl.getPlayerHead(texture, name, lore, this.genUUID(type)));
+        luckyBlock.setItem(PlayerHeadUtils.getPlayerHead(texture, name, lore, this.genUUID(type)));
 
         // Load shop settings from config and then apply it to holder
         boolean shopEnabled = this.getConfigField(config, "shop", Boolean.class, () -> true);
@@ -198,22 +201,7 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
         }
 
         // Add all configured LuckyEntries
-        int skippedPremium = 0;
-        int skippedEntries = 0;
-        for (String str : config.getConfigurationSection("drop").getKeys(false)) {
-            try {
-                luckyBlock.getItemsBag().add(this.loadLuckyEntry(config, "drop." + str));
-            } catch (PremiumVersionRequiredException exception) {
-                skippedPremium++;
-            } catch (EntryFormatException exception) {
-                skippedEntries++;
-            }
-        }
-        if (skippedEntries > 0 || skippedPremium > 0) {
-            this.logChannel.warning("Skipped " + (skippedEntries + skippedPremium)
-                    + " entries for " + config.getName() + " due misconfiguration"
-                    + (skippedPremium > 0 ? " (" + skippedPremium + " premium items)" : ""));
-        }
+        luckyBlock.setItemsBag(this.itemBagLoader.load(config));
 
         // Check if we have made any updates. If so, write it to remote. Then remove completed object
         if (config.hasChanges()) {
@@ -228,63 +216,6 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
     }
 
     @Override
-    public LuckyEntry loadLuckyEntry(Config config, String path)
-            throws EntryFormatException, PremiumVersionRequiredException {
-        if (config == null || !config.isLoaded()) {
-            throw new IllegalArgumentException("Config is not loaded");
-        }
-
-        LuckyEntry entry = null;
-        // If path contains items field, we are dealing with modern JSON loader
-        if (config.isSet(path + ".items")) {
-            // I am so sorry, but we hate hackers. I do not know why someone run free after premium
-            if (!LBMain.isPremium()) {
-                throw new PremiumVersionRequiredException("JSON loader");
-            }
-
-            DropChance chance = DropChance.MEDIUM;
-            try {
-                chance = DropChance.valueOf(config.getString(path + ".chance").toUpperCase());
-            } catch (Exception ignored) {
-            }
-            entry = new LuckyEntryHolder(chance);
-            ConfigurationSection section = config.getConfigurationSection(path + ".items");
-            for (String key : section.getKeys(false)) {
-                try {
-                    LuckyDrop drop = this.pathLoader.load(config.getConfigurationSection(path + ".items." + key));
-                    if (drop != null) {
-                        entry.add(drop);
-                    }
-                } catch (Throwable throwable) {
-                    notifyMisconfiguration(config.getName(), path, "json", throwable);
-                }
-            }
-        } else if (config.isSet(path)) {
-            entry = new LuckyEntryHolder();
-            List<String> list = config.getStringList(path);
-            for (String dropData : list) {
-                try {
-                    LuckyDrop drop = this.stringLoader.deserialize(dropData);
-                    if (drop != null) {
-                        entry.add(drop);
-                    }
-                } catch (Throwable throwable) {
-                    notifyMisconfiguration(config.getName(), path, "legacy", throwable);
-                }
-            }
-            this.convertFactory.add(config, path);
-        }
-        if (entry != null && entry.isEmpty()) {
-            this.logChannel.warning("Skipping entry with 0 items... " + config.getName() + ", " + path);
-            entry = null;
-        }
-        if (entry == null) {
-            throw new EntryFormatException(config.getName(), path);
-        }
-        return entry;
-    }
-
-    @Override
     public boolean isLuckyBlock(ItemStack stack) {
         return this.parseLuckyBlock(stack).isPresent();
     }
@@ -296,8 +227,15 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
 
     @Override
     public Optional<LuckyBlockKey> parseLuckyBlock(ItemStack stack) {
-        String type = this.versionControl.getValue(stack, CustomItemFactory.TAG_LUCKYBLOCK_TYPE);
-        if (type == null) {
+        if (stack == null || stack.getType().name().contains("AIR")) {
+            return Optional.empty();
+        }
+
+        String type = NBT.get(stack, nbt -> {
+            return nbt.getString(CustomItemFactory.TAG_LUCKYBLOCK_TYPE);
+        });
+
+        if (type == null || type.isEmpty()) {
             return Optional.empty();
         }
         return Optional.of(get(type));
@@ -358,8 +296,10 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
     }
 
     @Override
-    public LuckyEntry newLuckyEntry(DropChance chance, LuckyDrop... drops) {
-        return new LuckyEntryHolder(chance, drops);
+    public WeightListAmount<LuckyDrop> newLuckyEntry(LuckyDrop... drops) {
+        WeightListAmount<LuckyDrop> list = new WeightListAmount<>();
+        list.addAll(Arrays.asList(drops));
+        return list;
     }
 
     @Override
@@ -506,7 +446,8 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
                         continue;
                     }
                     //noinspection deprecation
-                    if (block.getType() == pair.getKey().getMaterial() && (this.versionControl.isModern()
+                    if (block.getType() == pair.getKey().getMaterial()
+                            && (MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1)
                             || block.getData() == pair.getKey().getColorData().getData())) {
                         notRemoved.add(new Pair<>(entity, pair.getKey()));
                         continue;
@@ -523,7 +464,7 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
 
     @Override
     public void resolveSign(Block block) {
-        if (versionControl.getMat().isSign(block.getType())) {
+        if (block.getState() instanceof Sign) {
             Sign sign = (Sign) block.getState();
             String[] lines = sign.getLines();
             if (lines[0].equalsIgnoreCase("[ntdluckyblock]")) {
@@ -563,7 +504,7 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
         // Light source feature
         // The trick is based on fire effect that is not rendering on client if stand is marker
         if (isLightSource()) {
-            if (getVersionControl().isLegacy()) {
+            if (!MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1)) {
                 // 1.8 - 1.12 ArmorStand (Or even Entity) meta apply is delayed
                 // If we do not give 2 ticks delay, client will play fire animation
                 Bukkit.getScheduler().runTaskLater(getLogChannel().getPlugin(),
@@ -575,8 +516,9 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
 
         // Update block. If we are on legacy MC version, apply block data
         block.setType(key.getMaterial());
-        if (getVersionControl().isLegacy() && key.isApplyColorDataToBlock()) {
-            IMat.setData(block, key.getColorData().getData());
+        if (!MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1) && key.isApplyColorDataToBlock()) {
+            BlockState state = block.getState();
+            state.setRawData(key.getColorData().getData());
         }
     }
 

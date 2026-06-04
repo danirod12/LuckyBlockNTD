@@ -2,6 +2,8 @@ package com.github.danirod12.luckyblock.api.loader;
 
 import com.github.danirod12.luckyblock.api.model.LuckyDrop;
 
+// V2f loader
+@Deprecated
 public interface StringLoader {
 
     @Deprecated

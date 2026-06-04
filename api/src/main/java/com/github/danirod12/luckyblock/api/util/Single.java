@@ -2,6 +2,11 @@ package com.github.danirod12.luckyblock.api.util;
 
 import java.util.Optional;
 
+/**
+ * A simple container that can hold a single value of type T.
+ *
+ * @param <T> the type of the value to be held
+ */
 public class Single<T> {
 
     private T t;

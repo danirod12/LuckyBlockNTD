@@ -3,6 +3,7 @@ package com.github.danirod12.luckyblock.recipe;
 import com.github.danirod12.luckyblock.api.model.LuckyBlockKey;
 import com.github.danirod12.luckyblock.api.setup.ILuckyRecipeItem;
 import com.github.danirod12.luckyblock.engine.LuckyBlockEngine;
+import de.tr7zw.nbtapi.utils.MinecraftVersion;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Dye;
 
@@ -31,7 +32,7 @@ public class LuckyRecipeItem implements ILuckyRecipeItem {
 
         switch (type) {
             case DYE: {
-                if (engine.getVersionControl().isLegacy()) {
+                if (!MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1)) {
                     if (!(item.getData() instanceof Dye)) {
                         return false;
                     }

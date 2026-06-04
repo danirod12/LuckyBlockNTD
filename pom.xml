@@ -12,7 +12,6 @@
     <modules>
         <module>plugin</module>
         <module>sk89q</module>
-        <module>nms</module>
         <module>api</module>
         <module>customitem</module>
     </modules>
@@ -125,7 +124,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.6.2</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -143,6 +142,10 @@
                         <relocation>
                             <pattern>org.bstats</pattern>
                             <shadedPattern>com.github.danirod12.luckyblock.util.bstats</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.cryptomorin.xseries</pattern>
+                            <shadedPattern>com.github.danirod12.luckyblock.util.xseries</shadedPattern>
                         </relocation>
                     </relocations>
                     <filters>

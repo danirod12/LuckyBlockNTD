@@ -1,10 +1,10 @@
-package com.github.danirod12.luckyblock.engine.manager;
+package com.github.danirod12.luckyblock.engine.generator;
 
+import com.cryptomorin.xseries.XMaterial;
 import com.github.danirod12.luckyblock.api.exception.StaticMethodsOnlyException;
 import com.github.danirod12.luckyblock.api.model.LuckyBlockKey;
 import com.github.danirod12.luckyblock.api.model.LuckyBlockType;
 import com.github.danirod12.luckyblock.api.util.ColorData;
-import com.github.danirod12.luckyblock.nms.VersionControlFactory;
 import org.bukkit.Material;
 
 import java.util.UUID;
@@ -54,7 +54,7 @@ public class BaseDataGenerator {
             case YELLOW:
                 return "17bc1b64cba3dc4cefe4e121c3cdbbb0fa99aba0e113b5c916815fc9b304e636";
             default:
-                throw new RuntimeException();
+                throw new UnsupportedOperationException("Not implemented texture for " + type);
         }
     }
 
@@ -88,7 +88,7 @@ public class BaseDataGenerator {
             hash.insert(0, "0");
         }
 
-        return UUID.fromString("12345678-1234-1234-1234-" + symbol + hash);
+        return UUID.fromString("12345678-1234-1234-1234-" + symbol + hash); // V2 UUID format
     }
 
     public static boolean hasDefaultCrafts(LuckyBlockKey key) {
@@ -99,18 +99,18 @@ public class BaseDataGenerator {
         return false;
     }
 
-    public static LuckyBlockKey getKey(VersionControlFactory versionControl, LuckyBlockType type) {
+    public static LuckyBlockKey getKey(LuckyBlockType type) {
         if (type == LuckyBlockType.ICED) {
             return new LuckyBlockKey("iced", ColorData.LIGHT_BLUE, Material.ICE, false);
         } else if (type == LuckyBlockType.TINTED) {
-            Material tinted = versionControl.getTintedMaterial();
+            Material tinted = XMaterial.TINTED_GLASS.get();
             if (tinted == null) {
-                tinted = versionControl.getMat().getGlass(ColorData.BLACK, 1).getType();
+                tinted = XMaterial.BLACK_STAINED_GLASS.get();
             }
             return new LuckyBlockKey("black", ColorData.BLACK, tinted, true);
         } else {
-            ColorData data = ColorData.parse(type.name());
-            Material material = versionControl.getMat().getGlass(data, 1).getType();
+            ColorData data = type.getColorData();
+            Material material = XMaterial.valueOf(data.name() + "_STAINED_GLASS").get();
             return new LuckyBlockKey(type.name(), data, material, true);
         }
     }

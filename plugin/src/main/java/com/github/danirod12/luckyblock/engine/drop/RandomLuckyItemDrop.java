@@ -11,6 +11,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
+@Deprecated
 @Getter
 public class RandomLuckyItemDrop implements LuckyDrop {
 

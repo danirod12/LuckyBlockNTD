@@ -38,4 +38,14 @@ public class EntityDrop implements LuckyDrop {
         }
         Bukkit.getPluginManager().callEvent(new EntitySpawnEvent(execution, entities));
     }
+
+    public static LuckyDrop deserialize(String[] data) {
+        EntityType entity = EntityType.valueOf(data.length < 1 ? "PIG" : data[0]);
+        int amount = data.length < 2 ? 1 : Integer.parseInt(data[1]);
+        return new EntityDrop(entity, amount);
+    }
+
+    public static String[] serialize(EntityDrop drop) {
+        return new String[]{drop.entity.name(), String.valueOf(drop.amount)};
+    }
 }

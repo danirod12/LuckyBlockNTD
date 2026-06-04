@@ -1,0 +1,28 @@
+{
+  "mode": "STRICT",
+  "settings": {
+    "default_base_weight": 10,
+    "default_tier": 1,
+    "entity_spawn_chance": 0.1,
+    "entity_drop_weight": 40.0,
+    "special_spawn_chance": 0.1,
+    "special_drop_weight": 35.0,
+    "schematic_spawn_chance": 0.1,
+    "schematic_drop_weight": 20.0,
+    "max_similarity": 0.7,
+    "top_similar": 10,
+    "semistrict_mode_weight": 10.0,
+    "v2_mode_weight": 50.0
+  },
+  "tag_modifiers": {
+    "weapon_melee": 5,
+    "weapon_ranged": 5,
+    "enchanted_book": 5
+  },
+  "tier_multipliers": {
+    "1": 1.0,
+    "2": 0.75,
+    "3": 0.5,
+    "4": 0.25
+  }
+}

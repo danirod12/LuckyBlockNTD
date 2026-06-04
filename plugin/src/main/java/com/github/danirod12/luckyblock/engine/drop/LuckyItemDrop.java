@@ -4,6 +4,7 @@ import com.github.danirod12.luckyblock.api.LuckyBlockAPI;
 import com.github.danirod12.luckyblock.api.event.ItemSpawnEvent;
 import com.github.danirod12.luckyblock.api.model.LuckyBlockKey;
 import com.github.danirod12.luckyblock.api.model.LuckyDrop;
+import com.github.danirod12.luckyblock.api.provider.LuckyEngineProvider;
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -30,7 +31,14 @@ public class LuckyItemDrop implements LuckyDrop {
 
     @Override
     public void execute(LuckyDrop.Execution execution) {
-        LuckyBlockAPI.getLuckyEngineProvider().get(key).ifPresent(instance -> {
+        LuckyEngineProvider provider = LuckyBlockAPI.getLuckyEngineProvider();
+
+        LuckyBlockKey key = this.key;
+        if (key == null) {
+            key = provider.random();
+        }
+
+        provider.get(key).ifPresent(instance -> {
             ItemStack stack = instance.getItem();
             if (stack != null) {
                 stack.setAmount(amount);
@@ -39,5 +47,17 @@ public class LuckyItemDrop implements LuckyDrop {
                 Bukkit.getPluginManager().callEvent(new ItemSpawnEvent(execution, item));
             }
         });
+    }
+
+    public static LuckyDrop deserialize(String[] data) {
+        LuckyEngineProvider provider = LuckyBlockAPI.getLuckyEngineProvider();
+        LuckyBlockKey key = data.length < 1 || data[0].equalsIgnoreCase("random")
+                ? null : provider.get(data[0]);
+        int amount = data.length < 2 ? 1 : Integer.parseInt(data[1]);
+        return new LuckyItemDrop(key, amount);
+    }
+
+    public static String[] serialize(LuckyItemDrop drop) {
+        return new String[]{drop.key == null ? "random" : drop.key.getKey(), String.valueOf(drop.amount)};
     }
 }
