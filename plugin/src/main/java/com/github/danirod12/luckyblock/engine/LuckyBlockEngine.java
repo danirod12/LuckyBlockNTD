@@ -5,6 +5,7 @@ import com.github.danirod12.luckyblock.LBMain;
 import com.github.danirod12.luckyblock.api.LuckyBlockAPI;
 import com.github.danirod12.luckyblock.api.customitem.CustomItemFactory;
 import com.github.danirod12.luckyblock.api.event.LuckyDropEvent;
+import com.github.danirod12.luckyblock.api.folia.SchedulerManager;
 import com.github.danirod12.luckyblock.api.model.LuckyBlock;
 import com.github.danirod12.luckyblock.api.model.LuckyBlockKey;
 import com.github.danirod12.luckyblock.api.model.LuckyBlockType;
@@ -507,7 +508,7 @@ public class LuckyBlockEngine implements LuckyEngineProvider {
             if (!MinecraftVersion.isAtLeastVersion(MinecraftVersion.MC1_13_R1)) {
                 // 1.8 - 1.12 ArmorStand (Or even Entity) meta apply is delayed
                 // If we do not give 2 ticks delay, client will play fire animation
-                Bukkit.getScheduler().runTaskLater(getLogChannel().getPlugin(),
+                SchedulerManager.runLaterAt(getLogChannel().getPlugin(), stand.getLocation(),
                         () -> stand.setFireTicks(Integer.MAX_VALUE), 2L);
             } else {
                 stand.setFireTicks(Integer.MAX_VALUE);

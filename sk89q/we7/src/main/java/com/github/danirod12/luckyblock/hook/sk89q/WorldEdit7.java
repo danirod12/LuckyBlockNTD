@@ -1,5 +1,6 @@
 package com.github.danirod12.luckyblock.hook.sk89q;
 
+import com.github.danirod12.luckyblock.api.folia.SchedulerManager;
 import com.github.danirod12.luckyblock.api.model.IWorldEdit;
 import com.github.danirod12.luckyblock.api.model.LuckyBlockKey;
 import com.github.danirod12.luckyblock.api.provider.LuckyEngineProvider;
@@ -26,7 +27,6 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import lombok.AllArgsConstructor;
-import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -88,7 +88,7 @@ public class WorldEdit7 implements IWorldEdit {
                 Vector3 max = realTo.add(holder.getTransform().apply(region.getMaximumPoint()
                         .subtract(region.getMinimumPoint()).toVector3()));
 
-                Bukkit.getScheduler().runTaskLater(this.plugin, () -> formatPastedSchematic(obj.getWorld(),
+                SchedulerManager.runLaterAt(this.plugin, obj.getLocation(), () -> formatPastedSchematic(obj.getWorld(),
                         new CuboidRegion(realTo.toBlockPoint(), max.toBlockPoint())), 1);
             }
         } catch (WorldEditException e) {

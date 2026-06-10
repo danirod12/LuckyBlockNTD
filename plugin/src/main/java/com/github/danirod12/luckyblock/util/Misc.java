@@ -1,6 +1,7 @@
 package com.github.danirod12.luckyblock.util;
 
 import com.github.danirod12.luckyblock.api.LuckyBlockAPI;
+import com.github.danirod12.luckyblock.api.folia.SchedulerManager;
 import com.github.danirod12.luckyblock.util.string.PopulationResult;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -220,8 +221,21 @@ public class Misc {
             if (populationResult.isTouchesOriginBlock()) {
                 final String finalResult = result;
                 final CommandSender finalCommandSender = commandSender;
-                Bukkit.getScheduler().runTask(LuckyBlockAPI.getInstance(), () ->
-                        dispatch(finalCommandSender, finalResult, as == PerformCommandAs.OPPED_PLAYER));
+
+                org.bukkit.Location loc = null;
+                if (finalCommandSender instanceof org.bukkit.entity.Entity) {
+                    loc = ((org.bukkit.entity.Entity) finalCommandSender).getLocation();
+                } else if (finalCommandSender instanceof org.bukkit.command.BlockCommandSender) {
+                    loc = ((org.bukkit.command.BlockCommandSender) finalCommandSender).getBlock().getLocation();
+                }
+
+                if (loc != null) {
+                    SchedulerManager.runAt(LuckyBlockAPI.getInstance(), loc, () ->
+                            dispatch(finalCommandSender, finalResult, as == PerformCommandAs.OPPED_PLAYER));
+                } else {
+                    SchedulerManager.runGlobal(LuckyBlockAPI.getInstance(), () ->
+                            dispatch(finalCommandSender, finalResult, as == PerformCommandAs.OPPED_PLAYER));
+                }
             } else {
                 dispatch(commandSender, result, as == PerformCommandAs.OPPED_PLAYER);
             }

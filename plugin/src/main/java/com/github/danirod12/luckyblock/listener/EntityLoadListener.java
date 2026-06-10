@@ -1,5 +1,7 @@
 package com.github.danirod12.luckyblock.listener;
 
+import com.github.danirod12.luckyblock.api.LuckyBlockAPI;
+import com.github.danirod12.luckyblock.api.folia.SchedulerManager;
 import com.github.danirod12.luckyblock.engine.LuckyBlockEngine;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -27,7 +29,8 @@ public class EntityLoadListener implements Listener {
         if (event.isNewChunk()) {
             return;
         }
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+        org.bukkit.Location chunkLoc = event.getChunk().getBlock(8, 0, 8).getLocation();
+        SchedulerManager.runLaterAt(plugin, chunkLoc, () -> {
             updateChunks(event.getChunk());
         }, 10L);
     }
@@ -43,20 +46,30 @@ public class EntityLoadListener implements Listener {
             if (!chunk.isLoaded()) {
                 continue;
             }
-            for (Entity entity : chunk.getEntities()) {
-                if (engine.searchByEntity(entity) != null) {
-                    if (engine.getConfigHolder().lightSource) {
-                        entity.setFireTicks(Integer.MAX_VALUE);
-                    } else {
-                        entity.setFireTicks(0);
-                    }
-                    // migration for pre-v2.4
-                    ArmorStand stand = ((ArmorStand) entity);
-                    if (!stand.isMarker()) {
-                        stand.setMarker(true);
+            org.bukkit.Location chunkLoc = chunk.getBlock(8, 0, 8).getLocation();
+            SchedulerManager.runAt(LuckyBlockAPI.getInstance(), chunkLoc, () -> {
+
+                if (!chunk.isLoaded()) {
+                    return;
+                }
+
+                for (Entity entity : chunk.getEntities()) {
+                    if (engine.searchByEntity(entity) != null) {
+                        if (engine.getConfigHolder().lightSource) {
+                            entity.setFireTicks(Integer.MAX_VALUE);
+                        } else {
+                            entity.setFireTicks(0);
+                        }
+                        // migration for pre-v2.4
+                        if (entity instanceof ArmorStand) {
+                            ArmorStand stand = (ArmorStand) entity;
+                            if (!stand.isMarker()) {
+                                stand.setMarker(true);
+                            }
+                        }
                     }
                 }
-            }
+            });
         }
     }
 }

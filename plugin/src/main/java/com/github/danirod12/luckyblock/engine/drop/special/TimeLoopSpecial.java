@@ -2,9 +2,10 @@ package com.github.danirod12.luckyblock.engine.drop.special;
 
 import com.cryptomorin.xseries.XSound;
 import com.github.danirod12.luckyblock.api.LuckyBlockAPI;
+import com.github.danirod12.luckyblock.api.folia.ManagedRunnable;
+import com.github.danirod12.luckyblock.api.folia.SchedulerManager;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class TimeLoopSpecial implements SpecialLuckyDrop {
     @Override
@@ -19,12 +20,12 @@ public class TimeLoopSpecial implements SpecialLuckyDrop {
 
         player.sendMessage("[!] Time anomaly detected...");
 
-        new BukkitRunnable() {
+        SchedulerManager.runTimerAt(LuckyBlockAPI.getInstance(), savePoint, new ManagedRunnable() {
             int loops = 0;
             @Override
             public void run() {
                 if (loops >= 3 || !player.isOnline()) {
-                    player.sendMessage("[!] Timeline restored.");
+                    player.sendMessage("§a[!] Timeline restored.");
                     this.cancel();
                     return;
                 }
@@ -35,6 +36,6 @@ public class TimeLoopSpecial implements SpecialLuckyDrop {
 
                 loops++;
             }
-        }.runTaskTimer(LuckyBlockAPI.getInstance(), 100L, 100L);
+        }, 100L, 100L);
     }
 }

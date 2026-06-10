@@ -1,5 +1,6 @@
 package com.github.danirod12.luckyblock.hook.sk89q;
 
+import com.github.danirod12.luckyblock.api.folia.SchedulerManager;
 import com.github.danirod12.luckyblock.api.model.IWorldEdit;
 import com.github.danirod12.luckyblock.api.provider.LuckyEngineProvider;
 import com.github.danirod12.luckyblock.api.util.JavaUtils;
@@ -45,7 +46,7 @@ public class WorldEditProvider {
             return;
         }
         if (fastAsyncWorldEdit) {
-            Bukkit.getScheduler().runTaskLater(plugin,
+            SchedulerManager.runLaterAt(plugin, target.getLocation(),
                     () -> worldedit.paste(file, target, /*true, */ignoreAir), 1);
         } else {
             worldedit.paste(file, target, /*false, */ignoreAir);

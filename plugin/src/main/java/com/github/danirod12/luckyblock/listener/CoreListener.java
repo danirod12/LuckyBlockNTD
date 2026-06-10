@@ -1,6 +1,7 @@
 package com.github.danirod12.luckyblock.listener;
 
 import com.github.danirod12.luckyblock.api.event.LuckyBlockPlaceEvent;
+import com.github.danirod12.luckyblock.api.folia.SchedulerManager;
 import com.github.danirod12.luckyblock.api.model.LuckyBlock;
 import com.github.danirod12.luckyblock.api.model.LuckyBlockKey;
 import com.github.danirod12.luckyblock.api.util.Pair;
@@ -134,7 +135,7 @@ public class CoreListener implements Listener {
 
             // We cannot force set skull with another block and summon start there
             // Cannot say clear if it is only a legacy problem or not, but it is ok to have it on all versions
-            Bukkit.getScheduler().runTaskLater(engine.getLogChannel().getPlugin(), () -> {
+            SchedulerManager.runLaterAt(engine.getLogChannel().getPlugin(), event.getBlock().getLocation(), () -> {
                 // Well, 1 tick may change a lot
                 if (event.getBlock().getType() != requiredType) { // TODO check, make tests on all versions with heads
                     return;
@@ -260,7 +261,7 @@ public class CoreListener implements Listener {
 
         if (engine.getConfigHolder().informAboutUpdates
                 && player.hasPermission("luckyblock.update") && spigotUpdater.isNeedUpdate()) {
-            Bukkit.getScheduler().runTaskLater(engine.getLogChannel().getPlugin(), () -> {
+            SchedulerManager.runLaterAt(engine.getLogChannel().getPlugin(), player.getLocation(), () -> {
                 if (player.isOnline()) {
                     spigotUpdater.sendUpdateMessage(player);
                 }

@@ -6,6 +6,8 @@ main: com.github.danirod12.luckyblock.LBMain
 version: ${project.parent.version}
 api-version: 1.13
 
+folia-supported: true
+
 author: danirod12 # NTD STUDIOS
 website: https://discord.gg/vbYW3sperj # vk.com/danirodplay
 

@@ -1,11 +1,12 @@
 package com.github.danirod12.luckyblock.engine.drop.special;
 
+import com.github.danirod12.luckyblock.api.folia.ManagedRunnable;
+import com.github.danirod12.luckyblock.api.folia.SchedulerManager;
 import com.github.danirod12.luckyblock.api.model.LuckyDrop;
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ public class DiamondColumnSpecial implements SpecialLuckyDrop {
         Block block = execution.getBlock();
         int y = materials.size() + 10;
 
-        new BukkitRunnable() {
+        SchedulerManager.runTimerAt(execution.getInstance(), block.getLocation(), new ManagedRunnable() {
 
             private final List<Material> list = new ArrayList<>(materials);
             private int i = 4;
@@ -52,7 +53,7 @@ public class DiamondColumnSpecial implements SpecialLuckyDrop {
                             b.setType(Material.FIRE);
                         }
                         block.getWorld().strikeLightning(block.getLocation().add(0.5, y - 10, 0.5));
-                        cancel();
+                        this.cancel();
                     }
                     return;
                 }
@@ -60,6 +61,6 @@ public class DiamondColumnSpecial implements SpecialLuckyDrop {
                 block.getWorld().spawnFallingBlock(block.getLocation().add(0.5, y, 0.5), list.get(0), (byte) 0);
                 list.remove(0);
             }
-        }.runTaskTimer(execution.getInstance(), 10, 10);
+        }, 10L, 10L);
     }
 }
