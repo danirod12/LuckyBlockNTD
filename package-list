@@ -1,6 +1,7 @@
 com.github.danirod12.luckyblock.api
 com.github.danirod12.luckyblock.api.event
 com.github.danirod12.luckyblock.api.exception
+com.github.danirod12.luckyblock.api.folia
 com.github.danirod12.luckyblock.api.loader
 com.github.danirod12.luckyblock.api.model
 com.github.danirod12.luckyblock.api.model.random
