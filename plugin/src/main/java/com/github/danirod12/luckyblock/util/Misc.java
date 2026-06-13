@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -222,11 +223,11 @@ public class Misc {
                 final String finalResult = result;
                 final CommandSender finalCommandSender = commandSender;
 
-                org.bukkit.Location loc = null;
-                if (finalCommandSender instanceof org.bukkit.entity.Entity) {
-                    loc = ((org.bukkit.entity.Entity) finalCommandSender).getLocation();
-                } else if (finalCommandSender instanceof org.bukkit.command.BlockCommandSender) {
-                    loc = ((org.bukkit.command.BlockCommandSender) finalCommandSender).getBlock().getLocation();
+                Location loc = null;
+                if (finalCommandSender instanceof Entity) {
+                    loc = ((Entity) finalCommandSender).getLocation();
+                } else if (finalCommandSender instanceof BlockCommandSender) {
+                    loc = ((BlockCommandSender) finalCommandSender).getBlock().getLocation();
                 }
 
                 if (loc != null) {
