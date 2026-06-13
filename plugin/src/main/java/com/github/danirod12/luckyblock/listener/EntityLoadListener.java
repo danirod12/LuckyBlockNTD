@@ -5,6 +5,7 @@ import com.github.danirod12.luckyblock.api.folia.SchedulerManager;
 import com.github.danirod12.luckyblock.engine.LuckyBlockEngine;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -47,7 +48,7 @@ public class EntityLoadListener implements Listener {
                 continue;
             }
             Location chunkLoc = chunk.getBlock(8, 0, 8).getLocation();
-            SchedulerManager.runAt(LuckyBlockAPI.getInstance(), chunkLoc, () -> {
+            SchedulerManager.runAtIfFolia(LuckyBlockAPI.getInstance(), chunkLoc, () -> {
 
                 if (!chunk.isLoaded()) {
                     return;

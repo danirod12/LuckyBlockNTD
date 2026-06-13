@@ -222,4 +222,12 @@ public class SchedulerManager {
             runnable.setBukkitTask(task);
         }
     }
+
+    public static void runAtIfFolia(Plugin plugin, Location location, Runnable runnable) {
+        if (IS_FOLIA) {
+            runAt(plugin, location, runnable);
+        } else {
+            runnable.run();
+        }
+    }
 }
