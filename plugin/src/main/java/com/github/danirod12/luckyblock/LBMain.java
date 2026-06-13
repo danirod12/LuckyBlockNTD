@@ -2,6 +2,8 @@ package com.github.danirod12.luckyblock;
 
 import com.github.danirod12.luckyblock.api.LuckyBlockAPI;
 import com.github.danirod12.luckyblock.api.customitem.CustomItemFactory;
+import com.github.danirod12.luckyblock.api.folia.ManagedRunnable;
+import com.github.danirod12.luckyblock.api.folia.SchedulerManager;
 import com.github.danirod12.luckyblock.api.model.*;
 import com.github.danirod12.luckyblock.api.provider.LBMainProvider;
 import com.github.danirod12.luckyblock.api.util.*;
@@ -200,11 +202,16 @@ public class LBMain extends LBMainProvider {
         // ============================================
 
         if (this.configHolder.getConfig().getBoolean("scheduled-update-check")) {
-            logChannel.debug("Loading Bukkit scheduler thread for delayed update check");
-            Bukkit.getScheduler().runTaskTimerAsynchronously(this,
-                    () -> checkForUpdates(this.configHolder.informAboutUpdates), 100L, 72000L);
+            logChannel.debug("Loading async scheduler thread for delayed update check");
+
+            SchedulerManager.runAsyncTimer(this, new ManagedRunnable() {
+                @Override
+                public void run() {
+                    checkForUpdates(configHolder.informAboutUpdates);
+                }
+            }, 100L, 72000L);
         } else {
-            Bukkit.getScheduler().runTaskLaterAsynchronously(this,
+            SchedulerManager.runAsyncLater(this,
                     () -> checkForUpdates(this.configHolder.informAboutUpdates), 100L);
         }
 
@@ -380,7 +387,7 @@ public class LBMain extends LBMainProvider {
         }
         if (prevLightSource != this.configHolder.lightSource) {
             if (startup) {
-                Bukkit.getScheduler().runTaskLater(this, this.entityLoadListener::updateAllLoaded, 111L);
+                SchedulerManager.runLaterGlobal(this, this.entityLoadListener::updateAllLoaded, 111L);
             } else {
                 this.entityLoadListener.updateAllLoaded();
             }

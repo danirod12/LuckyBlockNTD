@@ -1,10 +1,11 @@
 package com.github.danirod12.luckyblock.engine.drop.special;
 
 import com.github.danirod12.luckyblock.api.LuckyBlockAPI;
+import com.github.danirod12.luckyblock.api.folia.ManagedRunnable;
+import com.github.danirod12.luckyblock.api.folia.SchedulerManager;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 public class BlackHoleSpecial implements SpecialLuckyDrop {
@@ -12,7 +13,7 @@ public class BlackHoleSpecial implements SpecialLuckyDrop {
     public void execute(Execution execution) {
         final Location center = execution.getBlock().getLocation().add(0.5, 0.5, 0.5);
 
-        new BukkitRunnable() {
+        SchedulerManager.runTimerAt(LuckyBlockAPI.getInstance(), center, new ManagedRunnable() {
             int ticks = 0;
             @Override
             public void run() {
@@ -33,6 +34,6 @@ public class BlackHoleSpecial implements SpecialLuckyDrop {
                 }
                 ticks++;
             }
-        }.runTaskTimer(LuckyBlockAPI.getInstance(), 0L, 1L);
+        }, 0L, 1L);
     }
 }

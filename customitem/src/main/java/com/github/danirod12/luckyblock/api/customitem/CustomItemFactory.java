@@ -5,6 +5,8 @@ import com.cryptomorin.xseries.XMaterial;
 import com.github.danirod12.luckyblock.api.LuckyBlockAPI;
 import com.github.danirod12.luckyblock.api.event.CustomItemAddedEvent;
 import com.github.danirod12.luckyblock.api.event.CustomItemFactoryReloadEvent;
+import com.github.danirod12.luckyblock.api.folia.ManagedRunnable;
+import com.github.danirod12.luckyblock.api.folia.SchedulerManager;
 import com.github.danirod12.luckyblock.api.util.Config;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.utils.MinecraftVersion;
@@ -20,7 +22,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -107,23 +108,27 @@ public class CustomItemFactory {
                         .addUnsafeEnchantment(Enchantment.DURABILITY, 1).setSerialID("magic_wool")
                         .hideEnchantments()
                         .setName(messages.get("magic_wool"))
-                        .registerEvent(ItemEvent.PLACE, n -> new BukkitRunnable() {
+                        .registerEvent(ItemEvent.PLACE, n -> {
                             final Block block = n.getBlock();
-                            int rounds = ThreadLocalRandom.current().nextInt(5, 15);
-                            final XMaterial[] materials = Stream.of(XMaterial.values())
-                                    .filter(xm -> xm.name().endsWith("_WOOL")).toArray(XMaterial[]::new);
+                            SchedulerManager.runTimerAt(LuckyBlockAPI.getInstance(), block.getLocation(),
+                                new ManagedRunnable() {
+                                    int rounds = ThreadLocalRandom.current().nextInt(5, 15);
+                                    final XMaterial[] materials = Stream.of(XMaterial.values())
+                                            .filter(xm -> xm.name().endsWith("_WOOL")).toArray(XMaterial[]::new);
 
-                            @Override
-                            public void run() {
-                                if (rounds < 0 || !block.getType().name().contains("WOOL")) {
-                                    cancel();
-                                    return;
-                                }
+                                    @Override
+                                    public void run() {
+                                        if (rounds < 0 || !block.getType().name().contains("WOOL")) {
+                                            this.cancel();
+                                            return;
+                                        }
 
-                                XBlock.setType(block, materials[ThreadLocalRandom.current().nextInt(materials.length)]);
-                                rounds--;
-                            }
-                        }.runTaskTimer(LuckyBlockAPI.getInstance(), 2L, 5L)));
+                                        XBlock.setType(block,
+                                                materials[ThreadLocalRandom.current().nextInt(materials.length)]);
+                                        rounds--;
+                                    }
+                                }, 2L, 5L);
+                        }));
             } catch (Throwable th) {
                 th.printStackTrace();
             }

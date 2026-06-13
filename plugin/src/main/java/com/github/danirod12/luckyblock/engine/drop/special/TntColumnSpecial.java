@@ -1,10 +1,11 @@
 package com.github.danirod12.luckyblock.engine.drop.special;
 
+import com.github.danirod12.luckyblock.api.folia.ManagedRunnable;
+import com.github.danirod12.luckyblock.api.folia.SchedulerManager;
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.scheduler.BukkitRunnable;
 
 @Getter
 public class TntColumnSpecial implements SpecialLuckyDrop {
@@ -18,7 +19,7 @@ public class TntColumnSpecial implements SpecialLuckyDrop {
 
     @Override
     public void execute(Execution execution) {
-        new BukkitRunnable() {
+        SchedulerManager.runTimerAt(execution.getInstance(), execution.getBlock().getLocation(), new ManagedRunnable() {
             int i = amount;
 
             @Override
@@ -31,9 +32,9 @@ public class TntColumnSpecial implements SpecialLuckyDrop {
                 Location location = execution.getBlock().getLocation().add(.5, 4, .5);
                 execution.getBlock().getWorld().spawnFallingBlock(location, Material.TNT, (byte) 0);
                 if (--i <= 0) {
-                    cancel();
+                    this.cancel();
                 }
             }
-        }.runTaskTimer(execution.getInstance(), 10, 10);
+        }, 10L, 10L);
     }
 }

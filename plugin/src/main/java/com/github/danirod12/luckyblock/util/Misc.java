@@ -1,12 +1,14 @@
 package com.github.danirod12.luckyblock.util;
 
 import com.github.danirod12.luckyblock.api.LuckyBlockAPI;
+import com.github.danirod12.luckyblock.api.folia.SchedulerManager;
 import com.github.danirod12.luckyblock.util.string.PopulationResult;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -220,8 +222,21 @@ public class Misc {
             if (populationResult.isTouchesOriginBlock()) {
                 final String finalResult = result;
                 final CommandSender finalCommandSender = commandSender;
-                Bukkit.getScheduler().runTask(LuckyBlockAPI.getInstance(), () ->
-                        dispatch(finalCommandSender, finalResult, as == PerformCommandAs.OPPED_PLAYER));
+
+                Location loc = null;
+                if (finalCommandSender instanceof Entity) {
+                    loc = ((Entity) finalCommandSender).getLocation();
+                } else if (finalCommandSender instanceof BlockCommandSender) {
+                    loc = ((BlockCommandSender) finalCommandSender).getBlock().getLocation();
+                }
+
+                if (loc != null) {
+                    SchedulerManager.runAt(LuckyBlockAPI.getInstance(), loc, () ->
+                            dispatch(finalCommandSender, finalResult, as == PerformCommandAs.OPPED_PLAYER));
+                } else {
+                    SchedulerManager.runGlobal(LuckyBlockAPI.getInstance(), () ->
+                            dispatch(finalCommandSender, finalResult, as == PerformCommandAs.OPPED_PLAYER));
+                }
             } else {
                 dispatch(commandSender, result, as == PerformCommandAs.OPPED_PLAYER);
             }
