@@ -29,7 +29,7 @@ public class EntityLoadListener implements Listener {
         if (event.isNewChunk()) {
             return;
         }
-        org.bukkit.Location chunkLoc = event.getChunk().getBlock(8, 0, 8).getLocation();
+        Location chunkLoc = event.getChunk().getBlock(8, 0, 8).getLocation();
         SchedulerManager.runLaterAt(plugin, chunkLoc, () -> {
             updateChunks(event.getChunk());
         }, 10L);
@@ -46,7 +46,7 @@ public class EntityLoadListener implements Listener {
             if (!chunk.isLoaded()) {
                 continue;
             }
-            org.bukkit.Location chunkLoc = chunk.getBlock(8, 0, 8).getLocation();
+            Location chunkLoc = chunk.getBlock(8, 0, 8).getLocation();
             SchedulerManager.runAt(LuckyBlockAPI.getInstance(), chunkLoc, () -> {
 
                 if (!chunk.isLoaded()) {

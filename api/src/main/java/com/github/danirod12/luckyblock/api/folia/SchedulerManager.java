@@ -8,6 +8,8 @@ import org.bukkit.scheduler.BukkitTask;
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
 public class SchedulerManager {
 
     private static final boolean IS_FOLIA;
@@ -188,7 +190,7 @@ public class SchedulerManager {
             try {
                 Consumer<Object> consumer = task -> runnable.run();
                 asyncRunDelayed.invoke(asyncScheduler, plugin, consumer,
-                        delayTicks * 50L, java.util.concurrent.TimeUnit.MILLISECONDS);
+                        delayTicks * 50L, MILLISECONDS);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -209,7 +211,7 @@ public class SchedulerManager {
                     runnable.run();
                 };
                 Object taskObj = asyncRunAtFixedRate.invoke(asyncScheduler, plugin, consumer,
-                        delayTicks * 50L, periodTicks * 50L, java.util.concurrent.TimeUnit.MILLISECONDS);
+                        delayTicks * 50L, periodTicks * 50L, MILLISECONDS);
                 runnable.setFoliaTask(taskObj);
             } catch (Exception e) {
                 e.printStackTrace();
