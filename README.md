@@ -5,7 +5,10 @@
   <br>
 </h1>
 
-<h4 align="center">Source code of the LuckyBlock NTD spigot plugin, made with love in Java.</h4>
+<h4 align="center">Source code of the LuckyBlock NTD V3 spigot plugin, made with love in Java.</h4>
+
+<h4 align="center">Current stable version on SpigotMC is V2, branch v2. V3 is going to replace V2 soon</h3>
+
 <p align="center">
     <a href="https://www.codefactor.io/repository/github/danirod12/luckyblockntd/" alt="CodeFactor Score">
         <img src="https://www.codefactor.io/repository/github/danirod12/luckyblockntd/badge"/>
@@ -23,12 +26,6 @@
         <img src="https://img.shields.io/bstats/players/17081?color=brightgreen"/>
     </a>
 </p>
-
-## Plugin Wiki
-
-You can find setup info and languages list on plugin Wiki.
-[Click to visit plugin wiki](https://danirod12.github.io/ntd-wiki/docs/luckyblock/overview/)\
-If you want to make a contribution to the wiki, you can do so in [NTD Wiki repo](https://github.com/danirod12/ntd-wiki)
 
 ## What is it?
 
@@ -51,6 +48,12 @@ LuckyBlock NTD is perfect for both casual servers and competitive minigames like
 - Mineable addon - lucky blocks can drop from ore and block mining (premium)
 - Built-in GUI editor for real-time config changes without editing files (premium)
 - And much more!
+
+## Plugin Wiki
+
+You can find setup info and languages list on plugin Wiki.
+[Click to visit plugin wiki](https://danirod12.github.io/ntd-wiki/docs/luckyblock/overview/)\
+If you want to make a contribution to the wiki, you can do so in [NTD Wiki repo](https://github.com/danirod12/ntd-wiki)
 
 ## Contributing
 If you want to contribute to LuckyBlock NTD, you can do so by creating a pull request to `main` branch.\
