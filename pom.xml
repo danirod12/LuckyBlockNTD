@@ -157,7 +157,7 @@
                             </excludes>
                         </filter>
                     </filters>
-                    <finalName>ntdLuckyBlock-${project.version}-unobfuscated</finalName>
+                    <finalName>ntdLuckyBlock-${project.version}</finalName>
                 </configuration>
             </plugin>
 
